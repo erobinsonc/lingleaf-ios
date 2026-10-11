@@ -50,10 +50,10 @@ struct WordCardView: View {
                     if let definition = entry?.definition {
                         Text("\(Text(entry?.partOfSpeech ?? "").italic()) · \(definition)")
                             .font(.footnote)
-                            .foregroundStyle(Brand.secondaryText)
+                            .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                     } else if entryLoaded {
-                        Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
+                        Text("No definition available.").font(.footnote).foregroundStyle(.secondary)
                     }
                     Divider().padding(.vertical, 4)
                     contextView
@@ -87,10 +87,10 @@ struct WordCardView: View {
                 Text(headword).font(.largeTitle.weight(.semibold))
             }
             if let phonetic = entry?.phonetic {
-                Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
+                Text(phonetic).font(.title3).foregroundStyle(.secondary)
             }
             if headword != selection.word {
-                Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
+                Text("In the text: \(selection.word)").font(.caption).foregroundStyle(.secondary)
             }
         }
     }
@@ -106,7 +106,7 @@ struct WordCardView: View {
                 } else if translationFailed {
                     Text("Translation unavailable. Connect to the internet once to download the language.")
                         .font(.footnote)
-                        .foregroundStyle(Brand.secondaryText)
+                        .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
                 } else {
                     ProgressView()
@@ -118,22 +118,27 @@ struct WordCardView: View {
         }
     }
 
-    /// Small grey button under the translation ("Português ⌄") that changes the language in place.
+    /// Small button under the translation ("Português ˅") that changes the language in place.
+    /// iOS 26: a system glass capsule, legible on the glass card; earlier: a grey capsule.
     private func languageMenu(_ current: String) -> some View {
         Menu {
             languageButtons
         } label: {
-            Text(verbatim: "\(AppModel.languageName(current)) ⌄")
-                .font(.footnote)
-                .foregroundStyle(Brand.secondaryText)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 6)
-                .background(Color(uiColor: .tertiarySystemFill), in: Capsule())
-                .frame(minHeight: 44)
-                .contentShape(Rectangle())
+            HStack(spacing: 4) {
+                Text(verbatim: AppModel.languageName(current))
+                Image(systemName: "chevron.down").imageScale(.small).accessibilityHidden(true)
+            }
+            .font(.footnote)
+            .padding(.horizontal, Self.hasGlass ? 0 : 12)
+            .padding(.vertical, Self.hasGlass ? 0 : 6)
+            .background(Self.hasGlass ? Color.clear : Color(uiColor: .tertiarySystemFill), in: Capsule())
         }
         .menuStyle(.button)
-        .buttonStyle(.plain)
+        .modifier(GlassButtonStyle())
+        .controlSize(.small)
+        .tint(.primary)
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
         // The language name keeps its own language so VoiceOver reads it with the right voice.
         .accessibilityLabel(Text("Translation language: \(AppModel.languageLabel(current))"))
     }
@@ -143,7 +148,7 @@ struct WordCardView: View {
         VStack(spacing: 8) {
             Text("Translate into:")
                 .font(.subheadline)
-                .foregroundStyle(Brand.secondaryText)
+                .foregroundStyle(.secondary)
             FlowLayout(spacing: 8) {
                 ForEach(Self.suggestedLanguages, id: \.self) { code in
                     Button {
@@ -184,7 +189,7 @@ struct WordCardView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 6)
             .frame(minHeight: 44)
-            .overlay(Capsule().stroke(Brand.secondaryText, lineWidth: 1))
+            .overlay(Capsule().stroke(.secondary, lineWidth: 1))
             .contentShape(Capsule())
     }
 
@@ -194,7 +199,7 @@ struct WordCardView: View {
                 Text(selection.sentence).font(readingFont(size: 17)).italic()
                     .fixedSize(horizontal: false, vertical: true)
                 if let sentenceTranslation {
-                    Text(sentenceTranslation).font(.callout).foregroundStyle(Brand.secondaryText)
+                    Text(sentenceTranslation).font(.callout).foregroundStyle(.secondary)
                 }
             }
             Spacer(minLength: 8)
@@ -233,14 +238,15 @@ struct WordCardView: View {
         .padding(16)
     }
 
-    /// Primary: the yellow marker that underlines saved words, black text. Secondary:
-    /// a neutral tonal button. A checked button shows ✓, has the selected trait and
+    /// Primary: the yellow marker that underlines saved words, black text, opaque on any
+    /// backdrop. Secondary: the system glass button on iOS 26, a neutral tonal one before.
+    /// A checked button shows ✓, has the selected trait and
     /// a hint saying that tapping it removes the word.
     private func actionButton(
         _ title: LocalizedStringKey, checked: Bool, primary: Bool, action: @escaping () -> Void
     ) -> some View {
         let shape = RoundedRectangle(cornerRadius: 12)
-        let background = primary ? Brand.marker : Color(uiColor: .secondarySystemFill)
+        let background = primary ? Brand.marker : Self.hasGlass ? Color.clear : Color(uiColor: .secondarySystemFill)
         return Button(action: action) {
             HStack(spacing: 6) {
                 if checked {
@@ -258,7 +264,8 @@ struct WordCardView: View {
             .background(background, in: shape)
             .contentShape(shape)
         }
-        .buttonStyle(.plain)
+        .modifier(GlassButtonStyle(enabled: !primary))
+        .buttonBorderShape(.roundedRectangle(radius: 12))
         .accessibilityAddTraits(checked ? .isSelected : [])
         .accessibilityHint(checked ? Text("Remove from Words") : Text(verbatim: ""))
     }
@@ -371,6 +378,29 @@ struct WordCardView: View {
             if translatedInto == target { translations[base] = response.targetText }
         } catch {
             if translatedInto == target, translation == nil { translationFailed = true }
+        }
+    }
+}
+
+extension WordCardView {
+    /// Whether the system glass button style exists (iOS 26 and later).
+    static var hasGlass: Bool {
+        if #available(iOS 26, *) { return true }
+        return false
+    }
+}
+
+/// The card sits on the iOS 26 glass sheet: its secondary buttons use the system glass
+/// style, which keeps labels legible on it. Elsewhere, and before iOS 26, plain buttons
+/// that draw their own background.
+private struct GlassButtonStyle: ViewModifier {
+    var enabled = true
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *), enabled {
+            content.buttonStyle(.glass)
+        } else {
+            content.buttonStyle(.plain)
         }
     }
 }

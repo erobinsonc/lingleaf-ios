@@ -303,8 +303,9 @@ final class LingleafUITests: XCTestCase {
         try audit("Reader")
         app.links["beach"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
-        // Audited at full height: at half height the audit reports the scrollable card's text as
-        // clipped at larger sizes, and at accessibility sizes the app opens the card full height.
+        // The card as learners first see it: half height, on iOS 26 a glass sheet over the book.
+        try audit("Word card (half height)")
+        // Then at full height, where text clipping is checked too.
         // A slow drag, not a swipe: the card's ScrollView takes a swipe as a scroll and bounces back.
         let phonetic = app.staticTexts["/test/"]
         phonetic.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
@@ -338,6 +339,11 @@ final class LingleafUITests: XCTestCase {
         // (1×1 pt, nearly transparent); users never see it and live builds don't have it.
         if issue.element?.identifier == lastSpokenID { return true }
         switch (screen, issue.auditType) {
+        case ("Word card (half height)", .textClipped):
+            // At half height the card's text continues in its ScrollView; iOS 26 draws the
+            // medium sheet slightly scaled and reports all of it as clipped. The test drags
+            // the card to full height and audits it again, where clipping still fails.
+            return true
         case ("Settings", .contrast) where issue.element?.label.uppercased() == "VOICE":
             // The four section headers share one style and colour. Measured on the
             // screenshot tour all four are 7.58:1 (#4D4D4D on #F2F2F7), yet only

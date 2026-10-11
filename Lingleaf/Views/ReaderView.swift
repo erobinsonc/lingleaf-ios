@@ -64,9 +64,6 @@ struct ReaderView: View {
             // With accessibility text sizes a half-height card shows almost nothing; open it full height.
             .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
             .presentationDragIndicator(.visible)
-            // Opaque on purpose: on iOS 26 a medium-height sheet is translucent glass, the
-            // book text shows through and the card's text fails contrast.
-            .presentationBackground(Color(uiColor: .systemBackground))
         }
         .environment(\.openURL, OpenURLAction { url in
             handle(url)
