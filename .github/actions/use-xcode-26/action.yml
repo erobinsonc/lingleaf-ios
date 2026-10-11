@@ -1,0 +1,16 @@
+name: Use Xcode 26
+description: >
+  Selects the newest Xcode 26 on the runner. App Store Connect only accepts builds made with
+  the iOS 26 SDK, so tests, CodeQL and TestFlight all build with it.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n 1)
+        if [ -z "$xcode" ]; then
+          echo "::error::No Xcode 26 on this runner. Available: $(ls -d /Applications/Xcode_*.app | xargs -n1 basename | tr '\n' ' ')"
+          exit 1
+        fi
+        sudo xcode-select -s "$xcode"
+        xcodebuild -version

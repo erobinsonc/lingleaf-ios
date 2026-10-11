@@ -46,6 +46,8 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      # Same Xcode as the app build and TestFlight; older SDKs lack the iOS 26 APIs the app uses.
+      - uses: ./.github/actions/use-xcode-26
       # Install and generate before CodeQL starts tracing: Homebrew refuses to run
       # under the tracer ("Cannot install under Rosetta 2").
       - run: |
