@@ -40,6 +40,17 @@ jobs:
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
+      # Same Xcode as TestFlight uploads (App Store Connect requires the iOS 26 SDK),
+      # so tests and screenshots show what testers get.
+      - name: Use Xcode 26
+        run: |
+          xcode=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -n 1)
+          if [ -z "$xcode" ]; then
+            echo "::error::No Xcode 26 on this runner. Available: $(ls -d /Applications/Xcode_*.app | xargs -n1 basename | tr '\n' ' ')"
+            exit 1
+          fi
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
       - name: Install tools
         run: brew install xcodegen swiftlint
       - name: SwiftLint
