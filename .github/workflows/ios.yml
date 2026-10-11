@@ -65,6 +65,10 @@ jobs:
           devices = json.load(sys.stdin)['devices']
           print(next(d['udid'] for runtime, ds in sorted(devices.items(), reverse=True) if 'iOS' in runtime for d in ds if d['name'].startswith('iPhone')))")
           echo "Simulator: $UDID"
+          # Boot and wait first: a cold first launch on the iOS 26 simulator can
+          # exceed XCTest's launch timeout and fail whichever test runs first.
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
           xcodebuild test \
             -project Lingleaf.xcodeproj \
             -scheme Lingleaf \
