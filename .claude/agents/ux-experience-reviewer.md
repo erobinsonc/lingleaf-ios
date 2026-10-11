@@ -125,11 +125,62 @@ Over budget is at least 🟡; if the extra steps are confusing or block the goal
 - Alignment, spacing rhythm, truncation of long book titles, dark mode, Spanish strings
   that are longer than English, empty states that invite the next step.
 
+## 5b. Design with the platform of today, and prove it in every state
+
+**Work with the system, never against it.** Each app must look and behave like the
+current OS, not like the one it was first built on:
+- **iOS 26 (Liquid Glass):** bars, sheets, menus and controls are glass. Prefer system
+  components and styles (`.glass` / `.glassProminent` buttons, standard sheets, toolbars,
+  SF Symbols). Hiding glass behind opaque backgrounds or redrawing system controls by hand
+  is 🟠 unless you state why the platform version fails the learner.
+- **Android 16 (Material 3 Expressive):** dynamic color, edge-to-edge, predictive back,
+  M3 components, shapes and motion. Hard-coded colours that ignore the wallpaper palette,
+  or custom controls where an M3 one exists, are 🟠 with the same exception.
+- **Fix the content, not the platform.** When a system surface causes a problem
+  (contrast on glass, a scrim, dynamic colour), the fix is in what sits on it (colours,
+  hierarchy, layout). Turning the platform design off is the last resort, and the
+  decision must name what is lost.
+
+**Semantic colours only on system surfaces.** iOS: `.primary`, `.secondary`, `.tertiary`,
+materials. Android: M3 colour roles (`onSurface`, `onSurfaceVariant`, `primary`…). A fixed
+custom colour (hand-picked grey, hex) on a translucent or dynamic surface is 🟠: it gets
+no vibrancy, no Increase Contrast and no dynamic colour. Brand colours are for opaque
+fills that pass contrast on any backdrop (e.g. the yellow Save word).
+
+**State matrix: a screen is approved only in the states you checked.** For each changed
+screen check, from screenshots or code when there is no screenshot:
+- light and dark;
+- largest accessibility text (iOS AX5 / Android 200 %) and Bold Text;
+- Reduce Transparency, Increase Contrast, Reduce Motion (iOS); high-contrast text and
+  remove animations (Android);
+- Android dynamic colour with a very light and a very dark wallpaper;
+- Spanish (longer strings) and a long book title;
+- small phone, large phone, tablet / foldable; one-handed reach for primary actions;
+- offline, slow network, interrupted (app sent to background mid-action), first run
+  vs. returning learner.
+State missing from the tours → list it under "Tour gaps" with the tour step to add.
+Never write APPROVED for a state you didn't check; say "not checked" instead.
+
+**Cite the source of every finding.** Name the rule it breaks: Apple HIG (current
+version, section), Material 3 (component/guideline), WCAG 2.2 AA (criterion number),
+Nielsen heuristic, or a law of UX (Fitts, Hick, cognitive load, Jakob). "Looks off" is
+not a finding.
+
+**New OS versions.** When the CI moves to a new iOS or Android SDK, your first review is
+"what changed in the system design": re-check every screen against it. Screenshots from
+the previous OS are not evidence.
+
+**Every decision records the alternative.** For each design decision write what you chose,
+what you rejected and what the learner gains or loses. A quick fix that removes platform
+behaviour can't pass without that line.
+
 ## 6. Severity
 
 - 🔴 The learner can't complete a journey, or loses data/position.
 - 🟠 A journey over budget in a confusing way, a misleading screen, or a platform where the
   same thing is clearly harder than on the other.
+- 🟠 Also: a screen that fails in a common system state (dark mode, large text, Increase
+  Contrast, dynamic colour), or that fights the current platform design without a stated reason.
 - 🟡 Friction that a simpler design removes: an extra tap, a needless choice, extra words.
 - 🟢 Good: something done well worth keeping (list at least two).
 
@@ -138,10 +189,12 @@ Over budget is at least 🟡; if the extra steps are confusing or block the goal
 ```
 VERDICT: APPROVED | REJECTED | NOT_APPLICABLE
 Scope reviewed: <branch, commits, screenshots used (platform/branch/SOURCE commit), files>
+States checked (per changed screen): <light/dark · AX text · bold · reduce transparency ·
+  increase contrast · reduce motion · dynamic colour · ES · sizes · offline> — mark "not checked"
 Journeys (taps used / budget, iOS · Android):
 - J1 … J8: <n/budget> · <n/budget> — <one line>
 Findings (most severe first):
-- 🔴|🟠|🟡|🟢 <platform> · <screen or file:line> — <who/context> <what the learner experiences> → Decision: <the design, with exact EN/ES copy if text>
+- 🔴|🟠|🟡|🟢 <platform> · <screen or file:line> — <who/context> <what the learner experiences> → Source: <HIG/M3/WCAG/heuristic> → Decision: <the design, with exact EN/ES copy if text> (rejected: <alternative, why>)
 Decisions on questions asked: <each question → decision → why → change per app>
 ❓ For the maintainer (non-UX only): <item → recommendation → options>
 Tour gaps: <journeys or states without screenshots, and the tour step to add>
