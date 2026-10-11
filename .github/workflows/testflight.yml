@@ -61,8 +61,20 @@ jobs:
             exit 1
           fi
           mkdir -p "$RUNNER_TEMP/asc"
-          printf '%s\n' "$ASC_KEY_P8" > "$RUNNER_TEMP/asc/AuthKey.p8"
-          chmod 600 "$RUNNER_TEMP/asc/AuthKey.p8"
+          umask 077
+          # Rebuild the PEM from its base64 body: a secret pasted from a phone or a web
+          # form often loses its line breaks or gains spaces, and Xcode then rejects it.
+          body=$(printf '%s' "$ASC_KEY_P8" | sed -e 's/-----[A-Z ]*-----//g' | tr -cd 'A-Za-z0-9+/=')
+          {
+            echo "-----BEGIN PRIVATE KEY-----"
+            printf '%s' "$body" | fold -w 64
+            echo
+            echo "-----END PRIVATE KEY-----"
+          } > "$RUNNER_TEMP/asc/AuthKey.p8"
+          if ! openssl pkey -in "$RUNNER_TEMP/asc/AuthKey.p8" -noout 2>/dev/null; then
+            echo "::error::ASC_KEY_P8 is not a valid .p8 key. Paste the whole file again, BEGIN and END lines included. See docs/testflight.md."
+            exit 1
+          fi
 
       - name: Archive (Release, signed by Xcode with the API key)
         run: |
