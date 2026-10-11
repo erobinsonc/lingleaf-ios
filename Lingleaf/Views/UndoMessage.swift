@@ -31,6 +31,14 @@ private struct UndoMessageModifier: ViewModifier {
         voiceOver || switchControl || UIAccessibility.isVoiceOverRunning || UIAccessibility.isSwitchControlRunning
     }
 
+    #if DEBUG
+    /// UI tests only: the message doesn't time out, so a slow simulator can't miss it.
+    /// No Close button is shown, so screenshots match what learners see.
+    private static let keepForUITests = ProcessInfo.processInfo.arguments.contains { $0.hasPrefix("-ui-testing") }
+    #else
+    private static let keepForUITests = false
+    #endif
+
     func body(content: Content) -> some View {
         content
             .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -54,7 +62,7 @@ private struct UndoMessageModifier: ViewModifier {
             }
             // Restarts when assistive tech is turned on or off while the message shows.
             .task(id: Timeout(id: message?.id, staysOpen: staysOpen)) {
-                guard let current = message, !staysOpen else { return }
+                guard let current = message, !staysOpen, !Self.keepForUITests else { return }
                 try? await Task.sleep(for: .seconds(current.seconds))
                 // A newer message (or Undo) cancels this task; only time out this one.
                 if !Task.isCancelled, message?.id == current.id { message = nil }
