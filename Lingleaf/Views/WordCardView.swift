@@ -242,6 +242,8 @@ struct WordCardView: View {
                 actionButton("Save word", checked: false, primary: true) { save(learned: false) }
             }
         }
+        // Equal heights when one label wraps (e.g. "Guardar palabra" in Spanish).
+        .fixedSize(horizontal: false, vertical: true)
         .padding(16)
     }
 
@@ -268,7 +270,7 @@ struct WordCardView: View {
             .foregroundStyle(primary ? Color.black : Color.primary)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, minHeight: 50)
+            .frame(maxWidth: .infinity, minHeight: 50, maxHeight: .infinity)
             .background(background, in: shape)
             .contentShape(shape)
         }
