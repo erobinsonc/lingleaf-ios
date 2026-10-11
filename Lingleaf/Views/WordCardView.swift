@@ -66,9 +66,10 @@ struct WordCardView: View {
         }
         // iOS 26: the sheet stays system glass at its edge, but the content sits on one opaque
         // panel so the book never shows through the text (glass is for controls, not content).
+        // A UIKit colour on purpose: inside a glass sheet `.background` resolves to the glass.
         .background {
             if Self.hasGlass {
-                RoundedRectangle(cornerRadius: 28, style: .continuous).fill(.background.secondary)
+                RoundedRectangle(cornerRadius: 28, style: .continuous).fill(Color(uiColor: .secondarySystemBackground))
             }
         }
         .padding(Self.hasGlass ? 8 : 0)
