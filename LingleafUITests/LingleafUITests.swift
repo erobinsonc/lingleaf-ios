@@ -312,6 +312,11 @@ final class LingleafUITests: XCTestCase {
             .press(forDuration: 0.2, thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)))
         Thread.sleep(forTimeInterval: 1)
         XCTAssertLessThan(phonetic.frame.minY, 300, "The word card should be at full height before the audit")
+        // Evidence for the audit result: the full-height card exactly as audited (exported with the tour).
+        let fullHeight = XCTAttachment(screenshot: app.screenshot())
+        fullHeight.name = "en-light-12-word-card-full-height"
+        fullHeight.lifetime = .keepAlways
+        add(fullHeight)
         try audit("Word card")
 
         // Populated states: save the word, then audit every screen that shows it.
