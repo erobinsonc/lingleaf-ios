@@ -361,7 +361,7 @@ final class LingleafUITests: XCTestCase {
             // Progress bars (reader, review) are read-only indicators, not touch
             // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
             return issue.element?.elementType == .progressIndicator
-        case ("Word card", .elementDetection):
+        case ("Word card", .elementDetection), ("Word card (half height)", .elementDetection):
             // The card is a sheet over the reader: the book's text shows behind
             // it, dimmed and correctly hidden from VoiceOver while the card is open.
             return issue.element == nil

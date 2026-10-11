@@ -50,10 +50,10 @@ struct WordCardView: View {
                     if let definition = entry?.definition {
                         Text("\(Text(entry?.partOfSpeech ?? "").italic()) · \(definition)")
                             .font(.footnote)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Brand.secondaryText)
                             .multilineTextAlignment(.center)
                     } else if entryLoaded {
-                        Text("No definition available.").font(.footnote).foregroundStyle(.secondary)
+                        Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
                     }
                     Divider().padding(.vertical, 4)
                     contextView
@@ -64,6 +64,14 @@ struct WordCardView: View {
             }
             actions
         }
+        // iOS 26: the sheet stays system glass at its edge, but the content sits on one opaque
+        // panel so the book never shows through the text (glass is for controls, not content).
+        .background {
+            if Self.hasGlass {
+                RoundedRectangle(cornerRadius: 28, style: .continuous).fill(.background.secondary)
+            }
+        }
+        .padding(Self.hasGlass ? 8 : 0)
         .translationTask(configuration) { session in
             await translate(using: session)
         }
@@ -87,10 +95,10 @@ struct WordCardView: View {
                 Text(headword).font(.largeTitle.weight(.semibold))
             }
             if let phonetic = entry?.phonetic {
-                Text(phonetic).font(.title3).foregroundStyle(.secondary)
+                Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
             }
             if headword != selection.word {
-                Text("In the text: \(selection.word)").font(.caption).foregroundStyle(.secondary)
+                Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
         }
     }
@@ -106,7 +114,7 @@ struct WordCardView: View {
                 } else if translationFailed {
                     Text("Translation unavailable. Connect to the internet once to download the language.")
                         .font(.footnote)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Brand.secondaryText)
                         .multilineTextAlignment(.center)
                 } else {
                     ProgressView()
@@ -148,7 +156,7 @@ struct WordCardView: View {
         VStack(spacing: 8) {
             Text("Translate into:")
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Brand.secondaryText)
             FlowLayout(spacing: 8) {
                 ForEach(Self.suggestedLanguages, id: \.self) { code in
                     Button {
@@ -189,7 +197,7 @@ struct WordCardView: View {
             .padding(.horizontal, 14)
             .padding(.vertical, 6)
             .frame(minHeight: 44)
-            .overlay(Capsule().stroke(.secondary, lineWidth: 1))
+            .overlay(Capsule().stroke(Brand.secondaryText, lineWidth: 1))
             .contentShape(Capsule())
     }
 
@@ -199,7 +207,7 @@ struct WordCardView: View {
                 Text(selection.sentence).font(readingFont(size: 17)).italic()
                     .fixedSize(horizontal: false, vertical: true)
                 if let sentenceTranslation {
-                    Text(sentenceTranslation).font(.callout).foregroundStyle(.secondary)
+                    Text(sentenceTranslation).font(.callout).foregroundStyle(Brand.secondaryText)
                 }
             }
             Spacer(minLength: 8)
