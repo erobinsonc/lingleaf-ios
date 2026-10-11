@@ -7,6 +7,8 @@ import LingleafCore
 struct WordCardView: View {
     let selection: WordSelection
     let source: String
+    /// The sheet is at its full height: iOS 26 then draws it opaque, so the card needs no panel of its own.
+    var fullHeight = false
     /// Called when a button changed the word, just before the card closes, with
     /// the message (and its Undo) the reader shows.
     let onAction: (UndoMessage) -> Void
@@ -67,12 +69,8 @@ struct WordCardView: View {
         // iOS 26: the sheet stays system glass at its edge, but the content sits on one opaque
         // panel so the book never shows through the text (glass is for controls, not content).
         // A UIKit colour on purpose: inside a glass sheet `.background` resolves to the glass.
-        .background {
-            if Self.hasGlass {
-                RoundedRectangle(cornerRadius: 28, style: .continuous).fill(Color(uiColor: .secondarySystemBackground))
-            }
-        }
-        .padding(Self.hasGlass ? 8 : 0)
+        // Only at half height: at full height the sheet is opaque and a panel would frame a card in a card.
+        .modifier(ContentPanel(enabled: !fullHeight))
         .translationTask(configuration) { session in
             await translate(using: session)
         }
@@ -141,13 +139,13 @@ struct WordCardView: View {
             .padding(.horizontal, Self.hasGlass ? 0 : 12)
             .padding(.vertical, Self.hasGlass ? 0 : 6)
             .background(Self.hasGlass ? Color.clear : Color(uiColor: .tertiarySystemFill), in: Capsule())
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
         }
         .menuStyle(.button)
         .modifier(GlassButtonStyle())
         .controlSize(.small)
         .tint(.primary)
-        .frame(minHeight: 44)
-        .contentShape(Rectangle())
         // The language name keeps its own language so VoiceOver reads it with the right voice.
         .accessibilityLabel(Text("Translation language: \(AppModel.languageLabel(current))"))
     }
@@ -247,15 +245,16 @@ struct WordCardView: View {
         .padding(16)
     }
 
-    /// Primary: the yellow marker that underlines saved words, black text, opaque on any
-    /// backdrop. Secondary: the system glass button on iOS 26, a neutral tonal one before.
+    /// Primary: the yellow marker that underlines saved words, black text (on iOS 26 the
+    /// prominent glass button tinted with it). Secondary: the system glass button on iOS 26,
+    /// a neutral tonal one before. Both share the system's button metrics on iOS 26.
     /// A checked button shows ✓, has the selected trait and
     /// a hint saying that tapping it removes the word.
     private func actionButton(
         _ title: LocalizedStringKey, checked: Bool, primary: Bool, action: @escaping () -> Void
     ) -> some View {
         let shape = RoundedRectangle(cornerRadius: 12)
-        let background = primary ? Brand.marker : Self.hasGlass ? Color.clear : Color(uiColor: .secondarySystemFill)
+        let background = Self.hasGlass ? Color.clear : primary ? Brand.marker : Color(uiColor: .secondarySystemFill)
         return Button(action: action) {
             HStack(spacing: 6) {
                 if checked {
@@ -273,7 +272,8 @@ struct WordCardView: View {
             .background(background, in: shape)
             .contentShape(shape)
         }
-        .modifier(GlassButtonStyle(enabled: !primary))
+        .modifier(GlassButtonStyle(prominent: primary))
+        .tint(primary ? Brand.marker : nil)
         .buttonBorderShape(.roundedRectangle(radius: 12))
         .accessibilityAddTraits(checked ? .isSelected : [])
         .accessibilityHint(checked ? Text("Remove from Words") : Text(verbatim: ""))
@@ -399,17 +399,38 @@ extension WordCardView {
     }
 }
 
-/// The card sits on the iOS 26 glass sheet: its secondary buttons use the system glass
-/// style, which keeps labels legible on it. Elsewhere, and before iOS 26, plain buttons
-/// that draw their own background.
+/// The card's buttons on iOS 26: system glass (prominent for the primary action), so they
+/// share the system's metrics and stay legible on the glass sheet. Before iOS 26, plain
+/// buttons that draw their own background.
 private struct GlassButtonStyle: ViewModifier {
-    var enabled = true
+    var prominent = false
+
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            if prominent {
+                content.buttonStyle(.glassProminent)
+            } else {
+                content.buttonStyle(.glass)
+            }
+        } else {
+            content.buttonStyle(.plain)
+        }
+    }
+}
+
+/// iOS 26, half-height card: the sheet is glass and the book shows through it, so the
+/// content sits on one opaque panel, concentric with the sheet (glass is for controls,
+/// not content). A UIKit colour on purpose: inside a glass sheet `.background` is the glass.
+private struct ContentPanel: ViewModifier {
+    var enabled: Bool
 
     func body(content: Content) -> some View {
         if #available(iOS 26, *), enabled {
-            content.buttonStyle(.glass)
+            content
+                .background(Color(uiColor: .secondarySystemBackground), in: ConcentricRectangle())
+                .padding(8)
         } else {
-            content.buttonStyle(.plain)
+            content
         }
     }
 }

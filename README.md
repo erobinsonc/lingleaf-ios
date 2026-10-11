@@ -23,7 +23,7 @@ Android version: [lingleaf-android](https://github.com/erobinsonc/lingleaf-andro
 
 ## Build
 
-Requirements: Xcode 16+, iOS 18+, [XcodeGen](https://github.com/yonaskolb/XcodeGen).
+Requirements: Xcode 26+ (iOS 26 SDK, required by App Store Connect), iOS 18+, [XcodeGen](https://github.com/yonaskolb/XcodeGen).
 
 ```bash
 brew install xcodegen swiftlint

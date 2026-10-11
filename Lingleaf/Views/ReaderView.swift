@@ -29,6 +29,8 @@ struct ReaderView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    /// The word card's height, so the card drops its half-height panel when full height.
+    @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
     @State private var selection: WordSelection?
@@ -58,11 +60,12 @@ struct ReaderView: View {
         .toolbar { toolbar }
         .toolbar(.hidden, for: .tabBar)
         .sheet(item: $selection) { selection in
-            WordCardView(selection: selection, source: book?.title ?? "") { message in
+            WordCardView(selection: selection, source: book?.title ?? "", fullHeight: cardDetent == .large) { message in
                 undo = message
             }
             // With accessibility text sizes a half-height card shows almost nothing; open it full height.
-            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
+            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large], selection: $cardDetent)
+            .onAppear { cardDetent = dynamicTypeSize.isAccessibilitySize ? .large : .medium }
             .presentationDragIndicator(.visible)
         }
         .environment(\.openURL, OpenURLAction { url in
