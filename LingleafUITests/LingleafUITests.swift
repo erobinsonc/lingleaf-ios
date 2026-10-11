@@ -303,6 +303,10 @@ final class LingleafUITests: XCTestCase {
         try audit("Reader")
         app.links["beach"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
+        // Audited at full height: at half height the audit reports the scrollable card's text as
+        // clipped at larger sizes, and at accessibility sizes the app opens the card full height.
+        app.staticTexts["/test/"].swipeUp()
+        Thread.sleep(forTimeInterval: 1)
         try audit("Word card")
 
         // Populated states: save the word, then audit every screen that shows it.

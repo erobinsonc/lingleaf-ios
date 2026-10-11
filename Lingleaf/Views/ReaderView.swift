@@ -28,6 +28,7 @@ struct ReaderView: View {
 
     @Environment(AppModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
     @State private var selection: WordSelection?
@@ -60,7 +61,8 @@ struct ReaderView: View {
             WordCardView(selection: selection, source: book?.title ?? "") { message in
                 undo = message
             }
-            .presentationDetents([.medium, .large])
+            // With accessibility text sizes a half-height card shows almost nothing; open it full height.
+            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large])
             .presentationDragIndicator(.visible)
             // Opaque on purpose: on iOS 26 a medium-height sheet is translucent glass, the
             // book text shows through and the card's text fails contrast.
