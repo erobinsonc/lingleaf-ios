@@ -305,8 +305,12 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
         // Audited at full height: at half height the audit reports the scrollable card's text as
         // clipped at larger sizes, and at accessibility sizes the app opens the card full height.
-        app.staticTexts["/test/"].swipeUp()
+        // A slow drag, not a swipe: the card's ScrollView takes a swipe as a scroll and bounces back.
+        let phonetic = app.staticTexts["/test/"]
+        phonetic.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+            .press(forDuration: 0.2, thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)))
         Thread.sleep(forTimeInterval: 1)
+        XCTAssertLessThan(phonetic.frame.minY, 300, "The word card should be at full height before the audit")
         try audit("Word card")
 
         // Populated states: save the word, then audit every screen that shows it.
