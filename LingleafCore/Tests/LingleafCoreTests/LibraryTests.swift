@@ -187,37 +187,23 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(word.translation, "gato")
         XCTAssertNil(word.translationLanguage)
         XCTAssertNil(word.kind)
-        XCTAssertNil(word.chunk)
+        XCTAssertNil(word.base)
     }
 
-    func testHelperAndModalVerbsKeepTheirVerbGroup() throws {
+    func testHelperAndModalVerbsAreSavedAsTheirVerbGroup() throws {
         let library = library()
-        library.saveWord("do", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, chunk: "did not go")
-        var word = try XCTUnwrap(self.library().state.word("do"))
-        XCTAssertEqual(word.kind, .helper)
-        XCTAssertEqual(word.chunk, "did not go")
-        XCTAssertEqual(word.translationSource, "did not go")
-        XCTAssertEqual(word.translation, "no fue")
-
-        library.saveWord("do", learned: false, kind: .helper)
-        word = try XCTUnwrap(library.state.word("do"))
-        XCTAssertEqual(word.chunk, "did not go", "no verb group keeps the saved one")
-        XCTAssertEqual(word.translation, "no fue")
-
-        library.saveWord("do", learned: false, kind: .helper, chunk: "didn't see")
-        word = try XCTUnwrap(library.state.word("do"))
-        XCTAssertEqual(word.chunk, "didn't see")
-        XCTAssertEqual(word.translation, "", "a new verb group needs its own translation")
-
-        library.saveWord("do", learned: false, translation: "hacer", translationLanguage: "es")
-        word = try XCTUnwrap(library.state.word("do"))
-        XCTAssertNil(word.kind)
-        XCTAssertNil(word.chunk)
-        XCTAssertEqual(word.translationSource, "do")
-        XCTAssertEqual(word.translation, "hacer")
-        library.saveWord("must", learned: false, kind: .modal)
-        library.saveWord("will", learned: false, kind: .modal, chunk: "will go")
-        XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["will"], "no verb group, nothing to translate")
+        library.saveWord("did not go", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, base: "do")
+        library.saveWord("doesn't like", learned: false, kind: .helper, base: "do")
+        library.saveWord("Do", learned: true, translation: "hacer", translationLanguage: "es")
+        let reloaded = self.library()
+        let past = try XCTUnwrap(reloaded.state.word("Did not go"))
+        XCTAssertEqual(past.kind, .helper)
+        XCTAssertEqual(past.base, "do")
+        XCTAssertEqual(past.translation, "no fue", "each verb group is its own record")
+        XCTAssertEqual(reloaded.state.word("doesn't like")?.base, "do")
+        XCTAssertNil(reloaded.state.word("do")?.kind, "\"do\" as a word stays separate")
+        XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["doesn't like"])
+        XCTAssertFalse(library.isLearning("did"), "a verb group doesn't underline the helper everywhere")
     }
 
     func testReadingTimeFeedsTodayAndTheStreak() {

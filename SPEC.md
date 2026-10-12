@@ -34,8 +34,8 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S13 | Level filter | Discover shows chips "All" plus each level in the recommended list (A2–C2); "All" is selected by default, a level shows only its recommended books, in order; an empty level says "No recommended books at this level."; the chips hide while search results show. |
 | S14 | Translation language | The default is the first language in the device's preferred-language list that is supported and not English (Chinese → Simplified). If there is none, the first word card asks once "Translate into:" with up to 5 languages (the region's language first, then Español, Português, Français, 中文, العربية, without repeats) and "More languages"; the choice is saved. Each saved word records its translation language; words in another language are translated again when shown. |
 | S15 | Saved state on the card | A saved word's card shows "Saved" or "I know it" checked (check icon, selected state, announced as "Remove from Words" action); tapping the checked button removes that state, with Undo (timing as in S4). Deleting a word in Words happens at once and offers Undo for 5 s with the same rules (no confirmation dialog). The language button under the translation is announced as "Translation language: <language>". |
-| S16 | Helper and modal verbs | Tapping do/does/did used for a negative or a question ("did not go", "Did you see…?"), or a modal (can, could, will, would, shall, should, must, may, might, with their negative forms), shows the base form ("do", "will"), "Helper verb" or "Modal verb", the verb group in the sentence ("did not go") with its translation instead of the word's own translation, and one short note on what it does (e.g. "Here “did” has no meaning of its own: “did not” + verb makes the past negative."). It has no dictionary definition. Saving keeps the verb group; Words and Review show it. "do" as a main verb ("I did my homework") is an ordinary word. |
-| S17 | Selected word | While the card is open, the tapped word is marked in the reader (solid yellow marker, black text, announced as "Selected") and, in bold and underlined, in the card's sentence. If the half-height card would cover it, the reader scrolls it into the upper part of the screen. |
+| S16 | Helper and modal verbs | Tapping do/does/did used for a negative, a question or a prohibition ("did not go", "Did you see…?", "Don't touch"), or a modal (can, could, will, would, shall, should, must, may, might, with their negative forms), shows the base form ("do", "will"), "Helper verb" or "Modal verb", the verb group in the sentence ("did not go", "should have known") with its translation instead of the word's own, and one short note on what it does (e.g. "“didn't” (= “did not”) + base verb = past negative: “didn't go”, not “didn't went”."). No definition or IPA; Listen says the verb group. Saving stores the verb group as its own entry (the sentence when there is none), with its base form and kind; Words and Review show it. "do" as a main verb ("I did my homework") is an ordinary word. |
+| S17 | Selected word | While the card is open, the tapped word is marked in the reader (solid yellow marker, black text, announced as "Selected") and in bold in the card's sentence, underlined with its verb group if it has one. If the half-height card would cover it, the reader scrolls it into the upper part of the screen (without animation when Reduce Motion is on). |
 
 ## Shared logic (same rules, same tests on both platforms)
 
@@ -48,8 +48,11 @@ the same intent on both platforms. A change to behaviour updates this file in
   else an ordinary word. Modals: can/cannot/can't, could(n't), will/won't, would(n't), shall/shan't,
   should(n't), must(n't), may, might(n't) → base form; not a modal after a/an/the/my/your/his/her/
   its/our/their/free/good/ill, nor "May"/"Will" capitalized mid-sentence. Verb group: the word, then "not"
-  if next, then a pronoun subject (I, you, he, she, it, we, they) if the sentence is a question, then one
-  more word; none when the sentence ends first. A do-question without a pronoun subject has no verb group.
+  if next, then a pronoun subject (I, you, he, she, it, we, they) if the sentence is a question, then up to
+  4 of have/be/been/being/never/always/ever/really/just/also/still/even/only/already/probably/certainly/
+  surely/often, then the next word; if the sentence ends first, up to its last word, and none when the word
+  is the last one. A do-question without a pronoun subject has no verb group. A negative do/don't as the
+  sentence's first word, not in a question, is a prohibition.
 - Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end), trimmed.
 - Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals.
 - Streak: consecutive days meeting the goal; an unfinished today doesn't break it.

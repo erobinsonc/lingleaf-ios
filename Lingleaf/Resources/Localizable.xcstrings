@@ -384,46 +384,6 @@
         }
       }
     },
-    "Here “%@” has no meaning of its own: it makes a question about the past.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aquí “%@” no significa nada por sí solo: convierte la frase en una pregunta sobre el pasado."
-          }
-        }
-      }
-    },
-    "Here “%@” has no meaning of its own: it makes a question about the present.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aquí “%@” no significa nada por sí solo: convierte la frase en una pregunta sobre el presente."
-          }
-        }
-      }
-    },
-    "Here “%@” has no meaning of its own: “%@” + verb makes the past negative.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aquí “%1$@” no significa nada por sí solo: “%2$@” + verbo forma el negativo en pasado."
-          }
-        }
-      }
-    },
-    "Here “%@” has no meaning of its own: “%@” + verb makes the present negative.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aquí “%1$@” no significa nada por sí solo: “%2$@” + verbo forma el negativo en presente."
-          }
-        }
-      }
-    },
     "I know it": {
       "localizations": {
         "es": {
@@ -1120,6 +1080,56 @@
         }
       }
     },
+    "“%@” (= “%@”) + base verb = past negative: “didn't go”, not “didn't went”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negativo en pasado: “didn't go”, no “didn't went”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + base verb = present negative: “doesn't like”, not “doesn't likes”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negativo en presente: “doesn't like”, no “doesn't likes”."
+          }
+        }
+      }
+    },
+    "“%@” + base verb = past negative: “did not go”, not “did not went”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo en forma base = negativo en pasado: “did not go”, no “did not went”."
+          }
+        }
+      }
+    },
+    "“%@” + base verb = present negative: “does not like”, not “does not likes”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo en forma base = negativo en presente: “does not like”, no “does not likes”."
+          }
+        }
+      }
+    },
+    "“%@” + base verb tells someone not to do it: “Don't touch”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo en forma base sirve para prohibir: “Don't touch” = no toques."
+          }
+        }
+      }
+    },
     "“%@” added to your library.": {
       "localizations": {
         "es": {
@@ -1180,6 +1190,26 @@
         }
       }
     },
+    "“%@” starts a question about the past.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” abre una pregunta sobre el pasado."
+          }
+        }
+      }
+    },
+    "“%@” starts a question about the present.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” abre una pregunta sobre el presente."
+          }
+        }
+      }
+    },
     "“%@” will be removed from your library. Your saved words stay.": {
       "localizations": {
         "es": {
@@ -1195,12 +1225,12 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“can” + verbo: poder (saber hacer algo o tener permiso)."
+            "value": "“can” + verbo: poder (ser capaz o tener permiso)."
           }
         }
       }
     },
-    "“could” + verb: was able to, or might.": {
+    "“could” + verb: was able to, or it’s possible.": {
       "localizations": {
         "es": {
           "stringUnit": {
@@ -1260,12 +1290,12 @@
         }
       }
     },
-    "“will” + verb talks about the future.": {
+    "“will” + verb: the future.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“will” + verbo habla del futuro (iré, irás…)."
+            "value": "“will” + verbo: el futuro (iré, irás…)."
           }
         }
       }

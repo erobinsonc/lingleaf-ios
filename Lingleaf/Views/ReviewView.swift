@@ -60,10 +60,10 @@ struct ReviewView: View {
     private func card(_ word: VocabWord) -> some View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
-                // A helper or modal verb is reviewed with its verb group ("did not go").
-                Text(word.translationSource).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
+                // A helper or modal verb is saved as its verb group ("did not go").
+                Text(word.word).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
-                    model.speaker.speak(word.translationSource, rate: model.state.settings.speechRate)
+                    model.speaker.speak(word.word, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill").labelStyle(.iconOnly).font(.title)
                         .frame(minWidth: 44, minHeight: 44)
@@ -76,7 +76,7 @@ struct ReviewView: View {
             }
             if revealed {
                 VStack(spacing: 4) {
-                    if !word.phonetic.isEmpty { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
+                    if !word.phonetic.isEmpty, word.kind == nil { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
                     if word.translation.isEmpty {
                         Text("No translation yet. Connect to the internet once to get it.")
                             .font(.callout)

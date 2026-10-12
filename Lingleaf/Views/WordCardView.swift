@@ -42,6 +42,18 @@ struct WordCardView: View {
         return translations[TextTools.normalize(headword)] ?? translations[TextTools.normalize(selection.word)]
     }
 
+    /// What Save stores: the word's base form, or a helper or modal verb's verb group (the
+    /// whole sentence when it has none, so there's always something to recall and translate).
+    private var savedKey: String {
+        guard selection.function != nil else { return headword }
+        return selection.chunk ?? selection.sentence
+    }
+
+    /// How messages name what was saved: "did not go" rather than the whole sentence.
+    private var savedName: String {
+        selection.function == nil ? headword : selection.chunk ?? selection.word
+    }
+
     /// What the card translates as "the word": the tapped word, or a helper or modal verb's
     /// verb group (nil when it has none: the sentence's translation explains it).
     private var wordSource: String? {
@@ -101,7 +113,9 @@ struct WordCardView: View {
         VStack(spacing: 4) {
             HStack(spacing: 10) {
                 Button {
-                    model.speaker.speak(headword, rate: model.state.settings.speechRate)
+                    // A helper or modal verb: how the verb group sounds ("didn't go", not "do").
+                    let spoken = selection.function == nil ? headword : selection.chunk ?? selection.word
+                    model.speaker.speak(spoken, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill")
                         .labelStyle(.iconOnly)
@@ -109,10 +123,11 @@ struct WordCardView: View {
                 }
                 Text(headword).font(.largeTitle.weight(.semibold))
             }
-            if let phonetic = entry?.phonetic {
+            if selection.function == nil, let phonetic = entry?.phonetic {
                 Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
             }
-            if TextTools.normalize(headword) != TextTools.normalize(selection.word) {
+            // A helper or modal verb shows its form in the verb group just below.
+            if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word) {
                 Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
             if let kind = selection.function?.kind {
@@ -250,11 +265,16 @@ struct WordCardView: View {
     /// The sentence with the tapped word in bold and underlined, so it's clear which one it is.
     private var markedSentence: AttributedString {
         var text = AttributedString(selection.sentence)
-        if let range = selection.rangeInSentence,
-           let stringRange = Range(range.nsRange, in: selection.sentence),
-           let marked = Range(stringRange, in: text) {
+        func attributed(_ range: WordRange?) -> Range<AttributedString.Index>? {
+            guard let range, let stringRange = Range(range.nsRange, in: selection.sentence) else { return nil }
+            return Range(stringRange, in: text)
+        }
+        // A helper or modal verb: the whole verb group underlined, the tapped word in bold.
+        if let underlined = attributed(selection.function?.chunk ?? selection.rangeInSentence) {
+            text[underlined].underlineStyle = Text.LineStyle.single
+        }
+        if let marked = attributed(selection.rangeInSentence) {
             text[marked].inlinePresentationIntent = .stronglyEmphasized
-            text[marked].underlineStyle = Text.LineStyle.single
             text[marked].accessibilityTextCustom = [String(localized: "Selected")]
         }
         return text
@@ -265,7 +285,7 @@ struct WordCardView: View {
     /// [I know it] [Save word]; the button matching the saved state is checked
     /// and tapping it removes the word.
     private var actions: some View {
-        let saved = model.state.word(headword)
+        let saved = model.state.word(savedKey)
         let known = saved?.learned == true
         let learning = saved?.learned == false
         return HStack(spacing: 12) {
@@ -320,8 +340,11 @@ struct WordCardView: View {
     }
 
     private func save(learned: Bool) {
-        let word = headword
-        let translation = selection.function == nil ? translations[TextTools.normalize(word)] : self.translation
+        let word = savedKey
+        // Without a verb group, the sentence is what's saved: its translation goes with it.
+        let translation = selection.function == nil
+            ? translations[TextTools.normalize(word)]
+            : selection.chunk == nil ? sentenceTranslation : self.translation
         let previous = model.library.saveWord(
             word,
             learned: learned,
@@ -331,24 +354,24 @@ struct WordCardView: View {
             context: selection.sentence,
             source: source,
             kind: selection.function?.kind,
-            chunk: selection.chunk
+            base: selection.function?.base
         )
         // Saving never waits: a translation still on its way is done by TranslationWorker.
         if translation == nil { model.translateMissing() }
         if learned {
-            finish(String(localized: "“\(word)” marked as known"), word: word, previous: previous)
+            finish(String(localized: "“\(savedName)” marked as known"), word: word, previous: previous)
         } else {
-            finish(String(localized: "“\(word)” saved to Words"), word: word, previous: previous)
+            finish(String(localized: "“\(savedName)” saved to Words"), word: word, previous: previous)
         }
     }
 
     /// Tapping a checked button: the word leaves Words (Undo puts it back as it was).
     private func remove() {
-        let word = headword
+        let word = savedKey
         let key = TextTools.normalize(word)
         let previous = model.state.word(key)
         model.library.deleteWord(key)
-        finish(String(localized: "“\(word)” removed from Words"), word: word, previous: previous)
+        finish(String(localized: "“\(savedName)” removed from Words"), word: word, previous: previous)
     }
 
     private func finish(_ text: String, word: String, previous: VocabWord?) {
@@ -364,9 +387,14 @@ struct WordCardView: View {
     /// The dictionary lookup and the translation start together.
     private func load() async {
         let dictionary = model.dictionary
-        // A helper or modal verb: the base form's pronunciation ("will", not "won't").
-        let word = selection.function?.base ?? selection.word
-        let task = Task { await dictionary.lookup(word) }
+        let word = selection.word
+        // A helper or modal verb needs no dictionary: its definition and IPA would be the
+        // base form's ("do"), not what the learner sees ("didn't go").
+        let isFunction = selection.function != nil
+        let task = Task { () -> DictionaryEntry? in
+            if isFunction { return nil }
+            return await dictionary.lookup(word)
+        }
         lookup = task
         startTranslation()
         entry = await task.value
@@ -446,28 +474,38 @@ extension FunctionWord.Kind {
 extension FunctionWord {
     /// One short line on what the word does here. `form` is the word as tapped ("did", "didn't").
     func note(form: String) -> String {
-        let contracted = TextTools.normalize(form).hasSuffix("n't")
-        let negative = contracted ? form : "\(form) not"
+        let word = form.lowercased()
+        let contracted = TextTools.normalize(word).hasSuffix("n't")
+        let negative = contracted ? word : "\(word) not"
+        let expanded = Self.expanded[TextTools.normalize(word)] ?? negative
         switch use {
+        case .pastNegative where contracted:
+            return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = past negative: “didn't go”, not “didn't went”.")
         case .pastNegative:
-            return String(localized: "Here “\(form)” has no meaning of its own: “\(negative)” + verb makes the past negative.")
+            return String(localized: "“\(negative)” + base verb = past negative: “did not go”, not “did not went”.")
+        case .presentNegative where contracted:
+            return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = present negative: “doesn't like”, not “doesn't likes”.")
         case .presentNegative:
-            return String(localized: "Here “\(form)” has no meaning of its own: “\(negative)” + verb makes the present negative.")
+            return String(localized: "“\(negative)” + base verb = present negative: “does not like”, not “does not likes”.")
+        case .prohibition:
+            return String(localized: "“\(negative)” + base verb tells someone not to do it: “Don't touch”.")
         case .pastQuestion:
-            return String(localized: "Here “\(form)” has no meaning of its own: it makes a question about the past.")
+            return String(localized: "“\(word)” starts a question about the past.")
         case .presentQuestion:
-            return String(localized: "Here “\(form)” has no meaning of its own: it makes a question about the present.")
+            return String(localized: "“\(word)” starts a question about the present.")
         case .modal(let base):
             return Self.modalNote(base)
         }
     }
 
+    private static let expanded = ["didn't": "did not", "don't": "do not", "doesn't": "does not"]
+
     private static func modalNote(_ base: String) -> String {
         switch base {
-        case "will": String(localized: "“will” + verb talks about the future.")
+        case "will": String(localized: "“will” + verb: the future.")
         case "would": String(localized: "“would” + verb: what would happen, or a polite request.")
         case "can": String(localized: "“can” + verb: be able to, or be allowed to.")
-        case "could": String(localized: "“could” + verb: was able to, or might.")
+        case "could": String(localized: "“could” + verb: was able to, or it’s possible.")
         case "shall": String(localized: "“shall” + verb: the future, or an offer (“Shall we go?”).")
         case "should": String(localized: "“should” + verb: advice, what is right to do.")
         case "must": String(localized: "“must” + verb: it is necessary, or it is surely true.")

@@ -22,6 +22,10 @@ final class FunctionWordsTests: XCTestCase {
         XCTAssertEqual(analyze("She doesn’t like it.", "doesn").1, "doesn’t like")
         XCTAssertEqual(analyze("She doesn’t like it.", "doesn").0?.use, .presentNegative)
         XCTAssertEqual(analyze("Do not touch that.", "Do").1, "Do not touch")
+        XCTAssertEqual(analyze("Do not touch that.", "Do").0?.use, .prohibition)
+        XCTAssertEqual(analyze("Don’t go!", "Don").0?.use, .prohibition)
+        XCTAssertEqual(analyze("Don't you know?", "Don").0?.use, .presentNegative, "a question is not a prohibition")
+        XCTAssertEqual(analyze("I did not.", "did").1, "did not", "the sentence ends: the group stops there")
         let (result, chunk) = analyze("Why didn't you come?", "didn")
         XCTAssertEqual(result?.use, .pastNegative)
         XCTAssertEqual(chunk, "didn't you come")
@@ -59,6 +63,9 @@ final class FunctionWordsTests: XCTestCase {
         XCTAssertEqual(analyze("I can't see.", "can").0?.base, "can")
         XCTAssertNil(analyze("Yes, I can.", "can").0?.chunk)
         XCTAssertEqual(analyze("A tool that can cut wood.", "can").1, "can cut", "after a relative pronoun it's still a modal")
+        XCTAssertEqual(analyze("You should have known.", "should").1, "should have known", "have/be lead to the main verb")
+        XCTAssertEqual(analyze("We will never be able to go.", "will").1, "will never be able")
+        XCTAssertEqual(analyze("She did not really like it.", "did").1, "did not really like")
     }
 
     func testModalLookalikesAreOrdinaryWords() {

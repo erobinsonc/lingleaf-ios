@@ -15,6 +15,8 @@ public struct FunctionWord: Equatable, Sendable {
     /// What the word does in this sentence; the card explains it with one short note.
     public enum Use: Equatable, Sendable {
         case pastNegative, presentNegative, pastQuestion, presentQuestion
+        /// "Don't touch that.": telling someone not to do something.
+        case prohibition
         /// The modal's base form ("will" for "won't").
         case modal(String)
     }
@@ -23,8 +25,9 @@ public struct FunctionWord: Equatable, Sendable {
     /// The base form: "do" for "did" and "didn't", "will" for "won't".
     public let base: String
     public let use: Use
-    /// The verb group in the sentence ("did not go", "Can you help"); nil when it can't be
-    /// told reliably (a question whose subject is not a pronoun).
+    /// The verb group in the sentence ("did not go", "should have known", "Can you help");
+    /// nil when it can't be told reliably (a question whose subject is not a pronoun, or a
+    /// sentence that ends right after the word: "Yes, I can.").
     public let chunk: WordRange?
 }
 
@@ -48,6 +51,11 @@ public enum FunctionWords {
 
     private static let pronouns: Set<String> = ["i", "you", "he", "she", "it", "we", "they"]
     private static let questionWords: Set<String> = ["what", "where", "when", "why", "how", "who", "whom", "whose", "which"]
+    /// Skipped on the way to the main verb: "should have known", "will never be able".
+    private static let inGroup: Set<String> = [
+        "have", "be", "been", "being", "never", "always", "ever", "really", "just", "also",
+        "still", "even", "only", "already", "probably", "certainly", "surely", "often",
+    ]
     /// Before a modal these make it a noun: "a can of beans", "his will", "free will".
     private static let determiners: Set<String> = [
         "a", "an", "the", "my", "your", "his", "her", "its", "our", "their", "free", "good", "ill",
@@ -65,18 +73,28 @@ public enum FunctionWords {
         let isQuestion = sentence.trimmingCharacters(in: CharacterSet(charactersIn: " \"”’)]")).hasSuffix("?")
 
         /// The verb group: the word, "not", a pronoun subject in a question
-        /// ("Can you help", "didn't you come"), then the next word.
+        /// ("Can you help", "didn't you come"), have/be and adverbs ("should have known"),
+        /// then the main verb; up to the sentence's end if it comes first.
         let groupEnd: Int? = {
             var last = index
             if next == "not" { last += 1 }
             if isQuestion, last + 1 < tokens.count, pronouns.contains(tokens[last + 1]) { last += 1 }
-            last += 1
-            return last < words.count ? last : nil
+            var skipped = 0
+            while last + 1 < tokens.count, inGroup.contains(tokens[last + 1]), skipped < 4 {
+                last += 1
+                skipped += 1
+            }
+            if last + 1 < tokens.count { return last + 1 }
+            return last > index ? last : nil
         }()
         let group = groupEnd.map { WordRange(range.start, words[$0].end) }
 
         if let form = doForms[token] {
             if token.hasSuffix("n't") || next == "not" {
+                // "Don't touch that." / "Do not touch": first word, no subject → a prohibition.
+                if index == 0, !form.past, token != "doesn't", token != "does", !isQuestion {
+                    return FunctionWord(kind: .helper, base: form.base, use: .prohibition, chunk: group)
+                }
                 return FunctionWord(kind: .helper, base: form.base, use: form.past ? .pastNegative : .presentNegative, chunk: group)
             }
             let opensQuestion = index == 0 || questionWords.contains(tokens[index - 1])

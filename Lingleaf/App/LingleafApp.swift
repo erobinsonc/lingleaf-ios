@@ -198,7 +198,7 @@ final class AppModel {
         guard let target = targetLanguage, !library.wordsNeedingTranslation(target).isEmpty else { return }
         if let fakeTranslator {
             for word in library.wordsNeedingTranslation(target) {
-                guard let text = try? fakeTranslator(word.translationSource) else { return }
+                guard let text = try? fakeTranslator(word.word) else { return }
                 library.setTranslation(word.word, text, language: target)
             }
             return
@@ -222,7 +222,7 @@ final class AppModel {
         // doesn't ask to download it (the word card does).
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
-        let requests = words.map { TranslationSession.Request(sourceText: $0.translationSource, clientIdentifier: $0.word) }
+        let requests = words.map { TranslationSession.Request(sourceText: $0.word, clientIdentifier: $0.word) }
         guard let responses = try? await session.translations(from: requests) else { return }
         for response in responses {
             guard let word = response.clientIdentifier else { continue }

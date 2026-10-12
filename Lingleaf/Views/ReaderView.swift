@@ -41,6 +41,7 @@ struct ReaderView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The word card's height, so the card drops its half-height panel when full height.
     @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
@@ -176,7 +177,7 @@ struct ReaderView: View {
         let target = viewportHeight * 0.2 - frame.height * fraction
         let difference = viewportHeight - frame.height
         let anchor = abs(difference) < 1 ? UnitPoint.top : UnitPoint(x: 0, y: target / difference)
-        withAnimation { proxy.scrollTo(selected.paragraph, anchor: anchor) }
+        withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(selected.paragraph, anchor: anchor) }
     }
 
     /// Every word is a link (`lingleaf://word?p=…&o=…&e=…`); words being learned are underlined
