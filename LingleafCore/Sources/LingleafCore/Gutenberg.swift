@@ -53,7 +53,12 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
         return trimmed.isEmpty ? title.trimmingCharacters(in: .whitespaces) : trimmed
     }
 
-    public var coverURL: URL? { formats["image/jpeg"].flatMap(URL.init(string:)) }
+    /// The medium cover from Project Gutenberg's file cache, never a link taken from the
+    /// catalog: covers load only from www.gutenberg.org. Nil when the catalog lists none.
+    public var coverURL: URL? {
+        guard formats["image/jpeg"] != nil else { return nil }
+        return URL(string: GutenbergClient.coverURL(id))
+    }
 
     /// The plain-text edition, straight from Project Gutenberg's file cache: the catalog's
     /// "ebooks/<id>.txt.utf-8" links redirect there, and every hop is another chance to fail.

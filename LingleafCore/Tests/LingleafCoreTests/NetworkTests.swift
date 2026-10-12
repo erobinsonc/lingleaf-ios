@@ -59,6 +59,12 @@ final class GutenbergTests: XCTestCase {
         XCTAssertNil(GutenbergBook(id: 2, title: "No text", formats: ["application/zip": "https://example.com/2.zip"]).textURL)
     }
 
+    func testCoversLoadOnlyFromTheGutenbergFileCache() {
+        let elsewhere = GutenbergBook(id: 3, title: "x", formats: ["image/jpeg": "http://example.com/huge.jpg"])
+        XCTAssertEqual(elsewhere.coverURL?.absoluteString, "https://www.gutenberg.org/cache/epub/3/pg3.cover.medium.jpg", "not the catalog's link")
+        XCTAssertNil(GutenbergBook(id: 4, title: "No cover").coverURL)
+    }
+
     func testFilterKeepsBooksAtTheChosenLevelInOrder() {
         let books = GutenbergClient.recommended.map { GutenbergBook(id: $0.id, title: "Book \($0.id)") }
         XCTAssertEqual(GutenbergClient.filter(books, level: nil), books)

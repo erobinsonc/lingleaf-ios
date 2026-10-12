@@ -15,6 +15,12 @@ feat/*, fix/*  ──PR──▶  develop  ──release PR──▶  main
 - Releases: a pull request `develop → main`, approved by the maintainer. Tag `vX.Y.Z` on `main`.
 - Hotfixes: `fix/*` from `main`, merged into `main` and back into `develop`.
 
+## Fixing problems (mandatory)
+
+- Never take the easy way out to make a check, an audit or a test pass. Analyse the root cause and fix it there.
+- Don't remove what works (content, images, features) and don't put solid backgrounds over the design to silence a finding.
+- If the right fix needs a tool (a test hook, a helper, a check), build it. If no fix is known yet, stop and present the analysis and the options with evidence; the maintainer decides.
+
 ## Checks before every push
 
 ```bash
