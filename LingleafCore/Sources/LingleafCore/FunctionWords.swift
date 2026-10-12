@@ -17,6 +17,8 @@ public struct FunctionWord: Equatable, Sendable {
         case pastNegative, presentNegative, pastQuestion, presentQuestion
         /// "Don't touch that.": telling someone not to do something.
         case prohibition
+        /// "You went, didn't you?": asks the listener to agree, like "right?".
+        case questionTag
         /// The modal's base form ("will" for "won't").
         case modal(String)
     }
@@ -88,6 +90,13 @@ public enum FunctionWords {
             return last > index ? last : nil
         }()
         let group = groupEnd.map { WordRange(range.start, words[$0].end) }
+
+        // A question tag: ", didn't you?" / ", can't she?" closing the sentence.
+        let before = index > 0 ? TextTools.substring(sentence, WordRange(words[index - 1].end, range.start)) : ""
+        if isQuestion, index > 0, before.contains(","), index == tokens.count - 2, pronouns.contains(tokens[index + 1]) {
+            if let form = doForms[token] { return FunctionWord(kind: .helper, base: form.base, use: .questionTag, chunk: nil) }
+            if let base = modals[token] { return FunctionWord(kind: .modal, base: base, use: .questionTag, chunk: nil) }
+        }
 
         if let form = doForms[token] {
             if token.hasSuffix("n't") || next == "not" {

@@ -51,6 +51,15 @@ final class FunctionWordsTests: XCTestCase {
         XCTAssertNil(analyze("They do it every day.", "do").0)
     }
 
+    func testQuestionTags() {
+        let (tag, chunk) = analyze("You went, didn't you?", "didn")
+        XCTAssertEqual(tag?.use, .questionTag)
+        XCTAssertEqual(tag?.base, "do")
+        XCTAssertNil(chunk)
+        XCTAssertEqual(analyze("She can swim, can't she?", "can't").0?.use, .questionTag)
+        XCTAssertEqual(analyze("She can swim, can't she?", "can").0?.use, .modal("can"), "the first can is not the tag")
+    }
+
     func testModals() {
         let (will, willChunk) = analyze("We will go home.", "will")
         XCTAssertEqual(will?.kind, .modal)

@@ -1130,6 +1130,16 @@
         }
       }
     },
+    "“%@” + pronoun at the end asks the listener to agree, like “right?”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + pronombre al final pide que el otro confirme, como “¿verdad?”."
+          }
+        }
+      }
+    },
     "“%@” added to your library.": {
       "localizations": {
         "es": {

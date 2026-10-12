@@ -489,6 +489,8 @@ extension FunctionWord {
             return String(localized: "“\(negative)” + base verb = present negative: “does not like”, not “does not likes”.")
         case .prohibition:
             return String(localized: "“\(negative)” + base verb tells someone not to do it: “Don't touch”.")
+        case .questionTag:
+            return String(localized: "“\(word)” + pronoun at the end asks the listener to agree, like “right?”.")
         case .pastQuestion:
             return String(localized: "“\(word)” starts a question about the past.")
         case .presentQuestion:
