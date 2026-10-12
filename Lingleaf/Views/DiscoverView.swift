@@ -209,15 +209,11 @@ struct DiscoverView: View {
     private func row(_ book: GutenbergBook) -> some View {
         let failure = failure(book.id)
         return HStack(spacing: 14) {
-            // Decorative: the row says the title and author. A drawn cover shows while it loads or offline.
-            AsyncImage(url: model.loadsCovers ? book.coverURL : nil) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                BookCover(title: book.displayTitle)
-            }
-            .frame(width: 44, height: 62)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .accessibilityHidden(true)
+            // Decorative: the row says the title and author.
+            CoverThumbnail(book: book)
+                .frame(width: 44, height: 62)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.displayTitle).font(.headline)
@@ -327,5 +323,26 @@ struct DiscoverView: View {
             }
         }
         downloads[id] = .running(0, task)
+    }
+}
+
+/// The book's cover, or a drawn one while it loads, offline or in UI tests.
+private struct CoverThumbnail: View {
+    @Environment(AppModel.self) private var model
+    let book: GutenbergBook
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                BookCover(title: book.displayTitle)
+            }
+        }
+        .task(id: book.id) {
+            guard let covers = model.covers, let url = book.coverURL else { return }
+            image = await covers.load(url)
+        }
     }
 }

@@ -61,8 +61,17 @@ final class GutenbergTests: XCTestCase {
 
     func testCoversLoadOnlyFromTheGutenbergFileCache() {
         let elsewhere = GutenbergBook(id: 3, title: "x", formats: ["image/jpeg": "http://example.com/huge.jpg"])
-        XCTAssertEqual(elsewhere.coverURL?.absoluteString, "https://www.gutenberg.org/cache/epub/3/pg3.cover.medium.jpg", "not the catalog's link")
+        let cover = "https://www.gutenberg.org/cache/epub/3/pg3.cover.medium.jpg"
+        XCTAssertEqual(elsewhere.coverURL?.absoluteString, cover, "not the catalog's link")
         XCTAssertNil(GutenbergBook(id: 4, title: "No cover").coverURL)
+    }
+
+    func testCoversDecodeDownsampledAndHugeImagesAreRefused() {
+        XCTAssertEqual(GutenbergClient.coverSample(width: 350, height: 500), 1, "a medium cover stays sharp")
+        XCTAssertEqual(GutenbergClient.coverSample(width: 1000, height: 1400), 4)
+        XCTAssertNil(GutenbergClient.coverSample(width: 5000, height: 10), "a side over 4096 px")
+        XCTAssertNil(GutenbergClient.coverSample(width: 4096, height: 4096), "over 4 megapixels")
+        XCTAssertNil(GutenbergClient.coverSample(width: -1, height: -1), "not an image")
     }
 
     func testFilterKeepsBooksAtTheChosenLevelInOrder() {

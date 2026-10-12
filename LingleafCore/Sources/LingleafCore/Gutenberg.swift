@@ -137,6 +137,22 @@ public struct GutenbergClient: Sendable {
     public static func textURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).txt" }
     public static func coverURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).cover.medium.jpg" }
 
+    /// A real cover is under 1000 px a side; anything far larger is refused before decoding.
+    public static let coverMaxSide = 4096
+    public static let coverMaxPixels = 4_000_000
+    /// Twice the 44×62 pt shown at the densest screens: sharp, yet a few hundred KB at most.
+    public static let coverThumbnailWidth = 176
+    public static let coverThumbnailHeight = 248
+
+    /// The power-of-two downsampling that keeps a cover of `width`×`height` px at least
+    /// thumbnail-sized, or nil when the image is empty or too large to decode safely.
+    public static func coverSample(width: Int, height: Int) -> Int? {
+        guard width > 0, height > 0, width <= coverMaxSide, height <= coverMaxSide, width * height <= coverMaxPixels else { return nil }
+        var sample = 1
+        while width / (sample * 2) >= coverThumbnailWidth, height / (sample * 2) >= coverThumbnailHeight { sample *= 2 }
+        return sample
+    }
+
     /// The level of each recommended book, easiest first.
     public static let recommended: [(id: Int, level: String)] = [
         (21, "A2"), // Aesop's Fables
