@@ -34,12 +34,23 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S13 | Level filter | Discover shows chips "All" plus each level in the recommended list (A2–C2); "All" is selected by default, a level shows only its recommended books, in order; an empty level says "No recommended books at this level."; the chips hide while search results show. |
 | S14 | Translation language | The default is the first language in the device's preferred-language list that is supported and not English (Chinese → Simplified). If there is none, the first word card asks once "Translate into:" with up to 5 languages (the region's language first, then Español, Português, Français, 中文, العربية, without repeats) and "More languages"; the choice is saved. Each saved word records its translation language; words in another language are translated again when shown. |
 | S15 | Saved state on the card | A saved word's card shows "Saved" or "I know it" checked (check icon, selected state, announced as "Remove from Words" action); tapping the checked button removes that state, with Undo (timing as in S4). Deleting a word in Words happens at once and offers Undo for 5 s with the same rules (no confirmation dialog). The language button under the translation is announced as "Translation language: <language>". |
+| S16 | Helper and modal verbs | Tapping do/does/did used for a negative or a question ("did not go", "Did you see…?"), or a modal (can, could, will, would, shall, should, must, may, might, with their negative forms), shows the base form ("do", "will"), "Helper verb" or "Modal verb", the verb group in the sentence ("did not go") with its translation instead of the word's own translation, and one short note on what it does (e.g. "Here “did” has no meaning of its own: “did not” + verb makes the past negative."). It has no dictionary definition. Saving keeps the verb group; Words and Review show it. "do" as a main verb ("I did my homework") is an ordinary word. |
+| S17 | Selected word | While the card is open, the tapped word is marked in the reader (solid yellow marker, black text, announced as "Selected") and, in bold and underlined, in the card's sentence. If the half-height card would cover it, the reader scrolls it into the upper part of the screen. |
 
 ## Shared logic (same rules, same tests on both platforms)
 
 - Paragraphs: split on blank lines, hard-wrapped lines joined.
 - Words: `[A-Za-z]+(['’][A-Za-z]+)*`; contractions stay whole.
 - Base forms: irregular table, then plural/past/-ing rules (see `TextTools`).
+- Helper and modal verbs (see `FunctionWords`), within the tapped word's sentence:
+  do/does/did/don't/doesn't/didn't followed by "not" or contracted → negative (past for did); else, in a
+  sentence ending in "?", first word or after what/where/when/why/how/who/whom/whose/which → question;
+  else an ordinary word. Modals: can/cannot/can't, could(n't), will/won't, would(n't), shall/shan't,
+  should(n't), must(n't), may, might(n't) → base form; not a modal after a/an/the/my/your/his/her/
+  its/our/their/free/good/ill, nor "May"/"Will" capitalized mid-sentence. Verb group: the word, then "not"
+  if next, then a pronoun subject (I, you, he, she, it, we, they) if the sentence is a question, then one
+  more word; none when the sentence ends first. A do-question without a pronoun subject has no verb group.
+- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end), trimmed.
 - Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals.
 - Streak: consecutive days meeting the goal; an unfinished today doesn't break it.
 - Translation language pick: preferred-language list order; skip English and unsupported; `zh-*` → Simplified Chinese; none → ask.

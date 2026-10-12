@@ -60,9 +60,10 @@ struct ReviewView: View {
     private func card(_ word: VocabWord) -> some View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
-                Text(word.word).font(.largeTitle.weight(.semibold))
+                // A helper or modal verb is reviewed with its verb group ("did not go").
+                Text(word.translationSource).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
-                    model.speaker.speak(word.word, rate: model.state.settings.speechRate)
+                    model.speaker.speak(word.translationSource, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill").labelStyle(.iconOnly).font(.title)
                         .frame(minWidth: 44, minHeight: 44)

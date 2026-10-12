@@ -31,8 +31,16 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var box: Int
     public let createdAt: Date
     public var nextReview: Date
+    /// Set when the word was saved as a helper or modal verb ("do", "will"); nil for other words.
+    public var kind: FunctionWord.Kind?
+    /// For helper and modal verbs, the verb group it was saved from ("did not go"):
+    /// what `translation` translates, since the word alone means little.
+    public var chunk: String?
 
     public var id: String { word }
+
+    /// The text to translate: the verb group for helper and modal verbs, else the word.
+    public var translationSource: String { chunk ?? word }
 
     public func isDue(_ now: Date) -> Bool { !learned && nextReview <= now }
 }
@@ -223,10 +231,13 @@ public final class Library {
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.
+    /// `kind` and `chunk` describe a helper or modal verb; saving the word as the other
+    /// kind replaces them and drops a translation that belonged to the old kind.
     @discardableResult
     public func saveWord(
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
-        phonetic: String? = nil, context: String = "", source: String = ""
+        phonetic: String? = nil, context: String = "", source: String = "",
+        kind: FunctionWord.Kind? = nil, chunk: String? = nil
     ) -> VocabWord? {
         let key = TextTools.normalize(word)
         let existing = state.words.first { $0.word == key }
@@ -239,6 +250,13 @@ public final class Library {
             entry.nextReview = now()
         }
         entry.learned = learned
+        let newChunk = kind == nil ? nil : chunk.flatMap { $0.isEmpty ? nil : $0 }
+        if entry.kind != kind || (newChunk != nil && entry.chunk != newChunk) {
+            entry.translation = ""
+            entry.translationLanguage = nil
+        }
+        entry.kind = kind
+        if kind == nil || newChunk != nil { entry.chunk = newChunk }
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             entry.translation = translation
             entry.translationLanguage = translationLanguage
@@ -273,9 +291,12 @@ public final class Library {
     }
 
     /// Words to translate into `target`: no translation yet, or one recorded in
-    /// another language (or in an unknown one).
+    /// another language (or in an unknown one). A helper or modal verb saved without a
+    /// verb group is left out: alone it would get a misleading translation ("did" → "hizo").
     public func wordsNeedingTranslation(_ target: String) -> [VocabWord] {
-        state.words.filter { $0.translation.isEmpty || $0.translationLanguage != target }
+        state.words.filter {
+            ($0.kind == nil || $0.chunk != nil) && ($0.translation.isEmpty || $0.translationLanguage != target)
+        }
     }
 
     public func answerReview(_ word: String, correct: Bool) {

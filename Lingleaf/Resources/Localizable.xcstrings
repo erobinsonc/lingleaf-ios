@@ -374,6 +374,56 @@
         }
       }
     },
+    "Helper verb": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbo auxiliar"
+          }
+        }
+      }
+    },
+    "Here “%@” has no meaning of its own: it makes a question about the past.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí “%@” no significa nada por sí solo: convierte la frase en una pregunta sobre el pasado."
+          }
+        }
+      }
+    },
+    "Here “%@” has no meaning of its own: it makes a question about the present.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí “%@” no significa nada por sí solo: convierte la frase en una pregunta sobre el presente."
+          }
+        }
+      }
+    },
+    "Here “%@” has no meaning of its own: “%@” + verb makes the past negative.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí “%1$@” no significa nada por sí solo: “%2$@” + verbo forma el negativo en pasado."
+          }
+        }
+      }
+    },
+    "Here “%@” has no meaning of its own: “%@” + verb makes the present negative.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aquí “%1$@” no significa nada por sí solo: “%2$@” + verbo forma el negativo en presente."
+          }
+        }
+      }
+    },
     "I know it": {
       "localizations": {
         "es": {
@@ -510,6 +560,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Marcar como conocida"
+          }
+        }
+      }
+    },
+    "Modal verb": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbo modal"
           }
         }
       }
@@ -760,6 +820,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Guardada"
+          }
+        }
+      }
+    },
+    "Selected": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleccionada"
           }
         }
       }
@@ -1116,6 +1186,96 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” se quitará de tu biblioteca. Tus palabras guardadas se conservan."
+          }
+        }
+      }
+    },
+    "“can” + verb: be able to, or be allowed to.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“can” + verbo: poder (saber hacer algo o tener permiso)."
+          }
+        }
+      }
+    },
+    "“could” + verb: was able to, or might.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“could” + verbo: podía o podría."
+          }
+        }
+      }
+    },
+    "“may” + verb: maybe, or permission.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“may” + verbo: quizás, o permiso."
+          }
+        }
+      }
+    },
+    "“might” + verb: maybe.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“might” + verbo: quizás, puede que…"
+          }
+        }
+      }
+    },
+    "“must” + verb: it is necessary, or it is surely true.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“must” + verbo: hay que hacerlo, o seguro que es así."
+          }
+        }
+      }
+    },
+    "“shall” + verb: the future, or an offer (“Shall we go?”).": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“shall” + verbo: el futuro, o una propuesta (“Shall we go?” = ¿Vamos?)."
+          }
+        }
+      }
+    },
+    "“should” + verb: advice, what is right to do.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“should” + verbo: un consejo (debería…)."
+          }
+        }
+      }
+    },
+    "“will” + verb talks about the future.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“will” + verbo habla del futuro (iré, irás…)."
+          }
+        }
+      }
+    },
+    "“would” + verb: what would happen, or a polite request.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“would” + verbo: lo que pasaría (iría, haría…) o un pedido amable."
           }
         }
       }

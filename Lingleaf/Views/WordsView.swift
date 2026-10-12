@@ -97,10 +97,13 @@ private struct WordRow: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(word.word).font(.headline)
-                    if !word.phonetic.isEmpty {
+                    Text(word.translationSource).font(.headline)
+                    if !word.phonetic.isEmpty, word.kind == nil {
                         Text(word.phonetic).font(.caption).foregroundStyle(Brand.secondaryText)
                     }
+                }
+                if let kind = word.kind {
+                    Text(verbatim: "\(word.word) · \(kind.label)").font(.caption).foregroundStyle(Brand.secondaryText)
                 }
                 if !word.translation.isEmpty { Text(word.translation) }
                 if !word.context.isEmpty {

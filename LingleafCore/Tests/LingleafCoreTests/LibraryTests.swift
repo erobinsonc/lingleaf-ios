@@ -186,6 +186,38 @@ final class LibraryTests: XCTestCase {
         let word = try XCTUnwrap(library().state.word("cat"))
         XCTAssertEqual(word.translation, "gato")
         XCTAssertNil(word.translationLanguage)
+        XCTAssertNil(word.kind)
+        XCTAssertNil(word.chunk)
+    }
+
+    func testHelperAndModalVerbsKeepTheirVerbGroup() throws {
+        let library = library()
+        library.saveWord("do", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, chunk: "did not go")
+        var word = try XCTUnwrap(self.library().state.word("do"))
+        XCTAssertEqual(word.kind, .helper)
+        XCTAssertEqual(word.chunk, "did not go")
+        XCTAssertEqual(word.translationSource, "did not go")
+        XCTAssertEqual(word.translation, "no fue")
+
+        library.saveWord("do", learned: false, kind: .helper)
+        word = try XCTUnwrap(library.state.word("do"))
+        XCTAssertEqual(word.chunk, "did not go", "no verb group keeps the saved one")
+        XCTAssertEqual(word.translation, "no fue")
+
+        library.saveWord("do", learned: false, kind: .helper, chunk: "didn't see")
+        word = try XCTUnwrap(library.state.word("do"))
+        XCTAssertEqual(word.chunk, "didn't see")
+        XCTAssertEqual(word.translation, "", "a new verb group needs its own translation")
+
+        library.saveWord("do", learned: false, translation: "hacer", translationLanguage: "es")
+        word = try XCTUnwrap(library.state.word("do"))
+        XCTAssertNil(word.kind)
+        XCTAssertNil(word.chunk)
+        XCTAssertEqual(word.translationSource, "do")
+        XCTAssertEqual(word.translation, "hacer")
+        library.saveWord("must", learned: false, kind: .modal)
+        library.saveWord("will", learned: false, kind: .modal, chunk: "will go")
+        XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["will"], "no verb group, nothing to translate")
     }
 
     func testReadingTimeFeedsTodayAndTheStreak() {
