@@ -34,12 +34,27 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S13 | Level filter | Discover shows chips "All" plus each level in the recommended list (A2–C2); "All" is selected by default, a level shows only its recommended books, in order; an empty level says "No recommended books at this level."; the chips stay with the recommended books, below any search results. |
 | S14 | Translation language | The default is the first language in the device's preferred-language list that is supported and not English (Chinese → Simplified). If there is none, the first word card asks once "Translate into:" with up to 5 languages (the region's language first, then Español, Português, Français, 中文, العربية, without repeats) and "More languages"; the choice is saved. Each saved word records its translation language; words in another language are translated again when shown. |
 | S15 | Saved state on the card | A saved word's card shows "Saved" or "I know it" checked (check icon, selected state, announced as "Remove from Words" action); tapping the checked button removes that state, with Undo (timing as in S4). Deleting a word in Words happens at once and offers Undo for 5 s with the same rules (no confirmation dialog). The language button under the translation is announced as "Translation language: <language>". |
+| S16 | Helper and modal verbs | Tapping do/does/did used for a negative, a question or a prohibition ("did not go", "Did you see…?", "Don't touch"), or a modal (can, could, will, would, shall, should, must, may, might, with their negative forms), shows the base form ("do", "will"), "Helper verb" or "Modal verb", the verb group in the sentence ("did not go", "should have known") with its translation instead of the word's own, and one short note on what it does (e.g. "“didn't” (= “did not”) + base verb = past negative: “didn't go”, not “didn't went”."). No definition or IPA; Listen says the verb group. Saving stores the verb group as its own entry (the sentence when there is none), with its base form and kind; Words and Review show it. A question tag ("…, didn't you?") is explained as asking the listener to agree. A negative modal ("mustn't", "won't", "cannot", "must not") says it is the negative: "mustn't" = not allowed. "do" as a main verb ("I did my homework") is an ordinary word. |
+| S17 | Selected word | While the card is open, the tapped word is marked in the reader (solid yellow marker, black text) and in bold in the card's sentence, underlined with its verb group if it has one. If the half-height card would cover it, the reader scrolls it into the upper part of the screen (without animation when Reduce Motion is on). |
 
 ## Shared logic (same rules, same tests on both platforms)
 
 - Paragraphs: split on blank lines, hard-wrapped lines joined.
 - Words: `[A-Za-z]+(['’][A-Za-z]+)*`; contractions stay whole.
 - Base forms: irregular table, then plural/past/-ing rules (see `TextTools`).
+- Helper and modal verbs (see `FunctionWords`), within the tapped word's sentence:
+  do/does/did/don't/doesn't/didn't followed by "not" or contracted → negative (past for did); else, in a
+  sentence ending in "?", first word or after what/where/when/why/how/who/whom/whose/which → question;
+  else an ordinary word. Modals: can/cannot/can't, could(n't), will/won't, would(n't), shall/shan't,
+  should(n't), must(n't), may, might(n't) → base form; not a modal after a/an/the/my/your/his/her/
+  its/our/their/free/good/ill, nor "May"/"Will" capitalized mid-sentence. Verb group: the word, then "not"
+  if next, then a pronoun subject (I, you, he, she, it, we, they) if the sentence is a question, then up to
+  4 of have/be/been/being/never/always/ever/really/just/also/still/even/only/already/probably/certainly/
+  surely/often, then the next word; if the sentence ends first, up to its last word, and none when the word
+  is the last one. A do-question without a pronoun subject has no verb group. A negative do/don't as the
+  sentence's first word (after at most please/oh/now/so/and/but/then/well/no/yes/just), not in a question, is a prohibition. A modal is negative when contracted (n't), "cannot", or followed by "not". A do-form or modal after a comma, followed only by a pronoun and
+  "?", is a question tag ("You went, didn't you?"): no verb group.
+- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end), trimmed.
 - Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals, each due at the start of that review day (04:00 local time; 01:00 still belongs to the day before); a new word is due at the start of the next review day; "Again" → first box, due now.
 - Marking a saved word in a sentence: its forms (match keys), or a saved group of words, ignoring case.
 - Review session: due words sorted by due time, grouped by book, taken one per book in turn, at most 20.

@@ -229,6 +229,24 @@ final class LibraryTests: XCTestCase {
         let word = try XCTUnwrap(library().state.word("cat"))
         XCTAssertEqual(word.translation, "gato")
         XCTAssertNil(word.translationLanguage)
+        XCTAssertNil(word.kind)
+        XCTAssertNil(word.base)
+    }
+
+    func testHelperAndModalVerbsAreSavedAsTheirVerbGroup() throws {
+        let library = library()
+        library.saveWord("did not go", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, base: "do")
+        library.saveWord("doesn't like", learned: false, kind: .helper, base: "do")
+        library.saveWord("Do", learned: true, translation: "hacer", translationLanguage: "es")
+        let reloaded = self.library()
+        let past = try XCTUnwrap(reloaded.state.word("Did not go"))
+        XCTAssertEqual(past.kind, .helper)
+        XCTAssertEqual(past.base, "do")
+        XCTAssertEqual(past.translation, "no fue", "each verb group is its own record")
+        XCTAssertEqual(reloaded.state.word("doesn't like")?.base, "do")
+        XCTAssertNil(reloaded.state.word("do")?.kind, "\"do\" as a word stays separate")
+        XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["doesn't like"])
+        XCTAssertFalse(library.isLearning("did"), "a verb group doesn't underline the helper everywhere")
     }
 
     func testReadingTimeFeedsTodayAndTheStreak() {

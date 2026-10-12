@@ -31,6 +31,29 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "ES: beach")).firstMatch.exists)
     }
 
+    func testAModalVerbShowsItsVerbGroupAndWhatItDoes() {
+        button(startingWith: "The Red Boat").tap()
+        let word = app.links["Can"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10))
+        word.tap()
+
+        XCTAssertTrue(app.staticTexts["Modal verb"].waitForExistence(timeout: 10), "the card says what kind of word it is")
+        XCTAssertTrue(app.staticTexts["can"].exists, "the base form")
+        XCTAssertTrue(app.staticTexts["Can we fix"].exists, "the verb group it belongs to")
+        XCTAssertTrue(app.staticTexts["ES: Can we fix"].exists, "the verb group is translated, not the word alone")
+        XCTAssertTrue(app.staticTexts["“can” + verb: be able to, or be allowed to."].exists)
+        let card = XCTAttachment(screenshot: app.screenshot())
+        card.name = "en-light-13-modal-verb-card"
+        card.lifetime = .keepAlways
+        add(card)
+
+        app.buttons["Save word"].tap()
+        XCTAssertTrue(app.staticTexts["“Can we fix” saved to Words"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.tabBars.buttons["Words"].tap()
+        XCTAssertTrue(element(labelled: "can we fix").waitForExistence(timeout: 5), "Words shows the verb group")
+    }
+
     /// S7: recall first; the meaning brings the sentence, its translation and the answers.
     func testReviewAWord() {
         relaunch("-ui-testing", "-ui-testing-due")

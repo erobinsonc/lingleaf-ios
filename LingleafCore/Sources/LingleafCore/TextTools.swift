@@ -72,18 +72,39 @@ public enum TextTools {
 
     /// The sentence of `paragraph` that contains `offset`.
     public static func sentenceAt(_ paragraph: String, _ offset: Int) -> String {
+        substring(paragraph, sentenceRangeAt(paragraph, offset))
+    }
+
+    /// Where `sentenceAt` is in `paragraph`, without surrounding whitespace, so a
+    /// word's offset in the paragraph can be turned into its offset in the sentence.
+    public static func sentenceRangeAt(_ paragraph: String, _ offset: Int) -> WordRange {
         let ns = paragraph as NSString
         var start = 0
+        var end = ns.length
         for match in sentenceEnd.matches(in: paragraph, range: NSRange(location: 0, length: ns.length)) {
-            let end = match.range.location + match.range.length
-            if end > offset {
-                return ns.substring(with: NSRange(location: start, length: end - start))
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            let matchEnd = match.range.location + match.range.length
+            if matchEnd > offset {
+                end = matchEnd
+                break
             }
-            start = end
+            start = matchEnd
         }
-        let rest = ns.substring(from: start).trimmingCharacters(in: .whitespacesAndNewlines)
-        return rest.isEmpty ? paragraph.trimmingCharacters(in: .whitespacesAndNewlines) : rest
+        // Nothing left after the last sentence end: the whole paragraph.
+        let sentence = trimmed(ns, WordRange(start, end))
+        return sentence.start == sentence.end ? trimmed(ns, WordRange(0, ns.length)) : sentence
+    }
+
+    private static func trimmed(_ ns: NSString, _ range: WordRange) -> WordRange {
+        var start = range.start
+        var end = range.end
+        while start < end, isSpace(ns.character(at: start)) { start += 1 }
+        while end > start, isSpace(ns.character(at: end - 1)) { end -= 1 }
+        return WordRange(start, end)
+    }
+
+    private static func isSpace(_ unit: unichar) -> Bool {
+        guard let scalar = Unicode.Scalar(unit) else { return false }
+        return CharacterSet.whitespacesAndNewlines.contains(scalar)
     }
 
     /// Likely dictionary forms of `word`, most likely first, never the word

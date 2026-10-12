@@ -8,6 +8,18 @@ struct WordSelection: Identifiable {
     /// The word as it appears in the text ("animals").
     let word: String
     let sentence: String
+    /// Where the word is in `sentence`, to mark it on the card.
+    var rangeInSentence: WordRange?
+    /// Set when the word is a helper or modal verb ("did" in "did not go").
+    var function: FunctionWord?
+    /// The paragraph and range the word came from, to mark it in the reader.
+    var paragraph = 0
+    var range = WordRange(0, 0)
+
+    /// The verb group of a helper or modal verb ("did not go"), if there is one.
+    var chunk: String? {
+        function?.chunk.map { TextTools.substring(sentence, $0) }
+    }
 }
 
 /// A paragraph ready for the reader: the linked text and the words in it being learned.
@@ -29,6 +41,7 @@ struct ReaderView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The word card's height, so the card drops its half-height panel when full height.
     @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
@@ -39,6 +52,8 @@ struct ReaderView: View {
     @State private var sessionStart: Date?
     /// "“beach” saved to Words" with Undo, after a word card button.
     @State private var undo: UndoMessage?
+    /// The reader's visible height, to tell whether the half-height card covers the tapped word.
+    @State private var viewportHeight: CGFloat = 0
 
     private var book: Book? { model.state.books.first { $0.id == bookID } }
 
@@ -109,6 +124,16 @@ struct ReaderView: View {
                                     AccessibilityRotorEntry(Text("\(word.word), learning"), textRange: word.range)
                                 }
                             }
+                            .background {
+                                // Measured once, when a word of this paragraph is tapped.
+                                if let selected = selection, selected.paragraph == index {
+                                    GeometryReader { geometry in
+                                        Color.clear.onAppear {
+                                            reveal(selected, in: geometry.frame(in: .named(Self.readerSpace)), text: paragraphs[index], proxy: proxy)
+                                        }
+                                    }
+                                }
+                            }
                             .id(index)
                     }
                 }
@@ -119,6 +144,8 @@ struct ReaderView: View {
                 .frame(maxWidth: .infinity)
             }
             .scrollPosition(id: $position, anchor: .top)
+            .coordinateSpace(.named(Self.readerSpace))
+            .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { viewportHeight = $0 }
             .safeAreaInset(edge: .top, spacing: 0) {
                 ProgressView(value: book?.progress ?? 0)
                     .accessibilityLabel(Text("Reading progress"))
@@ -132,6 +159,25 @@ struct ReaderView: View {
                 }
             }
         }
+    }
+
+    private static let readerSpace = "reader"
+
+    /// The half-height card covers the lower half of the reader: when the tapped word is
+    /// there, scroll so it sits near the top. Its height in the paragraph is estimated from
+    /// its offset. A full-height card (accessibility text sizes) covers it anyway.
+    private func reveal(_ selected: WordSelection, in frame: CGRect, text: String, proxy: ScrollViewProxy) {
+        let length = (text as NSString).length
+        guard !dynamicTypeSize.isAccessibilitySize, viewportHeight > 0, length > 0 else { return }
+        let fraction = CGFloat(selected.range.start) / CGFloat(length)
+        let wordY = frame.minY + frame.height * fraction
+        guard wordY > viewportHeight * 0.4 || wordY < 0 else { return }
+        // `scrollTo` lines up the same unit point of the paragraph and of the viewport;
+        // this one puts the word at 20 % of the visible height.
+        let target = viewportHeight * 0.2 - frame.height * fraction
+        let difference = viewportHeight - frame.height
+        let anchor = abs(difference) < 1 ? UnitPoint.top : UnitPoint(x: 0, y: target / difference)
+        withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(selected.paragraph, anchor: anchor) }
     }
 
     /// Every word is a link (`lingleaf://word?p=…&o=…&e=…`); words being learned are underlined
@@ -152,7 +198,15 @@ struct ReaderView: View {
             ]
             attributed[attributedRange].link = components.url
             let word = String(text[stringRange])
-            if model.isLearning(word) {
+            if let selected = selection, selected.paragraph == index, selected.range == range {
+                // The word the card is about: solid marker with black text (≈13:1 in both modes),
+                // distinct from the learning underline. Not a link meanwhile, or the link tint
+                // would replace the black (the card is open over the reader anyway).
+                attributed[attributedRange].link = nil
+                attributed[attributedRange].backgroundColor = Brand.marker
+                attributed[attributedRange].foregroundColor = .black
+                attributed[attributedRange].accessibilityTextCustom = [String(localized: "Selected")]
+            } else if model.isLearning(word) {
                 attributed[attributedRange].underlineStyle = Text.LineStyle(pattern: .solid, color: Brand.markerLine)
                 attributed[attributedRange].backgroundColor = Brand.marker.opacity(0.18)
                 // Assistive technologies describe custom text attributes alongside the text.
@@ -217,9 +271,17 @@ struct ReaderView: View {
               0 <= start, start < end, end <= (paragraphs[index] as NSString).length
         else { return }
         let paragraph = paragraphs[index]
+        let sentenceRange = TextTools.sentenceRangeAt(paragraph, start)
+        let sentence = TextTools.substring(paragraph, sentenceRange)
+        let inSentence = WordRange(start - sentenceRange.start, end - sentenceRange.start)
+        let valid = sentenceRange.start <= start && end <= sentenceRange.end
         selection = WordSelection(
             word: TextTools.substring(paragraph, WordRange(start, end)),
-            sentence: TextTools.sentenceAt(paragraph, start)
+            sentence: sentence,
+            rangeInSentence: valid ? inSentence : nil,
+            function: valid ? FunctionWords.analyze(sentence, inSentence) : nil,
+            paragraph: index,
+            range: WordRange(start, end)
         )
     }
 

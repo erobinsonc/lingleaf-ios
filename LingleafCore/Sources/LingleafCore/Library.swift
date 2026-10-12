@@ -40,6 +40,11 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var box: Int
     public let createdAt: Date
     public var nextReview: Date
+    /// Set when `word` is the verb group of a helper or modal verb ("did not go"): what is
+    /// learned and translated, since the helper alone means little. Nil for other words.
+    public var kind: FunctionWord.Kind?
+    /// The helper or modal verb's base form ("do" for "did not go").
+    public var base: String?
 
     public var id: String { word }
 
@@ -243,10 +248,12 @@ public final class Library {
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.
+    /// For a helper or modal verb, `word` is its verb group and `kind`/`base` say what it is.
     @discardableResult
     public func saveWord(
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
-        phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = ""
+        phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = "",
+        kind: FunctionWord.Kind? = nil, base: String? = nil
     ) -> VocabWord? {
         let key = TextTools.normalize(word)
         let existing = state.words.first { $0.word == key }
@@ -260,6 +267,8 @@ public final class Library {
             entry.nextReview = Srs.startOfDay(1, after: now(), calendar: calendar)
         }
         entry.learned = learned
+        entry.kind = kind
+        entry.base = kind == nil ? nil : base
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             entry.translation = translation
             entry.translationLanguage = translationLanguage

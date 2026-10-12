@@ -522,6 +522,16 @@
         }
       }
     },
+    "Helper verb": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbo auxiliar"
+          }
+        }
+      }
+    },
     "I know it": {
       "localizations": {
         "es": {
@@ -678,6 +688,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Marcar como conocida"
+          }
+        }
+      }
+    },
+    "Modal verb": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbo modal"
           }
         }
       }
@@ -982,6 +1002,16 @@
         }
       }
     },
+    "Selected": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seleccionada"
+          }
+        }
+      }
+    },
     "Settings": {
       "localizations": {
         "es": {
@@ -1262,6 +1292,86 @@
         }
       }
     },
+    "“%@” (= “%@”) + base verb = past negative: “didn't go”, not “didn't went”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negación en pasado: “didn't go”, no “didn't went”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + base verb = present negative: “%@ like”, not “%@ likes”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negación en presente: “%3$@ like”, no “%4$@ likes”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”): the negative of “%@” + verb.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”): la forma negativa de “%3$@” + verbo."
+          }
+        }
+      }
+    },
+    "“%@” + base verb = past negative: “did not go”, not “did not went”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo en forma base = negación en pasado: “did not go”, no “did not went”."
+          }
+        }
+      }
+    },
+    "“%@” + base verb = present negative: “%@ like”, not “%@ likes”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” + verbo en forma base = negación en presente: “%2$@ like”, no “%3$@ likes”."
+          }
+        }
+      }
+    },
+    "“%@” + base verb tells someone not to do it: “Don't touch”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo en forma base sirve para prohibir: “Don't touch” = no toques."
+          }
+        }
+      }
+    },
+    "“%@” + pronoun at the end asks the listener to agree, like “right?”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + pronombre al final pide que el otro confirme, como “¿verdad?”."
+          }
+        }
+      }
+    },
+    "“%@” + verb: it is not allowed.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo: está prohibido."
+          }
+        }
+      }
+    },
     "“%@” added to your library.": {
       "localizations": {
         "es": {
@@ -1322,12 +1432,132 @@
         }
       }
     },
+    "“%@” starts a question about the past.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” abre una pregunta sobre el pasado."
+          }
+        }
+      }
+    },
+    "“%@” starts a question about the present.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” abre una pregunta sobre el presente."
+          }
+        }
+      }
+    },
     "“%@” will be removed from your library. Your saved words stay.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "“%@” se quitará de tu biblioteca. Tus palabras guardadas se conservan."
+          }
+        }
+      }
+    },
+    "“%@”: the negative of “%@” + verb.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@”: la forma negativa de “%2$@” + verbo."
+          }
+        }
+      }
+    },
+    "“can” + verb: be able to, or be allowed to.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“can” + verbo: poder (ser capaz o tener permiso)."
+          }
+        }
+      }
+    },
+    "“could” + verb: was able to, or it’s possible.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“could” + verbo: podía o podría."
+          }
+        }
+      }
+    },
+    "“may” + verb: maybe, or permission.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“may” + verbo: quizás, o permiso."
+          }
+        }
+      }
+    },
+    "“might” + verb: maybe.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“might” + verbo: quizás, puede que…"
+          }
+        }
+      }
+    },
+    "“must” + verb: it is necessary, or it is surely true.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“must” + verbo: hay que hacerlo, o seguro que es así."
+          }
+        }
+      }
+    },
+    "“shall” + verb: the future, or an offer (“Shall we go?”).": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“shall” + verbo: el futuro, o una propuesta (“Shall we go?” = ¿Vamos?)."
+          }
+        }
+      }
+    },
+    "“should” + verb: advice, what is right to do.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“should” + verbo: un consejo (debería…)."
+          }
+        }
+      }
+    },
+    "“will” + verb: the future.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“will” + verbo: el futuro (iré, irás…)."
+          }
+        }
+      }
+    },
+    "“would” + verb: what would happen, or a polite request.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“would” + verbo: lo que pasaría (iría, haría…) o un pedido amable."
           }
         }
       }

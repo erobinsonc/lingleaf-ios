@@ -94,6 +94,7 @@ struct ReviewView: View {
     private func card(_ word: VocabWord) -> some View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
+                // A helper or modal verb is saved as its verb group ("did not go").
                 Text(word.word).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
                     model.speaker.speak(word.word, rate: model.state.settings.speechRate)
@@ -136,7 +137,7 @@ struct ReviewView: View {
     @ViewBuilder
     private func meaning(_ word: VocabWord) -> some View {
         VStack(spacing: 4) {
-            if !word.phonetic.isEmpty { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
+            if !word.phonetic.isEmpty, word.kind == nil { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
             if word.translation.isEmpty {
                 Text("No translation yet. Connect to the internet once to get it.")
                     .font(.callout)
@@ -147,7 +148,8 @@ struct ReviewView: View {
                 Text(word.translation).font(.title2).multilineTextAlignment(.center)
             }
         }
-        if !word.context.isEmpty {
+        // A verb group saved without one is the sentence itself: not twice.
+        if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
             Divider()
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
