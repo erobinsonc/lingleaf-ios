@@ -133,7 +133,9 @@ final class GutenbergTests: XCTestCase {
     func testURLErrorsMapToOfflineTimedOutAndCancelled() {
         XCTAssertEqual((URLSessionFetcher.networkError(URLError(.notConnectedToInternet)) as? NetworkError)?.kind, .offline)
         XCTAssertEqual((URLSessionFetcher.networkError(URLError(.timedOut)) as? NetworkError)?.kind, .timedOut)
-        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.cannotFindHost)) as? NetworkError)?.kind, .other)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.cannotFindHost)) as? NetworkError)?.kind, .offline)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.cannotConnectToHost)) as? NetworkError)?.kind, .offline)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.badServerResponse)) as? NetworkError)?.kind, .other)
         XCTAssertTrue(URLSessionFetcher.networkError(URLError(.cancelled)) is CancellationError)
     }
 }

@@ -11,6 +11,52 @@
         }
       }
     },
+    "%lld books found": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld book found"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld books found"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libro encontrado"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libros encontrados"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libros encontrados"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld days in a row": {
       "localizations": {
         "en": {
@@ -991,7 +1037,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sigue buscando. Project Gutenberg puede tardar."
+            "value": "Seguimos buscando. Project Gutenberg puede tardar."
           }
         }
       }
@@ -1051,7 +1097,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Este libro no está disponible ahora."
+            "value": "Este libro no está disponible en este momento."
           }
         }
       }
@@ -1232,6 +1278,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” eliminada"
+          }
+        }
+      }
+    },
+    "“%@” is in your library.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” está en tu biblioteca."
           }
         }
       }

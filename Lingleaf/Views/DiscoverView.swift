@@ -1,3 +1,4 @@
+import Accessibility
 import SwiftUI
 import LingleafCore
 
@@ -140,11 +141,16 @@ struct DiscoverView: View {
                 let found = try await gutenberg.search(text)
                 guard !Task.isCancelled else { return }
                 results = found
+                announce(found.isEmpty
+                    ? String(localized: "No books found. Try another title or author.")
+                    : String(localized: "\(found.count) books found"))
             } catch is CancellationError {
                 return
             } catch {
                 guard !Task.isCancelled else { return }
-                searchError = (error as? GutenbergError) ?? .failed
+                let failure = (error as? GutenbergError) ?? .failed
+                searchError = failure
+                announce(searchMessage(failure))
             }
             searching = false
         }
@@ -255,19 +261,26 @@ struct DiscoverView: View {
             .buttonStyle(.plain)
             .accessibilityLabel(Text("Downloading \(book.displayTitle)"))
             .accessibilityValue(Text(fraction, format: .percent.precision(.fractionLength(0))))
-            .accessibilityHint(Text("Cancel download"))
-        } else if book.textURL == nil || failure == .unavailable {
-            // No plain-text edition: a disabled button would be dimmed below readable contrast.
-            if book.textURL == nil {
-                Text("Not available")
-                    .font(.subheadline)
-                    .foregroundStyle(Brand.secondaryText)
+            .accessibilityAction(named: Text("Cancel download")) {
+                task.cancel()
+                downloads[book.id] = nil
             }
+        } else if book.textURL == nil {
+            // No plain-text edition: a disabled button would be dimmed below readable contrast.
+            Text("Not available")
+                .font(.subheadline)
+                .foregroundStyle(Brand.secondaryText)
         } else {
+            // After any failure, Retry: "not available right now" may pass, and focus keeps a place to land.
             Button(failure == nil ? LocalizedStringKey("Get") : LocalizedStringKey("Retry")) { download(book) }
                 .buttonStyle(.bordered)
                 .accessibilityLabel(failure == nil ? Text("Get \(book.displayTitle)") : Text("Retry \(book.displayTitle)"))
         }
+    }
+
+    /// Results, errors and finished downloads change the screen without moving focus: say them.
+    private func announce(_ text: String) {
+        AccessibilityNotification.Announcement(text).post()
     }
 
     private func failure(_ id: Int) -> GutenbergError? {
@@ -302,11 +315,14 @@ struct DiscoverView: View {
                     gutenbergID: id
                 )
                 downloads[id] = nil
+                announce(String(localized: "“\(book.displayTitle)” is in your library."))
             } catch is CancellationError {
                 downloads[id] = nil
             } catch {
                 guard !Task.isCancelled else { return }
-                downloads[id] = .failed((error as? GutenbergError) ?? .failed)
+                let failure = (error as? GutenbergError) ?? .failed
+                downloads[id] = .failed(failure)
+                announce(downloadMessage(failure))
             }
         }
         downloads[id] = .running(0, task)

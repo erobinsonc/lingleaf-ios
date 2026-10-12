@@ -103,7 +103,8 @@ public struct URLSessionFetcher: HttpFetcher {
         switch error.code {
         case .cancelled:
             return CancellationError()
-        case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed, .internationalRoamingOff:
+        case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed, .internationalRoamingOff,
+             .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
             return NetworkError(error.localizedDescription, kind: .offline)
         case .timedOut:
             return NetworkError(error.localizedDescription, kind: .timedOut)
@@ -118,8 +119,10 @@ private final class ProgressObserver: NSObject, URLSessionTaskDelegate, @uncheck
     private let maxBytes: Int
     private let progress: (@Sendable (Double) -> Void)?
     private var observation: NSKeyValueObservation?
-    /// Set when the body passed `maxBytes` and the request was cancelled for it.
-    private(set) var tooLarge = false
+    /// Set (on the KVO thread) when the body passed `maxBytes` and the request was cancelled for it.
+    private let lock = NSLock()
+    private var exceeded = false
+    var tooLarge: Bool { lock.withLock { exceeded } }
 
     init(maxBytes: Int, progress: (@Sendable (Double) -> Void)?) {
         self.maxBytes = maxBytes
@@ -131,7 +134,7 @@ private final class ProgressObserver: NSObject, URLSessionTaskDelegate, @uncheck
         let progress = progress
         observation = task.progress.observe(\.completedUnitCount) { [weak self, weak task] value, _ in
             if value.completedUnitCount > maxBytes {
-                self?.tooLarge = true
+                self?.lock.withLock { self?.exceeded = true }
                 task?.cancel()
             }
             if value.totalUnitCount > 0 { progress?(value.fractionCompleted) }
