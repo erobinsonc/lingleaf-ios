@@ -1,6 +1,7 @@
 import ImageIO
 import LingleafCore
 import UIKit
+import UniformTypeIdentifiers
 
 /// Book covers over HTTPS through `URLSessionFetcher` (so HTTPS only and size-capped),
 /// decoded as small thumbnails and kept in memory for the session. Any failure returns
@@ -30,10 +31,13 @@ actor CoverLoader {
         return image
     }
 
-    /// Reads the size first, refuses huge images and decodes a downsampled copy, so a small
-    /// file that claims enormous dimensions can't exhaust memory. Nil when it isn't an image.
+    /// Only JPEG, by its first bytes and by what ImageIO reads. Reads the size first, refuses
+    /// huge images and decodes a downsampled copy, so a small file that claims enormous
+    /// dimensions can't exhaust memory. Nil when it isn't a JPEG image.
     static func thumbnail(_ data: Data) -> UIImage? {
-        guard let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
+        guard GutenbergClient.isJPEG(data),
+              let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary),
+              CGImageSourceGetType(source) as String? == UTType.jpeg.identifier,
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
               let width = properties[kCGImagePropertyPixelWidth] as? Int,
               let height = properties[kCGImagePropertyPixelHeight] as? Int,

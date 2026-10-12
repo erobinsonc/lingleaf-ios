@@ -74,6 +74,13 @@ final class GutenbergTests: XCTestCase {
         XCTAssertNil(GutenbergClient.coverSample(width: -1, height: -1), "not an image")
     }
 
+    func testOnlyJPEGCoversReachTheImageDecoder() {
+        XCTAssertTrue(GutenbergClient.isJPEG(Data([0xFF, 0xD8, 0xFF, 0xE0])))
+        XCTAssertFalse(GutenbergClient.isJPEG(Data("RIFF....WEBP".utf8)), "WebP")
+        XCTAssertFalse(GutenbergClient.isJPEG(Data([0xFF, 0xD8])), "too short")
+        XCTAssertFalse(GutenbergClient.isJPEG(Data()))
+    }
+
     func testFilterKeepsBooksAtTheChosenLevelInOrder() {
         let books = GutenbergClient.recommended.map { GutenbergBook(id: $0.id, title: "Book \($0.id)") }
         XCTAssertEqual(GutenbergClient.filter(books, level: nil), books)

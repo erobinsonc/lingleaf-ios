@@ -144,6 +144,10 @@ public struct GutenbergClient: Sendable {
     public static let coverThumbnailWidth = 176
     public static let coverThumbnailHeight = 248
 
+    /// Whether `data` starts like a JPEG file (FF D8 FF). Only JPEG covers reach the system's
+    /// image decoder: formats with a history of decoder exploits (WebP, HEIC…) never do.
+    public static func isJPEG(_ data: Data) -> Bool { data.starts(with: [0xFF, 0xD8, 0xFF]) }
+
     /// The power-of-two downsampling that keeps a cover of `width`×`height` px at least
     /// thumbnail-sized, or nil when the image is empty or too large to decode safely.
     public static func coverSample(width: Int, height: Int) -> Int? {
