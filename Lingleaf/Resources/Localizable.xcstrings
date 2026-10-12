@@ -1085,17 +1085,27 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negativo en pasado: “didn't go”, no “didn't went”."
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negación en pasado: “didn't go”, no “didn't went”."
           }
         }
       }
     },
-    "“%@” (= “%@”) + base verb = present negative: “doesn't like”, not “doesn't likes”.": {
+    "“%@” (= “%@”) + base verb = present negative: “%@ like”, not “%@ likes”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negativo en presente: “doesn't like”, no “doesn't likes”."
+            "value": "“%1$@” (= “%2$@”) + verbo en forma base = negación en presente: “%3$@ like”, no “%4$@ likes”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”): the negative of “%@” + verb.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”): la forma negativa de “%3$@” + verbo."
           }
         }
       }
@@ -1105,17 +1115,17 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” + verbo en forma base = negativo en pasado: “did not go”, no “did not went”."
+            "value": "“%@” + verbo en forma base = negación en pasado: “did not go”, no “did not went”."
           }
         }
       }
     },
-    "“%@” + base verb = present negative: “does not like”, not “does not likes”.": {
+    "“%@” + base verb = present negative: “%@ like”, not “%@ likes”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” + verbo en forma base = negativo en presente: “does not like”, no “does not likes”."
+            "value": "“%1$@” + verbo en forma base = negación en presente: “%2$@ like”, no “%3$@ likes”."
           }
         }
       }
@@ -1136,6 +1146,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” + pronombre al final pide que el otro confirme, como “¿verdad?”."
+          }
+        }
+      }
+    },
+    "“%@” + verb: it is not allowed.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + verbo: está prohibido."
           }
         }
       }
@@ -1226,6 +1246,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” se quitará de tu biblioteca. Tus palabras guardadas se conservan."
+          }
+        }
+      }
+    },
+    "“%@”: the negative of “%@” + verb.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@”: la forma negativa de “%2$@” + verbo."
           }
         }
       }

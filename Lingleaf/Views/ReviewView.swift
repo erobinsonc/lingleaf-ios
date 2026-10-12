@@ -70,7 +70,7 @@ struct ReviewView: View {
                         .contentShape(Rectangle())
                 }
             }
-            if !word.context.isEmpty {
+            if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
                 Text(word.context).italic().multilineTextAlignment(.center).foregroundStyle(Brand.secondaryText)
                     .fixedSize(horizontal: false, vertical: true)
             }

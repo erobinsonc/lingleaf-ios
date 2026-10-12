@@ -106,7 +106,8 @@ private struct WordRow: View {
                     Text(verbatim: "\(word.base ?? "") · \(kind.label)").font(.caption).foregroundStyle(Brand.secondaryText)
                 }
                 if !word.translation.isEmpty { Text(word.translation) }
-                if !word.context.isEmpty {
+                // A verb group saved without one is the sentence itself: not twice.
+                if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
                     Text(word.context).font(.caption).italic().foregroundStyle(Brand.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
                 }

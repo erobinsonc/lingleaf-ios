@@ -31,6 +31,9 @@ public struct FunctionWord: Equatable, Sendable {
     /// nil when it can't be told reliably (a question whose subject is not a pronoun, or a
     /// sentence that ends right after the word: "Yes, I can.").
     public let chunk: WordRange?
+    /// A negative modal: "mustn't", "cannot", "will not". Its note says so, since the
+    /// meaning can flip ("must" = necessary, "mustn't" = not allowed).
+    public var negative = false
 }
 
 public enum FunctionWords {
@@ -53,6 +56,8 @@ public enum FunctionWords {
 
     private static let pronouns: Set<String> = ["i", "you", "he", "she", "it", "we", "they"]
     private static let questionWords: Set<String> = ["what", "where", "when", "why", "how", "who", "whom", "whose", "which"]
+    /// Words that may come before a prohibition: "Please don't go", "And don't forget".
+    private static let leadIns: Set<String> = ["please", "oh", "now", "so", "and", "but", "then", "well", "no", "yes", "just"]
     /// Skipped on the way to the main verb: "should have known", "will never be able".
     private static let inGroup: Set<String> = [
         "have", "be", "been", "being", "never", "always", "ever", "really", "just", "also",
@@ -100,8 +105,8 @@ public enum FunctionWords {
 
         if let form = doForms[token] {
             if token.hasSuffix("n't") || next == "not" {
-                // "Don't touch that." / "Do not touch": first word, no subject → a prohibition.
-                if index == 0, !form.past, token != "doesn't", token != "does", !isQuestion {
+                // "Don't touch that." / "Please don't go": no subject before it → a prohibition.
+                if tokens[..<index].allSatisfy({ leadIns.contains($0) }), !form.past, token != "doesn't", token != "does", !isQuestion {
                     return FunctionWord(kind: .helper, base: form.base, use: .prohibition, chunk: group)
                 }
                 return FunctionWord(kind: .helper, base: form.base, use: form.past ? .pastNegative : .presentNegative, chunk: group)
@@ -120,6 +125,7 @@ public enum FunctionWords {
         if index > 0, determiners.contains(tokens[index - 1]) { return nil }
         // "May" and "Will" capitalized mid-sentence are a month and a name.
         if index > 0, token == "may" || token == "will", surface.first?.isUppercase == true { return nil }
-        return FunctionWord(kind: .modal, base: base, use: .modal(base), chunk: group)
+        let negative = token.hasSuffix("n't") || token == "cannot" || next == "not"
+        return FunctionWord(kind: .modal, base: base, use: .modal(base), chunk: group, negative: negative)
     }
 }

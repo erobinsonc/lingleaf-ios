@@ -49,9 +49,11 @@ struct WordCardView: View {
         return selection.chunk ?? selection.sentence
     }
 
-    /// How messages name what was saved: "did not go" rather than the whole sentence.
+    /// How messages name what was saved: "did not go"; without a verb group, the start of the sentence.
     private var savedName: String {
-        selection.function == nil ? headword : selection.chunk ?? selection.word
+        guard selection.function != nil else { return headword }
+        if let chunk = selection.chunk { return chunk }
+        return selection.sentence.count > 30 ? String(selection.sentence.prefix(30)) + "…" : selection.sentence
     }
 
     /// What the card translates as "the word": the tapped word, or a helper or modal verb's
@@ -484,9 +486,9 @@ extension FunctionWord {
         case .pastNegative:
             return String(localized: "“\(negative)” + base verb = past negative: “did not go”, not “did not went”.")
         case .presentNegative where contracted:
-            return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = present negative: “doesn't like”, not “doesn't likes”.")
+            return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = present negative: “\(negative) like”, not “\(negative) likes”.")
         case .presentNegative:
-            return String(localized: "“\(negative)” + base verb = present negative: “does not like”, not “does not likes”.")
+            return String(localized: "“\(negative)” + base verb = present negative: “\(negative) like”, not “\(negative) likes”.")
         case .prohibition:
             return String(localized: "“\(negative)” + base verb tells someone not to do it: “Don't touch”.")
         case .questionTag:
@@ -495,6 +497,14 @@ extension FunctionWord {
             return String(localized: "“\(word)” starts a question about the past.")
         case .presentQuestion:
             return String(localized: "“\(word)” starts a question about the present.")
+        case .modal(let base) where self.negative:
+            // The meaning can flip: "must" = necessary, "mustn't" = not allowed.
+            let shown = contracted || word == "cannot" ? word : "\(word) not"
+            if base == "must" { return String(localized: "“\(shown)” + verb: it is not allowed.") }
+            if contracted || word == "cannot" {
+                return String(localized: "“\(shown)” (= “\(base) not”): the negative of “\(base)” + verb.")
+            }
+            return String(localized: "“\(shown)”: the negative of “\(base)” + verb.")
         case .modal(let base):
             return Self.modalNote(base)
         }
