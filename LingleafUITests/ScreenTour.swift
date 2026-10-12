@@ -12,13 +12,16 @@ final class ScreenTour: XCTestCase {
         let undo: String
         let reviewNow: String
         let showMeaning: String
+        let remembered: String
     }
 
     private static let english = Labels(
-        language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning"
+        language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning",
+        remembered: "I remembered"
     )
     private static let spanish = Labels(
-        language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado"
+        language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado",
+        remembered: "Lo recordé"
     )
 
     private var app: XCUIApplication!
@@ -40,7 +43,7 @@ final class ScreenTour: XCTestCase {
         XCUIDevice.shared.appearance = dark ? .dark : .light
         prefix = "\(labels.language)-\(dark ? "dark" : "light")"
         app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
+        app.launchArguments = ["-ui-testing", "-ui-testing-due", "-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
             + (dark ? ["-dark-mode"] : [])
         app.launch()
 
@@ -75,16 +78,18 @@ final class ScreenTour: XCTestCase {
             snap("07-review")
             app.buttons[labels.showMeaning].tap()
             snap("08-review-meaning")
+            app.buttons[labels.remembered].tap()
+            snap("09-review-done")
             app.navigationBars.buttons.element(boundBy: 0).tap()
         }
 
         tab(1)
         _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
-        snap("09-discover")
+        snap("10-discover")
         app.buttons["level-filter-B1"].tap()
-        snap("10-discover-level-filter")
+        snap("11-discover-level-filter")
         tab(3)
-        snap("11-settings")
+        snap("12-settings")
         app.terminate()
     }
 

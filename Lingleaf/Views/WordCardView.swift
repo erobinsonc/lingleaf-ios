@@ -354,6 +354,7 @@ struct WordCardView: View {
             translationLanguage: translatedInto,
             phonetic: entry?.phonetic,
             context: selection.sentence,
+            contextTranslation: sentenceTranslation,
             source: source,
             kind: selection.function?.kind,
             base: selection.function?.base

@@ -25,7 +25,7 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S4 | Save word | "Save word" (primary, right) saves the word for review; it is underlined in yellow in every book, including inflected forms. A message "“word” saved to Words" with Undo shows for 4 s, longer when the system asks for more time to act (Android's accessibility timeout); with a screen reader or switch control it stays until Undo, Close or a newer message. |
 | S5 | I know it | "I know it" (secondary, left) saves the word as known; it is not underlined or reviewed. A message "“word” marked as known" with Undo shows like S4. |
 | S6 | Listen | Word, sentence and paragraph can be read aloud with an English voice. |
-| S7 | Review | Due words appear as flashcards; "I know it" schedules them 1, 3, 7, 14, 30 days out, then marks them learned; "Again" repeats them. |
+| S7 | Review | Recall first: a due word shows alone with "Show meaning"; the meaning then shows the translation, the sentence it was saved from (the word in bold), that sentence's translation (in the current translation language, filled in on the device when missing) and a button to hear it, and only then "Again" and "I remembered". A new word is first due at the start of the next review day (days start at 04:00 local time); "I remembered" moves it to the next box, due at the start of the day 1, 3, 7, 14 then 30 days later, and after the last box it is learned; "Again" sends it back to the first box and repeats it in the session. A session holds at most 20 due words, interleaved by book. At the end: "Done for today." and, when there are any, "N more tomorrow."; if more words are still due now, "Done for now. N more due today." with "Keep going". |
 | S8 | Daily goal | Reading time counts while the reader is open; the card shows minutes today and the streak (days meeting the goal). |
 | S9 | Discover | Recommended classics with a level, search by title/author, one-tap download into the library. |
 | S10 | Import | A plain-text `.txt` file can be imported; Gutenberg license headers are removed. |
@@ -55,7 +55,9 @@ the same intent on both platforms. A change to behaviour updates this file in
   sentence's first word (after at most please/oh/now/so/and/but/then/well/no/yes/just), not in a question, is a prohibition. A modal is negative when contracted (n't), "cannot", or followed by "not". A do-form or modal after a comma, followed only by a pronoun and
   "?", is a question tag ("You went, didn't you?"): no verb group.
 - Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end), trimmed.
-- Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals.
+- Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals, each due at the start of that review day (04:00 local time; 01:00 still belongs to the day before); a new word is due at the start of the next review day; "Again" → first box, due now.
+- Marking a saved word in a sentence: its forms (match keys), or a saved group of words, ignoring case.
+- Review session: due words sorted by due time, grouped by book, taken one per book in turn, at most 20.
 - Streak: consecutive days meeting the goal; an unfinished today doesn't break it.
 - Translation language pick: preferred-language list order; skip English and unsupported; `zh-*` → Simplified Chinese; none → ask.
 - Words needing translation: empty translation, or a translation language that is not recorded (words saved before it was) or differs from the current one.
