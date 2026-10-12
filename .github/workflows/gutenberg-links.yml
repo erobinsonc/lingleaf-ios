@@ -1,4 +1,4 @@
-# Weekly: every recommended book's text and cover still download from Project
+# Weekly: every recommended book's text still downloads from Project
 # Gutenberg's file cache (SPEC "Book downloads"). The ids come from SPEC.md, so the
 # check follows the list. A failure opens nothing; it shows as a red run.
 name: Gutenberg links
@@ -23,10 +23,9 @@ jobs:
           test -n "$ids"
           failed=0
           for id in $ids; do
-            for url in "https://www.gutenberg.org/cache/epub/$id/pg$id.txt" "https://www.gutenberg.org/cache/epub/$id/pg$id.cover.medium.jpg"; do
-              status=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 60 "$url")
-              echo "$status $url"
-              [ "$status" = "200" ] || failed=1
-            done
+            url="https://www.gutenberg.org/cache/epub/$id/pg$id.txt"
+            status=$(curl -s -o /dev/null -w '%{http_code}' -L --max-time 60 "$url")
+            echo "$status $url"
+            [ "$status" = "200" ] || failed=1
           done
           exit $failed

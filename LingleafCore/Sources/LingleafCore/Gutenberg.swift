@@ -124,13 +124,13 @@ public struct GutenbergClient: Sendable {
     ].map { id, title, author in
         GutenbergBook(
             id: id, title: title, authors: [.init(name: author)],
-            formats: ["text/plain; charset=utf-8": GutenbergClient.textURL(id), "image/jpeg": GutenbergClient.coverURL(id)]
+            formats: ["text/plain; charset=utf-8": GutenbergClient.textURL(id)]
         )
     }
 
-    /// Project Gutenberg's file cache: the plain-text edition and the medium cover.
+    /// The plain-text edition in Project Gutenberg's file cache. Recommended books show the
+    /// app's drawn cover, as on Android: no request per row, and no text baked into an image.
     public static func textURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).txt" }
-    public static func coverURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).cover.medium.jpg" }
 
     /// The level of each recommended book, easiest first.
     public static let recommended: [(id: Int, level: String)] = [
