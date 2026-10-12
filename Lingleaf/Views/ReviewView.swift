@@ -4,7 +4,7 @@ import LingleafCore
 
 /// Recall-first review of due words with spaced repetition (S7): the word alone, then
 /// "Show meaning" reveals the translation, the sentence it came from and that sentence's
-/// translation; only then "Again" or "Got it".
+/// translation; only then "Again" or "I remembered".
 struct ReviewView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -37,8 +37,7 @@ struct ReviewView: View {
         .onAppear {
             model.translateMissing()
             guard !loaded else { return }
-            queue = model.library.reviewSession()
-            total = queue.count
+            startSession()
             loaded = true
         }
     }
@@ -52,7 +51,7 @@ struct ReviewView: View {
             }
             .buttonStyle(.bordered)
             Button { answer(correct: true) } label: {
-                Text("Got it").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                Text("I remembered").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, minHeight: 44)
             }
             .buttonStyle(.borderedProminent)
@@ -60,16 +59,36 @@ struct ReviewView: View {
         .font(.headline)
     }
 
-    /// "Done for today. 12 more tomorrow."
+    /// "Done for today. 12 more tomorrow.", or, when more words are due now than one
+    /// session holds, "Done for now. 15 more due today." with Keep going.
     private var finished: some View {
+        let dueNow = model.library.dueWords().count
         let tomorrow = model.library.dueByEndOfTomorrow()
         return ContentUnavailableView {
-            Label("Done for today.", systemImage: "checkmark.seal.fill")
+            if dueNow > 0 {
+                Label("Done for now.", systemImage: "checkmark.seal.fill")
+            } else {
+                Label("Done for today.", systemImage: "checkmark.seal.fill")
+            }
         } description: {
-            if tomorrow > 0 { Text("\(tomorrow) more tomorrow.") }
+            if dueNow > 0 {
+                Text("\(dueNow) more due today.")
+            } else if tomorrow > 0 {
+                Text("\(tomorrow) more tomorrow.")
+            }
         } actions: {
             Button("Done") { dismiss() }.buttonStyle(.borderedProminent)
+            if dueNow > 0 {
+                Button("Keep going") { startSession() }.buttonStyle(.bordered)
+            }
         }
+    }
+
+    private func startSession() {
+        queue = model.library.reviewSession()
+        total = queue.count
+        reviewed = 0
+        revealed = false
     }
 
     private func card(_ word: VocabWord) -> some View {
@@ -134,7 +153,8 @@ struct ReviewView: View {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(Self.marked(word.context, word: word.word)).font(readingFont(size: 17)).italic()
                         .fixedSize(horizontal: false, vertical: true)
-                    if let translation = word.contextTranslation {
+                    // Only in the current translation language; another one is translated meanwhile.
+                    if let translation = word.contextTranslation(in: model.targetLanguage) {
                         Text(translation).font(.callout).foregroundStyle(Brand.secondaryText)
                             .fixedSize(horizontal: false, vertical: true)
                     }
@@ -153,23 +173,11 @@ struct ReviewView: View {
         }
     }
 
-    /// `sentence` with the saved word in bold: its inflected forms ("animals" for "animal"),
-    /// or, for a saved group of words, that group.
+    /// `sentence` with the saved word in bold (its forms, or the saved group of words).
     static func marked(_ sentence: String, word: String) -> AttributedString {
         var text = AttributedString(sentence)
-        var ranges: [Range<String.Index>] = []
-        if word.contains(" ") {
-            if let range = sentence.range(of: word, options: [.caseInsensitive, .diacriticInsensitive]) { ranges.append(range) }
-        } else {
-            for wordRange in TextTools.wordRanges(sentence) {
-                let token = TextTools.substring(sentence, wordRange)
-                if TextTools.matchKeys(token).contains(word), let range = Range(wordRange.nsRange, in: sentence) {
-                    ranges.append(range)
-                }
-            }
-        }
-        for range in ranges {
-            guard let marked = Range(range, in: text) else { continue }
+        for range in TextTools.occurrences(of: word, in: sentence) {
+            guard let stringRange = Range(range.nsRange, in: sentence), let marked = Range(stringRange, in: text) else { continue }
             text[marked].inlinePresentationIntent = .stronglyEmphasized
         }
         return text

@@ -206,11 +206,16 @@ final class AppModel {
     /// language (just saved, saved offline, or the language changed). UI tests use
     /// the fake translator; otherwise `TranslationWorker` runs `translatePending`.
     func translateMissing() {
-        guard let target = targetLanguage, !library.wordsNeedingTranslation(target).isEmpty else { return }
+        guard let target = targetLanguage,
+              !library.wordsNeedingTranslation(target).isEmpty || !library.contextsNeedingTranslation(target).isEmpty else { return }
         if let fakeTranslator {
             for word in library.wordsNeedingTranslation(target) {
                 guard let text = try? fakeTranslator(word.word) else { return }
                 library.setTranslation(word.word, text, language: target)
+            }
+            for word in library.contextsNeedingTranslation(target) {
+                guard let text = try? fakeTranslator(word.context) else { return }
+                library.setContextTranslation(word.word, text, language: target)
             }
             return
         }
@@ -228,16 +233,23 @@ final class AppModel {
         guard let target = targetLanguage else { return }
         let language = Locale.Language(identifier: target)
         let words = library.wordsNeedingTranslation(target)
-        guard workerConfiguration?.target == language, !words.isEmpty else { return }
+        let contexts = library.contextsNeedingTranslation(target)
+        guard workerConfiguration?.target == language, !words.isEmpty || !contexts.isEmpty else { return }
         // Only with the language already on the device: in the background the app
         // doesn't ask to download it (the word card does).
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
+        // A saved sentence is told apart from its word by a prefix on the identifier.
         let requests = words.map { TranslationSession.Request(sourceText: $0.word, clientIdentifier: $0.word) }
+            + contexts.map { TranslationSession.Request(sourceText: $0.context, clientIdentifier: "context:\($0.word)") }
         guard let responses = try? await session.translations(from: requests) else { return }
         for response in responses {
-            guard let word = response.clientIdentifier else { continue }
-            library.setTranslation(word, response.targetText, language: target)
+            guard let id = response.clientIdentifier else { continue }
+            if id.hasPrefix("context:") {
+                library.setContextTranslation(String(id.dropFirst("context:".count)), response.targetText, language: target)
+            } else {
+                library.setTranslation(id, response.targetText, language: target)
+            }
         }
     }
 }

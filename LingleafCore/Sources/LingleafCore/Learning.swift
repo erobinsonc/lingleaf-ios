@@ -20,6 +20,10 @@ public enum Srs {
     /// Max words in one review session.
     public static let sessionLimit = 20
 
+    /// Review days start at 04:00 local time, so a word saved late at night still gets a
+    /// night's sleep before its first review.
+    public static let dayStartHour = 4
+
     /// "Got it" moves the word to the next box, due at the start of the day `intervals[box]`
     /// days ahead (reviews land after a night's sleep, at any hour of that day); after the
     /// last box it is learned. "Again" sends it back to the first box, due now (repeated in the session).
@@ -29,10 +33,12 @@ public enum Srs {
         return SrsResult(box: box + 1, nextReview: startOfDay(intervals[box], after: now, calendar: calendar), learned: false)
     }
 
-    /// The start (00:00) of the day `days` after `date`'s day.
+    /// The start (04:00) of the review day `days` after `date`'s review day; a review day
+    /// runs from 04:00 to 04:00, so 01:00 still belongs to the day before.
     public static func startOfDay(_ days: Int, after date: Date, calendar: Calendar = .current) -> Date {
-        let today = calendar.startOfDay(for: date)
-        return calendar.date(byAdding: .day, value: days, to: today) ?? today
+        let shifted = calendar.date(byAdding: .hour, value: -dayStartHour, to: date) ?? date
+        let day = calendar.date(byAdding: .day, value: days, to: calendar.startOfDay(for: shifted)) ?? shifted
+        return calendar.date(byAdding: .hour, value: dayStartHour, to: day) ?? day
     }
 
     /// Up to `limit` words, interleaved by source (book) so one book doesn't fill the

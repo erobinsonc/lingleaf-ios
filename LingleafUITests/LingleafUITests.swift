@@ -37,12 +37,16 @@ final class LingleafUITests: XCTestCase {
         app.tabBars.buttons["Words"].tap()
         button(startingWith: "Review now").tap()
         XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.buttons["Got it"].exists, "recall first: no answers before the meaning")
+        XCTAssertFalse(app.buttons["I remembered"].exists, "recall first: no answers before the meaning")
         XCTAssertFalse(app.staticTexts["ES: sea"].exists)
         app.buttons["Show meaning"].tap()
         XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["ES: Tom lives in a small house by the sea."].exists, "the sentence's translation")
-        app.buttons["Got it"].tap()
+        // "Again" repeats the word in the session, recall first again.
+        app.buttons["Again"].tap()
+        XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
+        app.buttons["Show meaning"].tap()
+        app.buttons["I remembered"].tap()
         XCTAssertTrue(app.staticTexts["Done for today."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["1 more tomorrow."].exists, "the word is due again tomorrow")
     }

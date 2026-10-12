@@ -67,6 +67,52 @@
         }
       }
     },
+    "%lld more due today.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more due today."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more due today."
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Queda %lld para hoy."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Quedan %lld para hoy."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Quedan %lld para hoy."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld more tomorrow.": {
       "localizations": {
         "en": {
@@ -350,6 +396,16 @@
         }
       }
     },
+    "Done for now.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listo por ahora."
+          }
+        }
+      }
+    },
     "Done for today.": {
       "localizations": {
         "es": {
@@ -420,22 +476,22 @@
         }
       }
     },
-    "Got it": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lo recordé"
-          }
-        }
-      }
-    },
     "I know it": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Ya la sé"
+          }
+        }
+      }
+    },
+    "I remembered": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo recordé"
           }
         }
       }
@@ -466,6 +522,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En tu biblioteca"
+          }
+        }
+      }
+    },
+    "Keep going": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seguir"
           }
         }
       }

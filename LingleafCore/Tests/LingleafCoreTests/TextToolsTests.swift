@@ -48,6 +48,14 @@ final class TextToolsTests: XCTestCase {
         XCTAssertTrue(TextTools.baseFormCandidates("glass").isEmpty)
     }
 
+    func testOccurrencesFindTheSavedWordOrGroupInASentence() {
+        let sentence = "All animals are equal, but some animal is more equal."
+        XCTAssertEqual(TextTools.occurrences(of: "animal", in: sentence).map { TextTools.substring(sentence, $0) }, ["animals", "animal"])
+        let group = "He did NOT go home."
+        XCTAssertEqual(TextTools.occurrences(of: "did not go", in: group).map { TextTools.substring(group, $0) }, ["did NOT go"])
+        XCTAssertTrue(TextTools.occurrences(of: "can we fix", in: group).isEmpty)
+    }
+
     func testMatchKeysLinkInflectedFormsToTheBaseWord() {
         XCTAssertTrue(TextTools.matchKeys("Animals").isSuperset(of: ["animals", "animal"]))
         XCTAssertTrue(TextTools.matchKeys("was").contains("be"))
@@ -66,7 +74,14 @@ final class LearningTests: XCTestCase {
     func testCorrectAnswerMovesToTheNextBox() {
         let now = date("2026-10-09T08:00:00Z")
         XCTAssertEqual(Srs.review(box: 0, correct: true, now: now, calendar: calendar),
-                       SrsResult(box: 1, nextReview: date("2026-10-10T00:00:00Z"), learned: false), "due from the start of the next day")
+                       SrsResult(box: 1, nextReview: date("2026-10-10T04:00:00Z"), learned: false), "due from the start (04:00) of the next day")
+    }
+
+    func testReviewDaysStartAtFourInTheMorning() {
+        XCTAssertEqual(Srs.startOfDay(1, after: date("2026-10-09T23:50:00Z"), calendar: calendar), date("2026-10-10T04:00:00Z"))
+        XCTAssertEqual(Srs.startOfDay(1, after: date("2026-10-10T01:00:00Z"), calendar: calendar), date("2026-10-10T04:00:00Z"),
+                       "01:00 still belongs to the day before")
+        XCTAssertEqual(Srs.startOfDay(1, after: date("2026-10-10T04:00:00Z"), calendar: calendar), date("2026-10-11T04:00:00Z"))
     }
 
     func testWrongAnswerResets() {

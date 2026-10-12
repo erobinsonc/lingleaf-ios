@@ -74,8 +74,8 @@ final class LibraryTests: XCTestCase {
         XCTAssertTrue(library.isLearning("animals"))
         XCTAssertFalse(library.isLearning("equal"))
         XCTAssertTrue(library.dueWords().isEmpty, "a new word is first reviewed tomorrow")
-        now = ISO8601DateFormatter().date(from: "2026-10-10T00:00:00Z")!
-        XCTAssertEqual(library.dueWords().map(\.word), ["animal"], "due from 00:00 the next day")
+        now = ISO8601DateFormatter().date(from: "2026-10-10T04:00:00Z")!
+        XCTAssertEqual(library.dueWords().map(\.word), ["animal"], "due from 04:00 the next day")
 
         library.saveWord("animal", learned: true, translation: " ")
         XCTAssertFalse(library.isLearning("animals"))
@@ -122,7 +122,7 @@ final class LibraryTests: XCTestCase {
         let saved = library.state.word("bay")
         XCTAssertEqual(saved?.learned, false)
         XCTAssertEqual(saved?.box, 0)
-        XCTAssertEqual(saved?.nextReview, ISO8601DateFormatter().date(from: "2026-10-10T00:00:00Z"), "back to a first review tomorrow")
+        XCTAssertEqual(saved?.nextReview, ISO8601DateFormatter().date(from: "2026-10-10T04:00:00Z"), "back to a first review tomorrow")
     }
 
     func testReviewSessionInterleavesBooksAndCountsTomorrow() {
@@ -148,11 +148,20 @@ final class LibraryTests: XCTestCase {
 
     func testContextTranslationIsKeptWithItsSentence() {
         let library = library()
-        library.saveWord("sea", learned: false, context: "By the sea.", contextTranslation: "Junto al mar.")
+        library.saveWord("sea", learned: false, translationLanguage: "es", context: "By the sea.", contextTranslation: "Junto al mar.")
         library.saveWord("sea", learned: false, contextTranslation: nil)
         XCTAssertEqual(library.state.word("sea")?.contextTranslation, "Junto al mar.")
         library.saveWord("sea", learned: false, context: "The sea is blue.")
         XCTAssertNil(library.state.word("sea")?.contextTranslation, "a new sentence drops the old translation")
+        XCTAssertEqual(library.contextsNeedingTranslation("es").map(\.word), ["sea"])
+        library.setContextTranslation("sea", "El mar es azul.", language: "es")
+        library.setContextTranslation("sea", " ", language: "es")
+        library.setContextTranslation("missing", "x", language: "es")
+        let sea = self.library().state.word("sea")
+        XCTAssertEqual(sea?.contextTranslation(in: "es"), "El mar es azul.")
+        XCTAssertNil(sea?.contextTranslation(in: "pt"), "another language needs its own translation")
+        XCTAssertTrue(library.contextsNeedingTranslation("es").isEmpty)
+        XCTAssertEqual(library.contextsNeedingTranslation("pt").map(\.word), ["sea"])
     }
 
     func testSaveWordReturnsThePreviousRecordAndRestoreWordPutsItBack() {

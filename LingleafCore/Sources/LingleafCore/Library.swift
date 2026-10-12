@@ -26,8 +26,15 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var translationLanguage: String?
     public var phonetic: String
     public var context: String
-    /// The translation of `context`, when the card had it at save time.
+    /// The translation of `context`, and the language it is in; filled in later when the
+    /// card didn't have it, and again when the translation language changes.
     public var contextTranslation: String?
+    public var contextTranslationLanguage: String?
+
+    /// `contextTranslation` when it is in `language`.
+    public func contextTranslation(in language: String?) -> String? {
+        contextTranslationLanguage == language ? contextTranslation : nil
+    }
     public var source: String
     public var learned: Bool
     public var box: Int
@@ -220,10 +227,12 @@ public final class Library {
     /// Today's review session: at most `Srs.sessionLimit` due words, interleaved by book.
     public func reviewSession() -> [VocabWord] { Srs.session(dueWords()) }
 
-    /// Words being learned that are due by the end of tomorrow, for "12 more tomorrow".
+    /// Words being learned that come due before the end of tomorrow (not those due now),
+    /// for "12 more tomorrow".
     public func dueByEndOfTomorrow() -> Int {
-        let end = Srs.startOfDay(2, after: now(), calendar: calendar)
-        return state.words.filter { !$0.learned && $0.nextReview < end }.count
+        let now = now()
+        let end = Srs.startOfDay(2, after: now, calendar: calendar)
+        return state.words.filter { !$0.learned && $0.nextReview > now && $0.nextReview < end }.count
     }
 
     public func isLearning(_ token: String) -> Bool {
@@ -257,10 +266,16 @@ public final class Library {
         }
         if let phonetic, !phonetic.isEmpty { entry.phonetic = phonetic }
         if !context.isEmpty {
-            if context != entry.context { entry.contextTranslation = nil }
+            if context != entry.context {
+                entry.contextTranslation = nil
+                entry.contextTranslationLanguage = nil
+            }
             entry.context = context
         }
-        if let contextTranslation, !contextTranslation.isEmpty { entry.contextTranslation = contextTranslation }
+        if let contextTranslation, !contextTranslation.isEmpty {
+            entry.contextTranslation = contextTranslation
+            entry.contextTranslationLanguage = translationLanguage
+        }
         if !source.isEmpty { entry.source = source }
         replace(entry)
         return existing
@@ -286,6 +301,21 @@ public final class Library {
         entry.translation = text
         entry.translationLanguage = language
         replace(entry)
+    }
+
+    /// Records the translation of a word's sentence that arrived after it was saved.
+    public func setContextTranslation(_ word: String, _ text: String, language: String) {
+        let key = TextTools.normalize(word)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              var entry = state.words.first(where: { $0.word == key }), !entry.context.isEmpty else { return }
+        entry.contextTranslation = text
+        entry.contextTranslationLanguage = language
+        replace(entry)
+    }
+
+    /// Words whose sentence has no translation into `target` yet.
+    public func contextsNeedingTranslation(_ target: String) -> [VocabWord] {
+        state.words.filter { !$0.context.isEmpty && $0.contextTranslation(in: target) == nil }
     }
 
     /// Words to translate into `target`: no translation yet, or one recorded in
