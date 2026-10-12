@@ -97,7 +97,9 @@ final class AppModel {
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
             if url.contains("gutendex") { return HttpResponse(status: 200, text: fakeCatalog) }
-            if url.contains("gutenberg.org/ebooks/") { return HttpResponse(status: 200, text: fakeBookText) }
+            // Peter Pan is "not available right now", to show that message.
+            if url.contains("gutenberg.org/cache/epub/16/") { return HttpResponse(status: 404, text: "") }
+            if url.contains("gutenberg.org/cache/epub/") { return HttpResponse(status: 200, text: fakeBookText) }
             guard url.contains("dictionaryapi.dev") else { return HttpResponse(status: 404, text: "") }
             let word = url.split(separator: "/").last.map(String.init) ?? ""
             let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Definition of \#(word)."}]}]}]"#

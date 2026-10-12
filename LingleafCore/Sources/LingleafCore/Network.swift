@@ -22,12 +22,33 @@ public struct HttpResponse: Sendable {
 /// Minimal HTTP abstraction so network code stays testable without a server.
 public protocol HttpFetcher: Sendable {
     func get(_ url: String) async throws -> HttpResponse
+    /// Like `get`, reporting progress (0…1) while the body arrives.
+    func get(_ url: String, progress: (@Sendable (Double) -> Void)?) async throws -> HttpResponse
+}
+
+extension HttpFetcher {
+    public func get(_ url: String, progress: (@Sendable (Double) -> Void)?) async throws -> HttpResponse {
+        let response = try await get(url)
+        progress?(1)
+        return response
+    }
 }
 
 public struct NetworkError: Error, Equatable {
-    public let message: String
+    public enum Kind: Equatable, Sendable {
+        /// No internet connection.
+        case offline
+        case timedOut
+        case other
+    }
 
-    public init(_ message: String) { self.message = message }
+    public let message: String
+    public let kind: Kind
+
+    public init(_ message: String, kind: Kind = .other) {
+        self.message = message
+        self.kind = kind
+    }
 }
 
 /// Wraps a closure; handy for tests and previews.
@@ -56,16 +77,64 @@ public struct URLSessionFetcher: HttpFetcher {
     public init(maxBytes: Int = Limits.maxBytes) { self.maxBytes = maxBytes }
 
     public func get(_ url: String) async throws -> HttpResponse {
+        try await get(url, progress: nil)
+    }
+
+    /// Downloads the whole body in one go (not byte by byte), with progress from the
+    /// task. 30 s without data times out; cancelling the calling task cancels the request.
+    public func get(_ url: String, progress: (@Sendable (Double) -> Void)?) async throws -> HttpResponse {
         guard url.hasPrefix("https://"), let address = URL(string: url) else { throw NetworkError("Only HTTPS is allowed") }
         var request = URLRequest(url: address, timeoutInterval: 30)
         request.setValue("Lingleaf/0.1 (+https://github.com/erobinsonc/lingleaf-ios)", forHTTPHeaderField: "User-Agent")
-        let (bytes, response) = try await URLSession.shared.bytes(for: request)
-        guard response.expectedContentLength <= Int64(maxBytes) else { throw NetworkError("Response too large") }
-        var data = Data()
-        for try await byte in bytes {
-            data.append(byte)
-            if data.count > maxBytes { throw NetworkError("Response too large") }
+        let data: Data
+        let response: URLResponse
+        let observer = ProgressObserver(maxBytes: maxBytes, progress: progress)
+        do {
+            (data, response) = try await URLSession.shared.data(for: request, delegate: observer)
+        } catch let error as URLError {
+            throw observer.tooLarge ? NetworkError("Response too large") : Self.networkError(error)
         }
+        guard data.count <= maxBytes else { throw NetworkError("Response too large") }
+        progress?(1)
         return HttpResponse(status: (response as? HTTPURLResponse)?.statusCode ?? 0, body: data)
+    }
+
+    static func networkError(_ error: URLError) -> Error {
+        switch error.code {
+        case .cancelled:
+            return CancellationError()
+        case .notConnectedToInternet, .networkConnectionLost, .dataNotAllowed, .internationalRoamingOff:
+            return NetworkError(error.localizedDescription, kind: .offline)
+        case .timedOut:
+            return NetworkError(error.localizedDescription, kind: .timedOut)
+        default:
+            return NetworkError(error.localizedDescription)
+        }
+    }
+}
+
+/// Follows the request's progress and cancels it once it passes `maxBytes`.
+private final class ProgressObserver: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
+    private let maxBytes: Int
+    private let progress: (@Sendable (Double) -> Void)?
+    private var observation: NSKeyValueObservation?
+    /// Set when the body passed `maxBytes` and the request was cancelled for it.
+    private(set) var tooLarge = false
+
+    init(maxBytes: Int, progress: (@Sendable (Double) -> Void)?) {
+        self.maxBytes = maxBytes
+        self.progress = progress
+    }
+
+    func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
+        let maxBytes = Int64(maxBytes)
+        let progress = progress
+        observation = task.progress.observe(\.completedUnitCount) { [weak self, weak task] value, _ in
+            if value.completedUnitCount > maxBytes {
+                self?.tooLarge = true
+                task?.cancel()
+            }
+            if value.totalUnitCount > 0 { progress?(value.fractionCompleted) }
+        }
     }
 }

@@ -4,6 +4,8 @@ import Foundation
 public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
     public struct Person: Decodable, Hashable, Sendable {
         public let name: String
+
+        public init(name: String) { self.name = name }
     }
 
     public let id: Int
@@ -53,11 +55,42 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
 
     public var coverURL: URL? { formats["image/jpeg"].flatMap(URL.init(string:)) }
 
+    /// The plain-text edition, straight from Project Gutenberg's file cache: the catalog's
+    /// "ebooks/<id>.txt.utf-8" links redirect there, and every hop is another chance to fail.
+    /// Nil when the catalog lists no plain-text edition.
     public var textURL: String? {
-        let candidates = formats
-            .filter { $0.key.hasPrefix("text/plain") && !$0.value.hasSuffix(".zip") }
-            .sorted { $0.key < $1.key }
-        return (candidates.first { $0.key.contains("utf-8") } ?? candidates.first)?.value
+        guard formats.contains(where: { $0.key.hasPrefix("text/plain") && !$0.value.hasSuffix(".zip") }) else { return nil }
+        return GutenbergClient.textURL(id)
+    }
+}
+
+/// Why talking to Project Gutenberg failed, so the learner gets the right message and action.
+public enum GutenbergError: Error, Equatable, Sendable {
+    /// No internet connection.
+    case offline
+    /// The server didn't answer in time.
+    case timedOut
+    /// The book can't be had right now (403, 404, 410, no plain text, or empty).
+    case unavailable
+    /// Anything else (5xx, a broken answer).
+    case failed
+
+    init(_ error: Error) {
+        if let error = error as? GutenbergError {
+            self = error
+        } else if let error = error as? NetworkError {
+            switch error.kind {
+            case .offline: self = .offline
+            case .timedOut: self = .timedOut
+            case .other: self = .failed
+            }
+        } else {
+            self = .failed
+        }
+    }
+
+    init(status: Int) {
+        self = [403, 404, 410].contains(status) ? .unavailable : .failed
     }
 }
 
@@ -69,7 +102,37 @@ public struct GutenbergClient: Sendable {
     private let http: HttpFetcher
     private static let base = "https://gutendex.com/books"
 
-    /// Hand-picked classics with a CEFR level hint, easiest first.
+    /// Hand-picked classics with a CEFR level hint, easiest first. Shipped with the app
+    /// (title, author, level), so Discover shows them at once and without the catalog.
+    public static let recommendedBooks: [GutenbergBook] = [
+        (21, "Aesop's Fables", "Aesop"),
+        (55, "The Wonderful Wizard of Oz", "Baum, L. Frank"),
+        (16, "Peter Pan", "Barrie, J. M."),
+        (236, "The Jungle Book", "Kipling, Rudyard"),
+        (11, "Alice's Adventures in Wonderland", "Carroll, Lewis"),
+        (74, "The Adventures of Tom Sawyer", "Twain, Mark"),
+        (120, "Treasure Island", "Stevenson, Robert Louis"),
+        (1661, "The Adventures of Sherlock Holmes", "Doyle, Arthur Conan"),
+        (1342, "Pride and Prejudice", "Austen, Jane"),
+        (84, "Frankenstein", "Shelley, Mary Wollstonecraft"),
+        (174, "The Picture of Dorian Gray", "Wilde, Oscar"),
+        (1400, "Great Expectations", "Dickens, Charles"),
+        (345, "Dracula", "Stoker, Bram"),
+        (2701, "Moby-Dick", "Melville, Herman"),
+        (219, "Heart of Darkness", "Conrad, Joseph"),
+        (145, "Middlemarch", "Eliot, George"),
+    ].map { id, title, author in
+        GutenbergBook(
+            id: id, title: title, authors: [.init(name: author)],
+            formats: ["text/plain; charset=utf-8": GutenbergClient.textURL(id), "image/jpeg": GutenbergClient.coverURL(id)]
+        )
+    }
+
+    /// Project Gutenberg's file cache: the plain-text edition and the medium cover.
+    public static func textURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).txt" }
+    public static func coverURL(_ id: Int) -> String { "https://www.gutenberg.org/cache/epub/\(id)/pg\(id).cover.medium.jpg" }
+
+    /// The level of each recommended book, easiest first.
     public static let recommended: [(id: Int, level: String)] = [
         (21, "A2"), // Aesop's Fables
         (55, "B1"), // The Wonderful Wizard of Oz
@@ -102,30 +165,38 @@ public struct GutenbergClient: Sendable {
         return books.filter { Self.level(for: $0.id) == level }
     }
 
+    /// Searches the catalog by title or author. Throws `GutenbergError`; cancelling the task cancels the request.
     public func search(_ query: String) async throws -> [GutenbergBook] {
         let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
-        return try await fetch("\(Self.base)?languages=en&search=\(encoded)")
+        let response = try await call { try await http.get("\(Self.base)?languages=en&search=\(encoded)") }
+        guard response.status == 200 else { throw GutenbergError(status: response.status) }
+        do {
+            return try JSONDecoder().decode(GutendexResponse.self, from: response.body).results
+        } catch {
+            throw GutenbergError.failed
+        }
     }
 
-    public func fetchRecommended() async throws -> [GutenbergBook] {
-        let ids = Self.recommended.map(\.id)
-        let books = try await fetch("\(Self.base)?ids=\(ids.map(String.init).joined(separator: ","))")
-        return books.sorted { (ids.firstIndex(of: $0.id) ?? .max) < (ids.firstIndex(of: $1.id) ?? .max) }
-    }
-
-    public func downloadText(_ book: GutenbergBook) async throws -> String {
-        guard let url = book.textURL else { throw NetworkError("No plain-text edition") }
-        let response = try await http.get(url)
-        guard response.status == 200 else { throw NetworkError("HTTP \(response.status)") }
+    /// The book's text without the license header and footer, reporting progress (0…1)
+    /// while it downloads. Throws `GutenbergError`; cancelling the task cancels the download.
+    public func downloadText(_ book: GutenbergBook, progress: (@Sendable (Double) -> Void)? = nil) async throws -> String {
+        guard let url = book.textURL else { throw GutenbergError.unavailable }
+        let response = try await call { try await http.get(url, progress: progress) }
+        guard response.status == 200 else { throw GutenbergError(status: response.status) }
         let text = Self.stripBoilerplate(response.text)
-        guard !text.isEmpty else { throw NetworkError("Empty book") }
+        guard !text.isEmpty else { throw GutenbergError.unavailable }
         return text
     }
 
-    private func fetch(_ url: String) async throws -> [GutenbergBook] {
-        let response = try await http.get(url)
-        guard response.status == 200 else { throw NetworkError("HTTP \(response.status)") }
-        return try JSONDecoder().decode(GutendexResponse.self, from: response.body).results
+    /// Runs a request, turning its errors into `GutenbergError` (cancellation passes through).
+    private func call(_ request: () async throws -> HttpResponse) async throws -> HttpResponse {
+        do {
+            return try await request()
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch {
+            throw GutenbergError(error)
+        }
     }
 
     /// Removes the Project Gutenberg license header and footer.

@@ -10,8 +10,8 @@ the same intent on both platforms. A change to behaviour updates this file in
 
 - Learn English by reading real books. The reader is the product.
 - No accounts, ads or tracking. Data stays on the device.
-- Network only for: the Gutenberg catalog and downloads (`gutendex.com`,
-  `gutenberg.org`) and word definitions (`api.dictionaryapi.dev`). HTTPS only.
+- Network only for: Gutenberg search (`gutendex.com`), book downloads and covers
+  (`www.gutenberg.org/cache/epub/`) and word definitions (`api.dictionaryapi.dev`). HTTPS only.
 - Translation runs on the device (Apple Translation on iOS, Google ML Kit on Android).
 - Interface in English and Spanish; more languages welcome.
 
@@ -27,7 +27,7 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S6 | Listen | Word, sentence and paragraph can be read aloud with an English voice. |
 | S7 | Review | Due words appear as flashcards; "I know it" schedules them 1, 3, 7, 14, 30 days out, then marks them learned; "Again" repeats them. |
 | S8 | Daily goal | Reading time counts while the reader is open; the card shows minutes today and the streak (days meeting the goal). |
-| S9 | Discover | Recommended classics with a level, search by title/author, one-tap download into the library. |
+| S9 | Discover | The recommended classics ship with the app (title, author, level) and show at once; covers load from Project Gutenberg. Search by title/author shows "Searching Project Gutenberg…", after 8 s also "Still searching. Project Gutenberg can be slow." with Cancel; a new search cancels the previous one; a failed search says "You're offline. Connect to the internet to search." or "Project Gutenberg didn't answer. Try again." with Retry, and the recommended books stay below. "Get" downloads the plain text straight from Project Gutenberg's file cache with a progress ring (tapping it cancels) and turns into "Read", which opens the book; a failed download says why in its row ("This book isn't available right now." for 403/404/410 or an empty book; offline; "Project Gutenberg didn't answer. Try again.") with Retry when it may pass. |
 | S10 | Import | A plain-text `.txt` file can be imported; Gutenberg license headers are removed. |
 | S11 | Settings | Daily goal, text size, speech speed and translation language persist. "Translate into" shows "Ask me when I tap a word" until a language is chosen. |
 | S12 | Offline | Without internet the reader, saved words and review work; the card says translation/definition are unavailable (a platform may name the reason, e.g. Android needs Wi‑Fi once to download the language). Saving a word never waits for translation; a missing translation is filled in on the device as soon as it is available, and Review shows "No translation yet. Connect to the internet once to get it." until then. |
@@ -44,6 +44,7 @@ the same intent on both platforms. A change to behaviour updates this file in
 - Streak: consecutive days meeting the goal; an unfinished today doesn't break it.
 - Translation language pick: preferred-language list order; skip English and unsupported; `zh-*` → Simplified Chinese; none → ask.
 - Words needing translation: empty translation, or a translation language that is not recorded (words saved before it was) or differs from the current one.
+- Book downloads: `https://www.gutenberg.org/cache/epub/{id}/pg{id}.txt`; covers `…/pg{id}.cover.medium.jpg`. A weekly CI job checks every recommended link.
 - Recommended books (Gutenberg id, level), easiest first: A2 21; B1 55, 16, 236; B2 11, 74, 120, 1661;
   C1 1342, 84, 174, 1400, 345; C2 2701, 219, 145. Levels: A1, A2, B1, B2, C1, C2. The level filter keeps order.
 - Imported .txt: title is the file name without its extension (empty → "Book"); Gutenberg header/footer removed; files over 10 MB or with no text are refused.

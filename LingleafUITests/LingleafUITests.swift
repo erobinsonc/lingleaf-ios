@@ -87,19 +87,21 @@ final class LingleafUITests: XCTestCase {
         )
     }
 
-    /// S9 Discover: one tap downloads a recommended book (fake catalog and fake
-    /// Gutenberg text, see `AppModel.uiTesting`) into the library.
+    /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.
     func testDownloadABookFromDiscover() {
         app.tabBars.buttons["Discover"].tap()
         let get = app.buttons["Get Aesop's Fables"]
-        XCTAssertTrue(get.waitForExistence(timeout: 10), "the fake catalog lists Aesop's Fables")
+        XCTAssertTrue(get.waitForExistence(timeout: 10), "recommended books are there at once")
         get.tap()
+        let read = app.buttons["Read Aesop's Fables"]
+        XCTAssertTrue(read.waitForExistence(timeout: 10), "Get turns into Read")
 
-        let alert = app.alerts.matching(NSPredicate(format: "label CONTAINS %@", "is in your library")).firstMatch
-        XCTAssertTrue(alert.waitForExistence(timeout: 10), "the download is confirmed")
-        alert.buttons["OK"].tap()
-        XCTAssertTrue(alert.waitForNonExistence(timeout: 5))
+        app.buttons["Get Peter Pan"].tap()
+        XCTAssertTrue(app.staticTexts["This book isn't available right now."].waitForExistence(timeout: 10))
 
+        read.tap()
+        XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the book")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
         app.tabBars.buttons["Library"].tap()
         XCTAssertTrue(button(startingWith: "Aesop's Fables").exists, "the book is in the library")
     }
