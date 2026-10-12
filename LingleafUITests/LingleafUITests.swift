@@ -31,21 +31,26 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "ES: beach")).firstMatch.exists)
     }
 
+    /// S7: recall first; the meaning brings the sentence, its translation and the answers.
     func testReviewAWord() {
-        button(startingWith: "The Red Boat").tap()
-        let word = app.links["sea"].firstMatch
-        XCTAssertTrue(word.waitForExistence(timeout: 10))
-        word.tap()
-        XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
-        app.buttons["Save word"].tap()
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-
+        relaunch("-ui-testing", "-ui-testing-due")
         app.tabBars.buttons["Words"].tap()
         button(startingWith: "Review now").tap()
+        XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["Got it"].exists, "recall first: no answers before the meaning")
+        XCTAssertFalse(app.staticTexts["ES: sea"].exists)
         app.buttons["Show meaning"].tap()
-        XCTAssertTrue(app.staticTexts["ES: sea"].exists)
-        app.buttons["I know it"].tap()
-        XCTAssertTrue(app.staticTexts["All done!"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["ES: Tom lives in a small house by the sea."].exists, "the sentence's translation")
+        app.buttons["Got it"].tap()
+        XCTAssertTrue(app.staticTexts["Done for today."].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["1 more tomorrow."].exists, "the word is due again tomorrow")
+    }
+
+    private func relaunch(_ arguments: String...) {
+        app.terminate()
+        app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
     }
 
     func testFilterRecommendedBooksByLevel() {
@@ -132,19 +137,7 @@ final class LingleafUITests: XCTestCase {
 
     /// S12: a word saved offline has no translation yet; Review says so when the meaning is shown.
     func testReviewSaysWhenAWordHasNoTranslationYet() {
-        app.terminate()
-        app.launchArguments = ["-ui-testing-offline", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
-        app.launch()
-
-        button(startingWith: "The Red Boat").tap()
-        let word = app.links["beach"].firstMatch
-        XCTAssertTrue(word.waitForExistence(timeout: 10))
-        word.tap()
-        XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
-        app.buttons["Save word"].tap()
-        XCTAssertTrue(app.buttons["Save word"].waitForNonExistence(timeout: 10))
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-
+        relaunch("-ui-testing-offline", "-ui-testing-due")
         app.tabBars.buttons["Words"].tap()
         button(startingWith: "Review now").tap()
         XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
@@ -328,11 +321,14 @@ final class LingleafUITests: XCTestCase {
         app.tabBars.buttons["Words"].tap()
         XCTAssertTrue(element(labelled: "beach").waitForExistence(timeout: 5))
         try audit("Words with a word")
+        // New words are first due tomorrow: a word due now comes from the test launch argument.
+        relaunch("-ui-testing", "-ui-testing-due")
+        app.tabBars.buttons["Words"].tap()
         button(startingWith: "Review now").tap()
         XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
         try audit("Review")
         app.buttons["Show meaning"].tap()
-        XCTAssertTrue(app.staticTexts["ES: beach"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
         try audit("Review with the meaning")
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
     }

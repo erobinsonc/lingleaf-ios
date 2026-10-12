@@ -66,7 +66,7 @@ final class LearningTests: XCTestCase {
     func testCorrectAnswerMovesToTheNextBox() {
         let now = date("2026-10-09T08:00:00Z")
         XCTAssertEqual(Srs.review(box: 0, correct: true, now: now, calendar: calendar),
-                       SrsResult(box: 1, nextReview: date("2026-10-10T08:00:00Z"), learned: false))
+                       SrsResult(box: 1, nextReview: date("2026-10-10T00:00:00Z"), learned: false), "due from the start of the next day")
     }
 
     func testWrongAnswerResets() {

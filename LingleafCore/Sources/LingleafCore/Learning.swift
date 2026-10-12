@@ -17,12 +17,44 @@ public enum Srs {
     /// Days until the next review for each box.
     public static let intervals = [1, 3, 7, 14, 30]
 
+    /// Max words in one review session.
+    public static let sessionLimit = 20
+
+    /// "Got it" moves the word to the next box, due at the start of the day `intervals[box]`
+    /// days ahead (reviews land after a night's sleep, at any hour of that day); after the
+    /// last box it is learned. "Again" sends it back to the first box, due now (repeated in the session).
     public static func review(box: Int, correct: Bool, now: Date, calendar: Calendar = .current) -> SrsResult {
         guard correct else { return SrsResult(box: 0, nextReview: now, learned: false) }
-        guard box < intervals.count,
-              let next = calendar.date(byAdding: .day, value: intervals[box], to: now)
-        else { return SrsResult(box: box, nextReview: now, learned: true) }
-        return SrsResult(box: box + 1, nextReview: next, learned: false)
+        guard box < intervals.count else { return SrsResult(box: box, nextReview: now, learned: true) }
+        return SrsResult(box: box + 1, nextReview: startOfDay(intervals[box], after: now, calendar: calendar), learned: false)
+    }
+
+    /// The start (00:00) of the day `days` after `date`'s day.
+    public static func startOfDay(_ days: Int, after date: Date, calendar: Calendar = .current) -> Date {
+        let today = calendar.startOfDay(for: date)
+        return calendar.date(byAdding: .day, value: days, to: today) ?? today
+    }
+
+    /// Up to `limit` words, interleaved by source (book) so one book doesn't fill the
+    /// session; within a book, the longest-due first.
+    public static func session(_ due: [VocabWord], limit: Int = sessionLimit) -> [VocabWord] {
+        var bySource: [(String, [VocabWord])] = []
+        for word in due.sorted(by: { $0.nextReview < $1.nextReview }) {
+            if let index = bySource.firstIndex(where: { $0.0 == word.source }) {
+                bySource[index].1.append(word)
+            } else {
+                bySource.append((word.source, [word]))
+            }
+        }
+        var out: [VocabWord] = []
+        var round = 0
+        while out.count < limit, bySource.contains(where: { $0.1.count > round }) {
+            for (_, words) in bySource where round < words.count && out.count < limit {
+                out.append(words[round])
+            }
+            round += 1
+        }
+        return out
     }
 }
 

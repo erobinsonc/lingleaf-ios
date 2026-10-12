@@ -67,6 +67,52 @@
         }
       }
     },
+    "%lld more tomorrow.": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more tomorrow."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld more tomorrow."
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld más mañana."
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld más mañana."
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld más mañana."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld of %lld": {
       "localizations": {
         "es": {
@@ -159,16 +205,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Todos"
-          }
-        }
-      }
-    },
-    "All done!": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "¡Listo!"
           }
         }
       }
@@ -314,6 +350,16 @@
         }
       }
     },
+    "Done for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listo por hoy."
+          }
+        }
+      }
+    },
     "Downloading": {
       "localizations": {
         "es": {
@@ -370,6 +416,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Consigue un libro en Descubrir o importa un archivo .txt."
+          }
+        }
+      }
+    },
+    "Got it": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo recordé"
           }
         }
       }
@@ -980,52 +1036,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Palabras"
-          }
-        }
-      }
-    },
-    "You reviewed %lld words.": {
-      "localizations": {
-        "en": {
-          "variations": {
-            "plural": {
-              "one": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "You reviewed %lld word."
-                }
-              },
-              "other": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "You reviewed %lld words."
-                }
-              }
-            }
-          }
-        },
-        "es": {
-          "variations": {
-            "plural": {
-              "one": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "Repasaste %lld palabra."
-                }
-              },
-              "many": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "Repasaste %lld palabras."
-                }
-              },
-              "other": {
-                "stringUnit": {
-                  "state": "translated",
-                  "value": "Repasaste %lld palabras."
-                }
-              }
-            }
           }
         }
       }

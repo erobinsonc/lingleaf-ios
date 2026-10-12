@@ -40,7 +40,7 @@ final class ScreenTour: XCTestCase {
         XCUIDevice.shared.appearance = dark ? .dark : .light
         prefix = "\(labels.language)-\(dark ? "dark" : "light")"
         app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
+        app.launchArguments = ["-ui-testing", "-ui-testing-due", "-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
             + (dark ? ["-dark-mode"] : [])
         app.launch()
 

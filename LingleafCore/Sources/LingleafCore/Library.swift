@@ -26,6 +26,8 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var translationLanguage: String?
     public var phonetic: String
     public var context: String
+    /// The translation of `context`, when the card had it at save time.
+    public var contextTranslation: String?
     public var source: String
     public var learned: Bool
     public var box: Int
@@ -215,6 +217,15 @@ public final class Library {
         return state.words.filter { $0.isDue(now) }.sorted { $0.nextReview < $1.nextReview }
     }
 
+    /// Today's review session: at most `Srs.sessionLimit` due words, interleaved by book.
+    public func reviewSession() -> [VocabWord] { Srs.session(dueWords()) }
+
+    /// Words being learned that are due by the end of tomorrow, for "12 more tomorrow".
+    public func dueByEndOfTomorrow() -> Int {
+        let end = Srs.startOfDay(2, after: now(), calendar: calendar)
+        return state.words.filter { !$0.learned && $0.nextReview < end }.count
+    }
+
     public func isLearning(_ token: String) -> Bool {
         let learning = state.learningWords
         return !learning.isEmpty && !TextTools.matchKeys(token).isDisjoint(with: learning)
@@ -226,7 +237,7 @@ public final class Library {
     @discardableResult
     public func saveWord(
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
-        phonetic: String? = nil, context: String = "", source: String = ""
+        phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = ""
     ) -> VocabWord? {
         let key = TextTools.normalize(word)
         let existing = state.words.first { $0.word == key }
@@ -234,9 +245,10 @@ public final class Library {
             word: key, translation: "", translationLanguage: nil, phonetic: "", context: "", source: "",
             learned: learned, box: 0, createdAt: now(), nextReview: now()
         )
+        // A new word is first reviewed tomorrow, after a night's sleep (S7).
         if !learned, existing == nil || existing?.learned == true {
             entry.box = 0
-            entry.nextReview = now()
+            entry.nextReview = Srs.startOfDay(1, after: now(), calendar: calendar)
         }
         entry.learned = learned
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -244,7 +256,11 @@ public final class Library {
             entry.translationLanguage = translationLanguage
         }
         if let phonetic, !phonetic.isEmpty { entry.phonetic = phonetic }
-        if !context.isEmpty { entry.context = context }
+        if !context.isEmpty {
+            if context != entry.context { entry.contextTranslation = nil }
+            entry.context = context
+        }
+        if let contextTranslation, !contextTranslation.isEmpty { entry.contextTranslation = contextTranslation }
         if !source.isEmpty { entry.source = source }
         replace(entry)
         return existing

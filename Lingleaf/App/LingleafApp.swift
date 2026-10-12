@@ -70,8 +70,10 @@ final class AppModel {
         let arguments = ProcessInfo.processInfo.arguments
         // With -ui-testing-no-language no translation language is saved, so the word card asks.
         let language = arguments.contains("-ui-testing-no-language") ? nil : "es"
-        if arguments.contains("-ui-testing-offline") { return uiTesting(offline: true, language: language) }
-        if arguments.contains("-ui-testing") { return uiTesting(offline: false, language: language) }
+        // With -ui-testing-due a word is waiting for review (new words are first due tomorrow).
+        let due = arguments.contains("-ui-testing-due")
+        if arguments.contains("-ui-testing-offline") { return uiTesting(offline: true, language: language, due: due) }
+        if arguments.contains("-ui-testing") { return uiTesting(offline: false, language: language, due: due) }
         #endif
         return live()
     }
@@ -92,7 +94,7 @@ final class AppModel {
     /// and translations. With `offline`, every request fails and translation throws,
     /// as on a device without internet. The speaker records instead of speaking.
     /// `language` is saved as the translation language; nothing is picked from the device.
-    private static func uiTesting(offline: Bool, language: String?) -> AppModel {
+    private static func uiTesting(offline: Bool, language: String?, due: Bool) -> AppModel {
         let dir = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
@@ -114,6 +116,15 @@ final class AppModel {
         let model = AppModel(library: library, http: http, speaker: speaker, autoLanguage: nil, fakeTranslator: translator)
         speaker.record = { [weak model] text in model?.lastSpoken = text }
         if let language { library.updateSettings { $0.targetLanguage = language } }
+        if due {
+            let sentence = "Tom lives in a small house by the sea."
+            library.saveWord(
+                "sea", learned: false, translation: offline ? nil : "ES: sea", translationLanguage: "es",
+                context: sentence, contextTranslation: offline ? nil : "ES: \(sentence)", source: "The Red Boat"
+            )
+            // "Again" makes it due now.
+            library.answerReview("sea", correct: false)
+        }
         return model
     }
 

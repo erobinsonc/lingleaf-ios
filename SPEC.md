@@ -25,7 +25,7 @@ the same intent on both platforms. A change to behaviour updates this file in
 | S4 | Save word | "Save word" (primary, right) saves the word for review; it is underlined in yellow in every book, including inflected forms. A message "“word” saved to Words" with Undo shows for 4 s, longer when the system asks for more time to act (Android's accessibility timeout); with a screen reader or switch control it stays until Undo, Close or a newer message. |
 | S5 | I know it | "I know it" (secondary, left) saves the word as known; it is not underlined or reviewed. A message "“word” marked as known" with Undo shows like S4. |
 | S6 | Listen | Word, sentence and paragraph can be read aloud with an English voice. |
-| S7 | Review | Due words appear as flashcards; "I know it" schedules them 1, 3, 7, 14, 30 days out, then marks them learned; "Again" repeats them. |
+| S7 | Review | Recall first: a due word shows alone with "Show meaning"; the meaning then shows the translation, the sentence it was saved from (the word in bold), that sentence's translation and a button to hear it, and only then "Again" and "Got it". A new word is first due at 00:00 the next day; "Got it" moves it to the next box, due at 00:00 1, 3, 7, 14 then 30 days later, and after the last box it is learned; "Again" sends it back to the first box and repeats it in the session. A session holds at most 20 due words, interleaved by book. At the end: "Done for today." and, when there are any, "N more tomorrow." (words due by the end of tomorrow). |
 | S8 | Daily goal | Reading time counts while the reader is open; the card shows minutes today and the streak (days meeting the goal). |
 | S9 | Discover | Recommended classics with a level, search by title/author, one-tap download into the library. |
 | S10 | Import | A plain-text `.txt` file can be imported; Gutenberg license headers are removed. |
@@ -40,7 +40,8 @@ the same intent on both platforms. A change to behaviour updates this file in
 - Paragraphs: split on blank lines, hard-wrapped lines joined.
 - Words: `[A-Za-z]+(['’][A-Za-z]+)*`; contractions stay whole.
 - Base forms: irregular table, then plural/past/-ing rules (see `TextTools`).
-- Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals.
+- Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals, each due at the start (00:00, local time) of that day; a new word is due at 00:00 the next day; "Again" → first box, due now.
+- Review session: due words sorted by due time, grouped by book, taken one per book in turn, at most 20.
 - Streak: consecutive days meeting the goal; an unfinished today doesn't break it.
 - Translation language pick: preferred-language list order; skip English and unsupported; `zh-*` → Simplified Chinese; none → ask.
 - Words needing translation: empty translation, or a translation language that is not recorded (words saved before it was) or differs from the current one.

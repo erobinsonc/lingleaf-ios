@@ -2,7 +2,9 @@ import Accessibility
 import SwiftUI
 import LingleafCore
 
-/// Flashcard review of due words with spaced repetition.
+/// Recall-first review of due words with spaced repetition (S7): the word alone, then
+/// "Show meaning" reveals the translation, the sentence it came from and that sentence's
+/// translation; only then "Again" or "Got it".
 struct ReviewView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
@@ -13,36 +15,20 @@ struct ReviewView: View {
     @State private var loaded = false
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 20) {
             if let word = queue.first {
                 ProgressView(value: Double(reviewed), total: Double(max(total, 1)))
                     .accessibilityLabel(Text("Review progress"))
                     .accessibilityValue(Text("\(reviewed) of \(total)"))
-                Spacer()
-                // The saved record, not the queued copy: a translation may arrive while reviewing.
-                card(model.state.word(word.word) ?? word)
-                Spacer()
-                HStack(spacing: 12) {
-                    Button { answer(correct: false) } label: {
-                        Text("Again").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .buttonStyle(.bordered)
-                    Button { answer(correct: true) } label: {
-                        Text("I know it").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
-                            .frame(maxWidth: .infinity, minHeight: 44)
-                    }
-                    .buttonStyle(.borderedProminent)
+                ScrollView {
+                    // The saved record, not the queued copy: a translation may arrive while reviewing.
+                    card(model.state.word(word.word) ?? word)
+                        .padding(.vertical, 8)
                 }
-                .font(.headline)
+                .scrollBounceBehavior(.basedOnSize)
+                if revealed { answers }
             } else if loaded {
-                ContentUnavailableView {
-                    Label("All done!", systemImage: "checkmark.seal.fill")
-                } description: {
-                    Text("You reviewed \(reviewed) words.")
-                } actions: {
-                    Button("Done") { dismiss() }.buttonStyle(.borderedProminent)
-                }
+                finished
             }
         }
         .padding()
@@ -51,16 +37,45 @@ struct ReviewView: View {
         .onAppear {
             model.translateMissing()
             guard !loaded else { return }
-            queue = model.library.dueWords()
+            queue = model.library.reviewSession()
             total = queue.count
             loaded = true
+        }
+    }
+
+    /// Only after the meaning is shown: recall comes first.
+    private var answers: some View {
+        HStack(spacing: 12) {
+            Button { answer(correct: false) } label: {
+                Text("Again").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+            }
+            .buttonStyle(.bordered)
+            Button { answer(correct: true) } label: {
+                Text("Got it").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
+                    .frame(maxWidth: .infinity, minHeight: 44)
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .font(.headline)
+    }
+
+    /// "Done for today. 12 more tomorrow."
+    private var finished: some View {
+        let tomorrow = model.library.dueByEndOfTomorrow()
+        return ContentUnavailableView {
+            Label("Done for today.", systemImage: "checkmark.seal.fill")
+        } description: {
+            if tomorrow > 0 { Text("\(tomorrow) more tomorrow.") }
+        } actions: {
+            Button("Done") { dismiss() }.buttonStyle(.borderedProminent)
         }
     }
 
     private func card(_ word: VocabWord) -> some View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
-                Text(word.word).font(.largeTitle.weight(.semibold))
+                Text(word.word).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
                     model.speaker.speak(word.word, rate: model.state.settings.speechRate)
                 } label: {
@@ -69,23 +84,8 @@ struct ReviewView: View {
                         .contentShape(Rectangle())
                 }
             }
-            if !word.context.isEmpty {
-                Text(word.context).italic().multilineTextAlignment(.center).foregroundStyle(Brand.secondaryText)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
             if revealed {
-                VStack(spacing: 4) {
-                    if !word.phonetic.isEmpty { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
-                    if word.translation.isEmpty {
-                        Text("No translation yet. Connect to the internet once to get it.")
-                            .font(.callout)
-                            .foregroundStyle(Brand.secondaryText)
-                            .multilineTextAlignment(.center)
-                            .fixedSize(horizontal: false, vertical: true)
-                    } else {
-                        Text(word.translation).font(.title2)
-                    }
-                }
+                meaning(word)
             } else {
                 Button {
                     withAnimation { revealed = true }
@@ -110,6 +110,69 @@ struct ReviewView: View {
         .frame(maxWidth: .infinity)
         .padding(24)
         .background(.background.secondary, in: RoundedRectangle(cornerRadius: 20))
+    }
+
+    /// The translation, then the sentence the word was saved from (the word in bold),
+    /// its translation and a button to hear it.
+    @ViewBuilder
+    private func meaning(_ word: VocabWord) -> some View {
+        VStack(spacing: 4) {
+            if !word.phonetic.isEmpty { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
+            if word.translation.isEmpty {
+                Text("No translation yet. Connect to the internet once to get it.")
+                    .font(.callout)
+                    .foregroundStyle(Brand.secondaryText)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                Text(word.translation).font(.title2).multilineTextAlignment(.center)
+            }
+        }
+        if !word.context.isEmpty {
+            Divider()
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Self.marked(word.context, word: word.word)).font(readingFont(size: 17)).italic()
+                        .fixedSize(horizontal: false, vertical: true)
+                    if let translation = word.contextTranslation {
+                        Text(translation).font(.callout).foregroundStyle(Brand.secondaryText)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+                Spacer(minLength: 8)
+                Button {
+                    model.speaker.speak(word.context, rate: model.state.settings.speechRate)
+                } label: {
+                    Label("Listen to the sentence", systemImage: "speaker.wave.1")
+                        .labelStyle(.iconOnly)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// `sentence` with the saved word in bold: its inflected forms ("animals" for "animal"),
+    /// or, for a saved group of words, that group.
+    static func marked(_ sentence: String, word: String) -> AttributedString {
+        var text = AttributedString(sentence)
+        var ranges: [Range<String.Index>] = []
+        if word.contains(" ") {
+            if let range = sentence.range(of: word, options: [.caseInsensitive, .diacriticInsensitive]) { ranges.append(range) }
+        } else {
+            for wordRange in TextTools.wordRanges(sentence) {
+                let token = TextTools.substring(sentence, wordRange)
+                if TextTools.matchKeys(token).contains(word), let range = Range(wordRange.nsRange, in: sentence) {
+                    ranges.append(range)
+                }
+            }
+        }
+        for range in ranges {
+            guard let marked = Range(range, in: text) else { continue }
+            text[marked].inlinePresentationIntent = .stronglyEmphasized
+        }
+        return text
     }
 
     /// The button VoiceOver was on disappears; say what appeared in its place.

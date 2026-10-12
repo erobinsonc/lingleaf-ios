@@ -73,7 +73,9 @@ final class LibraryTests: XCTestCase {
         XCTAssertGreaterThan(changes, 0)
         XCTAssertTrue(library.isLearning("animals"))
         XCTAssertFalse(library.isLearning("equal"))
-        XCTAssertEqual(library.dueWords().map(\.word), ["animal"])
+        XCTAssertTrue(library.dueWords().isEmpty, "a new word is first reviewed tomorrow")
+        now = ISO8601DateFormatter().date(from: "2026-10-10T00:00:00Z")!
+        XCTAssertEqual(library.dueWords().map(\.word), ["animal"], "due from 00:00 the next day")
 
         library.saveWord("animal", learned: true, translation: " ")
         XCTAssertFalse(library.isLearning("animals"))
@@ -86,6 +88,8 @@ final class LibraryTests: XCTestCase {
     func testReviewAnswersScheduleTheNextReview() {
         let library = library()
         library.saveWord("equal", learned: false)
+        now = now.addingTimeInterval(86_400)
+        XCTAssertEqual(library.dueWords().first?.box, 0)
         library.answerReview("equal", correct: true)
         XCTAssertTrue(library.dueWords().isEmpty)
         now = now.addingTimeInterval(86_400)
@@ -118,7 +122,37 @@ final class LibraryTests: XCTestCase {
         let saved = library.state.word("bay")
         XCTAssertEqual(saved?.learned, false)
         XCTAssertEqual(saved?.box, 0)
-        XCTAssertEqual(library.dueWords().map(\.word), ["bay"])
+        XCTAssertEqual(saved?.nextReview, ISO8601DateFormatter().date(from: "2026-10-10T00:00:00Z"), "back to a first review tomorrow")
+    }
+
+    func testReviewSessionInterleavesBooksAndCountsTomorrow() {
+        let library = library()
+        for word in ["a1", "a2", "a3"] { library.saveWord(word, learned: false, source: "A") }
+        for word in ["b1", "b2"] { library.saveWord(word, learned: false, source: "B") }
+        library.saveWord("known", learned: true, source: "A")
+        XCTAssertEqual(library.dueByEndOfTomorrow(), 5)
+        now = now.addingTimeInterval(86_400)
+        XCTAssertEqual(Set(library.reviewSession().prefix(2).map(\.source)), ["A", "B"], "one book doesn't fill the session")
+        XCTAssertEqual(library.reviewSession().count, 5)
+        XCTAssertEqual(Srs.session(library.dueWords(), limit: 3).count, 3)
+        for word in library.reviewSession() { library.answerReview(word.word, correct: true) }
+        XCTAssertEqual(library.dueByEndOfTomorrow(), 5, "answered words are due again tomorrow")
+    }
+
+    func testSessionHoldsAtMostTwentyWords() {
+        let library = library()
+        for index in 0..<25 { library.saveWord("w\(index)", learned: false) }
+        now = now.addingTimeInterval(86_400)
+        XCTAssertEqual(library.reviewSession().count, Srs.sessionLimit)
+    }
+
+    func testContextTranslationIsKeptWithItsSentence() {
+        let library = library()
+        library.saveWord("sea", learned: false, context: "By the sea.", contextTranslation: "Junto al mar.")
+        library.saveWord("sea", learned: false, contextTranslation: nil)
+        XCTAssertEqual(library.state.word("sea")?.contextTranslation, "Junto al mar.")
+        library.saveWord("sea", learned: false, context: "The sea is blue.")
+        XCTAssertNil(library.state.word("sea")?.contextTranslation, "a new sentence drops the old translation")
     }
 
     func testSaveWordReturnsThePreviousRecordAndRestoreWordPutsItBack() {
