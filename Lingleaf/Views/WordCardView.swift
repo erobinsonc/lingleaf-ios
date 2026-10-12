@@ -291,6 +291,7 @@ struct WordCardView: View {
             translationLanguage: translatedInto,
             phonetic: entry?.phonetic,
             context: selection.sentence,
+            contextTranslation: sentenceTranslation,
             source: source
         )
         // Saving never waits: a translation still on its way is done by TranslationWorker.

@@ -131,6 +131,17 @@ public enum TextTools {
         return out
     }
 
+    /// Where a saved word appears in `sentence`, to mark it: its forms ("animals" for
+    /// "animal"), or, for a saved group of words ("did not go"), that group (ignoring case).
+    public static func occurrences(of word: String, in sentence: String) -> [WordRange] {
+        let key = normalize(word)
+        if key.contains(" ") {
+            let range = (normalize(sentence) as NSString).range(of: key)
+            return range.location == NSNotFound ? [] : [WordRange(range.location, range.location + range.length)]
+        }
+        return wordRanges(sentence).filter { matchKeys(substring(sentence, $0)).contains(key) }
+    }
+
     /// The word plus its likely base forms: what to match against saved words.
     public static func matchKeys(_ word: String) -> Set<String> {
         Set([normalize(word)] + baseFormCandidates(word))
