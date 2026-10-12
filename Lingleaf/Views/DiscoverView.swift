@@ -209,7 +209,8 @@ struct DiscoverView: View {
     private func row(_ book: GutenbergBook) -> some View {
         let failure = failure(book.id)
         return HStack(spacing: 14) {
-            AsyncImage(url: book.coverURL) { image in
+            // Decorative: the row says the title and author. A drawn cover shows while it loads or offline.
+            AsyncImage(url: model.loadsCovers ? book.coverURL : nil) { image in
                 image.resizable().scaledToFill()
             } placeholder: {
                 BookCover(title: book.displayTitle)

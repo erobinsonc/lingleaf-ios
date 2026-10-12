@@ -47,7 +47,7 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual(alice?.displayTitle, "Alice's Adventures in Wonderland")
         XCTAssertEqual(alice?.authorName, "Lewis Carroll")
         XCTAssertEqual(alice?.textURL, "https://www.gutenberg.org/cache/epub/11/pg11.txt")
-        XCTAssertNil(alice?.coverURL, "the app draws the cover")
+        XCTAssertEqual(alice?.coverURL?.absoluteString, "https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg")
         XCTAssertEqual(GutenbergClient.level(for: 11), "B2")
     }
 
