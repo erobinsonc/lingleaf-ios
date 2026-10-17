@@ -54,6 +54,38 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(element(labelled: "can we fix").waitForExistence(timeout: 5), "Words shows the verb group")
     }
 
+    /// S16: a perfect's helper says what it does; a pronoun contraction, what it stands for.
+    func testAPerfectSaysWhatItDoes() {
+        button(startingWith: "The Lighthouse Keeper").tap()
+        let had = app.links["had"].firstMatch
+        XCTAssertTrue(had.waitForExistence(timeout: 10))
+        had.tap()
+        XCTAssertTrue(app.staticTexts["Helper verb"].waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["have"].exists, "the base form")
+        XCTAssertTrue(app.staticTexts["had kept"].exists, "the verb group up to the participle")
+        XCTAssertTrue(app.staticTexts["“had” + past participle: it happened before another past moment: “had left”."].exists)
+        attachScreenshot("en-light-14-perfect-card")
+    }
+
+    func testAContractionSaysWhatItStandsFor() {
+        button(startingWith: "A Day at the Market").tap()
+        let that = app.links["That's"].firstMatch
+        XCTAssertTrue(that.waitForExistence(timeout: 10))
+        for _ in 0..<6 where !that.isHittable { app.swipeUp() }
+        that.tap()
+        XCTAssertTrue(app.staticTexts["that is"].waitForExistence(timeout: 10), "the contraction's expansion is its base form")
+        XCTAssertTrue(app.staticTexts["“that's” = “that is”."].exists)
+        XCTAssertFalse(app.staticTexts["Helper verb"].exists, "a plain contraction has no label")
+        attachScreenshot("en-light-15-contraction-card")
+    }
+
+    private func attachScreenshot(_ name: String) {
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = name
+        shot.lifetime = .keepAlways
+        add(shot)
+    }
+
     /// S7: recall first; the meaning brings the sentence, its translation and the answers.
     func testReviewAWord() {
         relaunch("-ui-testing", "-ui-testing-due")

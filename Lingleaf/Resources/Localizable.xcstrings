@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ or %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ o %2$@"
+          }
+        }
+      }
+    },
     "%@, learning": {
       "localizations": {
         "es": {
@@ -1322,6 +1332,46 @@
         }
       }
     },
+    "“%@” (= “%@”) + past participle: it happened before another past moment: “had left”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + participio: pasó antes que otra cosa del pasado: “had left”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + past participle: it happened before now and still matters: “seen”, not “saw”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + participio: pasó antes y todavía importa: “seen”, no “saw”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + verb: the future.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo: el futuro."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + verb: an imagined result, or a polite request.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo: algo imaginado, o una petición amable."
+          }
+        }
+      }
+    },
     "“%@” (= “%@”): the negative of “%@” + verb.": {
       "localizations": {
         "es": {
@@ -1362,6 +1412,26 @@
         }
       }
     },
+    "“%@” + past participle: it happened before another past moment: “had left”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + participio: pasó antes que otra cosa del pasado: “had left”."
+          }
+        }
+      }
+    },
+    "“%@” + past participle: it happened before now and still matters: “seen”, not “saw”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + participio: pasó antes y todavía importa: “seen”, no “saw”."
+          }
+        }
+      }
+    },
     "“%@” + pronoun at the end asks the listener to agree, like “right?”.": {
       "localizations": {
         "es": {
@@ -1382,12 +1452,32 @@
         }
       }
     },
+    "“%@” = “%@”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” = “%2$@”."
+          }
+        }
+      }
+    },
     "“%@” added to your library.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "“%@” se agregó a tu biblioteca."
+          }
+        }
+      }
+    },
+    "“%@” can be “%@” or “%@”: the sentence's translation tells which.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” puede ser “%2$@” o “%3$@”: la traducción de la frase dice cuál."
           }
         }
       }
@@ -1482,6 +1572,16 @@
         }
       }
     },
+    "“'d better” (= “had better”) + verb: strong advice: “You'd better go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“'d better” (= “had better”) + verbo: un consejo firme, “más te vale”: “You'd better go”."
+          }
+        }
+      }
+    },
     "“can” + verb: be able to, or be allowed to.": {
       "localizations": {
         "es": {
@@ -1498,6 +1598,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "“could” + verbo: podía o podría."
+          }
+        }
+      }
+    },
+    "“had better” + verb: strong advice: “You'd better go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“had better” + verbo: un consejo firme, “más te vale”: “You'd better go”."
+          }
+        }
+      }
+    },
+    "“it's” = “%@”; “its” (no apostrophe) = belonging to it.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“it's” = “%@”; “its” (sin apóstrofo) = su, de una cosa o un animal."
+          }
+        }
+      }
+    },
+    "“let's” (= “let us”) + verb: a suggestion to do something together: “Let's go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“let's” (= “let us”) + verbo: una propuesta para hacer juntos: “Let's go”."
           }
         }
       }
@@ -1548,6 +1678,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“should” + verbo: un consejo (debería…)."
+          }
+        }
+      }
+    },
+    "“who's” = “%@”; “whose” = of whom: “Whose book?”": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“who's” = “%@”; “whose” = de quién: “Whose book?”"
           }
         }
       }

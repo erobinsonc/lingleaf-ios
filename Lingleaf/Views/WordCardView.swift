@@ -37,6 +37,13 @@ struct WordCardView: View {
         return base
     }
 
+    /// The headword as a screen reader says it: "he had or he would", not "slash".
+    private var spokenHeadword: String {
+        let parts = headword.components(separatedBy: " / ")
+        guard parts.count == 2 else { return headword }
+        return String(localized: "\(parts[0]) or \(parts[1])")
+    }
+
     /// The base form's translation, else the tapped form's while the base form's is on its way.
     /// A helper or modal verb means little alone ("did" → "hizo"): its verb group's translation.
     private var translation: String? {
@@ -126,6 +133,8 @@ struct WordCardView: View {
                         .font(.largeTitle)
                 }
                 Text(headword).font(.largeTitle.weight(.semibold))
+                    .accessibilityLabel(Text(spokenHeadword))
+                    .accessibilityAddTraits(.isHeader)
             }
             if selection.function == nil, let phonetic = entry?.phonetic {
                 Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
@@ -134,8 +143,8 @@ struct WordCardView: View {
             if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word) {
                 Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
-            if let kind = selection.function?.kind {
-                Text(kind.label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
+            if let label = selection.function?.kind.label {
+                Text(label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
             }
         }
     }
@@ -146,8 +155,9 @@ struct WordCardView: View {
     private var translationView: some View {
         if let target = model.targetLanguage {
             VStack(spacing: 4) {
-                if let chunk = selection.chunk {
-                    // The verb group it belongs to, then its translation.
+                // The verb group it belongs to, then its translation; not when it is just the
+                // tapped word ("That's"), which the headword and note already explain.
+                if let chunk = selection.chunk, chunk != selection.word {
                     Text(verbatim: chunk).font(.headline).multilineTextAlignment(.center)
                 }
                 if let translation {
@@ -481,10 +491,12 @@ struct WordCardView: View {
 }
 
 extension FunctionWord.Kind {
-    var label: String {
+    /// Nil for a contraction: the card's headword ("it is") already says what it is.
+    var label: String? {
         switch self {
         case .helper: String(localized: "Helper verb")
         case .modal: String(localized: "Modal verb")
+        case .contraction: nil
         }
     }
 }
@@ -492,10 +504,14 @@ extension FunctionWord.Kind {
 extension FunctionWord {
     /// One short line on what the word does here. `form` is the word as tapped ("did", "didn't").
     func note(form: String) -> String {
-        let word = form.lowercased()
+        // "I'll" keeps its capital I; other words are shown in lower case.
+        let word = form.hasPrefix("I'") || form.hasPrefix("I’") ? form : form.lowercased()
+        if let expansion { return contractionNote(word, expansion) }
         let contracted = TextTools.normalize(word).hasSuffix("n't")
         let negative = contracted ? word : "\(word) not"
         let expanded = Self.expanded[TextTools.normalize(word)] ?? negative
+        // A perfect's helper as tapped, with "not" when it follows: "has not" for "has not seen".
+        let shown = self.negative && !contracted ? "\(word) not" : word
         switch use {
         case .pastNegative where contracted:
             return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = past negative: “didn't go”, not “didn't went”.")
@@ -518,11 +534,49 @@ extension FunctionWord {
             let shown = contracted || word == "cannot" ? word : "\(word) not"
             if base == "must" { return String(localized: "“\(shown)” + verb: it is not allowed.") }
             if contracted || word == "cannot" {
-                return String(localized: "“\(shown)” (= “\(base) not”): the negative of “\(base)” + verb.")
+                // One argument for "can not", so the key matches the translated one.
+                let full = "\(base) not"
+                return String(localized: "“\(shown)” (= “\(full)”): the negative of “\(base)” + verb.")
             }
             return String(localized: "“\(shown)”: the negative of “\(base)” + verb.")
         case .modal(let base):
             return Self.modalNote(base)
+        case .presentPerfect:
+            return String(localized: "“\(shown)” + past participle: it happened before now and still matters: “seen”, not “saw”.")
+        case .pastPerfect:
+            return String(localized: "“\(shown)” + past participle: it happened before another past moment: “had left”.")
+        case .hadBetter:
+            return String(localized: "“had better” + verb: strong advice: “You'd better go”.")
+        case .contraction:
+            return String(localized: "“\(word)” = “\(base)”.")
+        }
+    }
+
+    /// A pronoun contraction: what it stands for, and what it does when it is a helper here.
+    private func contractionNote(_ word: String, _ expansion: String) -> String {
+        switch use {
+        case .presentPerfect:
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: it happened before now and still matters: “seen”, not “saw”.")
+        case .pastPerfect:
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: it happened before another past moment: “had left”.")
+        case .hadBetter:
+            return String(localized: "“'d better” (= “had better”) + verb: strong advice: “You'd better go”.")
+        case .modal("will"):
+            return String(localized: "“\(word)” (= “\(expansion)”) + verb: the future.")
+        case .modal:
+            return String(localized: "“\(word)” (= “\(expansion)”) + verb: an imagined result, or a polite request.")
+        default:
+            let key = TextTools.normalize(word)
+            // "he'd put": had or would; the sentence's translation settles it.
+            let both = expansion.components(separatedBy: " / ")
+            if both.count == 2 {
+                return String(localized: "“\(word)” can be “\(both[0])” or “\(both[1])”: the sentence's translation tells which.")
+            }
+            if key == "let's" { return String(localized: "“let's” (= “let us”) + verb: a suggestion to do something together: “Let's go”.") }
+            // The lookalikes learners mix up.
+            if key == "it's" { return String(localized: "“it's” = “\(expansion)”; “its” (no apostrophe) = belonging to it.") }
+            if key == "who's" { return String(localized: "“who's” = “\(expansion)”; “whose” = of whom: “Whose book?”") }
+            return String(localized: "“\(word)” = “\(expansion)”.")
         }
     }
 
