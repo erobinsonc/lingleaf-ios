@@ -509,15 +509,17 @@ extension FunctionWord {
             let shown = contracted || word == "cannot" ? word : "\(word) not"
             if base == "must" { return String(localized: "“\(shown)” + verb: it is not allowed.") }
             if contracted || word == "cannot" {
-                return String(localized: "“\(shown)” (= “\(base) not”): the negative of “\(base)” + verb.")
+                // One argument for "can not", so the key matches the translated one.
+                let full = "\(base) not"
+                return String(localized: "“\(shown)” (= “\(full)”): the negative of “\(base)” + verb.")
             }
             return String(localized: "“\(shown)”: the negative of “\(base)” + verb.")
         case .modal(let base):
             return Self.modalNote(base)
         case .presentPerfect:
-            return String(localized: "“\(shown)” + past participle: before now, still relevant: “has seen”, not “has saw”.")
+            return String(localized: "“\(shown)” + past participle: it happened before now and still matters: “seen”, not “saw”.")
         case .pastPerfect:
-            return String(localized: "“\(shown)” + past participle: before another past moment: “had left”.")
+            return String(localized: "“\(shown)” + past participle: it happened before another past moment: “had left”.")
         case .hadBetter:
             return String(localized: "“had better” + verb: strong advice: “You'd better go”.")
         case .contraction:
@@ -529,21 +531,21 @@ extension FunctionWord {
     private func contractionNote(_ word: String, _ expansion: String) -> String {
         switch use {
         case .presentPerfect:
-            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: before now, still relevant: “has seen”, not “has saw”.")
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: it happened before now and still matters: “seen”, not “saw”.")
         case .pastPerfect:
-            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: before another past moment: “had left”.")
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: it happened before another past moment: “had left”.")
         case .hadBetter:
             return String(localized: "“'d better” (= “had better”) + verb: strong advice: “You'd better go”.")
         case .modal("will"):
             return String(localized: "“\(word)” (= “\(expansion)”) + verb: the future.")
         case .modal:
-            return String(localized: "“\(word)” (= “\(expansion)”) + verb: what would happen, or a polite request.")
+            return String(localized: "“\(word)” (= “\(expansion)”) + verb: an imagined result, or a polite request.")
         default:
             let key = TextTools.normalize(word)
-            if key == "let's" { return String(localized: "“let's” (= “let us”) + verb: a suggestion for us: “Let's go”.") }
+            if key == "let's" { return String(localized: "“let's” (= “let us”) + verb: a suggestion to do something together: “Let's go”.") }
             // The lookalikes learners mix up.
             if key == "it's" { return String(localized: "“it's” = “\(expansion)”; “its” (no apostrophe) = belonging to it.") }
-            if key == "who's" { return String(localized: "“who's” = “\(expansion)”; “whose” asks who owns it: “Whose book?”") }
+            if key == "who's" { return String(localized: "“who's” = “\(expansion)”; “whose” = of whom: “Whose book?”") }
             return String(localized: "“\(word)” = “\(expansion)”.")
         }
     }

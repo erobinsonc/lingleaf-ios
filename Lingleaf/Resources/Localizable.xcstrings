@@ -1312,22 +1312,22 @@
         }
       }
     },
-    "“%@” (= “%@”) + past participle: before another past moment: “had left”.": {
+    "“%@” (= “%@”) + past participle: it happened before another past moment: “had left”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” (= “%2$@”) + participio: antes de otro momento del pasado: “had left”."
+            "value": "“%1$@” (= “%2$@”) + participio: pasó antes que otra cosa del pasado: “had left”."
           }
         }
       }
     },
-    "“%@” (= “%@”) + past participle: before now, still relevant: “has seen”, not “has saw”.": {
+    "“%@” (= “%@”) + past participle: it happened before now and still matters: “seen”, not “saw”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” (= “%2$@”) + participio: antes de ahora y sigue importando: “has seen”, no “has saw”."
+            "value": "“%1$@” (= “%2$@”) + participio: pasó antes y todavía importa: “seen”, no “saw”."
           }
         }
       }
@@ -1342,12 +1342,12 @@
         }
       }
     },
-    "“%@” (= “%@”) + verb: what would happen, or a polite request.": {
+    "“%@” (= “%@”) + verb: an imagined result, or a polite request.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%1$@” (= “%2$@”) + verbo: lo que pasaría, o una petición amable."
+            "value": "“%1$@” (= “%2$@”) + verbo: algo imaginado, o una petición amable."
           }
         }
       }
@@ -1392,22 +1392,22 @@
         }
       }
     },
-    "“%@” + past participle: before another past moment: “had left”.": {
+    "“%@” + past participle: it happened before another past moment: “had left”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” + participio: antes de otro momento del pasado: “had left”."
+            "value": "“%@” + participio: pasó antes que otra cosa del pasado: “had left”."
           }
         }
       }
     },
-    "“%@” + past participle: before now, still relevant: “has seen”, not “has saw”.": {
+    "“%@” + past participle: it happened before now and still matters: “seen”, not “saw”.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“%@” + participio: antes de ahora y sigue importando: “has seen”, no “has saw”."
+            "value": "“%@” + participio: pasó antes y todavía importa: “seen”, no “saw”."
           }
         }
       }
@@ -1547,7 +1547,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“'d better” (= “had better”) + verbo: un consejo fuerte: “You'd better go”."
+            "value": "“'d better” (= “had better”) + verbo: un consejo firme, “más te vale”: “You'd better go”."
           }
         }
       }
@@ -1577,7 +1577,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“had better” + verbo: un consejo fuerte: “You'd better go”."
+            "value": "“had better” + verbo: un consejo firme, “más te vale”: “You'd better go”."
           }
         }
       }
@@ -1592,7 +1592,7 @@
         }
       }
     },
-    "“let's” (= “let us”) + verb: a suggestion for us: “Let's go”.": {
+    "“let's” (= “let us”) + verb: a suggestion to do something together: “Let's go”.": {
       "localizations": {
         "es": {
           "stringUnit": {
@@ -1652,12 +1652,12 @@
         }
       }
     },
-    "“who's” = “%@”; “whose” asks who owns it: “Whose book?”": {
+    "“who's” = “%@”; “whose” = of whom: “Whose book?”": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "“who's” = “%@”; “whose” pregunta de quién es: “Whose book?”"
+            "value": "“who's” = “%@”; “whose” = de quién: “Whose book?”"
           }
         }
       }

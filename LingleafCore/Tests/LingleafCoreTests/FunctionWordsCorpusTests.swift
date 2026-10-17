@@ -12,6 +12,7 @@ final class FunctionWordsCorpusTests: XCTestCase {
         let use: String?
         let base: String?
         let chunk: String?
+        let note: String?
     }
 
     private struct Corpus: Decodable {
@@ -58,7 +59,9 @@ final class FunctionWordsCorpusTests: XCTestCase {
                 if correct { right[got, default: 0] += 1 }
             }
             if !correct {
-                print("corpus mismatch: \(item.sentence) [\(item.word)]: expected \(item.use ?? "nil") \(item.base ?? "nil") '\(item.chunk ?? "nil")', got \(got ?? "nil") \(result?.base ?? "nil") '\(chunk ?? "nil")'")
+                let wanted = "\(item.use ?? "nil") \(item.base ?? "nil") '\(item.chunk ?? "nil")'"
+                let found = "\(got ?? "nil") \(result?.base ?? "nil") '\(chunk ?? "nil")'"
+                print("corpus mismatch: \(item.sentence) [\(item.word)]: expected \(wanted), got \(found)")
             }
         }
         for rule in measured {
