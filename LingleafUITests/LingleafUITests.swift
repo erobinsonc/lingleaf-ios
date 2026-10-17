@@ -71,7 +71,7 @@ final class LingleafUITests: XCTestCase {
         app.buttons["Show meaning"].tap()
         app.buttons["I remembered"].tap()
         XCTAssertTrue(app.staticTexts["Done for today."].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.staticTexts["1 more tomorrow."].exists, "the word is due again tomorrow")
+        XCTAssertTrue(app.staticTexts["1 word tomorrow."].exists, "the word is due again tomorrow")
     }
 
     private func relaunch(_ arguments: String...) {

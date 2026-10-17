@@ -61,7 +61,7 @@ Apple Translation doesn't run in the Simulator; try translations on a real devic
 
 Lingleaf has no accounts, ads or analytics, and keeps your books and words on your
 device (and in your iCloud/device backup, if you use one). The app itself talks only to
-`gutendex.com` / `gutenberg.org` (books) and `api.dictionaryapi.dev` (definitions),
+`gutendex.com` / `www.gutenberg.org` (books) and `api.dictionaryapi.dev` (definitions),
 always over HTTPS.
 
 Translation runs on the device with Apple Translation; iOS downloads each language

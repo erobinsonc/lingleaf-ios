@@ -60,6 +60,16 @@ public struct Settings: Codable, Equatable, Sendable {
 
     public init() {}
 
+    /// Within the ranges Settings offers: a restored or edited settings file can't make the
+    /// streak count forever (a goal of 0) or the reader unreadable.
+    public func bounded() -> Settings {
+        var settings = self
+        settings.dailyGoalMinutes = min(max(dailyGoalMinutes, 5), 60)
+        settings.fontSize = fontSize.isFinite ? min(max(fontSize, 14), 34) : Settings().fontSize
+        settings.speechRate = speechRate.isFinite ? min(max(speechRate, 0.3), 0.6) : Settings().speechRate
+        return settings
+    }
+
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         let defaults = Settings()
@@ -154,7 +164,12 @@ public final class Library {
 
     public func load() {
         var loaded = LibraryState()
-        loaded.books = decode([Book].self, "books.json") ?? []
+        // Progress stays inside the book, whatever a restored file says.
+        loaded.books = (decode([Book].self, "books.json") ?? []).map { book in
+            var book = book
+            book.progressParagraph = min(max(book.progressParagraph, 0), max(book.paragraphCount - 1, 0))
+            return book
+        }
         // Saved before contexts were capped, or restored from a backup: cut to size.
         loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { word in
             var word = word
@@ -162,7 +177,7 @@ public final class Library {
             return word
         }
         loaded.readingLog = decode([String: Int].self, "reading-log.json") ?? [:]
-        loaded.settings = decode(Settings.self, "settings.json") ?? Settings()
+        loaded.settings = (decode(Settings.self, "settings.json") ?? Settings()).bounded()
         state = loaded
     }
 
@@ -445,7 +460,10 @@ public struct FileStorage: Storage {
 
     public func write(_ name: String, _ content: String) {
         guard StorageNames.isSafe(name) else { return }
-        try? content.write(to: directory.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        // Atomic, and encrypted by Data Protection until the device is first unlocked after a restart.
+        try? Data(content.utf8).write(
+            to: directory.appendingPathComponent(name), options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication]
+        )
     }
 
     public func delete(_ name: String) {

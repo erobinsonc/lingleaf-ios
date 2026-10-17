@@ -17,6 +17,7 @@ jobs:
   upload:
     name: Archive and upload
     runs-on: macos-15
+    timeout-minutes: 60
     # Only from main: a workflow edited on another branch never gets the signing key.
     if: github.ref == 'refs/heads/main'
     # The environment holds the secrets, requires the maintainer's approval and only

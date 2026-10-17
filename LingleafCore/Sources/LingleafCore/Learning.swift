@@ -70,6 +70,9 @@ public func dayKey(_ date: Date, calendar: Calendar = .current) -> String {
     return String(format: "%04d-%02d-%02d", c.year ?? 0, c.month ?? 0, c.day ?? 0)
 }
 
+/// Longest reading streak counted, in days.
+public let maxStreakDays = 3650
+
 /// Consecutive days meeting the goal. Today only counts once it's met, so an
 /// unfinished today doesn't break yesterday's streak.
 public func readingStreak(_ secondsByDay: [String: Int], goalSeconds: Int, today: Date, calendar: Calendar = .current) -> Int {
@@ -77,7 +80,8 @@ public func readingStreak(_ secondsByDay: [String: Int], goalSeconds: Int, today
     func previous(_ day: Date) -> Date { calendar.date(byAdding: .day, value: -1, to: day) ?? day }
     var day = met(today) ? today : previous(today)
     var count = 0
-    while met(day) {
+    // Ten years at most: no saved data can make this loop run on.
+    while count < maxStreakDays, met(day) {
         count += 1
         day = previous(day)
     }

@@ -21,7 +21,8 @@ We defend against:
 
 How:
 
-- HTTPS only (App Transport Security, Data Protection), only the hosts listed in the README, size caps on every download.
+- HTTPS only (App Transport Security), only the hosts listed in the README, size caps on every download.
+- Saved files are atomic and encrypted with Data Protection (until the first unlock after a restart).
 - Download links are built from the book id, never taken from a server's answer.
 - Only JPEG covers reach the system image decoder, checked before decoding, capped in size and pixels, and downsampled.
 - All outside text is shown as plain text: never run, never parsed as markup or links.

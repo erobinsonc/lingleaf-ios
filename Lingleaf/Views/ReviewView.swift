@@ -17,9 +17,17 @@ struct ReviewView: View {
     var body: some View {
         VStack(spacing: 20) {
             if let word = queue.first {
-                ProgressView(value: Double(reviewed), total: Double(max(total, 1)))
-                    .accessibilityLabel(Text("Review progress"))
-                    .accessibilityValue(Text("\(reviewed) of \(total)"))
+                // The count beside the bar: at the start an empty bar alone can read as "done".
+                HStack(spacing: 12) {
+                    ProgressView(value: Double(reviewed), total: Double(max(total, 1)))
+                    Text("\(reviewed) of \(total)")
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(Brand.secondaryText)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(Text("Review progress"))
+                .accessibilityValue(Text("\(reviewed) of \(total)"))
+                .accessibilityAddTraits(.updatesFrequently)
                 ScrollView {
                     // The saved record, not the queued copy: a translation may arrive while reviewing.
                     card(model.state.word(word.word) ?? word)
@@ -59,22 +67,27 @@ struct ReviewView: View {
         .font(.headline)
     }
 
-    /// "Done for today. 12 more tomorrow.", or, when more words are due now than one
+    /// "Done for today. 12 words tomorrow.", or, when more words are due now than one
     /// session holds, "Done for now. 15 more due today." with Keep going.
     private var finished: some View {
         let dueNow = model.library.dueWords().count
         let tomorrow = model.library.dueByEndOfTomorrow()
         return ContentUnavailableView {
-            if dueNow > 0 {
-                Label("Done for now.", systemImage: "checkmark.seal.fill")
-            } else {
-                Label("Done for today.", systemImage: "checkmark.seal.fill")
+            // The brand colour, not the default grey, which reads as disabled.
+            Group {
+                if dueNow > 0 {
+                    Label("Done for now.", systemImage: "checkmark.seal.fill")
+                } else {
+                    Label("Done for today.", systemImage: "checkmark.seal.fill")
+                }
             }
+            .symbolRenderingMode(.hierarchical)
+            .foregroundStyle(Brand.ink)
         } description: {
             if dueNow > 0 {
                 Text("\(dueNow) more due today.")
             } else if tomorrow > 0 {
-                Text("\(tomorrow) more tomorrow.")
+                Text("\(tomorrow) words tomorrow.")
             }
         } actions: {
             Button("Done") { dismiss() }.buttonStyle(.borderedProminent)

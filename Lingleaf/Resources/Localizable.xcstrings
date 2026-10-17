@@ -159,7 +159,7 @@
         }
       }
     },
-    "%lld more tomorrow.": {
+    "%lld words tomorrow.": {
       "localizations": {
         "en": {
           "variations": {
@@ -167,13 +167,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld more tomorrow."
+                  "value": "%lld word tomorrow."
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld more tomorrow."
+                  "value": "%lld words tomorrow."
                 }
               }
             }
@@ -185,19 +185,19 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld más mañana."
+                  "value": "Mañana tienes %lld palabra."
                 }
               },
               "many": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld más mañana."
+                  "value": "Mañana tienes %lld palabras."
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "%lld más mañana."
+                  "value": "Mañana tienes %lld palabras."
                 }
               }
             }

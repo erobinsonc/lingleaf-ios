@@ -28,6 +28,25 @@ final class LibraryTests: XCTestCase {
         return library
     }
 
+    func testRestoredSettingsAndBooksAreBroughtBackIntoRange() {
+        storage.files["settings.json"] = #"{"dailyGoalMinutes": 0, "fontSize": 900, "speechRate": -3}"#
+        let library = library()
+        XCTAssertEqual(library.state.settings.dailyGoalMinutes, 5, "a goal of 0 would make every day count")
+        XCTAssertEqual(library.state.settings.fontSize, 34)
+        XCTAssertEqual(library.state.settings.speechRate, 0.3)
+        XCTAssertLessThanOrEqual(library.streak(), maxStreakDays, "the streak always ends")
+        XCTAssertEqual(readingStreak([:], goalSeconds: 0, today: now, calendar: calendar), maxStreakDays)
+    }
+
+    func testRestoredReadingProgressStaysInsideTheBook() throws {
+        let book = library().addBook(title: "T", author: "A", text: "One.\n\nTwo.")
+        let saved = try XCTUnwrap(storage.files["books.json"])
+        storage.files["books.json"] = saved.replacingOccurrences(
+            of: #""progressParagraph"\s*:\s*0"#, with: #""progressParagraph":-7"#, options: .regularExpression
+        )
+        XCTAssertEqual(library().state.books.first { $0.id == book.id }?.progressParagraph, 0)
+    }
+
     func testKeepsACopyOfAFileThatCannotBeRead() {
         storage.files["words.json"] = "not json"
         let library = library()
