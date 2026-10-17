@@ -28,6 +28,12 @@ feat/*, fix/*  ──PR──▶  develop  ──release PR──▶  main
 - Don't remove what works (content, images, features) and don't put solid backgrounds over the design to silence a finding.
 - If the right fix needs a tool (a test hook, a helper, a check), build it. If no fix is known yet, stop and present the analysis and the options with evidence; the maintainer decides.
 
+## Design decisions (mandatory)
+
+- Decide by what is most usable for the learner and by learning evidence, never by development cost. Effort is never a reason to cut, simplify or postpone what the learner needs.
+- UX decisions come from `ux-experience-reviewer`, learning decisions from `learning-science-reviewer`. They compare the options themselves, including the maintainer's literal request, designed as well as it can be.
+- When a validator rejects or reduces something the maintainer asked for, explain why with evidence and ask the maintainer before building the alternative.
+
 ## Checks before every push
 
 ```bash
