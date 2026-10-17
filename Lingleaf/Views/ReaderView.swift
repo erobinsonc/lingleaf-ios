@@ -83,18 +83,10 @@ struct ReaderView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
         // Once reading aloud starts, its controls sit at the bottom, in reach of the thumb (issue #33).
-        .toolbar {
-            if let reading, reading.current != nil { readAloudBar(reading) }
-        }
+        // Our own bar, not a system bottom toolbar: that one is coordinated with the hidden
+        // tab bar and left it missing after going back from the reader.
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let reading, reading.loop != nil {
-                // Says how long the repeated stretch is.
-                Text("Repeating \(reading.loopCount) sentences")
-                    .font(.subheadline.weight(.semibold))
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 6)
-                    .modifier(BarBackground())
-            }
+            if let reading, reading.current != nil { readAloudBar(reading) }
         }
         .onChange(of: reading?.current == nil) { _, stopped in
             if !stopped { pauseFocused = true }
@@ -259,39 +251,51 @@ struct ReaderView: View {
 
     /// Previous sentence · Pause/Play · Repeat sentence, while reading aloud or paused (SPEC S6).
     /// While repeating, Previous sentence adds one sentence to the stretch.
-    @ToolbarContentBuilder
-    private func readAloudBar(_ reading: ReadAloudController) -> some ToolbarContent {
+    private func readAloudBar(_ reading: ReadAloudController) -> some View {
         let repeating = reading.loop != nil
-        ToolbarItemGroup(placement: .bottomBar) {
-            Spacer()
-            Button {
-                following = true
-                reading.previous()
-            } label: {
-                Label(repeating ? LocalizedStringKey("Add previous sentence") : "Previous sentence", systemImage: "backward.end")
+        return VStack(spacing: 4) {
+            if repeating {
+                // Says how long the repeated stretch is.
+                Text("Repeating \(reading.loopCount) sentences")
+                    .font(.subheadline.weight(.semibold))
             }
-            Button {
-                if reading.isReading {
-                    reading.pause()
-                } else {
+            HStack(spacing: 28) {
+                Button {
                     following = true
-                    reading.play()
+                    reading.previous()
+                } label: {
+                    Label(repeating ? LocalizedStringKey("Add previous sentence") : "Previous sentence", systemImage: "backward.end")
+                        .frame(minWidth: 44, minHeight: 44)
                 }
-            } label: {
-                if reading.isReading {
-                    Label("Pause", systemImage: "pause.fill")
-                } else {
-                    Label("Play", systemImage: "play.fill")
+                Button {
+                    if reading.isReading {
+                        reading.pause()
+                    } else {
+                        following = true
+                        reading.play()
+                    }
+                } label: {
+                    if reading.isReading {
+                        Label("Pause", systemImage: "pause.fill").frame(minWidth: 44, minHeight: 44)
+                    } else {
+                        Label("Play", systemImage: "play.fill").frame(minWidth: 44, minHeight: 44)
+                    }
                 }
+                .accessibilityFocused($pauseFocused)
+                // A system toggle: VoiceOver says whether it is on.
+                Toggle(isOn: Binding(get: { reading.loop != nil }, set: { _ in reading.toggleRepeat() })) {
+                    Label("Repeat sentence", systemImage: "repeat.1").frame(minWidth: 44, minHeight: 44)
+                }
+                .toggleStyle(.button)
             }
-            .accessibilityFocused($pauseFocused)
-            // A system toggle: VoiceOver says whether it is on.
-            Toggle(isOn: Binding(get: { reading.loop != nil }, set: { _ in reading.toggleRepeat() })) {
-                Label("Repeat sentence", systemImage: "repeat.1")
-            }
-            .toggleStyle(.button)
-            Spacer()
+            .labelStyle(.iconOnly)
+            .font(.title2)
+            .buttonStyle(.borderless)
         }
+        .padding(.horizontal, 20)
+        .padding(.vertical, 8)
+        .modifier(BarBackground())
+        .padding(.bottom, 8)
     }
 
     /// Starts reading aloud at the sentence holding `offset` of paragraph `paragraph`.
@@ -452,13 +456,13 @@ struct ReaderView: View {
     }
 }
 
-/// Behind the line above the bottom bar: glass on iOS 26, like the bar; the bar material before.
+/// Behind the reading controls: glass on iOS 26, like the system bars; the bar material before.
 private struct BarBackground: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26, *) {
             content.glassEffect(.regular, in: Capsule()).padding(.horizontal, 16)
         } else {
-            content.background(.bar)
+            content.background(.bar, in: Capsule()).padding(.horizontal, 16)
         }
     }
 }

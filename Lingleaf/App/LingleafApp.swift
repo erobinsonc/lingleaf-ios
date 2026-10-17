@@ -66,11 +66,6 @@ final class AppModel {
         spokenLog.append(text)
     }
 
-    #if DEBUG
-    /// UI tests only: the text being "spoken" ends, so reading aloud goes on.
-    func finishSpeech() { speaker.finishRecorded() }
-    #endif
-
     init(
         library: Library, http: HttpFetcher, speaker: Speaker, autoLanguage: String?,
         fakeTranslator: (@Sendable (String) throws -> String)? = nil, covers: CoverLoader? = CoverLoader()
@@ -309,12 +304,6 @@ private struct LastSpokenProbe: View {
                 .opacity(0.01)
                 .allowsHitTesting(false)
                 .accessibilityIdentifier("ui-test-last-spoken")
-            // Ends the text being "spoken", so a test steps through reading aloud.
-            // 2×2 pt at 2 % opacity: still hit-testable (UIKit skips views under 1 %).
-            Button { model.finishSpeech() } label: { Text(verbatim: "finish") }
-                .frame(width: 2, height: 2)
-                .opacity(0.02)
-                .accessibilityIdentifier("ui-test-finish-speech")
             // Everything spoken so far, one text per line.
             Text(model.spokenLog.joined(separator: "\n"))
                 .frame(width: 1, height: 1)

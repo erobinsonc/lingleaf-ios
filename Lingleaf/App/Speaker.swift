@@ -14,6 +14,8 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     /// goes on with the next sentence.
     @ObservationIgnored private var onFinish: (() -> Void)?
     @ObservationIgnored private var spoken: AVSpeechUtterance?
+    /// UI tests: counts recorded texts, so only the latest one "ends".
+    @ObservationIgnored private var recorded = 0
 
     override init() {
         super.init()
@@ -26,9 +28,17 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         #if DEBUG
         if let record {
             record(text)
-            // UI tests: a recorded sentence ends when the test says so (`finishRecorded`),
-            // so a test steps through reading aloud one sentence at a time.
+            // UI tests: a recorded text "ends" after 2 s, as a short sentence would, so
+            // reading aloud moves on; tests check the spoken log, not the moment.
             self.onFinish = onFinish
+            if onFinish != nil {
+                recorded += 1
+                let current = recorded
+                Task { @MainActor in
+                    try? await Task.sleep(for: .seconds(2))
+                    if self.recorded == current { self.finish(nil) }
+                }
+            }
             return
         }
         #endif
@@ -46,14 +56,10 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
 
     func stop() {
         onFinish = nil
+        recorded += 1
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
     }
-
-    #if DEBUG
-    /// UI tests: the recorded text "ends", as a spoken one would.
-    func finishRecorded() { finish(nil) }
-    #endif
 
     /// The utterance ended by itself: run its `onFinish` (only for the one still current).
     private func finish(_ utterance: AVSpeechUtterance?) {
