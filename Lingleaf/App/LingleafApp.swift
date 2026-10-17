@@ -40,6 +40,8 @@ final class AppModel {
     let fakeTranslator: (@Sendable (String) throws -> String)?
     /// The language picked from the device's preferred languages; nil when none is supported (then the app asks).
     let autoLanguage: String?
+    /// Book covers from Project Gutenberg; nil in UI tests, so they never depend on the network.
+    let covers: CoverLoader?
     /// Drives `TranslationWorker`: each new or invalidated value translates the saved words that need it.
     private(set) var workerConfiguration: TranslationSession.Configuration?
     /// UI tests only: the last text handed to the fake speaker, shown by `LastSpokenProbe`.
@@ -48,8 +50,9 @@ final class AppModel {
 
     init(
         library: Library, http: HttpFetcher, speaker: Speaker, autoLanguage: String?,
-        fakeTranslator: (@Sendable (String) throws -> String)? = nil
+        fakeTranslator: (@Sendable (String) throws -> String)? = nil, covers: CoverLoader? = CoverLoader()
     ) {
+        self.covers = covers
         self.library = library
         self.dictionary = DictionaryClient(http: http)
         self.gutenberg = GutenbergClient(http: http)
@@ -99,7 +102,9 @@ final class AppModel {
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
             if url.contains("gutendex") { return HttpResponse(status: 200, text: fakeCatalog) }
-            if url.contains("gutenberg.org/ebooks/") { return HttpResponse(status: 200, text: fakeBookText) }
+            // Peter Pan is "not available right now", to show that message.
+            if url.contains("gutenberg.org/cache/epub/16/") { return HttpResponse(status: 404, text: "") }
+            if url.contains("gutenberg.org/cache/epub/") { return HttpResponse(status: 200, text: fakeBookText) }
             guard url.contains("dictionaryapi.dev") else { return HttpResponse(status: 404, text: "") }
             let word = url.split(separator: "/").last.map(String.init) ?? ""
             let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Definition of \#(word)."}]}]}]"#
@@ -113,7 +118,7 @@ final class AppModel {
         }
         let speaker = Speaker()
         let library = Library(storage: FileStorage(directory: dir))
-        let model = AppModel(library: library, http: http, speaker: speaker, autoLanguage: nil, fakeTranslator: translator)
+        let model = AppModel(library: library, http: http, speaker: speaker, autoLanguage: nil, fakeTranslator: translator, covers: nil)
         speaker.record = { [weak model] text in model?.lastSpoken = text }
         if let language { library.updateSettings { $0.targetLanguage = language } }
         if due {

@@ -11,6 +11,52 @@
         }
       }
     },
+    "%lld books found": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld book found"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld books found"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libro encontrado"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libros encontrados"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld libros encontrados"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld days in a row": {
       "localizations": {
         "en": {
@@ -285,6 +331,26 @@
         }
       }
     },
+    "Cancel": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelar"
+          }
+        }
+      }
+    },
+    "Cancel download": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancelar descarga"
+          }
+        }
+      }
+    },
     "Close": {
       "comment": "Closes the Undo message when it doesn't time out (VoiceOver or Switch Control on).",
       "localizations": {
@@ -306,32 +372,12 @@
         }
       }
     },
-    "Couldn't download “%@”. Try again.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo descargar “%@”. Intenta de nuevo."
-          }
-        }
-      }
-    },
     "Couldn't import that file. Try a plain-text (.txt) English book.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "No se pudo importar. Intenta con un libro en inglés en texto plano (.txt)."
-          }
-        }
-      }
-    },
-    "Couldn't load the catalog. Check your connection.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No se pudo cargar el catálogo. Revisa tu conexión."
           }
         }
       }
@@ -416,12 +462,12 @@
         }
       }
     },
-    "Downloading": {
+    "Downloading %@": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Descargando"
+            "value": "Descargando %@"
           }
         }
       }
@@ -756,6 +802,36 @@
         }
       }
     },
+    "Project Gutenberg didn't answer. Try again.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Read": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leer"
+          }
+        }
+      }
+    },
+    "Read %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leer %@"
+          }
+        }
+      }
+    },
     "Read %lld minutes a day": {
       "localizations": {
         "es": {
@@ -836,6 +912,16 @@
         }
       }
     },
+    "Retry %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reintentar %@"
+          }
+        }
+      }
+    },
     "Review": {
       "localizations": {
         "es": {
@@ -906,6 +992,16 @@
         }
       }
     },
+    "Searching Project Gutenberg…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscando en Project Gutenberg…"
+          }
+        }
+      }
+    },
     "Selected": {
       "localizations": {
         "es": {
@@ -966,6 +1062,16 @@
         }
       }
     },
+    "Still searching. Project Gutenberg can be slow.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seguimos buscando. Project Gutenberg puede tardar."
+          }
+        }
+      }
+    },
     "Stop reading": {
       "localizations": {
         "es": {
@@ -1012,6 +1118,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este libro está vacío."
+          }
+        }
+      }
+    },
+    "This book isn't available right now.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este libro no está disponible en este momento."
           }
         }
       }
@@ -1132,6 +1248,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Palabras"
+          }
+        }
+      }
+    },
+    "You're offline. Connect to the internet to download it.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin conexión. Conéctate a internet para descargarlo."
+          }
+        }
+      }
+    },
+    "You're offline. Connect to the internet to search.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin conexión. Conéctate a internet para buscar."
           }
         }
       }

@@ -40,32 +40,45 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual(book("x", "Aesop").authorName, "Aesop")
     }
 
-    func testRecommendedBooksParseAndKeepCuratedOrder() async throws {
-        let alice = alice
-        let client = GutenbergClient(http: ClosureFetcher { url in
-            XCTAssertTrue(url.contains("ids=21,55"))
-            return ok(#"{"count": 2, "results": [\#(alice), {"id": 21, "title": "Fables"}]}"#)
-        })
-        let books = try await client.fetchRecommended()
-        XCTAssertEqual(books.map(\.id), [21, 11])
-        XCTAssertNil(books[0].authorName)
-        XCTAssertEqual(books[1].authorName, "Lewis Carroll")
-        XCTAssertEqual(books[1].textURL, "https://example.com/11.utf8.txt")
-        XCTAssertEqual(books[1].coverURL?.absoluteString, "https://example.com/11.jpg")
+    func testRecommendedBooksShipWithTheAppWithDirectLinks() {
+        let books = GutenbergClient.recommendedBooks
+        XCTAssertEqual(books.map(\.id), GutenbergClient.recommended.map(\.id), "same books, same order as the levels")
+        let alice = books.first { $0.id == 11 }
+        XCTAssertEqual(alice?.displayTitle, "Alice's Adventures in Wonderland")
+        XCTAssertEqual(alice?.authorName, "Lewis Carroll")
+        XCTAssertEqual(alice?.textURL, "https://www.gutenberg.org/cache/epub/11/pg11.txt")
+        XCTAssertEqual(alice?.coverURL?.absoluteString, "https://www.gutenberg.org/cache/epub/11/pg11.cover.medium.jpg")
         XCTAssertEqual(GutenbergClient.level(for: 11), "B2")
     }
 
-    func testRecommendedRequestsEveryCuratedID() async throws {
-        let recorder = Recorder()
-        let client = GutenbergClient(http: ClosureFetcher { url in
-            await recorder.add(url)
-            return ok(#"{"results": []}"#)
-        })
-        _ = try await client.fetchRecommended()
-        let urls = await recorder.urls
-        let ids = GutenbergClient.recommended.map { String($0.id) }.joined(separator: ",")
-        XCTAssertEqual(urls, ["https://gutendex.com/books?ids=\(ids)"])
-        XCTAssertLessThanOrEqual(GutenbergClient.recommended.count, 32, "Gutendex returns 32 books per page")
+    func testCatalogBooksDownloadFromTheFileCache() throws {
+        let data = Data(#"{"results": [\#(alice)]}"#.utf8)
+        struct Page: Decodable { let results: [GutenbergBook] }
+        let book = try XCTUnwrap(JSONDecoder().decode(Page.self, from: data).results.first)
+        XCTAssertEqual(book.textURL, "https://www.gutenberg.org/cache/epub/11/pg11.txt", "not the catalog's redirecting link")
+        XCTAssertNil(GutenbergBook(id: 2, title: "No text", formats: ["application/zip": "https://example.com/2.zip"]).textURL)
+    }
+
+    func testCoversLoadOnlyFromTheGutenbergFileCache() {
+        let elsewhere = GutenbergBook(id: 3, title: "x", formats: ["image/jpeg": "http://example.com/huge.jpg"])
+        let cover = "https://www.gutenberg.org/cache/epub/3/pg3.cover.medium.jpg"
+        XCTAssertEqual(elsewhere.coverURL?.absoluteString, cover, "not the catalog's link")
+        XCTAssertNil(GutenbergBook(id: 4, title: "No cover").coverURL)
+    }
+
+    func testCoversDecodeDownsampledAndHugeImagesAreRefused() {
+        XCTAssertEqual(GutenbergClient.coverSample(width: 350, height: 500), 1, "a medium cover stays sharp")
+        XCTAssertEqual(GutenbergClient.coverSample(width: 1000, height: 1400), 4)
+        XCTAssertNil(GutenbergClient.coverSample(width: 5000, height: 10), "a side over 4096 px")
+        XCTAssertNil(GutenbergClient.coverSample(width: 4096, height: 4096), "over 4 megapixels")
+        XCTAssertNil(GutenbergClient.coverSample(width: -1, height: -1), "not an image")
+    }
+
+    func testOnlyJPEGCoversReachTheImageDecoder() {
+        XCTAssertTrue(GutenbergClient.isJPEG(Data([0xFF, 0xD8, 0xFF, 0xE0])))
+        XCTAssertFalse(GutenbergClient.isJPEG(Data("RIFF....WEBP".utf8)), "WebP")
+        XCTAssertFalse(GutenbergClient.isJPEG(Data([0xFF, 0xD8])), "too short")
+        XCTAssertFalse(GutenbergClient.isJPEG(Data()))
     }
 
     func testFilterKeepsBooksAtTheChosenLevelInOrder() {
@@ -82,33 +95,70 @@ final class GutenbergTests: XCTestCase {
         }
     }
 
-    func testSearchEncodesTheQueryAndErrorsOnBadStatus() async throws {
+    private func error(_ operation: () async throws -> Void) async -> Error? {
+        do {
+            try await operation()
+            return nil
+        } catch {
+            return error
+        }
+    }
+
+    func testSearchEncodesTheQueryAndSaysWhyItFailed() async throws {
         let client = GutenbergClient(http: ClosureFetcher { url in
-            url.contains("search=tom%20sawyer") ? ok(#"{"results": []}"#) : HttpResponse(status: 500, text: "")
+            if url.contains("search=tom%20sawyer") { return ok(#"{"results": []}"#) }
+            if url.contains("search=offline") { throw NetworkError("No internet", kind: .offline) }
+            if url.contains("search=slow") { throw NetworkError("Timed out", kind: .timedOut) }
+            if url.contains("search=broken") { return ok("<html>") }
+            return HttpResponse(status: 500, text: "")
         })
         let none = try await client.search("tom sawyer")
         XCTAssertTrue(none.isEmpty)
-        do {
-            _ = try await client.search("other")
-            XCTFail("expected an error")
-        } catch {}
+        let offline = await error { _ = try await client.search("offline") }
+        XCTAssertEqual(offline as? GutenbergError, .offline)
+        let slow = await error { _ = try await client.search("slow") }
+        XCTAssertEqual(slow as? GutenbergError, .timedOut)
+        let broken = await error { _ = try await client.search("broken") }
+        XCTAssertEqual(broken as? GutenbergError, .failed)
+        let server = await error { _ = try await client.search("other") }
+        XCTAssertEqual(server as? GutenbergError, .failed)
+        let cancelled = await error { _ = try await GutenbergClient(http: ClosureFetcher { _ in throw CancellationError() }).search("x") }
+        XCTAssertTrue(cancelled is CancellationError, "cancelling is not a failure to show")
+        let other = await error { _ = try await GutenbergClient(http: ClosureFetcher { _ in throw URLError(.badURL) }).search("x") }
+        XCTAssertEqual(other as? GutenbergError, .failed)
     }
 
-    func testDownloadStripsBoilerplateAndRejectsEmptyBooks() async throws {
+    func testDownloadStripsBoilerplateReportsProgressAndSaysWhyItFailed() async throws {
         let book = GutenbergBook(id: 1, title: "X", formats: ["text/plain": "https://example.com/1.txt"])
-        let text = try await GutenbergClient(http: ClosureFetcher { _ in ok("h\n*** START OF IT ***\nCafé story.\n*** END OF IT ***") })
-            .downloadText(book)
+        let done = Recorder()
+        let text = try await GutenbergClient(http: ClosureFetcher { url in
+            XCTAssertEqual(url, "https://www.gutenberg.org/cache/epub/1/pg1.txt")
+            return ok("h\n*** START OF IT ***\nCafé story.\n*** END OF IT ***")
+        }).downloadText(book) { fraction in Task { await done.add(String(fraction)) } }
         XCTAssertEqual(text, "Café story.")
-        for (client, target) in [
-            (GutenbergClient(http: ClosureFetcher { _ in ok("*** START OF IT ***\n*** END OF IT ***") }), book),
-            (GutenbergClient(http: ClosureFetcher { _ in notFound }), book),
-            (GutenbergClient(http: ClosureFetcher { _ in notFound }), GutenbergBook(id: 2, title: "No text")),
-        ] {
-            do {
-                _ = try await client.downloadText(target)
-                XCTFail("expected an error")
-            } catch {}
+        try await Task.sleep(nanoseconds: 50_000_000)
+        let progress = await done.urls
+        XCTAssertEqual(progress, ["1.0"])
+        let cases: [(GutenbergClient, GutenbergBook, GutenbergError)] = [
+            (GutenbergClient(http: ClosureFetcher { _ in ok("*** START OF IT ***\n*** END OF IT ***") }), book, .unavailable),
+            (GutenbergClient(http: ClosureFetcher { _ in notFound }), book, .unavailable),
+            (GutenbergClient(http: ClosureFetcher { _ in HttpResponse(status: 403, text: "") }), book, .unavailable),
+            (GutenbergClient(http: ClosureFetcher { _ in HttpResponse(status: 503, text: "") }), book, .failed),
+            (GutenbergClient(http: ClosureFetcher { _ in ok("x") }), GutenbergBook(id: 2, title: "No text"), .unavailable),
+        ]
+        for (client, target, expected) in cases {
+            let failure = await error { _ = try await client.downloadText(target) }
+            XCTAssertEqual(failure as? GutenbergError, expected)
         }
+    }
+
+    func testURLErrorsMapToOfflineTimedOutAndCancelled() {
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.notConnectedToInternet)) as? NetworkError)?.kind, .offline)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.timedOut)) as? NetworkError)?.kind, .timedOut)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.cannotFindHost)) as? NetworkError)?.kind, .offline)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.cannotConnectToHost)) as? NetworkError)?.kind, .offline)
+        XCTAssertEqual((URLSessionFetcher.networkError(URLError(.badServerResponse)) as? NetworkError)?.kind, .other)
+        XCTAssertTrue(URLSessionFetcher.networkError(URLError(.cancelled)) is CancellationError)
     }
 }
 

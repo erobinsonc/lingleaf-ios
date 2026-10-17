@@ -1,55 +1,70 @@
+import Accessibility
 import SwiftUI
 import LingleafCore
 
-/// Search and download free public-domain books from Project Gutenberg.
+/// Recommended classics (shipped with the app) and search of Project Gutenberg, with a
+/// download that shows its progress, can be cancelled, and says why it failed (S9, S12).
 struct DiscoverView: View {
     @Environment(AppModel.self) private var model
     @State private var query = ""
-    @State private var recommended: [GutenbergBook] = []
     @State private var results: [GutenbergBook]?
-    @State private var loading = false
-    @State private var failed = false
-    @State private var downloading: Set<Int> = []
-    @State private var message: String?
+    @State private var searchTask: Task<Void, Never>?
+    @State private var searching = false
+    /// The search has taken over 8 s: say Project Gutenberg can be slow, and offer Cancel.
+    @State private var slow = false
+    @State private var searchError: GutenbergError?
+    @State private var downloads: [Int: Download] = [:]
     /// Level chosen in the filter chips; nil shows every recommended book.
     @State private var level: String?
+
+    /// A download in progress (0…1) or why it failed.
+    private enum Download: Equatable {
+        case running(Double, Task<Void, Never>)
+        case failed(GutenbergError)
+
+        static func == (lhs: Download, rhs: Download) -> Bool {
+            switch (lhs, rhs) {
+            case let (.running(a, _), .running(b, _)): a == b
+            case let (.failed(a), .failed(b)): a == b
+            default: false
+            }
+        }
+    }
 
     /// Levels that have at least one recommended book, easiest first.
     private static let filterLevels = GutenbergClient.levels.filter { level in
         GutenbergClient.recommended.contains { $0.level == level }
     }
 
-    private var downloaded: Set<Int> { Set(model.state.books.compactMap(\.gutenbergID)) }
-    private var books: [GutenbergBook] { results ?? GutenbergClient.filter(recommended, level: level) }
+    private var recommended: [GutenbergBook] { GutenbergClient.filter(GutenbergClient.recommendedBooks, level: level) }
 
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    if results == nil && !recommended.isEmpty { levelFilter }
-                    if loading {
-                        ProgressView().frame(maxWidth: .infinity)
-                    } else if failed {
-                        VStack(spacing: 12) {
-                            Text("Couldn't load the catalog. Check your connection.")
-                            Button("Retry") { Task { await load(results == nil ? nil : query) } }
-                                .buttonStyle(.bordered)
-                        }
-                        .frame(maxWidth: .infinity)
-                    } else if books.isEmpty {
-                        if results == nil && !recommended.isEmpty {
-                            Text("No recommended books at this level.")
-                        } else {
+                if searching || searchError != nil { searchStatus }
+                if let results {
+                    Section {
+                        if results.isEmpty {
                             Text("No books found. Try another title or author.")
+                        } else {
+                            ForEach(results) { row($0) }
                         }
+                    } header: {
+                        Text("Results").foregroundStyle(Brand.secondaryText)
+                    }
+                }
+                Section {
+                    levelFilter
+                    if recommended.isEmpty {
+                        Text("No recommended books at this level.")
                     } else {
-                        ForEach(books) { row($0) }
+                        ForEach(recommended) { row($0) }
                     }
                 } header: {
                     // The credit lives in the header: as a footer, a row among the books or
                     // a section of its own, the audit reported it as not scaling with Dynamic Type.
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(results == nil ? "Recommended for learners" : "Results")
+                        Text("Recommended for learners")
                         Text("Free public-domain classics from Project Gutenberg.")
                             .font(.footnote)
                             .textCase(nil)
@@ -58,15 +73,99 @@ struct DiscoverView: View {
                 }
             }
             .navigationTitle("Discover")
+            .navigationDestination(for: String.self) { ReaderView(bookID: $0) }
             .searchable(text: $query, prompt: "Title or author")
-            .onSubmit(of: .search) { Task { await load(query) } }
-            .onChange(of: query) { _, newValue in if newValue.isEmpty { results = nil } }
-            .task { if recommended.isEmpty { await load(nil) } }
-            .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {
-                Button("OK", role: .cancel) {}
+            .onSubmit(of: .search) { startSearch() }
+            .onChange(of: query) { _, newValue in
+                if newValue.isEmpty { cancelSearch() }
             }
         }
     }
+
+    // MARK: Search
+
+    /// "Searching Project Gutenberg…", after 8 s "Still searching…" with Cancel, or why it failed with Retry.
+    @ViewBuilder
+    private var searchStatus: some View {
+        Section {
+            if searching {
+                HStack(spacing: 12) {
+                    ProgressView()
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Searching Project Gutenberg…")
+                        if slow {
+                            Text("Still searching. Project Gutenberg can be slow.")
+                                .font(.subheadline)
+                                .foregroundStyle(Brand.secondaryText)
+                        }
+                    }
+                    Spacer(minLength: 8)
+                    if slow {
+                        Button("Cancel") { cancelSearch() }.buttonStyle(.bordered)
+                    }
+                }
+                .accessibilityElement(children: .contain)
+            } else if let searchError {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(searchMessage(searchError))
+                    Button("Retry") { startSearch() }.buttonStyle(.bordered)
+                }
+            }
+        }
+    }
+
+    private func searchMessage(_ error: GutenbergError) -> String {
+        switch error {
+        case .offline: String(localized: "You're offline. Connect to the internet to search.")
+        default: String(localized: "Project Gutenberg didn't answer. Try again.")
+        }
+    }
+
+    /// A new search cancels the one still running.
+    private func startSearch() {
+        let text = query.trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return }
+        searchTask?.cancel()
+        searching = true
+        slow = false
+        searchError = nil
+        results = nil
+        let gutenberg = model.gutenberg
+        searchTask = Task {
+            let slowTimer = Task {
+                try? await Task.sleep(for: .seconds(8))
+                if !Task.isCancelled { slow = true }
+            }
+            defer { slowTimer.cancel() }
+            do {
+                let found = try await gutenberg.search(text)
+                guard !Task.isCancelled else { return }
+                results = found
+                announce(found.isEmpty
+                    ? String(localized: "No books found. Try another title or author.")
+                    : String(localized: "\(found.count) books found"))
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else { return }
+                let failure = (error as? GutenbergError) ?? .failed
+                searchError = failure
+                announce(searchMessage(failure))
+            }
+            searching = false
+        }
+    }
+
+    private func cancelSearch() {
+        searchTask?.cancel()
+        searchTask = nil
+        searching = false
+        slow = false
+        searchError = nil
+        results = nil
+    }
+
+    // MARK: Level filter
 
     /// "All" plus one chip per level; scrolls sideways when the text is large.
     private var levelFilter: some View {
@@ -105,16 +204,16 @@ struct DiscoverView: View {
         .accessibilityIdentifier("level-filter-\(value ?? "all")")
     }
 
+    // MARK: Books
+
     private func row(_ book: GutenbergBook) -> some View {
-        HStack(spacing: 14) {
-            AsyncImage(url: book.coverURL) { image in
-                image.resizable().scaledToFill()
-            } placeholder: {
-                BookCover(title: book.displayTitle)
-            }
-            .frame(width: 44, height: 62)
-            .clipShape(RoundedRectangle(cornerRadius: 6))
-            .accessibilityHidden(true)
+        let failure = failure(book.id)
+        return HStack(spacing: 14) {
+            // Decorative: the row says the title and author.
+            CoverThumbnail(book: book)
+                .frame(width: 44, height: 62)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.displayTitle).font(.headline)
@@ -123,59 +222,127 @@ struct DiscoverView: View {
                     Text(book.authorName ?? String(localized: "Unknown author"))
                         .font(.subheadline).foregroundStyle(Brand.secondaryText)
                 }
+                if let failure {
+                    Text(downloadMessage(failure))
+                        .font(.subheadline)
+                        .foregroundStyle(Brand.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
             }
             Spacer(minLength: 8)
-            if downloaded.contains(book.id) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundStyle(Brand.ink)
-                    .accessibilityLabel(Text("In your library"))
-            } else if downloading.contains(book.id) {
-                ProgressView()
-                    .accessibilityLabel(Text("Downloading"))
-            } else if book.textURL != nil {
-                Button("Get") { Task { await download(book) } }
-                    .buttonStyle(.bordered)
-                    .accessibilityLabel(Text("Get \(book.title)"))
-            } else {
-                // No plain-text edition: a disabled button would be dimmed below readable contrast.
-                Text("Not available")
-                    .font(.subheadline)
-                    .foregroundStyle(Brand.secondaryText)
-            }
+            action(book, failure: failure)
         }
         .padding(.vertical, 4)
     }
 
-    private func load(_ search: String?) async {
-        loading = true
-        failed = false
-        defer { loading = false }
-        do {
-            if let search, !search.trimmingCharacters(in: .whitespaces).isEmpty {
-                results = try await model.gutenberg.search(search.trimmingCharacters(in: .whitespaces))
-            } else {
-                recommended = try await model.gutenberg.fetchRecommended()
+    /// Get → a progress ring (tap to cancel) → Read; Retry after a failure that may pass.
+    @ViewBuilder
+    private func action(_ book: GutenbergBook, failure: GutenbergError?) -> some View {
+        if let saved = model.state.books.first(where: { $0.gutenbergID == book.id }) {
+            NavigationLink(value: saved.id) {
+                Text("Read")
             }
-        } catch {
-            failed = true
+            .buttonStyle(.borderedProminent)
+            .tint(Brand.ink)
+            .accessibilityLabel(Text("Read \(book.displayTitle)"))
+        } else if case let .running(fraction, task) = downloads[book.id] {
+            Button {
+                task.cancel()
+                downloads[book.id] = nil
+            } label: {
+                ProgressView(value: fraction)
+                    .progressViewStyle(.circular)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text("Downloading \(book.displayTitle)"))
+            .accessibilityValue(Text(fraction, format: .percent.precision(.fractionLength(0))))
+            .accessibilityAction(named: Text("Cancel download")) {
+                task.cancel()
+                downloads[book.id] = nil
+            }
+        } else if book.textURL == nil {
+            // No plain-text edition: a disabled button would be dimmed below readable contrast.
+            Text("Not available")
+                .font(.subheadline)
+                .foregroundStyle(Brand.secondaryText)
+        } else {
+            // After any failure, Retry: "not available right now" may pass, and focus keeps a place to land.
+            Button(failure == nil ? LocalizedStringKey("Get") : LocalizedStringKey("Retry")) { download(book) }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(failure == nil ? Text("Get \(book.displayTitle)") : Text("Retry \(book.displayTitle)"))
         }
     }
 
-    private func download(_ book: GutenbergBook) async {
-        downloading.insert(book.id)
-        defer { downloading.remove(book.id) }
-        do {
-            let text = try await model.gutenberg.downloadText(book)
-            model.library.addBook(
-                title: book.displayTitle,
-                author: book.authorName ?? String(localized: "Unknown author"),
-                text: text,
-                level: GutenbergClient.level(for: book.id),
-                gutenbergID: book.id
-            )
-            message = String(localized: "“\(book.displayTitle)” is in your library.")
-        } catch {
-            message = String(localized: "Couldn't download “\(book.displayTitle)”. Try again.")
+    /// Results, errors and finished downloads change the screen without moving focus: say them.
+    private func announce(_ text: String) {
+        AccessibilityNotification.Announcement(text).post()
+    }
+
+    private func failure(_ id: Int) -> GutenbergError? {
+        if case let .failed(error) = downloads[id] { return error }
+        return nil
+    }
+
+    private func downloadMessage(_ error: GutenbergError) -> String {
+        switch error {
+        case .unavailable: String(localized: "This book isn't available right now.")
+        case .offline: String(localized: "You're offline. Connect to the internet to download it.")
+        case .timedOut, .failed: String(localized: "Project Gutenberg didn't answer. Try again.")
+        }
+    }
+
+    private func download(_ book: GutenbergBook) {
+        let gutenberg = model.gutenberg
+        let library = model.library
+        let id = book.id
+        let task = Task {
+            do {
+                let text = try await gutenberg.downloadText(book) { fraction in
+                    Task { @MainActor in
+                        if case let .running(_, task) = downloads[id] { downloads[id] = .running(fraction, task) }
+                    }
+                }
+                library.addBook(
+                    title: book.displayTitle,
+                    author: book.authorName ?? String(localized: "Unknown author"),
+                    text: text,
+                    level: GutenbergClient.level(for: id),
+                    gutenbergID: id
+                )
+                downloads[id] = nil
+                announce(String(localized: "“\(book.displayTitle)” is in your library."))
+            } catch is CancellationError {
+                downloads[id] = nil
+            } catch {
+                guard !Task.isCancelled else { return }
+                let failure = (error as? GutenbergError) ?? .failed
+                downloads[id] = .failed(failure)
+                announce(downloadMessage(failure))
+            }
+        }
+        downloads[id] = .running(0, task)
+    }
+}
+
+/// The book's cover, or a drawn one while it loads, offline or in UI tests.
+private struct CoverThumbnail: View {
+    @Environment(AppModel.self) private var model
+    let book: GutenbergBook
+    @State private var image: UIImage?
+
+    var body: some View {
+        Group {
+            if let image {
+                Image(uiImage: image).resizable().scaledToFill()
+            } else {
+                BookCover(title: book.displayTitle)
+            }
+        }
+        .task(id: book.id) {
+            guard let covers = model.covers, let url = book.coverURL else { return }
+            image = await covers.load(url)
         }
     }
 }
