@@ -54,43 +54,75 @@ public enum TextTools {
 
     /// `paragraph` in pieces of at most `maxParagraph` UTF-16 units, each cut after the last
     /// sentence end that fits, else at the last space, else (no spaces at all) at the limit.
+    /// Walks the text once with an index, so a 10 MB text without blank lines splits in linear time.
     static func bounded(_ paragraph: String) -> [String] {
-        var rest = paragraph as NSString
+        // One real NSString, made once: every regex and substring below works on it in place.
+        let ns = NSString(string: paragraph)
+        guard ns.length > maxParagraph else { return [paragraph] }
+        let text = ns as String
         var pieces: [String] = []
-        while rest.length > maxParagraph {
+        var start = 0
+        while true {
+            while start < ns.length, isSpace(ns.character(at: start)) { start += 1 }
+            if ns.length - start <= maxParagraph {
+                let last = ns.substring(from: start).trimmingCharacters(in: .whitespaces)
+                if !last.isEmpty { pieces.append(last) }
+                return pieces
+            }
             // One unit past the limit, so the sentence-end lookahead can see what follows.
-            let window = NSRange(location: 0, length: maxParagraph + 1)
-            var cut = sentenceEnd.matches(in: rest as String, range: window)
-                .map { $0.range.location + $0.range.length }
+            let window = NSRange(location: start, length: maxParagraph + 1)
+            var cut = sentenceEnd.matches(in: text, range: window)
+                .map { $0.range.location + $0.range.length - start }
                 .last { $0 <= maxParagraph } ?? 0
             if cut == 0 {
-                let space = rest.rangeOfCharacter(
-                    from: .whitespaces, options: .backwards, range: NSRange(location: 0, length: maxParagraph)
+                let space = ns.rangeOfCharacter(
+                    from: .whitespaces, options: .backwards, range: NSRange(location: start + 1, length: maxParagraph - 1)
                 )
-                cut = space.location == NSNotFound || space.location == 0 ? maxParagraph : space.location
+                cut = space.location == NSNotFound ? maxParagraph : space.location - start
             }
-            if CFStringIsSurrogateHighCharacter(rest.character(at: cut - 1)) { cut -= 1 }
-            let piece = rest.substring(to: cut).trimmingCharacters(in: .whitespaces)
+            // Never between the halves of a surrogate pair, and always forward.
+            if cut > 1, CFStringIsSurrogateHighCharacter(ns.character(at: start + cut - 1)) { cut -= 1 }
+            let piece = ns.substring(with: NSRange(location: start, length: cut)).trimmingCharacters(in: .whitespaces)
             if !piece.isEmpty { pieces.append(piece) }
-            rest = rest.substring(from: cut).trimmingCharacters(in: .whitespaces) as NSString
+            start += cut
         }
-        if rest.length > 0 { pieces.append(rest as String) }
-        return pieces
     }
 
-    /// Outside text shown as a title or author: no control or invisible formatting
-    /// characters (bidi overrides, zero-width), single spaces, at most `maxLabel` characters.
+    /// At most `max` UTF-16 units of `text`, never splitting a surrogate pair.
+    public static func truncated(_ text: String, _ max: Int) -> String {
+        let units = text.utf16
+        guard units.count > max else { return text }
+        var end = max
+        if end > 1, UTF16.isLeadSurrogate(units[units.index(units.startIndex, offsetBy: end - 1)]) { end -= 1 }
+        return String(decoding: units.prefix(end), as: UTF16.self)
+    }
+
+    /// Accents kept on one letter: real text needs two or three; "Zalgo" text piles up thousands.
+    public static let maxCombiningMarks = 4
+    /// Characters that show as blank space but are letters or symbols, not whitespace.
+    private static let blankFillers: Set<UInt32> = [0x115F, 0x1160, 0x3164, 0xFFA0, 0x2800]
+
+    /// Outside text shown as a title or author: no control, invisible formatting or blank
+    /// filler characters (bidi overrides, zero-width, Hangul fillers), at most
+    /// `maxCombiningMarks` accents on one letter, single spaces, at most `maxLabel` UTF-16 units.
     public static func cleanLabel(_ text: String) -> String {
         var scalars = String.UnicodeScalarView()
+        var marks = 0
         for scalar in text.unicodeScalars {
-            switch scalar.properties.generalCategory {
+            let category = scalar.properties.generalCategory
+            if category == .nonspacingMark || category == .enclosingMark {
+                marks += 1
+                if marks <= maxCombiningMarks { scalars.append(scalar) }
+                continue
+            }
+            marks = 0
+            switch category {
             case .format: continue
             case .control, .lineSeparator, .paragraphSeparator: scalars.append(" ")
-            default: scalars.append(scalar)
+            default: if !blankFillers.contains(scalar.value) { scalars.append(scalar) }
             }
         }
-        let single = String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " ")
-        return String(single.prefix(maxLabel))
+        return truncated(String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " "), maxLabel)
     }
 
     /// Every English word; contractions such as "don't" stay whole.

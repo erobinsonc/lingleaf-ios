@@ -321,6 +321,15 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(FileStorage(directory: dir).read("../lingleaf-outside.txt"), "a restored book can't name a file outside")
     }
 
+    func testAHugeContextIsNeverSaved() {
+        let library = library()
+        library.saveWord("sea", learned: false, context: String(repeating: "sea ", count: 5_000),
+                         contextTranslation: String(repeating: "mar ", count: 5_000))
+        let saved = library.state.word("sea")
+        XCTAssertEqual(saved?.context.utf16.count, TextTools.maxSentence)
+        XCTAssertLessThanOrEqual(saved?.contextTranslation?.utf16.count ?? 0, 2 * TextTools.maxSentence)
+    }
+
     func testAHugeSavedContextIsCutWhenLoaded() {
         library().saveWord("sea", learned: false, context: String(repeating: "sea ", count: 5_000))
         XCTAssertEqual(library().state.word("sea")?.context.utf16.count, TextTools.maxSentence)

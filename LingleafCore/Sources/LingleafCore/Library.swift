@@ -158,7 +158,7 @@ public final class Library {
         // Saved before contexts were capped, or restored from a backup: cut to size.
         loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { word in
             var word = word
-            if word.context.utf16.count > TextTools.maxSentence { word.context = String(word.context.prefix(TextTools.maxSentence)) }
+            word.context = TextTools.truncated(word.context, TextTools.maxSentence)
             return word
         }
         loaded.readingLog = decode([String: Int].self, "reading-log.json") ?? [:]
@@ -366,7 +366,14 @@ public final class Library {
         save(state.words, "words.json")
     }
 
+    /// A translation can be longer than its sentence; twice the sentence's limit.
+    private static let maxContextTranslation = 2 * TextTools.maxSentence
+
     private func replace(_ entry: VocabWord) {
+        // Every saved word passes here: whatever a caller hands in, nothing huge is kept.
+        var entry = entry
+        entry.context = TextTools.truncated(entry.context, TextTools.maxSentence)
+        entry.contextTranslation = entry.contextTranslation.map { TextTools.truncated($0, Self.maxContextTranslation) }
         var words = state.words.filter { $0.word != entry.word }
         words.append(entry)
         state.words = words.sorted { $0.createdAt > $1.createdAt }

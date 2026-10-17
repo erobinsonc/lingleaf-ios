@@ -21,6 +21,14 @@ final class TextToolsTests: XCTestCase {
         XCTAssertEqual(oneWord.map(\.count), [2_000, 2_000, 500])
     }
 
+    func testATenMegabyteTextWithoutBlankLinesSplitsInLinearTime() {
+        let book = String(repeating: "word ", count: 2_000_000)
+        let started = Date()
+        let pieces = TextTools.splitParagraphs(book)
+        XCTAssertEqual(pieces.count, 5_000, "2,000-unit pieces")
+        XCTAssertLessThan(Date().timeIntervalSince(started), 3)
+    }
+
     func testALongSentenceIsCappedAroundTheTappedWord() {
         let paragraph = String(repeating: "word ", count: 500)
         let range = TextTools.sentenceRangeAt(paragraph, 1_200)
@@ -34,6 +42,10 @@ final class TextToolsTests: XCTestCase {
         XCTAssertEqual(TextTools.cleanLabel("\u{202E}evil\u{200B} title\n  x"), "evil title x")
         XCTAssertEqual(TextTools.cleanLabel(String(repeating: "t", count: 300)).count, TextTools.maxLabel)
         XCTAssertEqual(TextTools.cleanLabel("Alice’s Adventures"), "Alice’s Adventures")
+        let zalgo = TextTools.cleanLabel("a" + String(repeating: "\u{0301}", count: 100_000))
+        XCTAssertEqual(zalgo.unicodeScalars.count, 1 + TextTools.maxCombiningMarks, "at most 4 accents on a letter")
+        XCTAssertEqual(TextTools.cleanLabel("\u{3164}\u{115F}\u{2800}Fake"), "Fake", "blank fillers")
+        XCTAssertEqual(TextTools.cleanLabel("Cafe\u{0301}"), "Cafe\u{0301}")
     }
 
     func testWordRangesKeepContractionsAndSkipNumbers() {

@@ -16,7 +16,8 @@ the same intent on both platforms. A change to behaviour updates this file in
   Outside data is untrusted even from these hosts: dictionary fields are cut to 500 characters
   (definition) and 100 (word, IPA, part of speech); JSON nested deeper than 64 levels is refused;
   a search shows each book once, at most 32, and a recommended book always as shipped; titles and
-  authors lose invisible control and formatting characters and are at most 200 characters.
+  authors lose invisible control, formatting and blank-filler characters, keep at most 4 accents per
+  letter and are at most 200 characters.
   Paragraphs over 2,000 characters are cut at the last sentence end that fits (else at a space);
   a word's saved sentence is at most 600 characters around the word. Files are read and written
   only under the app's own plain names.
