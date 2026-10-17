@@ -130,8 +130,10 @@ private struct NoVoiceAlert: ViewModifier {
     @Bindable var speaker: Speaker
 
     func body(content: Content) -> some View {
-        content.alert(String(localized: "Can't read aloud: this device has no English voice."), isPresented: $speaker.missedVoice) {
+        content.alert(String(localized: "Can't read aloud"), isPresented: $speaker.missedVoice) {
             Button(String(localized: "OK"), role: .cancel) {}
+        } message: {
+            Text("This device has no English voice. Add one in Settings > Accessibility > Spoken Content > Voices.")
         }
     }
 }

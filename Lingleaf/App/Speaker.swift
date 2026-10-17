@@ -31,8 +31,11 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     }
 
     @objc nonisolated private func interrupted(_ notification: Notification) {
-        guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
-              AVAudioSession.InterruptionType(rawValue: raw) == .began else { return }
+        guard let info = notification.userInfo,
+              let raw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+              AVAudioSession.InterruptionType(rawValue: raw) == .began,
+              // A late notice for an app that was suspended: leaving the app already paused.
+              info[AVAudioSessionInterruptionWasSuspendedKey] as? Bool != true else { return }
         Task { @MainActor in
             self.stop()
             self.onInterruption?()
@@ -79,9 +82,12 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     func stop() {
         onFinish = nil
         recorded += 1
+        let wasSpeaking = synthesizer.isSpeaking
+        spoken = nil
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
-        release()
+        // While the audio still plays, ending the session fails (busy): then it ends on the cancel.
+        if !wasSpeaking { release() }
     }
 
     /// The utterance ended by itself: run its `onFinish` (only for the one still current).
@@ -126,6 +132,9 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
             if utterance === self.spoken {
                 self.stop()
                 self.onInterruption?()
+            } else if self.spoken == nil {
+                // Stopped by us, and the audio is off now.
+                self.release()
             }
         }
     }

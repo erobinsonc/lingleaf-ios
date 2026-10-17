@@ -351,12 +351,12 @@
         }
       }
     },
-    "Can't read aloud: this device has no English voice.": {
+    "Can't read aloud": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se puede leer en voz alta: este dispositivo no tiene voz en inglés."
+            "value": "No se puede leer en voz alta"
           }
         }
       }
@@ -1244,6 +1244,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este libro no está disponible en este momento."
+          }
+        }
+      }
+    },
+    "This device has no English voice. Add one in Settings > Accessibility > Spoken Content > Voices.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este dispositivo no tiene voz en inglés. Agrégala en Ajustes > Accesibilidad > Contenido leído > Voces."
           }
         }
       }
