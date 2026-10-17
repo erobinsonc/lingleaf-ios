@@ -69,6 +69,33 @@ public enum Limits {
     public static let maxBytes = 10 * 1024 * 1024
 }
 
+/// Checks JSON nesting without parsing it: a deeply nested answer (`[[[[…`) can't
+/// exhaust the parser. Real answers nest fewer than 10 levels.
+public enum JSONGuard {
+    public static let maxDepth = 64
+
+    public static func isShallow(_ data: Data, maxDepth: Int = maxDepth) -> Bool {
+        var depth = 0
+        var inString = false
+        var escaped = false
+        for byte in data {
+            if inString {
+                if escaped { escaped = false } else if byte == 0x5C { escaped = true } else if byte == 0x22 { inString = false }
+                continue
+            }
+            switch byte {
+            case 0x22: inString = true
+            case 0x5B, 0x7B:
+                depth += 1
+                if depth > maxDepth { return false }
+            case 0x5D, 0x7D: depth -= 1
+            default: break
+            }
+        }
+        return true
+    }
+}
+
 /// The only hosts the app talks to (see README). A request or redirect anywhere else is refused,
 /// so even a compromised host can't send the app to a server of the attacker's choosing.
 public enum Hosts {

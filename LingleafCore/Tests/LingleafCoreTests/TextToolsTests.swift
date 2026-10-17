@@ -9,6 +9,33 @@ final class TextToolsTests: XCTestCase {
         )
     }
 
+    func testAParagraphTheSizeOfABookIsCutAtSentenceEndsOrSpaces() {
+        let noStops = String(repeating: "word ", count: 5_000)
+        let pieces = TextTools.splitParagraphs(noStops)
+        XCTAssertGreaterThan(pieces.count, 1)
+        XCTAssertTrue(pieces.allSatisfy { $0.utf16.count <= TextTools.maxParagraph })
+        XCTAssertEqual(pieces.joined(separator: " "), noStops.trimmingCharacters(in: .whitespaces), "no word lost or cut")
+        let sentences = TextTools.splitParagraphs(String(repeating: "A short sentence here. ", count: 300))
+        XCTAssertTrue(sentences.allSatisfy { $0.hasSuffix(".") && $0.utf16.count <= TextTools.maxParagraph })
+        let oneWord = TextTools.splitParagraphs(String(repeating: "a", count: 4_500))
+        XCTAssertEqual(oneWord.map(\.count), [2_000, 2_000, 500])
+    }
+
+    func testALongSentenceIsCappedAroundTheTappedWord() {
+        let paragraph = String(repeating: "word ", count: 500)
+        let range = TextTools.sentenceRangeAt(paragraph, 1_200)
+        XCTAssertLessThanOrEqual(range.end - range.start, TextTools.maxSentence)
+        XCTAssertTrue(range.contains(1_200))
+        XCTAssertEqual(TextTools.substring(paragraph, range).first, "w", "starts at a word")
+        XCTAssertEqual(TextTools.sentenceAt("Short one. Here.", 2), "Short one.", "ordinary sentences are unchanged")
+    }
+
+    func testLabelsLoseInvisibleCharactersAndStayShort() {
+        XCTAssertEqual(TextTools.cleanLabel("\u{202E}evil\u{200B} title\n  x"), "evil title x")
+        XCTAssertEqual(TextTools.cleanLabel(String(repeating: "t", count: 300)).count, TextTools.maxLabel)
+        XCTAssertEqual(TextTools.cleanLabel("Alice’s Adventures"), "Alice’s Adventures")
+    }
+
     func testWordRangesKeepContractionsAndSkipNumbers() {
         let text = "Don’t stop, it's 10 o'clock!"
         XCTAssertEqual(TextTools.wordRanges(text).map { TextTools.substring(text, $0) }, ["Don’t", "stop", "it's", "o'clock"])

@@ -20,8 +20,17 @@ public enum TextTools {
     private static let wordPattern = try! NSRegularExpression(pattern: "[A-Za-z]+(?:['’][A-Za-z]+)*")
     private static let sentenceEnd = try! NSRegularExpression(pattern: "[.!?]+[\"”’)\\]]*(?=\\s|$)")
 
+    /// Longest paragraph kept whole, in UTF-16 units: a text without blank lines can't
+    /// become one paragraph the size of a book.
+    public static let maxParagraph = 2000
+    /// Longest sentence kept as a word's context, in UTF-16 units.
+    public static let maxSentence = 600
+    /// Longest title or author shown or saved, in characters.
+    public static let maxLabel = 200
+
     /// Splits text on blank lines and joins hard-wrapped lines
-    /// (Project Gutenberg wraps at ~70 columns).
+    /// (Project Gutenberg wraps at ~70 columns). Paragraphs over `maxParagraph` are cut
+    /// after their last sentence end that fits, else at a space.
     public static func splitParagraphs(_ text: String) -> [String] {
         let normalized = text
             .replacingOccurrences(of: "\r\n", with: "\n")
@@ -32,15 +41,56 @@ public enum TextTools {
             let trimmed = line.trimmingCharacters(in: .whitespaces)
             if trimmed.isEmpty {
                 if !current.isEmpty {
-                    paragraphs.append(current.joined(separator: " "))
+                    paragraphs.append(contentsOf: bounded(current.joined(separator: " ")))
                     current.removeAll()
                 }
             } else {
                 current.append(trimmed)
             }
         }
-        if !current.isEmpty { paragraphs.append(current.joined(separator: " ")) }
+        if !current.isEmpty { paragraphs.append(contentsOf: bounded(current.joined(separator: " "))) }
         return paragraphs
+    }
+
+    /// `paragraph` in pieces of at most `maxParagraph` UTF-16 units, each cut after the last
+    /// sentence end that fits, else at the last space, else (no spaces at all) at the limit.
+    static func bounded(_ paragraph: String) -> [String] {
+        var rest = paragraph as NSString
+        var pieces: [String] = []
+        while rest.length > maxParagraph {
+            // One unit past the limit, so the sentence-end lookahead can see what follows.
+            let window = NSRange(location: 0, length: maxParagraph + 1)
+            var cut = sentenceEnd.matches(in: rest as String, range: window)
+                .map { $0.range.location + $0.range.length }
+                .last { $0 <= maxParagraph } ?? 0
+            if cut == 0 {
+                let space = rest.rangeOfCharacter(
+                    from: .whitespaces, options: .backwards, range: NSRange(location: 0, length: maxParagraph)
+                )
+                cut = space.location == NSNotFound || space.location == 0 ? maxParagraph : space.location
+            }
+            if CFStringIsSurrogateHighCharacter(rest.character(at: cut - 1)) { cut -= 1 }
+            let piece = rest.substring(to: cut).trimmingCharacters(in: .whitespaces)
+            if !piece.isEmpty { pieces.append(piece) }
+            rest = rest.substring(from: cut).trimmingCharacters(in: .whitespaces) as NSString
+        }
+        if rest.length > 0 { pieces.append(rest as String) }
+        return pieces
+    }
+
+    /// Outside text shown as a title or author: no control or invisible formatting
+    /// characters (bidi overrides, zero-width), single spaces, at most `maxLabel` characters.
+    public static func cleanLabel(_ text: String) -> String {
+        var scalars = String.UnicodeScalarView()
+        for scalar in text.unicodeScalars {
+            switch scalar.properties.generalCategory {
+            case .format: continue
+            case .control, .lineSeparator, .paragraphSeparator: scalars.append(" ")
+            default: scalars.append(scalar)
+            }
+        }
+        let single = String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " ")
+        return String(single.prefix(maxLabel))
     }
 
     /// Every English word; contractions such as "don't" stay whole.
@@ -91,7 +141,23 @@ public enum TextTools {
         }
         // Nothing left after the last sentence end: the whole paragraph.
         let sentence = trimmed(ns, WordRange(start, end))
-        return sentence.start == sentence.end ? trimmed(ns, WordRange(0, ns.length)) : sentence
+        let found = sentence.start == sentence.end ? trimmed(ns, WordRange(0, ns.length)) : sentence
+        return capped(ns, found, around: offset)
+    }
+
+    /// At most `maxSentence` units of `range` around `offset`, cut at spaces: a word's saved
+    /// context stays a readable snippet even in a text without sentence ends.
+    private static func capped(_ ns: NSString, _ range: WordRange, around offset: Int) -> WordRange {
+        guard range.end - range.start > maxSentence else { return range }
+        let end = min(range.end, max(range.start, min(offset, range.end) - maxSentence / 2) + maxSentence)
+        let start = max(range.start, end - maxSentence)
+        var s = start
+        var e = end
+        // Start just after a space and end just before one, so no word is cut in half.
+        if s > range.start { while s < e, !isSpace(ns.character(at: s - 1)) { s += 1 } }
+        if e < range.end { while e > s, !isSpace(ns.character(at: e)) { e -= 1 } }
+        if s >= e { (s, e) = (start, end) }
+        return trimmed(ns, WordRange(s, e))
     }
 
     private static func trimmed(_ ns: NSString, _ range: WordRange) -> WordRange {

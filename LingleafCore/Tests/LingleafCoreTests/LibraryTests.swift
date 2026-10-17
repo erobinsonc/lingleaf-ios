@@ -307,6 +307,32 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(storage.files["books.json"], "nothing is saved")
     }
 
+    func testStorageAcceptsOnlyTheAppsOwnFileNames() throws {
+        for name in ["books.json", "book-1760000000000-0.txt", "words.json.corrupt", "seeded"] {
+            XCTAssertTrue(StorageNames.isSafe(name), name)
+        }
+        for name in ["../secret", "a/b", ".hidden", "", "book-..txt", String(repeating: "a", count: 200)] {
+            XCTAssertFalse(StorageNames.isSafe(name), name)
+        }
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let outside = dir.deletingLastPathComponent().appendingPathComponent("lingleaf-outside.txt")
+        try "outside".write(to: outside, atomically: true, encoding: .utf8)
+        XCTAssertNil(FileStorage(directory: dir).read("../lingleaf-outside.txt"), "a restored book can't name a file outside")
+    }
+
+    func testAHugeSavedContextIsCutWhenLoaded() {
+        library().saveWord("sea", learned: false, context: String(repeating: "sea ", count: 5_000))
+        XCTAssertEqual(library().state.word("sea")?.context.utf16.count, TextTools.maxSentence)
+    }
+
+    func testLearningWordsFollowTheSavedWords() {
+        let library = library()
+        library.saveWord("sea", learned: false)
+        library.saveWord("boat", learned: true)
+        XCTAssertEqual(library.state.learningWords, ["sea"])
+    }
+
     func testFileStorageRoundTrip() throws {
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: dir) }

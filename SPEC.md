@@ -14,7 +14,12 @@ the same intent on both platforms. A change to behaviour updates this file in
   (`www.gutenberg.org/cache/epub/`) and word definitions (`api.dictionaryapi.dev`). HTTPS only,
   to these hosts only: a redirect is followed only to them (at most 5); no cookies, no disk cache.
   Outside data is untrusted even from these hosts: dictionary fields are cut to 500 characters
-  (definition) and 100 (word, IPA, part of speech).
+  (definition) and 100 (word, IPA, part of speech); JSON nested deeper than 64 levels is refused;
+  a search shows each book once, at most 32, and a recommended book always as shipped; titles and
+  authors lose invisible control and formatting characters and are at most 200 characters.
+  Paragraphs over 2,000 characters are cut at the last sentence end that fits (else at a space);
+  a word's saved sentence is at most 600 characters around the word. Files are read and written
+  only under the app's own plain names.
 - Translation runs on the device (Apple Translation on iOS, Google ML Kit on Android).
 - Interface in English and Spanish; more languages welcome.
 

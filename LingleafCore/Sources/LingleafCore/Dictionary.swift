@@ -74,6 +74,7 @@ public actor DictionaryClient {
         guard let response = try? await http.get("https://api.dictionaryapi.dev/api/v2/entries/en/\(encoded)") else { return nil }
         if response.status == 404 { cache[word] = .some(nil) }
         guard response.status == 200 else { return nil }
+        guard JSONGuard.isShallow(response.body) else { return nil }
         let entry = (try? JSONSerialization.jsonObject(with: response.body) as? [[String: Any]])?
             .first
             .flatMap(DictionaryEntry.parse)

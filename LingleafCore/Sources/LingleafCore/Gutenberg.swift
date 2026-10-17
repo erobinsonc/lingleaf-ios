@@ -37,7 +37,7 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
         let name = raw.replacingOccurrences(of: #"\s*\([^)]*\)"#, with: "", options: .regularExpression)
             .trimmingCharacters(in: .whitespaces)
         let parts = name.split(separator: ",", maxSplits: 1).map { $0.trimmingCharacters(in: .whitespaces) }
-        return parts.count == 2 ? "\(parts[1]) \(parts[0])" : name
+        return TextTools.cleanLabel(parts.count == 2 ? "\(parts[1]) \(parts[0])" : name)
     }
 
     /// Short title for lists: catalog titles carry subtitles and MARC markers
@@ -49,8 +49,8 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
         for separator in [" : ", ";", "$b"] {
             if let range = short.range(of: separator) { short = String(short[..<range.lowerBound]) }
         }
-        let trimmed = short.trimmingCharacters(in: .whitespaces)
-        return trimmed.isEmpty ? title.trimmingCharacters(in: .whitespaces) : trimmed
+        let trimmed = TextTools.cleanLabel(short)
+        return trimmed.isEmpty ? TextTools.cleanLabel(title) : trimmed
     }
 
     /// The medium cover from Project Gutenberg's file cache, never a link taken from the
@@ -195,11 +195,24 @@ public struct GutenbergClient: Sendable {
         let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
         let response = try await call { try await http.get("\(Self.base)?languages=en&search=\(encoded)") }
         guard response.status == 200 else { throw GutenbergError(status: response.status) }
+        guard JSONGuard.isShallow(response.body) else { throw GutenbergError.failed }
         do {
-            return try JSONDecoder().decode(GutendexResponse.self, from: response.body).results
+            return Self.cleanResults(try JSONDecoder().decode(GutendexResponse.self, from: response.body).results)
         } catch {
             throw GutenbergError.failed
         }
+    }
+
+    /// Most results shown for one search (one page of the catalog).
+    public static let maxResults = 32
+
+    /// One row per book, at most `maxResults`. A recommended book always shows as shipped
+    /// with the app, so a catalog answer can't put another title under its level badge.
+    static func cleanResults(_ books: [GutenbergBook]) -> [GutenbergBook] {
+        var seen = Set<Int>()
+        return books.filter { seen.insert($0.id).inserted }
+            .prefix(maxResults)
+            .map { book in recommendedBooks.first { $0.id == book.id } ?? book }
     }
 
     /// The book's text without the license header and footer, reporting progress (0…1)

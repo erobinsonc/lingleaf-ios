@@ -161,6 +161,27 @@ final class GutenbergTests: XCTestCase {
         XCTAssertTrue(URLSessionFetcher.networkError(URLError(.cancelled)) is CancellationError)
     }
 
+    func testDeeplyNestedJSONIsRefusedBeforeParsing() async throws {
+        let deep = String(repeating: "[", count: 10_000) + String(repeating: "]", count: 10_000)
+        XCTAssertFalse(JSONGuard.isShallow(Data(deep.utf8)))
+        XCTAssertTrue(JSONGuard.isShallow(Data(#"{"results": [{"id": 1, "title": "[[[[[[[[[[\"]]"}]}"#.utf8)), "brackets in strings")
+        let search = await error { _ = try await GutenbergClient(http: ClosureFetcher { _ in ok(deep) }).search("x") }
+        XCTAssertEqual(search as? GutenbergError, .failed)
+        let word = await DictionaryClient(http: ClosureFetcher { _ in ok(deep) }).lookup("x")
+        XCTAssertNil(word)
+    }
+
+    func testSearchShowsEachBookOnceAndRecommendedBooksAsShipped() async throws {
+        let fake = #"{"id": 21, "title": "\u202eFake", "formats": {"text/plain": "x"}}"#
+        let other = #"{"id": 99, "title": "Other", "formats": {"text/plain": "x"}}"#
+        let many = (1000..<1100).map { #"{"id": \#($0), "title": "B"}"# }.joined(separator: ",")
+        let client = GutenbergClient(http: ClosureFetcher { _ in ok(#"{"results": [\#(fake), \#(other), \#(fake), \#(many)]}"#) })
+        let found = try await client.search("x")
+        XCTAssertEqual(Array(found.prefix(2).map(\.id)), [21, 99], "the duplicate is dropped")
+        XCTAssertEqual(found.first?.title, GutenbergClient.recommendedBooks.first { $0.id == 21 }?.title)
+        XCTAssertEqual(found.count, GutenbergClient.maxResults)
+    }
+
     func testOnlyHTTPSToTheAppsHostsIsAllowed() async {
         XCTAssertTrue(Hosts.isAllowed(URL(string: "https://www.gutenberg.org/cache/epub/11/pg11.txt")))
         XCTAssertTrue(Hosts.isAllowed(URL(string: "https://gutendex.com/books/?search=alice")))

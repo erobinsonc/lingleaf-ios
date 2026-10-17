@@ -19,9 +19,14 @@ jobs:
         env:
           BASE: ${{ github.base_ref }}
           HEAD: ${{ github.head_ref }}
+          # A fork can name its branch "develop" too: releases come only from this repository.
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         run: |
           case "$BASE" in
             main)
+              if [ "$SAME_REPO" != "true" ]; then
+                echo "::error::Pull requests to main come from this repository, not from a fork."; exit 1
+              fi
               case "$HEAD" in
                 develop|hotfix/*) ;;
                 *) echo "::error::Pull requests to main come from develop (release) or hotfix/*, not '$HEAD'."; exit 1 ;;
