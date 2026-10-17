@@ -962,16 +962,6 @@
         }
       }
     },
-    "Repeating": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Repitiendo"
-          }
-        }
-      }
-    },
     "Repeating %lld sentences": {
       "localizations": {
         "en": {

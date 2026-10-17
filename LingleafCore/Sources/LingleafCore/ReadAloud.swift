@@ -18,19 +18,9 @@ public enum ReadAloud {
     /// finds them; a very long one comes in consecutive pieces of at most
     /// `TextTools.maxSentence` units, cut at spaces, so nothing is read twice or skipped.
     public static func sentences(_ paragraph: String) -> [WordRange] {
+        // One pass over the paragraph: a hostile one ("a. a. a. …") stays linear.
         let ns = paragraph as NSString
-        var out: [WordRange] = []
-        var at = 0
-        while true {
-            while at < ns.length, TextTools.isSpace(ns.character(at: at)) { at += 1 }
-            if at >= ns.length { break }
-            let sentence = TextTools.sentenceBounds(paragraph, at)
-            // Each sentence ends after the last one; anything else would read a sentence twice.
-            if sentence.end <= at { break }
-            out += pieces(ns, WordRange(max(at, sentence.start), sentence.end))
-            at = sentence.end
-        }
-        return out
+        return TextTools.sentenceRanges(paragraph).flatMap { pieces(ns, $0) }
     }
 
     /// `range` in pieces of at most `TextTools.maxSentence` units, cut before a space when there is one.

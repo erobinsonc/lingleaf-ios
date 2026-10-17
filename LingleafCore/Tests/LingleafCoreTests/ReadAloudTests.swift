@@ -57,4 +57,15 @@ final class ReadAloudTests: XCTestCase {
         XCTAssertEqual(ReadAloud.count(book, from: three, to: one), 0, "the end before the start")
         XCTAssertEqual(ReadAloud.count(book, from: one, to: SentencePosition(0, WordRange(1, 2))), 0, "an end that is no sentence")
     }
+
+    func testSentencesMatchTheSentenceOfEachWordAndStayLinearOnHostileText() {
+        let text = "Tom has a boat. It is red!  Is it new? “Yes,” he said. No end"
+        for sentence in ReadAloud.sentences(text) {
+            XCTAssertEqual(TextTools.sentenceRangeAt(text, sentence.start), sentence, "same rule as the sentence of a word")
+        }
+        let hostile = String(repeating: "a. ", count: 1000)
+        let started = Date()
+        XCTAssertEqual(ReadAloud.sentences(hostile).count, 1000)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2, "one pass, not one per sentence")
+    }
 }

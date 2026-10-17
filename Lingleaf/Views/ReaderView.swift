@@ -61,6 +61,8 @@ struct ReaderView: View {
     /// Whether the reader scrolls to follow the sentence being read; scrolling by hand stops it
     /// until that sentence is back on screen.
     @State private var following = true
+    /// When the bottom bar appears, VoiceOver moves to Pause: the button it was on is gone.
+    @AccessibilityFocusState private var pauseFocused: Bool
 
     private var book: Book? { model.state.books.first { $0.id == bookID } }
 
@@ -91,8 +93,11 @@ struct ReaderView: View {
                     .font(.subheadline.weight(.semibold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)
-                    .background(.bar)
+                    .modifier(BarBackground())
             }
+        }
+        .onChange(of: reading?.current == nil) { _, stopped in
+            if !stopped { pauseFocused = true }
         }
         // VoiceOver hears the stretch grow.
         .onChange(of: reading?.loopCount) { _, count in
@@ -279,15 +284,12 @@ struct ReaderView: View {
                     Label("Play", systemImage: "play.fill")
                 }
             }
-            Button {
-                reading.toggleRepeat()
-            } label: {
+            .accessibilityFocused($pauseFocused)
+            // A system toggle: VoiceOver says whether it is on.
+            Toggle(isOn: Binding(get: { reading.loop != nil }, set: { _ in reading.toggleRepeat() })) {
                 Label("Repeat sentence", systemImage: "repeat.1")
             }
-            .accessibilityAddTraits(repeating ? .isSelected : [])
-            .accessibilityValue(repeating ? Text("Repeating") : Text(verbatim: ""))
-            .tint(repeating ? Brand.ink : nil)
-            .background(repeating ? AnyShapeStyle(Color(uiColor: .secondarySystemFill)) : AnyShapeStyle(.clear), in: Capsule())
+            .toggleStyle(.button)
             Spacer()
         }
     }
@@ -316,8 +318,6 @@ struct ReaderView: View {
         withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(selected.paragraph, anchor: anchor) }
     }
 
-    /// Every word is a link (`lingleaf://word?p=…&o=…&e=…`); words being learned are underlined
-    /// (dark amber in light mode, the yellow marker in dark mode) on a light yellow tint.
     /// The sentences of paragraph `index` to highlight: the repeated stretch when repeating,
     /// else the sentence being read.
     private func highlighted(_ index: Int, _ text: String) -> [WordRange] {
@@ -331,6 +331,8 @@ struct ReaderView: View {
         }
     }
 
+    /// Every word is a link (`lingleaf://word?p=…&o=…&e=…`); words being learned are underlined
+    /// (dark amber in light mode, the yellow marker in dark mode) on a light yellow tint.
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
@@ -447,5 +449,16 @@ struct ReaderView: View {
         guard let start = sessionStart else { return }
         sessionStart = nil
         model.library.addReadingTime(Int(Date.now.timeIntervalSince(start)))
+    }
+}
+
+/// Behind the line above the bottom bar: glass on iOS 26, like the bar; the bar material before.
+private struct BarBackground: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            content.glassEffect(.regular, in: Capsule()).padding(.horizontal, 16)
+        } else {
+            content.background(.bar)
+        }
     }
 }

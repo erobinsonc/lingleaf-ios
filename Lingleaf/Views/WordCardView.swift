@@ -9,10 +9,10 @@ struct WordCardView: View {
     let source: String
     /// The sheet is at its full height: iOS 26 then draws it opaque, so the card needs no panel of its own.
     var fullHeight = false
-    /// Called when a button changed the word, just before the card closes, with
-    /// the message (and its Undo) the reader shows.
     /// Reads the book aloud from this sentence on; nil hides the button.
     var onReadFromHere: (() -> Void)?
+    /// Called when a button changed the word, just before the card closes, with
+    /// the message (and its Undo) the reader shows.
     let onAction: (UndoMessage) -> Void
 
     @Environment(AppModel.self) private var model

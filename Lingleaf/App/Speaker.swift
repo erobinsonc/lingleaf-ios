@@ -97,8 +97,12 @@ struct RepeatedStretch: Equatable {
 final class ReadAloudController {
     private(set) var current: SentencePosition?
     private(set) var isReading = false
-    /// The repeated stretch; nil when not repeating.
-    private(set) var loop: RepeatedStretch?
+    /// The repeated stretch; nil when not repeating. Its sentences are counted when it changes.
+    private(set) var loop: RepeatedStretch? {
+        didSet { loopCount = loop.map { ReadAloud.count(paragraphs, from: $0.first, to: $0.last) } ?? 0 }
+    }
+    /// How many sentences are repeated: "Repeating 3 sentences".
+    private(set) var loopCount = 0
     @ObservationIgnored private var paragraphs: [String] = []
     @ObservationIgnored private let speaker: Speaker
     @ObservationIgnored private let rate: () -> Double
@@ -108,11 +112,6 @@ final class ReadAloudController {
     init(speaker: Speaker, rate: @escaping () -> Double) {
         self.speaker = speaker
         self.rate = rate
-    }
-
-    /// How many sentences are repeated: "Repeating 3 sentences".
-    var loopCount: Int {
-        loop.map { ReadAloud.count(paragraphs, from: $0.first, to: $0.last) } ?? 0
     }
 
     func read(_ paragraphs: [String], from position: SentencePosition) {
