@@ -11,6 +11,8 @@ struct WordCardView: View {
     var fullHeight = false
     /// Called when a button changed the word, just before the card closes, with
     /// the message (and its Undo) the reader shows.
+    /// Reads the book aloud from this sentence on; nil hides the button.
+    var onReadFromHere: (() -> Void)?
     let onAction: (UndoMessage) -> Void
 
     @Environment(AppModel.self) private var model
@@ -249,6 +251,19 @@ struct WordCardView: View {
                     .fixedSize(horizontal: false, vertical: true)
                 if let sentenceTranslation {
                     Text(sentenceTranslation).font(.callout).foregroundStyle(Brand.secondaryText)
+                }
+                if let onReadFromHere {
+                    // Back to an earlier point, or on from this one (SPEC S6).
+                    Button {
+                        dismiss()
+                        onReadFromHere()
+                    } label: {
+                        Label("Read from here", systemImage: "play.fill")
+                            .font(.callout.weight(.semibold))
+                            .frame(minHeight: 44)
+                            .contentShape(Rectangle())
+                    }
+                    .tint(.primary)
                 }
             }
             Spacer(minLength: 8)

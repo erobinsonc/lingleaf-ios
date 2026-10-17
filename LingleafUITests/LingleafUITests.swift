@@ -112,11 +112,24 @@ final class LingleafUITests: XCTestCase {
         closeCard()
         assertLastSpoken("Tom lives in a small house by the sea.", "the sentence button speaks the word's sentence")
 
+        // Read aloud goes on sentence by sentence; the same button pauses (issue #32).
         app.buttons["Read aloud"].tap()
-        assertLastSpoken(
-            "Tom lives in a small house by the sea. He is ten years old. He has a dog. The dog is brown and white. Its name is Max.",
-            "Read aloud speaks the current paragraph"
-        )
+        assertLastSpoken("Tom lives in a small house by the sea.", "Read aloud starts at the top of the screen")
+        assertLastSpoken("He is ten years old.", "and goes on with the next sentence")
+        XCTAssertTrue(app.buttons["Pause"].exists, "while reading, the button pauses")
+        let reading = XCTAttachment(screenshot: app.screenshot())
+        reading.name = "en-light-16-reading-aloud"
+        reading.lifetime = .keepAlways
+        add(reading)
+        app.buttons["Pause"].tap()
+        XCTAssertTrue(app.buttons["Read aloud"].waitForExistence(timeout: 5))
+
+        // The word card's Read from here starts at the word's sentence (issue #33).
+        app.links["sand"].firstMatch.tap()
+        XCTAssertTrue(app.buttons["Read from here"].waitForExistence(timeout: 10))
+        app.buttons["Read from here"].tap()
+        assertLastSpoken("The sand is warm.", "Read from here starts at the tapped word's sentence")
+        app.buttons["Pause"].tap()
     }
 
     /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.

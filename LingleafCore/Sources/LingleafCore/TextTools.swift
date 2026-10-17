@@ -160,6 +160,11 @@ public enum TextTools {
     /// Where `sentenceAt` is in `paragraph`, without surrounding whitespace, so a
     /// word's offset in the paragraph can be turned into its offset in the sentence.
     public static func sentenceRangeAt(_ paragraph: String, _ offset: Int) -> WordRange {
+        capped(paragraph as NSString, sentenceBounds(paragraph, offset), around: offset)
+    }
+
+    /// The whole sentence of `paragraph` at `offset`, trimmed and not capped.
+    static func sentenceBounds(_ paragraph: String, _ offset: Int) -> WordRange {
         let ns = paragraph as NSString
         var start = 0
         var end = ns.length
@@ -173,8 +178,7 @@ public enum TextTools {
         }
         // Nothing left after the last sentence end: the whole paragraph.
         let sentence = trimmed(ns, WordRange(start, end))
-        let found = sentence.start == sentence.end ? trimmed(ns, WordRange(0, ns.length)) : sentence
-        return capped(ns, found, around: offset)
+        return sentence.start == sentence.end ? trimmed(ns, WordRange(0, ns.length)) : sentence
     }
 
     /// At most `maxSentence` units of `range` around `offset`, cut at spaces: a word's saved
@@ -200,7 +204,7 @@ public enum TextTools {
         return WordRange(start, end)
     }
 
-    private static func isSpace(_ unit: unichar) -> Bool {
+    static func isSpace(_ unit: unichar) -> Bool {
         guard let scalar = Unicode.Scalar(unit) else { return false }
         return CharacterSet.whitespacesAndNewlines.contains(scalar)
     }

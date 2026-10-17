@@ -802,6 +802,16 @@
         }
       }
     },
+    "Pause": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pausar"
+          }
+        }
+      }
+    },
     "Project Gutenberg didn't answer. Try again.": {
       "localizations": {
         "es": {
@@ -848,6 +858,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Leer en voz alta"
+          }
+        }
+      }
+    },
+    "Read from here": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leer desde aquí"
           }
         }
       }
@@ -1068,16 +1088,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Seguimos buscando. Project Gutenberg puede tardar."
-          }
-        }
-      }
-    },
-    "Stop reading": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Detener lectura"
           }
         }
       }
