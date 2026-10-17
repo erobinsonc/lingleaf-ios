@@ -1312,6 +1312,46 @@
         }
       }
     },
+    "“%@” (= “%@”) + past participle: before another past moment: “had left”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + participio: antes de otro momento del pasado: “had left”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + past participle: before now, still relevant: “has seen”, not “has saw”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + participio: antes de ahora y sigue importando: “has seen”, no “has saw”."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + verb: the future.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo: el futuro."
+          }
+        }
+      }
+    },
+    "“%@” (= “%@”) + verb: what would happen, or a polite request.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” (= “%2$@”) + verbo: lo que pasaría, o una petición amable."
+          }
+        }
+      }
+    },
     "“%@” (= “%@”): the negative of “%@” + verb.": {
       "localizations": {
         "es": {
@@ -1352,6 +1392,26 @@
         }
       }
     },
+    "“%@” + past participle: before another past moment: “had left”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + participio: antes de otro momento del pasado: “had left”."
+          }
+        }
+      }
+    },
+    "“%@” + past participle: before now, still relevant: “has seen”, not “has saw”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” + participio: antes de ahora y sigue importando: “has seen”, no “has saw”."
+          }
+        }
+      }
+    },
     "“%@” + pronoun at the end asks the listener to agree, like “right?”.": {
       "localizations": {
         "es": {
@@ -1368,6 +1428,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” + verbo: está prohibido."
+          }
+        }
+      }
+    },
+    "“%@” = “%@”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” = “%2$@”."
           }
         }
       }
@@ -1472,6 +1542,16 @@
         }
       }
     },
+    "“'d better” (= “had better”) + verb: strong advice: “You'd better go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“'d better” (= “had better”) + verbo: un consejo fuerte: “You'd better go”."
+          }
+        }
+      }
+    },
     "“can” + verb: be able to, or be allowed to.": {
       "localizations": {
         "es": {
@@ -1488,6 +1568,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "“could” + verbo: podía o podría."
+          }
+        }
+      }
+    },
+    "“had better” + verb: strong advice: “You'd better go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“had better” + verbo: un consejo fuerte: “You'd better go”."
+          }
+        }
+      }
+    },
+    "“it's” = “%@”; “its” (no apostrophe) = belonging to it.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“it's” = “%@”; “its” (sin apóstrofo) = su, de una cosa o un animal."
+          }
+        }
+      }
+    },
+    "“let's” (= “let us”) + verb: a suggestion for us: “Let's go”.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“let's” (= “let us”) + verbo: una propuesta para hacer juntos: “Let's go”."
           }
         }
       }
@@ -1538,6 +1648,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“should” + verbo: un consejo (debería…)."
+          }
+        }
+      }
+    },
+    "“who's” = “%@”; “whose” asks who owns it: “Whose book?”": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“who's” = “%@”; “whose” pregunta de quién es: “Whose book?”"
           }
         }
       }

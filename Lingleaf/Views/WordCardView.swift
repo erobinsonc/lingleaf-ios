@@ -132,8 +132,8 @@ struct WordCardView: View {
             if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word) {
                 Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
-            if let kind = selection.function?.kind {
-                Text(kind.label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
+            if let label = selection.function?.kind.label {
+                Text(label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
             }
         }
     }
@@ -466,10 +466,12 @@ struct WordCardView: View {
 }
 
 extension FunctionWord.Kind {
-    var label: String {
+    /// Nil for a contraction: the card's headword ("it is") already says what it is.
+    var label: String? {
         switch self {
         case .helper: String(localized: "Helper verb")
         case .modal: String(localized: "Modal verb")
+        case .contraction: nil
         }
     }
 }
@@ -477,10 +479,14 @@ extension FunctionWord.Kind {
 extension FunctionWord {
     /// One short line on what the word does here. `form` is the word as tapped ("did", "didn't").
     func note(form: String) -> String {
-        let word = form.lowercased()
+        // "I'll" keeps its capital I; other words are shown in lower case.
+        let word = form.hasPrefix("I'") || form.hasPrefix("I’") ? form : form.lowercased()
+        if let expansion { return contractionNote(word, expansion) }
         let contracted = TextTools.normalize(word).hasSuffix("n't")
         let negative = contracted ? word : "\(word) not"
         let expanded = Self.expanded[TextTools.normalize(word)] ?? negative
+        // A perfect's helper as tapped, with "not" when it follows: "has not" for "has not seen".
+        let shown = self.negative && !contracted ? "\(word) not" : word
         switch use {
         case .pastNegative where contracted:
             return String(localized: "“\(negative)” (= “\(expanded)”) + base verb = past negative: “didn't go”, not “didn't went”.")
@@ -508,6 +514,37 @@ extension FunctionWord {
             return String(localized: "“\(shown)”: the negative of “\(base)” + verb.")
         case .modal(let base):
             return Self.modalNote(base)
+        case .presentPerfect:
+            return String(localized: "“\(shown)” + past participle: before now, still relevant: “has seen”, not “has saw”.")
+        case .pastPerfect:
+            return String(localized: "“\(shown)” + past participle: before another past moment: “had left”.")
+        case .hadBetter:
+            return String(localized: "“had better” + verb: strong advice: “You'd better go”.")
+        case .contraction:
+            return String(localized: "“\(word)” = “\(base)”.")
+        }
+    }
+
+    /// A pronoun contraction: what it stands for, and what it does when it is a helper here.
+    private func contractionNote(_ word: String, _ expansion: String) -> String {
+        switch use {
+        case .presentPerfect:
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: before now, still relevant: “has seen”, not “has saw”.")
+        case .pastPerfect:
+            return String(localized: "“\(word)” (= “\(expansion)”) + past participle: before another past moment: “had left”.")
+        case .hadBetter:
+            return String(localized: "“'d better” (= “had better”) + verb: strong advice: “You'd better go”.")
+        case .modal("will"):
+            return String(localized: "“\(word)” (= “\(expansion)”) + verb: the future.")
+        case .modal:
+            return String(localized: "“\(word)” (= “\(expansion)”) + verb: what would happen, or a polite request.")
+        default:
+            let key = TextTools.normalize(word)
+            if key == "let's" { return String(localized: "“let's” (= “let us”) + verb: a suggestion for us: “Let's go”.") }
+            // The lookalikes learners mix up.
+            if key == "it's" { return String(localized: "“it's” = “\(expansion)”; “its” (no apostrophe) = belonging to it.") }
+            if key == "who's" { return String(localized: "“who's” = “\(expansion)”; “whose” asks who owns it: “Whose book?”") }
+            return String(localized: "“\(word)” = “\(expansion)”.")
         }
     }
 

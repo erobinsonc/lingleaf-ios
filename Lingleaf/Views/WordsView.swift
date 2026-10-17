@@ -103,7 +103,9 @@ private struct WordRow: View {
                     }
                 }
                 if let kind = word.kind {
-                    Text(verbatim: "\(word.base ?? "") · \(kind.label)").font(.caption).foregroundStyle(Brand.secondaryText)
+                    // A contraction has no label: its base ("it is") says what it is.
+                    Text(verbatim: [word.base ?? "", kind.label].compactMap { $0 }.joined(separator: " · "))
+                        .font(.caption).foregroundStyle(Brand.secondaryText)
                 }
                 if !word.translation.isEmpty { Text(word.translation) }
                 // A verb group saved without one is the sentence itself: not twice.
