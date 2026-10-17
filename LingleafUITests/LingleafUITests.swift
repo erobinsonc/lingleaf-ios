@@ -63,7 +63,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Helper verb"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["have"].exists, "the base form")
         XCTAssertTrue(app.staticTexts["had kept"].exists, "the verb group up to the participle")
-        XCTAssertTrue(app.staticTexts["“had” + past participle: before another past moment: “had left”."].exists)
+        XCTAssertTrue(app.staticTexts["“had” + past participle: it happened before another past moment: “had left”."].exists)
         attachScreenshot("en-light-14-perfect-card")
     }
 
