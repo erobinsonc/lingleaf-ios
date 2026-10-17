@@ -144,22 +144,23 @@ final class LingleafUITests: XCTestCase {
         closeCard()
         assertLastSpoken("Tom lives in a small house by the sea.", "the sentence button speaks the word's sentence")
 
-        // Read aloud goes on sentence by sentence; the same button pauses (issue #32).
+        // Read aloud goes on sentence by sentence; the bar at the bottom pauses (issue #32).
         app.buttons["Read aloud"].tap()
         assertLastSpoken("Tom lives in a small house by the sea.", "Read aloud starts at the top of the screen")
+        finishSentence()
         assertLastSpoken("He is ten years old.", "and goes on with the next sentence")
-        XCTAssertTrue(app.buttons["Pause"].exists, "while reading, the button pauses")
+        XCTAssertTrue(app.buttons["Pause"].exists, "while reading, the bar pauses")
         let reading = XCTAttachment(screenshot: app.screenshot())
         reading.name = "en-light-16-reading-aloud"
         reading.lifetime = .keepAlways
         add(reading)
-        // Tapping a word pauses: nothing more is read while its card is open.
+        // Tapping a word pauses: the sentence ending doesn't move reading on.
         app.links["dog"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Read from here"].waitForExistence(timeout: 10))
-        let atTap = app.staticTexts[Self.lastSpokenID].label
-        sleep(3)
-        assertLastSpoken(atTap, "tapping a word pauses reading aloud")
         closeCard()
+        finishSentence()
+        assertSpoken(["Tom lives in a small house by the sea.", "He is ten years old."], "paused: nothing more is read")
+        XCTAssertTrue(app.staticTexts[Self.spokenLogID].label.hasSuffix("He is ten years old."), "paused: nothing more is read")
         XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5), "paused: the bar at the bottom stays, with Play")
 
         // The word card's Read from here starts at the word's sentence (issue #33).
@@ -171,11 +172,17 @@ final class LingleafUITests: XCTestCase {
         // Repeat sentence loops it; Add previous sentence grows the stretch backwards (issue #33).
         element(labelled: "Repeat sentence").tap()
         XCTAssertTrue(app.staticTexts["Repeating 1 sentence"].waitForExistence(timeout: 5))
+        finishSentence()
+        assertSpoken(["The sand is warm.", "The sand is warm."], "Repeat sentence reads it again")
         app.buttons["Add previous sentence"].tap()
-        assertLastSpoken("Every morning, Tom and Max walk to the beach.", "the stretch is read from its new start")
         XCTAssertTrue(app.staticTexts["Repeating 2 sentences"].waitForExistence(timeout: 5))
-        assertLastSpoken("The sand is warm.", "then its last sentence")
-        assertLastSpoken("Every morning, Tom and Max walk to the beach.", "and back to its start")
+        assertLastSpoken("Every morning, Tom and Max walk to the beach.", "the stretch is read from its new start")
+        finishSentence()
+        finishSentence()
+        assertSpoken(
+            ["Every morning, Tom and Max walk to the beach.", "The sand is warm.", "Every morning, Tom and Max walk to the beach."],
+            "the stretch is read to its end, and again"
+        )
         let repeating = XCTAttachment(screenshot: app.screenshot())
         repeating.name = "en-light-17-repeating"
         repeating.lifetime = .keepAlways
@@ -183,6 +190,11 @@ final class LingleafUITests: XCTestCase {
         element(labelled: "Repeat sentence").tap()
         XCTAssertTrue(app.buttons["Previous sentence"].waitForExistence(timeout: 5), "repeat off: back to Previous sentence")
         app.buttons["Pause"].tap()
+    }
+
+    /// The text being "spoken" ends (UI tests step through reading aloud one sentence at a time).
+    private func finishSentence() {
+        app.buttons["ui-test-finish-speech"].tap()
     }
 
     /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.
@@ -458,7 +470,7 @@ final class LingleafUITests: XCTestCase {
     private static func knownFalsePositive(_ issue: XCUIAccessibilityAuditIssue, on screen: String) -> Bool {
         // The DEBUG-only element that exposes the last spoken text to UI tests
         // (1×1 pt, nearly transparent); users never see it and live builds don't have it.
-        if issue.element?.identifier == lastSpokenID { return true }
+        if [lastSpokenID, spokenLogID, "ui-test-finish-speech"].contains(issue.element?.identifier ?? "") { return true }
         switch (screen, issue.auditType) {
         case ("Word card (half height)", .textClipped):
             // At half height the card's text continues in its ScrollView; iOS 26 draws the
@@ -498,6 +510,16 @@ final class LingleafUITests: XCTestCase {
 
     /// Identifier of `LastSpokenProbe` in the app.
     private static let lastSpokenID = "ui-test-last-spoken"
+    private static let spokenLogID = "ui-test-spoken-log"
+
+    /// Waits until `texts` were spoken one after another (reading aloud moves on every 1.5 s,
+    /// so checking only the last one would miss some).
+    private func assertSpoken(_ texts: [String], _ message: String, file: StaticString = #filePath, line: UInt = #line) {
+        let probe = app.staticTexts[Self.spokenLogID]
+        let spoken = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label CONTAINS %@", texts.joined(separator: "\n")), object: probe)
+        let result = XCTWaiter().wait(for: [spoken], timeout: 10)
+        XCTAssertEqual(result, .completed, "\(message); spoken: '\(probe.exists ? probe.label : "nothing")'", file: file, line: line)
+    }
 
     /// Waits for the app's record of the last spoken text to equal `text`.
     private func assertLastSpoken(_ text: String, _ message: String, file: StaticString = #filePath, line: UInt = #line) {

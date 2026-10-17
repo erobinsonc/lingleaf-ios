@@ -56,6 +56,20 @@ final class AppModel {
     /// UI tests only: the last text handed to the fake speaker, shown by `LastSpokenProbe`.
     /// Always nil in live mode. (Not inside `#if`: `@Observable` must see it to track it.)
     private(set) var lastSpoken: String?
+    /// UI tests only: every text handed to the fake speaker, in order, so a test can check a
+    /// sequence (reading aloud moves on every 1.5 s, faster than a test can look at each one).
+    private(set) var spokenLog: [String] = []
+
+    /// UI tests only: what the fake speaker was handed.
+    func recordSpoken(_ text: String) {
+        lastSpoken = text
+        spokenLog.append(text)
+    }
+
+    #if DEBUG
+    /// UI tests only: the text being "spoken" ends, so reading aloud goes on.
+    func finishSpeech() { speaker.finishRecorded() }
+    #endif
 
     init(
         library: Library, http: HttpFetcher, speaker: Speaker, autoLanguage: String?,
@@ -128,7 +142,7 @@ final class AppModel {
         let speaker = Speaker()
         let library = Library(storage: FileStorage(directory: dir))
         let model = AppModel(library: library, http: http, speaker: speaker, autoLanguage: nil, fakeTranslator: translator, covers: nil)
-        speaker.record = { [weak model] text in model?.lastSpoken = text }
+        speaker.record = { [weak model] text in model?.recordSpoken(text) }
         if let language { library.updateSettings { $0.targetLanguage = language } }
         if due {
             let sentence = "Tom lives in a small house by the sea."
@@ -295,6 +309,18 @@ private struct LastSpokenProbe: View {
                 .opacity(0.01)
                 .allowsHitTesting(false)
                 .accessibilityIdentifier("ui-test-last-spoken")
+            // Ends the text being "spoken", so a test steps through reading aloud.
+            // 2×2 pt at 2 % opacity: still hit-testable (UIKit skips views under 1 %).
+            Button { model.finishSpeech() } label: { Text(verbatim: "finish") }
+                .frame(width: 2, height: 2)
+                .opacity(0.02)
+                .accessibilityIdentifier("ui-test-finish-speech")
+            // Everything spoken so far, one text per line.
+            Text(model.spokenLog.joined(separator: "\n"))
+                .frame(width: 1, height: 1)
+                .opacity(0.01)
+                .allowsHitTesting(false)
+                .accessibilityIdentifier("ui-test-spoken-log")
         }
     }
 }
