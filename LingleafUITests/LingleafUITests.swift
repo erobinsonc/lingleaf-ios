@@ -300,6 +300,7 @@ final class LingleafUITests: XCTestCase {
             RunLoop.current.run(until: Date().addingTimeInterval(1.5))
             // The reader hides the tab bar; then nothing can sit under it.
             let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
+            let before = issues.count
             try app.performAccessibilityAudit { issue in
                 // Rows scrolled under the translucent tab bar are measured against
                 // the bar's blur; scrolled into view they read normally. The tab
@@ -313,6 +314,16 @@ final class LingleafUITests: XCTestCase {
                 let element = issue.element.map { "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)" } ?? "screen"
                 issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
                 return true
+            }
+            // Evidence for any finding: the screen as audited, kept with the test results, so a
+            // finding without a resolvable element (a view that changed mid-audit) can be traced.
+            if issues.count > before {
+                let shot = XCTAttachment(screenshot: app.screenshot())
+                // Named like the tour's shots, so CI exports and publishes it with them.
+                let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
+                shot.name = "en-light-99-audit-\(slug)"
+                shot.lifetime = .keepAlways
+                add(shot)
             }
         }
         for tab in ["Library", "Discover", "Words", "Settings"] {
