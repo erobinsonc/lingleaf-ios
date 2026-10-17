@@ -18,7 +18,9 @@ public struct WordRange: Hashable, Sendable {
 
 public enum TextTools {
     private static let wordPattern = try! NSRegularExpression(pattern: "[A-Za-z]+(?:['’][A-Za-z]+)*")
-    private static let sentenceEnd = try! NSRegularExpression(pattern: "[.!?]+[\"”’)\\]]*(?=\\s|$)")
+    /// Starts only at the first mark of a run and never backtracks into it, so a long run of
+    /// marks ("!!!!…x") is matched in one pass, not once per mark.
+    private static let sentenceEnd = try! NSRegularExpression(pattern: "(?<![.!?])[.!?]++[\"”’)\\]]*+(?=\\s|$)")
 
     /// Longest paragraph kept whole, in UTF-16 units: a text without blank lines can't
     /// become one paragraph the size of a book.

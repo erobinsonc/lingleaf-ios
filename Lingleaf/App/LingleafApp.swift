@@ -20,6 +20,7 @@ struct LingleafApp: App {
                 #endif
                 // After the overlay, so the probe reads the model from the environment too.
                 .environment(model)
+                .noVoiceAlert(model.speaker)
                 .tint(Brand.ink)
                 .preferredColorScheme(Self.forcedColorScheme)
         }

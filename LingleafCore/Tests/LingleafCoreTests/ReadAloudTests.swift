@@ -68,4 +68,21 @@ final class ReadAloudTests: XCTestCase {
         XCTAssertEqual(ReadAloud.sentences(hostile).count, 1000)
         XCTAssertLessThan(Date().timeIntervalSince(started), 2, "one pass, not one per sentence")
     }
+
+    func testALongRepeatedStretchIsCountedInOnePassPerParagraph() {
+        let book = Array(repeating: String(repeating: "a. ", count: 600), count: 20)
+        let first = ReadAloud.start(book, 0)!
+        let last = ReadAloud.previous(book, before: SentencePosition(20, WordRange(0, 1)))!
+        let started = Date()
+        XCTAssertEqual(ReadAloud.count(book, from: first, to: last), 12_000)
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2, "one split per paragraph, not one per sentence")
+    }
+
+    func testAHardCutKeepsAnEmojiWhole() {
+        // 599 letters, then an emoji (2 UTF-16 units) across the 600-unit cut, with no space.
+        let text = String(repeating: "a", count: 599) + "😀" + String(repeating: "b", count: 10)
+        let pieces = ReadAloud.sentences(text)
+        XCTAssertEqual(pieces.first, WordRange(0, 599), "the cut moves before the emoji")
+        XCTAssertEqual(pieces.last?.end, (text as NSString).length, "nothing skipped")
+    }
 }

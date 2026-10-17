@@ -351,6 +351,16 @@
         }
       }
     },
+    "Can't read aloud: this device has no English voice.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se puede leer en voz alta: este dispositivo no tiene voz en inglés."
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "es": {

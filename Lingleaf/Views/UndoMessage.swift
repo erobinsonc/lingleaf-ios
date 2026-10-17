@@ -118,3 +118,20 @@ private struct UndoBanner: View {
         .padding(.bottom, 8)
     }
 }
+
+extension View {
+    /// Says the device has no English voice when something couldn't be read aloud (SPEC S6).
+    func noVoiceAlert(_ speaker: Speaker) -> some View {
+        modifier(NoVoiceAlert(speaker: speaker))
+    }
+}
+
+private struct NoVoiceAlert: ViewModifier {
+    @Bindable var speaker: Speaker
+
+    func body(content: Content) -> some View {
+        content.alert(String(localized: "Can't read aloud: this device has no English voice."), isPresented: $speaker.missedVoice) {
+            Button(String(localized: "OK"), role: .cancel) {}
+        }
+    }
+}

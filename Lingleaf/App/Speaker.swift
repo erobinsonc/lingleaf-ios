@@ -16,10 +16,27 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     @ObservationIgnored private var spoken: AVSpeechUtterance?
     /// UI tests: counts recorded texts, so only the latest one "ends".
     @ObservationIgnored private var recorded = 0
+    /// Runs when the system cuts the speech off (a call, an alarm, Siri): reading aloud pauses,
+    /// so the bar doesn't show Pause while nothing is heard.
+    @ObservationIgnored var onInterruption: (() -> Void)?
+    /// Set when something was to be said but the device has no English voice: an alert says so.
+    var missedVoice = false
 
     override init() {
         super.init()
         synthesizer.delegate = self
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(interrupted(_:)),
+            name: AVAudioSession.interruptionNotification, object: AVAudioSession.sharedInstance())
+    }
+
+    @objc nonisolated private func interrupted(_ notification: Notification) {
+        guard let raw = notification.userInfo?[AVAudioSessionInterruptionTypeKey] as? UInt,
+              AVAudioSession.InterruptionType(rawValue: raw) == .began else { return }
+        Task { @MainActor in
+            self.stop()
+            self.onInterruption?()
+        }
     }
 
     /// Speaks `text`, stopping anything being said. `onFinish` runs when it ends by itself.
@@ -42,6 +59,11 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
             return
         }
         #endif
+        guard !noVoice else {
+            stop()
+            missedVoice = true
+            return
+        }
         let session = AVAudioSession.sharedInstance()
         try? session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
         try? session.setActive(true)
@@ -59,17 +81,35 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         recorded += 1
         synthesizer.stopSpeaking(at: .immediate)
         isSpeaking = false
+        release()
     }
 
     /// The utterance ended by itself: run its `onFinish` (only for the one still current).
     private func finish(_ utterance: AVSpeechUtterance?) {
         refresh()
-        guard utterance == nil || utterance === spoken, let onFinish else { return }
+        guard utterance == nil || utterance === spoken else { return }
+        let onFinish = self.onFinish
         self.onFinish = nil
-        onFinish()
+        onFinish?()
+        // Nothing more to say (no next sentence was started): give the audio back.
+        if utterance != nil, spoken === utterance { release() }
+    }
+
+    /// Ends our audio session, so the music of other apps comes back to its full volume.
+    private func release() {
+        spoken = nil
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
 
     private func refresh() { isSpeaking = synthesizer.isSpeaking }
+
+    /// No English voice on this device: reading aloud and Listen say so instead of staying silent.
+    var noVoice: Bool {
+        #if DEBUG
+        if record != nil { return false }
+        #endif
+        return AVSpeechSynthesisVoice(language: "en-US") == nil
+    }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didStart utterance: AVSpeechUtterance) {
         Task { @MainActor in self.refresh() }
@@ -80,7 +120,14 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     }
 
     nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
-        Task { @MainActor in self.refresh() }
+        Task { @MainActor in
+            self.refresh()
+            // Our own stops forget the utterance first: a cancel of the current one came from the system.
+            if utterance === self.spoken {
+                self.stop()
+                self.onInterruption?()
+            }
+        }
     }
 }
 
@@ -113,7 +160,11 @@ final class ReadAloudController {
     init(speaker: Speaker, rate: @escaping () -> Double) {
         self.speaker = speaker
         self.rate = rate
+        speaker.onInterruption = { [weak self] in self?.interrupted() }
     }
+
+    /// The system cut the speech off: show it paused, on the same sentence.
+    private func interrupted() { isReading = false }
 
     func read(_ paragraphs: [String], from position: SentencePosition) {
         self.paragraphs = paragraphs
@@ -155,6 +206,14 @@ final class ReadAloudController {
     }
 
     private func speak(_ position: SentencePosition) {
+        // No English voice: stop, and the speaker's alert says why (SPEC S6).
+        guard !speaker.noVoice else {
+            isReading = false
+            current = nil
+            loop = nil
+            speaker.missedVoice = true
+            return
+        }
         current = position
         onSentence(position)
         let text = TextTools.substring(paragraphs[position.paragraph], position.range)

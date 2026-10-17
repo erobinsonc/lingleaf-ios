@@ -118,6 +118,8 @@ struct WordCardView: View {
         .onChange(of: model.targetLanguage) { _, _ in
             startTranslation()
         }
+        // Inside the sheet: an alert from under it would not show.
+        .noVoiceAlert(model.speaker)
     }
 
     private var header: some View {

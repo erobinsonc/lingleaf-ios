@@ -21,6 +21,14 @@ final class TextToolsTests: XCTestCase {
         XCTAssertEqual(oneWord.map(\.count), [2_000, 2_000, 500])
     }
 
+    func testALongRunOfMarksIsMatchedInLinearTime() {
+        let hostile = String(repeating: "!", count: 50_000) + "x"
+        let started = Date()
+        XCTAssertEqual(TextTools.sentenceRanges(hostile).count, 1, "no sentence end: one sentence")
+        XCTAssertLessThan(Date().timeIntervalSince(started), 2, "not one scan of the run per mark")
+        XCTAssertEqual(TextTools.sentenceRanges("Wait!!! He said “no.” Then?").count, 3, "runs and closing quotes still end sentences")
+    }
+
     func testATenMegabyteTextWithoutBlankLinesSplitsInLinearTime() {
         let book = String(repeating: "word ", count: 2_000_000)
         let started = Date()
