@@ -160,6 +160,25 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual((URLSessionFetcher.networkError(URLError(.badServerResponse)) as? NetworkError)?.kind, .other)
         XCTAssertTrue(URLSessionFetcher.networkError(URLError(.cancelled)) is CancellationError)
     }
+
+    func testOnlyHTTPSToTheAppsHostsIsAllowed() async {
+        XCTAssertTrue(Hosts.isAllowed(URL(string: "https://www.gutenberg.org/cache/epub/11/pg11.txt")))
+        XCTAssertTrue(Hosts.isAllowed(URL(string: "https://gutendex.com/books/?search=alice")))
+        XCTAssertTrue(Hosts.isAllowed(URL(string: "https://api.dictionaryapi.dev/api/v2/entries/en/walk")))
+        XCTAssertFalse(Hosts.isAllowed(URL(string: "http://www.gutenberg.org/x")), "plain HTTP")
+        XCTAssertFalse(Hosts.isAllowed(URL(string: "https://evil.example/x")), "another host")
+        XCTAssertFalse(Hosts.isAllowed(URL(string: "https://gutenberg.org.evil.example/x")), "a look-alike host")
+        XCTAssertFalse(Hosts.isAllowed(URL(string: "https://www.gutenberg.org:8443/x")), "another port")
+        XCTAssertFalse(Hosts.isAllowed(URL(string: "https://user@www.gutenberg.org/x")), "credentials in the URL")
+        XCTAssertFalse(Hosts.isAllowed(nil))
+        // Refused before any connection is made.
+        do {
+            _ = try await URLSessionFetcher().get("https://evil.example/x")
+            XCTFail("another host must be refused")
+        } catch {
+            XCTAssertTrue(error is NetworkError)
+        }
+    }
 }
 
 final class DictionaryTests: XCTestCase {
@@ -201,6 +220,14 @@ final class DictionaryTests: XCTestCase {
         let result = await client.lookup("walked")
         XCTAssertEqual(result?.word, "walk")
         XCTAssertEqual(result?.phonetic, "/walk/")
+    }
+
+    func testHugeAnswersAreCutToSaneLengths() async {
+        let huge = String(repeating: "plural ", count: 200_000)
+        let client = DictionaryClient(http: ClosureFetcher { _ in Self.entry("big", huge, phonetic: String(repeating: "x", count: 5_000)) })
+        let result = await client.lookup("big")
+        XCTAssertEqual(result?.definition?.count, DictionaryEntry.maxDefinition)
+        XCTAssertEqual(result?.phonetic?.count, DictionaryEntry.maxShortField)
     }
 
     func testReturnsNilWhenOfflineOnServerErrorsOrBadJSON() async {

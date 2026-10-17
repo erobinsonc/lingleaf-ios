@@ -14,21 +14,27 @@ public struct DictionaryEntry: Equatable, Sendable {
         self.definition = definition
     }
 
+    /// Longest field kept from an answer. Real definitions are a sentence or two; a hostile
+    /// answer can't make the card or the inflection search work through megabytes of text.
+    static let maxDefinition = 500
+    static let maxShortField = 100
+
     static func parse(_ json: [String: Any]) -> DictionaryEntry? {
-        guard let word = json["word"] as? String else { return nil }
-        var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : $0 }
+        guard let word = (json["word"] as? String).map({ String($0.prefix(maxShortField)) }) else { return nil }
+        var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : String($0.prefix(maxShortField)) }
         if phonetic == nil {
             phonetic = (json["phonetics"] as? [[String: Any]])?
                 .compactMap { $0["text"] as? String }
                 .first { !$0.isEmpty }
+                .map { String($0.prefix(maxShortField)) }
         }
         let meaning = (json["meanings"] as? [[String: Any]])?.first
         let definition = (meaning?["definitions"] as? [[String: Any]])?.first
         return DictionaryEntry(
             word: word,
             phonetic: phonetic,
-            partOfSpeech: meaning?["partOfSpeech"] as? String,
-            definition: definition?["definition"] as? String
+            partOfSpeech: (meaning?["partOfSpeech"] as? String).map { String($0.prefix(maxShortField)) },
+            definition: (definition?["definition"] as? String).map { String($0.prefix(maxDefinition)) }
         )
     }
 }

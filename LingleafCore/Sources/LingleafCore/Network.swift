@@ -69,12 +69,40 @@ public enum Limits {
     public static let maxBytes = 10 * 1024 * 1024
 }
 
-/// HTTPS-only fetcher. Plain HTTP is refused before any connection is made,
-/// and responses larger than `maxBytes` are cut off with an error.
+/// The only hosts the app talks to (see README). A request or redirect anywhere else is refused,
+/// so even a compromised host can't send the app to a server of the attacker's choosing.
+public enum Hosts {
+    public static let allowed: Set<String> = ["gutendex.com", "www.gutenberg.org", "api.dictionaryapi.dev"]
+    /// Redirects followed at most, each one HTTPS and to an allowed host.
+    public static let maxRedirects = 5
+
+    /// Whether `url` is HTTPS to one of `allowed` (exact host, default port).
+    public static func isAllowed(_ url: URL?, in allowed: Set<String> = allowed) -> Bool {
+        guard let url, url.scheme == "https", url.user == nil, let host = url.host?.lowercased(),
+              url.port == nil || url.port == 443 else { return false }
+        return allowed.contains(host)
+    }
+}
+
+/// HTTPS-only fetcher for the allowed hosts. Anything else is refused before any connection is made,
+/// redirects elsewhere are not followed, and responses larger than `maxBytes` are cut off with an error.
+/// No cookies and no disk cache: what the learner looks up stays off the disk.
 public struct URLSessionFetcher: HttpFetcher {
     private let maxBytes: Int
+    private let allowedHosts: Set<String>
 
-    public init(maxBytes: Int = Limits.maxBytes) { self.maxBytes = maxBytes }
+    public init(maxBytes: Int = Limits.maxBytes, allowedHosts: Set<String> = Hosts.allowed) {
+        self.maxBytes = maxBytes
+        self.allowedHosts = allowedHosts
+    }
+
+    private static let session: URLSession = {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.httpCookieAcceptPolicy = .never
+        configuration.httpShouldSetCookies = false
+        configuration.urlCache = nil
+        return URLSession(configuration: configuration)
+    }()
 
     public func get(_ url: String) async throws -> HttpResponse {
         try await get(url, progress: nil)
@@ -83,14 +111,16 @@ public struct URLSessionFetcher: HttpFetcher {
     /// Downloads the whole body in one go (not byte by byte), with progress from the
     /// task. 30 s without data times out; cancelling the calling task cancels the request.
     public func get(_ url: String, progress: (@Sendable (Double) -> Void)?) async throws -> HttpResponse {
-        guard url.hasPrefix("https://"), let address = URL(string: url) else { throw NetworkError("Only HTTPS is allowed") }
+        guard let address = URL(string: url), Hosts.isAllowed(address, in: allowedHosts) else {
+            throw NetworkError("Only HTTPS to the app's hosts is allowed")
+        }
         var request = URLRequest(url: address, timeoutInterval: 30)
         request.setValue("Lingleaf/0.1 (+https://github.com/erobinsonc/lingleaf-ios)", forHTTPHeaderField: "User-Agent")
         let data: Data
         let response: URLResponse
-        let observer = ProgressObserver(maxBytes: maxBytes, progress: progress)
+        let observer = ProgressObserver(maxBytes: maxBytes, allowedHosts: allowedHosts, progress: progress)
         do {
-            (data, response) = try await URLSession.shared.data(for: request, delegate: observer)
+            (data, response) = try await Self.session.data(for: request, delegate: observer)
         } catch let error as URLError {
             throw observer.tooLarge ? NetworkError("Response too large") : Self.networkError(error)
         }
@@ -114,9 +144,12 @@ public struct URLSessionFetcher: HttpFetcher {
     }
 }
 
-/// Follows the request's progress and cancels it once it passes `maxBytes`.
+/// Follows the request's progress and cancels it once it passes `maxBytes`; allows only
+/// redirects that stay on HTTPS and the allowed hosts, at most `Hosts.maxRedirects`.
 private final class ProgressObserver: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
     private let maxBytes: Int
+    private let allowedHosts: Set<String>
+    private var redirects = 0
     private let progress: (@Sendable (Double) -> Void)?
     private var observation: NSKeyValueObservation?
     /// Set (on the KVO thread) when the body passed `maxBytes` and the request was cancelled for it.
@@ -124,9 +157,20 @@ private final class ProgressObserver: NSObject, URLSessionTaskDelegate, @uncheck
     private var exceeded = false
     var tooLarge: Bool { lock.withLock { exceeded } }
 
-    init(maxBytes: Int, progress: (@Sendable (Double) -> Void)?) {
+    init(maxBytes: Int, allowedHosts: Set<String>, progress: (@Sendable (Double) -> Void)?) {
         self.maxBytes = maxBytes
+        self.allowedHosts = allowedHosts
         self.progress = progress
+    }
+
+    /// A refused redirect returns the 3xx itself, which callers treat as "not available".
+    func urlSession(
+        _ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
+        newRequest request: URLRequest
+    ) async -> URLRequest? {
+        let count = lock.withLock { redirects += 1; return redirects }
+        guard count <= Hosts.maxRedirects, Hosts.isAllowed(request.url, in: allowedHosts) else { return nil }
+        return request
     }
 
     func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {

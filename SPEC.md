@@ -11,7 +11,10 @@ the same intent on both platforms. A change to behaviour updates this file in
 - Learn English by reading real books. The reader is the product.
 - No accounts, ads or tracking. Data stays on the device.
 - Network only for: Gutenberg search (`gutendex.com`), book downloads and covers
-  (`www.gutenberg.org/cache/epub/`) and word definitions (`api.dictionaryapi.dev`). HTTPS only.
+  (`www.gutenberg.org/cache/epub/`) and word definitions (`api.dictionaryapi.dev`). HTTPS only,
+  to these hosts only: a redirect is followed only to them (at most 5); no cookies, no disk cache.
+  Outside data is untrusted even from these hosts: dictionary fields are cut to 500 characters
+  (definition) and 100 (word, IPA, part of speech).
 - Translation runs on the device (Apple Translation on iOS, Google ML Kit on Android).
 - Interface in English and Spanish; more languages welcome.
 
