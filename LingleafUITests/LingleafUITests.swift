@@ -410,23 +410,38 @@ final class LingleafUITests: XCTestCase {
             // number of elements under the bar right now; any more still fail, with a screenshot.
             let underBar = Self.elementsUnder(tabBar, in: app)
             var unresolved: [String] = []
-            try app.performAccessibilityAudit { issue in
-                // Rows scrolled under the translucent tab bar are measured against
-                // the bar's blur; scrolled into view they read normally. The tab
-                // bar's own buttons are not exempt: their contrast is still checked.
-                if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
-                   !Self.isTabBarButton(flagged, in: tabBar) { return true }
-                // The search field is UIKit's own (from `.searchable`); its clipping
-                // at large text sizes is iOS's to handle, not something the app can change.
-                if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                if Self.knownFalsePositive(issue, on: screen) { return true }
-                if issue.auditType == .contrast, issue.element == nil {
-                    unresolved.append("[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
-                    return true
+            // The audit itself can time out (the first one after a cold simulator boot): that is
+            // no result, so it runs again; the findings of an audit that completes always count.
+            for attempt in 1...3 {
+                issues.removeSubrange(before...)
+                unresolved = []
+                do {
+                    try app.performAccessibilityAudit { issue in
+                        // Rows scrolled under the translucent tab bar are measured against
+                        // the bar's blur; scrolled into view they read normally. The tab
+                        // bar's own buttons are not exempt: their contrast is still checked.
+                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
+                           !Self.isTabBarButton(flagged, in: tabBar) { return true }
+                        // The search field is UIKit's own (from `.searchable`); its clipping
+                        // at large text sizes is iOS's to handle, not something the app can change.
+                        if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
+                        if Self.knownFalsePositive(issue, on: screen) { return true }
+                        if issue.auditType == .contrast, issue.element == nil {
+                            unresolved.append(
+                                "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
+                            return true
+                        }
+                        let element = issue.element.map {
+                            "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
+                        } ?? "screen"
+                        issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
+                        return true
+                    }
+                    break
+                } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                    && error.code == -56 && attempt < 3 {
+                    RunLoop.current.run(until: Date().addingTimeInterval(2))
                 }
-                let element = issue.element.map { "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)" } ?? "screen"
-                issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
-                return true
             }
             if unresolved.count > underBar {
                 issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
