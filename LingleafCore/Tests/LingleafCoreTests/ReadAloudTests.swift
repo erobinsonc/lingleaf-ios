@@ -36,4 +36,25 @@ final class ReadAloudTests: XCTestCase {
         XCTAssertNil(ReadAloud.start(["", " "], 0))
         XCTAssertEqual(ReadAloud.start(book, -1), first, "a negative paragraph starts at the first")
     }
+
+    func testPreviousGoesBackOneSentenceAcrossEmptyParagraphs() {
+        let book = ["One. Two.", "", "Three."]
+        let one = SentencePosition(0, WordRange(0, 4))
+        let two = SentencePosition(0, WordRange(5, 9))
+        let three = SentencePosition(2, WordRange(0, 6))
+        XCTAssertEqual(ReadAloud.previous(book, before: three), two)
+        XCTAssertEqual(ReadAloud.previous(book, before: two), one)
+        XCTAssertNil(ReadAloud.previous(book, before: one), "the book's first sentence")
+        XCTAssertEqual(ReadAloud.previous(book, before: SentencePosition(9, WordRange(0, 1))), three, "past the end: the last sentence")
+    }
+
+    func testARepeatedStretchCountsItsSentences() {
+        let book = ["One. Two.", "", "Three."]
+        let one = SentencePosition(0, WordRange(0, 4))
+        let three = SentencePosition(2, WordRange(0, 6))
+        XCTAssertEqual(ReadAloud.count(book, from: one, to: one), 1)
+        XCTAssertEqual(ReadAloud.count(book, from: one, to: three), 3)
+        XCTAssertEqual(ReadAloud.count(book, from: three, to: one), 0, "the end before the start")
+        XCTAssertEqual(ReadAloud.count(book, from: one, to: SentencePosition(0, WordRange(1, 2))), 0, "an end that is no sentence")
+    }
 }

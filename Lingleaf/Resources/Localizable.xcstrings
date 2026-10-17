@@ -291,6 +291,16 @@
         }
       }
     },
+    "Add previous sentence": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Añadir frase anterior"
+          }
+        }
+      }
+    },
     "Again": {
       "localizations": {
         "es": {
@@ -822,6 +832,26 @@
         }
       }
     },
+    "Play": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reproducir"
+          }
+        }
+      }
+    },
+    "Previous sentence": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frase anterior"
+          }
+        }
+      }
+    },
     "Project Gutenberg didn't answer. Try again.": {
       "localizations": {
         "es": {
@@ -918,6 +948,62 @@
           "stringUnit": {
             "state": "translated",
             "value": "Quitar de Palabras"
+          }
+        }
+      }
+    },
+    "Repeat sentence": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repetir frase"
+          }
+        }
+      }
+    },
+    "Repeating %lld sentences": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repeating %lld sentence"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repeating %lld sentences"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repitiendo %lld frase"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repitiendo %lld frases"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Repitiendo %lld frases"
+                }
+              }
+            }
           }
         }
       }

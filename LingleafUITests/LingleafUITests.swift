@@ -154,13 +154,28 @@ final class LingleafUITests: XCTestCase {
         reading.lifetime = .keepAlways
         add(reading)
         app.buttons["Pause"].tap()
-        XCTAssertTrue(app.buttons["Read aloud"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5), "paused: the bar at the bottom stays, with Play")
 
         // The word card's Read from here starts at the word's sentence (issue #33).
         app.links["sand"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Read from here"].waitForExistence(timeout: 10))
         app.buttons["Read from here"].tap()
         assertLastSpoken("The sand is warm.", "Read from here starts at the tapped word's sentence")
+
+        // Repeat sentence loops it; Add previous sentence grows the stretch backwards (issue #33).
+        app.buttons["Repeat sentence"].tap()
+        XCTAssertTrue(app.staticTexts["Repeating 1 sentence"].waitForExistence(timeout: 5))
+        app.buttons["Add previous sentence"].tap()
+        assertLastSpoken("Every morning, Tom and Max walk to the beach.", "the stretch is read from its new start")
+        XCTAssertTrue(app.staticTexts["Repeating 2 sentences"].waitForExistence(timeout: 5))
+        assertLastSpoken("The sand is warm.", "then its last sentence")
+        assertLastSpoken("Every morning, Tom and Max walk to the beach.", "and back to its start")
+        let repeating = XCTAttachment(screenshot: app.screenshot())
+        repeating.name = "en-light-17-repeating"
+        repeating.lifetime = .keepAlways
+        add(repeating)
+        app.buttons["Repeat sentence"].tap()
+        XCTAssertTrue(app.buttons["Previous sentence"].waitForExistence(timeout: 5), "repeat off: back to Previous sentence")
         app.buttons["Pause"].tap()
     }
 

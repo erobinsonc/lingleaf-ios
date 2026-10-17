@@ -63,6 +63,34 @@ public enum ReadAloud {
         return nil
     }
 
+    /// The sentence before `current`, skipping empty paragraphs, or nil when it was the book's first.
+    public static func previous(_ paragraphs: [String], before current: SentencePosition) -> SentencePosition? {
+        let own = paragraphs.indices.contains(current.paragraph) ? paragraphs[current.paragraph] : ""
+        if let range = sentences(own).last(where: { $0.end <= current.range.start }) {
+            return SentencePosition(current.paragraph, range)
+        }
+        var paragraph = min(current.paragraph, paragraphs.count) - 1
+        while paragraph >= 0 {
+            if let range = sentences(paragraphs[paragraph]).last { return SentencePosition(paragraph, range) }
+            paragraph -= 1
+        }
+        return nil
+    }
+
+    /// How many sentences there are from `first` to `last`, both included (a repeated stretch:
+    /// "Repeating 3 sentences"); 0 when `last` comes before `first`.
+    public static func count(_ paragraphs: [String], from first: SentencePosition, to last: SentencePosition) -> Int {
+        var count = 0
+        var at: SentencePosition? = first
+        while let position = at {
+            count += 1
+            if position == last { return count }
+            if position.paragraph > last.paragraph { return 0 }
+            at = next(paragraphs, after: position)
+        }
+        return 0
+    }
+
     /// The sentence after `current`, or nil when it was the book's last.
     public static func next(_ paragraphs: [String], after current: SentencePosition) -> SentencePosition? {
         start(paragraphs, current.paragraph, offset: current.range.end)

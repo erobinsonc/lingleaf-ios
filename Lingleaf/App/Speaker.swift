@@ -83,13 +83,22 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
     }
 }
 
+/// A repeated stretch of sentences, from `first` to `last`.
+struct RepeatedStretch: Equatable {
+    var first: SentencePosition
+    var last: SentencePosition
+}
+
 /// Reads a book aloud sentence by sentence (SPEC S6), with the sentence being read for the reader
-/// to highlight. Pausing keeps the sentence, so reading goes on from it.
+/// to highlight. Pausing keeps the sentence, so reading goes on from it. Repeat loops the sentence
+/// being read; Previous sentence then adds one more before it to the stretch.
 @Observable
 @MainActor
 final class ReadAloudController {
     private(set) var current: SentencePosition?
     private(set) var isReading = false
+    /// The repeated stretch; nil when not repeating.
+    private(set) var loop: RepeatedStretch?
     @ObservationIgnored private var paragraphs: [String] = []
     @ObservationIgnored private let speaker: Speaker
     @ObservationIgnored private let rate: () -> Double
@@ -101,10 +110,42 @@ final class ReadAloudController {
         self.rate = rate
     }
 
+    /// How many sentences are repeated: "Repeating 3 sentences".
+    var loopCount: Int {
+        loop.map { ReadAloud.count(paragraphs, from: $0.first, to: $0.last) } ?? 0
+    }
+
     func read(_ paragraphs: [String], from position: SentencePosition) {
         self.paragraphs = paragraphs
+        loop = nil
         isReading = true
         speak(position)
+    }
+
+    /// Goes on from the start of the paused sentence.
+    func play() {
+        guard let current else { return }
+        isReading = true
+        speak(current)
+    }
+
+    /// Back to the start of the previous sentence and reads on. While repeating, it adds that
+    /// sentence to the repeated stretch instead and reads the stretch from its new start.
+    func previous() {
+        guard let current else { return }
+        let back = ReadAloud.previous(paragraphs, before: loop?.first ?? current)
+        if loop != nil {
+            guard let back else { return }
+            loop?.first = back
+        }
+        isReading = true
+        speak(back ?? current)
+    }
+
+    /// Repeats the sentence being read until turned off; then reading goes on forward.
+    func toggleRepeat() {
+        guard let current else { return }
+        loop = loop == nil ? RepeatedStretch(first: current, last: current) : nil
     }
 
     func pause() {
@@ -120,7 +161,9 @@ final class ReadAloudController {
         // The speed setting applies from the next sentence on.
         speaker.speak(text, rate: rate()) { [weak self] in
             guard let self, self.isReading else { return }
-            if let next = ReadAloud.next(self.paragraphs, after: position) {
+            if let loop = self.loop, position == loop.last {
+                self.speak(loop.first)
+            } else if let next = ReadAloud.next(self.paragraphs, after: position) {
                 self.speak(next)
             } else {
                 // The end of the book.

@@ -80,6 +80,25 @@ struct ReaderView: View {
         .navigationTitle(book?.title ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar { toolbar }
+        // Once reading aloud starts, its controls sit at the bottom, in reach of the thumb (issue #33).
+        .toolbar {
+            if let reading, reading.current != nil { readAloudBar(reading) }
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) {
+            if let reading, reading.loop != nil {
+                // Says how long the repeated stretch is.
+                Text("Repeating \(reading.loopCount) sentences")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 6)
+                    .background(.bar)
+            }
+        }
+        // VoiceOver hears the stretch grow.
+        .onChange(of: reading?.loopCount) { _, count in
+            guard let count, count > 0 else { return }
+            AccessibilityNotification.Announcement(String(localized: "Repeating \(count) sentences")).post()
+        }
         .toolbar(.hidden, for: .tabBar)
         .sheet(item: $selection) { selection in
             WordCardView(
@@ -169,6 +188,12 @@ struct ReaderView: View {
                                     }
                                 }
                             }
+                            // A repeated stretch also gets a bar at the side, not only a fill.
+                            .overlay(alignment: .leading) {
+                                if let loop = reading?.loop, (loop.first.paragraph...loop.last.paragraph).contains(index) {
+                                    Capsule().fill(Brand.secondaryText).frame(width: 3).offset(x: -10).accessibilityHidden(true)
+                                }
+                            }
                             .id(index)
                             .onScrollVisibilityChange(threshold: 0.01) { shown in
                                 if shown { visible.insert(index) } else { visible.remove(index) }
@@ -227,6 +252,45 @@ struct ReaderView: View {
         withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(sentence.paragraph, anchor: anchor) }
     }
 
+    /// Previous sentence · Pause/Play · Repeat sentence, while reading aloud or paused (SPEC S6).
+    /// While repeating, Previous sentence adds one sentence to the stretch.
+    @ToolbarContentBuilder
+    private func readAloudBar(_ reading: ReadAloudController) -> some ToolbarContent {
+        let repeating = reading.loop != nil
+        ToolbarItemGroup(placement: .bottomBar) {
+            Spacer()
+            Button {
+                following = true
+                reading.previous()
+            } label: {
+                Label(repeating ? LocalizedStringKey("Add previous sentence") : "Previous sentence", systemImage: "backward.end")
+            }
+            Button {
+                if reading.isReading {
+                    reading.pause()
+                } else {
+                    following = true
+                    reading.play()
+                }
+            } label: {
+                if reading.isReading {
+                    Label("Pause", systemImage: "pause.fill")
+                } else {
+                    Label("Play", systemImage: "play.fill")
+                }
+            }
+            Button {
+                reading.toggleRepeat()
+            } label: {
+                Label("Repeat sentence", systemImage: "repeat.1")
+            }
+            .accessibilityAddTraits(repeating ? .isSelected : [])
+            .tint(repeating ? Brand.ink : nil)
+            .background(repeating ? AnyShapeStyle(Color(uiColor: .secondarySystemFill)) : AnyShapeStyle(.clear), in: Capsule())
+            Spacer()
+        }
+    }
+
     /// Starts reading aloud at the sentence holding `offset` of paragraph `paragraph`.
     private func readFrom(paragraph: Int, offset: Int) {
         guard let paragraphs, let start = ReadAloud.start(paragraphs, paragraph, offset: offset) else { return }
@@ -253,6 +317,19 @@ struct ReaderView: View {
 
     /// Every word is a link (`lingleaf://word?p=…&o=…&e=…`); words being learned are underlined
     /// (dark amber in light mode, the yellow marker in dark mode) on a light yellow tint.
+    /// The sentences of paragraph `index` to highlight: the repeated stretch when repeating,
+    /// else the sentence being read.
+    private func highlighted(_ index: Int, _ text: String) -> [WordRange] {
+        guard let loop = reading?.loop else {
+            return reading?.current.flatMap { $0.paragraph == index ? [$0.range] : nil } ?? []
+        }
+        guard (loop.first.paragraph...loop.last.paragraph).contains(index) else { return [] }
+        return ReadAloud.sentences(text).filter { range in
+            (index > loop.first.paragraph || range.start >= loop.first.range.start)
+                && (index < loop.last.paragraph || range.end <= loop.last.range.end)
+        }
+    }
+
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
@@ -285,9 +362,9 @@ struct ReaderView: View {
                 learning.append(LearningWord(id: range.start, word: word, range: stringRange))
             }
         }
-        // The sentence being read aloud, on a neutral fill (yellow marks words being learned).
-        if let current = reading?.current, current.paragraph == index,
-           let stringRange = Range(current.range.nsRange, in: text), let sentence = Range(stringRange, in: attributed) {
+        // The sentences being read or repeated, on a neutral fill (yellow marks words being learned).
+        for range in highlighted(index, text) {
+            guard let stringRange = Range(range.nsRange, in: text), let sentence = Range(stringRange, in: attributed) else { continue }
             for run in attributed[sentence].runs where run.backgroundColor == nil {
                 attributed[run.range].backgroundColor = Color(uiColor: .secondarySystemFill)
             }
@@ -298,27 +375,18 @@ struct ReaderView: View {
     @ToolbarContentBuilder
     private var toolbar: some ToolbarContent {
         ToolbarItemGroup(placement: .topBarTrailing) {
-            Button {
-                if reading?.isReading == true {
-                    reading?.pause()
-                } else if let paragraphs, !paragraphs.isEmpty {
-                    // From the paused sentence when it is on screen, else from the top of the screen.
-                    if let paused = reading?.current, visible.contains(paused.paragraph) {
-                        following = true
-                        reading?.read(paragraphs, from: paused)
-                    } else {
+            if reading?.current == nil {
+                Button {
+                    // From the top of the screen; once started, the bar at the bottom has the controls.
+                    if let paragraphs, !paragraphs.isEmpty {
                         readFrom(paragraph: min(position ?? book?.progressParagraph ?? 0, paragraphs.count - 1), offset: 0)
                     }
-                }
-            } label: {
-                if reading?.isReading == true {
-                    Label { Text("Pause") } icon: { inkIcon("pause.circle") }
-                } else {
+                } label: {
                     Label { Text("Read aloud") } icon: { inkIcon("speaker.wave.2") }
                 }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.plain)
             }
-            .labelStyle(.iconOnly)
-            .buttonStyle(.plain)
             Menu {
                 Button("Larger text", systemImage: "plus.magnifyingglass") {
                     model.library.updateSettings { $0.fontSize = min($0.fontSize + 2, 34) }
