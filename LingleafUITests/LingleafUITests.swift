@@ -156,8 +156,9 @@ final class LingleafUITests: XCTestCase {
         // Tapping a word pauses: nothing more is read while its card is open.
         app.links["dog"].firstMatch.tap()
         XCTAssertTrue(app.buttons["Read from here"].waitForExistence(timeout: 10))
+        let atTap = app.staticTexts[Self.lastSpokenID].label
         sleep(3)
-        assertLastSpoken("He is ten years old.", "tapping a word pauses reading aloud")
+        assertLastSpoken(atTap, "tapping a word pauses reading aloud")
         closeCard()
         XCTAssertTrue(app.buttons["Play"].waitForExistence(timeout: 5), "paused: the bar at the bottom stays, with Play")
 
