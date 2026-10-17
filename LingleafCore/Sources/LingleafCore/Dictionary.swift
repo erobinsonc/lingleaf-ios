@@ -20,21 +20,21 @@ public struct DictionaryEntry: Equatable, Sendable {
     static let maxShortField = 100
 
     static func parse(_ json: [String: Any]) -> DictionaryEntry? {
-        guard let word = (json["word"] as? String).map({ String($0.prefix(maxShortField)) }) else { return nil }
-        var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : String($0.prefix(maxShortField)) }
+        guard let word = (json["word"] as? String).map({ TextTools.truncated($0, maxShortField) }) else { return nil }
+        var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : TextTools.truncated($0, maxShortField) }
         if phonetic == nil {
             phonetic = (json["phonetics"] as? [[String: Any]])?
                 .compactMap { $0["text"] as? String }
                 .first { !$0.isEmpty }
-                .map { String($0.prefix(maxShortField)) }
+                .map { TextTools.truncated($0, maxShortField) }
         }
         let meaning = (json["meanings"] as? [[String: Any]])?.first
         let definition = (meaning?["definitions"] as? [[String: Any]])?.first
         return DictionaryEntry(
             word: word,
             phonetic: phonetic,
-            partOfSpeech: (meaning?["partOfSpeech"] as? String).map { String($0.prefix(maxShortField)) },
-            definition: (definition?["definition"] as? String).map { String($0.prefix(maxDefinition)) }
+            partOfSpeech: (meaning?["partOfSpeech"] as? String).map { TextTools.truncated($0, maxShortField) },
+            definition: (definition?["definition"] as? String).map { TextTools.truncated($0, maxDefinition) }
         )
     }
 }

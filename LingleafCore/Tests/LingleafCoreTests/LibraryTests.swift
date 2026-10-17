@@ -311,13 +311,14 @@ final class LibraryTests: XCTestCase {
         for name in ["books.json", "book-1760000000000-0.txt", "words.json.corrupt", "seeded"] {
             XCTAssertTrue(StorageNames.isSafe(name), name)
         }
-        for name in ["../secret", "a/b", ".hidden", "", "book-..txt", String(repeating: "a", count: 200)] {
+        for name in ["../secret", "a/b", ".hidden", "", "book-..txt", "books.json\n", String(repeating: "a", count: 200)] {
             XCTAssertFalse(StorageNames.isSafe(name), name)
         }
         let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: dir) }
         let outside = dir.deletingLastPathComponent().appendingPathComponent("lingleaf-outside.txt")
         try "outside".write(to: outside, atomically: true, encoding: .utf8)
+        defer { try? FileManager.default.removeItem(at: outside) }
         XCTAssertNil(FileStorage(directory: dir).read("../lingleaf-outside.txt"), "a restored book can't name a file outside")
     }
 

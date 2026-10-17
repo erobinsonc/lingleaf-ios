@@ -104,7 +104,7 @@ public enum Hosts {
     public static let maxRedirects = 5
 
     /// Whether `url` is HTTPS to one of `allowed` (exact host, default port).
-    public static func isAllowed(_ url: URL?, in allowed: Set<String> = allowed) -> Bool {
+    public static func isAllowed(_ url: URL?, in allowed: Set<String> = Hosts.allowed) -> Bool {
         guard let url, url.scheme == "https", url.user == nil, let host = url.host?.lowercased(),
               url.port == nil || url.port == 443 else { return false }
         return allowed.contains(host)

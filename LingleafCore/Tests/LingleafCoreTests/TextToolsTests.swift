@@ -45,6 +45,7 @@ final class TextToolsTests: XCTestCase {
         let zalgo = TextTools.cleanLabel("a" + String(repeating: "\u{0301}", count: 100_000))
         XCTAssertEqual(zalgo.unicodeScalars.count, 1 + TextTools.maxCombiningMarks, "at most 4 accents on a letter")
         XCTAssertEqual(TextTools.cleanLabel("\u{3164}\u{115F}\u{2800}Fake"), "Fake", "blank fillers")
+        XCTAssertEqual(TextTools.cleanLabel("\u{3000}\u{00A0}Alice\u{2003} x"), "Alice x", "Unicode spaces")
         XCTAssertEqual(TextTools.cleanLabel("Cafe\u{0301}"), "Cafe\u{0301}")
     }
 

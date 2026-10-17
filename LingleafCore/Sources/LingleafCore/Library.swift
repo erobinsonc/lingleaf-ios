@@ -425,7 +425,7 @@ public final class Library {
 /// A name read back from a restored backup can't reach outside the app's folder.
 public enum StorageNames {
     public static func isSafe(_ name: String) -> Bool {
-        !name.contains("..") && name.range(of: #"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"#, options: .regularExpression) != nil
+        !name.contains("..") && name.range(of: #"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}\z"#, options: .regularExpression) != nil
     }
 }
 

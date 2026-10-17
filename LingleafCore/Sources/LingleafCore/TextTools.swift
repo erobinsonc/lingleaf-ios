@@ -81,7 +81,7 @@ public enum TextTools {
                 cut = space.location == NSNotFound ? maxParagraph : space.location - start
             }
             // Never between the halves of a surrogate pair, and always forward.
-            if cut > 1, CFStringIsSurrogateHighCharacter(ns.character(at: start + cut - 1)) { cut -= 1 }
+            if cut > 1, UTF16.isLeadSurrogate(ns.character(at: start + cut - 1)) { cut -= 1 }
             let piece = ns.substring(with: NSRange(location: start, length: cut)).trimmingCharacters(in: .whitespaces)
             if !piece.isEmpty { pieces.append(piece) }
             start += cut
