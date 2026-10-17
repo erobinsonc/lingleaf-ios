@@ -102,9 +102,10 @@ private struct WordRow: View {
                         Text(word.phonetic).font(.caption).foregroundStyle(Brand.secondaryText)
                     }
                 }
-                if let kind = word.kind {
-                    // A contraction has no label: its base ("it is") says what it is.
-                    Text(verbatim: [word.base ?? "", kind.label].compactMap { $0 }.joined(separator: " · "))
+                // "do · Helper verb"; a contraction has no label: its base ("it is") says what it is.
+                let detail = [word.base, word.kind.flatMap(\.label)].compactMap { $0 }.filter { !$0.isEmpty }
+                if word.kind != nil, !detail.isEmpty {
+                    Text(verbatim: detail.joined(separator: " · "))
                         .font(.caption).foregroundStyle(Brand.secondaryText)
                 }
                 if !word.translation.isEmpty { Text(word.translation) }

@@ -1,6 +1,16 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%@ or %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ o %2$@"
+          }
+        }
+      }
+    },
     "%@, learning": {
       "localizations": {
         "es": {
@@ -1448,6 +1458,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” se agregó a tu biblioteca."
+          }
+        }
+      }
+    },
+    "“%@” can be “%@” or “%@”: the sentence's translation tells which.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” puede ser “%2$@” o “%3$@”: la traducción de la frase dice cuál."
           }
         }
       }

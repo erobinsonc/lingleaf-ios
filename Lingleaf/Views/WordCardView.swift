@@ -35,6 +35,13 @@ struct WordCardView: View {
         return base
     }
 
+    /// The headword as a screen reader says it: "he had or he would", not "slash".
+    private var spokenHeadword: String {
+        let parts = headword.components(separatedBy: " / ")
+        guard parts.count == 2 else { return headword }
+        return String(localized: "\(parts[0]) or \(parts[1])")
+    }
+
     /// The base form's translation, else the tapped form's while the base form's is on its way.
     /// A helper or modal verb means little alone ("did" → "hizo"): its verb group's translation.
     private var translation: String? {
@@ -124,6 +131,8 @@ struct WordCardView: View {
                         .font(.largeTitle)
                 }
                 Text(headword).font(.largeTitle.weight(.semibold))
+                    .accessibilityLabel(Text(spokenHeadword))
+                    .accessibilityAddTraits(.isHeader)
             }
             if selection.function == nil, let phonetic = entry?.phonetic {
                 Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
@@ -144,8 +153,9 @@ struct WordCardView: View {
     private var translationView: some View {
         if let target = model.targetLanguage {
             VStack(spacing: 4) {
-                if let chunk = selection.chunk {
-                    // The verb group it belongs to, then its translation.
+                // The verb group it belongs to, then its translation; not when it is just the
+                // tapped word ("That's"), which the headword and note already explain.
+                if let chunk = selection.chunk, chunk != selection.word {
                     Text(verbatim: chunk).font(.headline).multilineTextAlignment(.center)
                 }
                 if let translation {
@@ -542,6 +552,11 @@ extension FunctionWord {
             return String(localized: "“\(word)” (= “\(expansion)”) + verb: an imagined result, or a polite request.")
         default:
             let key = TextTools.normalize(word)
+            // "he'd put": had or would; the sentence's translation settles it.
+            let both = expansion.components(separatedBy: " / ")
+            if both.count == 2 {
+                return String(localized: "“\(word)” can be “\(both[0])” or “\(both[1])”: the sentence's translation tells which.")
+            }
             if key == "let's" { return String(localized: "“let's” (= “let us”) + verb: a suggestion to do something together: “Let's go”.") }
             // The lookalikes learners mix up.
             if key == "it's" { return String(localized: "“it's” = “\(expansion)”; “its” (no apostrophe) = belonging to it.") }
