@@ -194,7 +194,24 @@ final class LingleafUITests: XCTestCase {
 
     /// The text being "spoken" ends (UI tests step through reading aloud one sentence at a time).
     private func finishSentence() {
-        app.buttons["ui-test-finish-speech"].tap()
+        // A tap at the control's centre: it is 2 pt and nearly transparent, so XCUITest
+        // finds no hit point for an ordinary tap.
+        let control = app.buttons["ui-test-finish-speech"]
+        XCTAssertTrue(control.waitForExistence(timeout: 5))
+        control.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+    }
+
+    /// Evidence when an element is missing: the screen and its accessibility hierarchy,
+    /// kept with the test results.
+    private func attachEvidence(_ name: String) {
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "evidence-\(name)"
+        shot.lifetime = .keepAlways
+        add(shot)
+        let tree = XCTAttachment(string: app.debugDescription)
+        tree.name = "evidence-\(name)-hierarchy"
+        tree.lifetime = .keepAlways
+        add(tree)
     }
 
     /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.
@@ -213,7 +230,9 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the book")
         app.navigationBars.buttons.element(boundBy: 0).tap()
         app.tabBars.buttons["Library"].tap()
-        XCTAssertTrue(button(startingWith: "Aesop's Fables").exists, "the book is in the library")
+        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Aesop's Fables")).firstMatch
+        if !row.waitForExistence(timeout: 10) { attachEvidence("library-after-download") }
+        XCTAssertTrue(row.exists, "the book is in the library")
     }
 
     // S10 Import goes through the system file picker, which XCUITest can't drive
