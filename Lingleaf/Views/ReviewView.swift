@@ -19,15 +19,15 @@ struct ReviewView: View {
             if let word = queue.first {
                 // The count beside the bar: at the start an empty bar alone can read as "done".
                 HStack(spacing: 12) {
+                    // The bar stays the accessible element (a progress indicator), with the count as its value.
                     ProgressView(value: Double(reviewed), total: Double(max(total, 1)))
+                        .accessibilityLabel(Text("Review progress"))
+                        .accessibilityValue(Text("\(reviewed) of \(total)"))
                     Text("\(reviewed) of \(total)")
                         .font(.subheadline.monospacedDigit())
                         .foregroundStyle(Brand.secondaryText)
+                        .accessibilityHidden(true)
                 }
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel(Text("Review progress"))
-                .accessibilityValue(Text("\(reviewed) of \(total)"))
-                .accessibilityAddTraits(.updatesFrequently)
                 ScrollView {
                     // The saved record, not the queued copy: a translation may arrive while reviewing.
                     card(model.state.word(word.word) ?? word)
