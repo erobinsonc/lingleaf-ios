@@ -61,6 +61,7 @@ struct ContentView: View {
         // From the observed state, so the badge follows every review and save.
         let words = model.state.words
         let due = words.filter { $0.isDue(now) }.count
+        let nextDue = words.filter { !$0.learned && $0.nextReview > now }.map(\.nextReview).min()
         TabView {
             LibraryView()
                 .tabItem { Label("Library", systemImage: "books.vertical") }
@@ -80,16 +81,12 @@ struct ContentView: View {
             if phase == .active { now = Date() }
         }
         // Sleeps until the next word falls due (a new review day), then counts again.
-        .task(id: DueClock(now: now, words: words.count)) {
-            guard let next = words.filter({ !$0.learned && $0.nextReview > now }).map(\.nextReview).min() else { return }
-            try? await Task.sleep(for: .seconds(max(1, next.timeIntervalSinceNow + 1)))
+        // Keyed on the next due date, so an answer that moves it restarts the wait.
+        .task(id: nextDue) {
+            guard let nextDue else { return }
+            try? await Task.sleep(for: .seconds(max(1, nextDue.timeIntervalSinceNow + 1)))
             if !Task.isCancelled { now = Date() }
         }
-    }
-
-    private struct DueClock: Equatable {
-        let now: Date
-        let words: Int
     }
 }
 

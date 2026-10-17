@@ -73,16 +73,15 @@ struct ReviewView: View {
         let dueNow = model.library.dueWords().count
         let tomorrow = model.library.dueByEndOfTomorrow()
         return ContentUnavailableView {
-            // The brand colour, not the default grey, which reads as disabled.
-            Group {
-                if dueNow > 0 {
-                    Label("Done for now.", systemImage: "checkmark.seal.fill")
-                } else {
-                    Label("Done for today.", systemImage: "checkmark.seal.fill")
-                }
+            // A solid seal in the brand colour (not the default grey, which reads as disabled,
+            // nor hierarchical layers, which fade on black); the title keeps the primary colour.
+            Label {
+                if dueNow > 0 { Text("Done for now.") } else { Text("Done for today.") }
+            } icon: {
+                Image(systemName: "checkmark.seal.fill")
+                    .symbolRenderingMode(.monochrome)
+                    .foregroundStyle(Brand.ink)
             }
-            .symbolRenderingMode(.hierarchical)
-            .foregroundStyle(Brand.ink)
         } description: {
             if dueNow > 0 {
                 Text("\(dueNow) more due today.")
