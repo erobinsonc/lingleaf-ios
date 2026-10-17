@@ -93,8 +93,21 @@ final class ScreenTour: XCTestCase {
         app.terminate()
     }
 
+    /// Taps a tab. After going back from the reader (which hides the tab bar) the bar slides
+    /// back in: wait for it, and keep evidence if it never comes back.
     private func tab(_ index: Int) {
-        app.tabBars.buttons.element(boundBy: index).tap()
+        let bar = app.tabBars.firstMatch
+        if !bar.waitForExistence(timeout: 10) {
+            let shot = XCTAttachment(screenshot: app.screenshot())
+            shot.name = "evidence-no-tab-bar"
+            shot.lifetime = .keepAlways
+            add(shot)
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "evidence-no-tab-bar-hierarchy"
+            tree.lifetime = .keepAlways
+            add(tree)
+        }
+        bar.buttons.element(boundBy: index).tap()
     }
 
     private func snap(_ name: String) {

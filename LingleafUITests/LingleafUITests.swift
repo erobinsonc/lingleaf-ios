@@ -233,6 +233,8 @@ final class LingleafUITests: XCTestCase {
         read.tap()
         XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the book")
         app.navigationBars.buttons.element(boundBy: 0).tap()
+        // The tab bar slides back in after the reader: wait for it, with evidence if it doesn't.
+        if !app.tabBars.firstMatch.waitForExistence(timeout: 10) { attachEvidence("no-tab-bar-after-reader") }
         app.tabBars.buttons["Library"].tap()
         let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Aesop's Fables")).firstMatch
         if !row.waitForExistence(timeout: 10) { attachEvidence("library-after-download") }
