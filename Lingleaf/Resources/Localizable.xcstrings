@@ -296,7 +296,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Añadir frase anterior"
+            "value": "Agregar frase anterior"
           }
         }
       }
@@ -958,6 +958,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Repetir frase"
+          }
+        }
+      }
+    },
+    "Repeating": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repitiendo"
           }
         }
       }

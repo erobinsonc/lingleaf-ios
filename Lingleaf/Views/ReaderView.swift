@@ -285,6 +285,7 @@ struct ReaderView: View {
                 Label("Repeat sentence", systemImage: "repeat.1")
             }
             .accessibilityAddTraits(repeating ? .isSelected : [])
+            .accessibilityValue(repeating ? Text("Repeating") : Text(verbatim: ""))
             .tint(repeating ? Brand.ink : nil)
             .background(repeating ? AnyShapeStyle(Color(uiColor: .secondarySystemFill)) : AnyShapeStyle(.clear), in: Capsule())
             Spacer()
