@@ -369,7 +369,7 @@ struct ReaderView: View {
         for range in highlighted(index, text) {
             guard let stringRange = Range(range.nsRange, in: text), let sentence = Range(stringRange, in: attributed) else { continue }
             for run in attributed[sentence].runs where run.backgroundColor == nil {
-                attributed[run.range].backgroundColor = Color(uiColor: .secondarySystemFill)
+                attributed[run.range].backgroundColor = Brand.reading
             }
         }
         return MarkedParagraph(text: attributed, learning: learning)

@@ -10,6 +10,8 @@ enum Brand {
     /// (≈1.5:1), so light mode uses dark amber #8A6A00; dark mode keeps the marker #F5CF4A.
     static let markerLine = dynamic(light: rgb(0x8A6A00), dark: rgb(0xF5CF4A))
     static let learned = Color(red: 0.16, green: 0.45, blue: 0.31)
+    /// The sentence being read aloud: a warm grey on the paper (as on Android), not yellow.
+    static let reading = dynamic(light: rgb(0xE4DFD3), dark: rgb(0x323A37))
     /// Streak text: #A0430A on light backgrounds, #FF8A50 on dark ones (both ≥4.5:1).
     static let streak = dynamic(light: rgb(0xA0430A), dark: rgb(0xFF8A50))
     /// Secondary text darker than the system's, so it passes WCAG AA (≥4.5:1) on list backgrounds.
