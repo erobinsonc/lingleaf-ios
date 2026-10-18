@@ -45,6 +45,8 @@ private final class LearningCache {
         entries[index] = Entry(text: text, learning: learning, ranges: ranges)
         return ranges
     }
+
+    func clear() { entries = [:] }
 }
 
 /// A word being learned, located in its paragraph (for the VoiceOver rotor).
@@ -146,6 +148,7 @@ struct ReaderView: View {
         .task {
             let loaded = model.library.openBook(bookID)
             words = loaded.map(TextTools.wordRanges)
+            learningCache.clear()
             paragraphs = loaded
         }
         .onAppear {

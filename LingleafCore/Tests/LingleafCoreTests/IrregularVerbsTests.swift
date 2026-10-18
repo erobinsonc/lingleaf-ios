@@ -235,6 +235,11 @@ final class IrregularVerbsTests: XCTestCase {
 
     func testDerivedListsKeepTheOldOnesAndAddTheNewForms() {
         let table = IrregularVerbs.shared
+        // The shipped table's counts (same in lingleaf-android); a table edit updates them here.
+        XCTAssertEqual(table.formToBase.count, 573)
+        XCTAssertEqual(table.participles.count, 203)
+        XCTAssertEqual(table.baseLikeParticiples.count, 26)
+        XCTAssertEqual(table.hadBetterBases.count, 141)
         XCTAssertEqual(table.formToBase["stole"], nil, "\"stole\" is a homograph (a stole is a scarf)")
         XCTAssertEqual(table.formToBase["stolen"], "steal")
         XCTAssertEqual(table.formToBase["learnt"], "learn")

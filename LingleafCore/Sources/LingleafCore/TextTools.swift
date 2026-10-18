@@ -346,11 +346,23 @@ public enum TextTools {
         return matchKeys(words, i)
     }
 
-    /// The match keys of every word of `text` (`words`: its `wordRanges`), in one pass.
+    /// The match keys of every word of `text` (`words`: its `wordRanges`), in one pass. Ranges
+    /// that are not in order inside the text are not trusted: the text is tokenized once instead
+    /// and each range found in it (a range that is not a word gets the keys of its letters alone).
     public static func matchKeys(in text: String, words ranges: [WordRange]) -> [Set<String>] {
-        let words = Words(text as NSString, ranges: ranges.filter { isInside(text, $0) })
-        guard words.ranges.count == ranges.count else { return ranges.map { matchKeys(in: text, at: $0) } }
-        return words.ranges.indices.map { matchKeys(words, $0) }
+        let ns = text as NSString
+        let ordered = ranges.indices.allSatisfy { k in
+            isInside(text, ranges[k]) && (k == 0 || ranges[k - 1].end <= ranges[k].start)
+        }
+        if ordered {
+            let words = Words(ns, ranges: ranges)
+            return words.ranges.indices.map { matchKeys(words, $0) }
+        }
+        let words = Words(ns)
+        return ranges.map { range in
+            guard isInside(text, range) else { return [] }
+            return words.index(of: range).map { matchKeys(words, $0) } ?? matchKeys(substring(text, range))
+        }
     }
 
     /// `matchKeys(in:at:)` for word `i` of `words`.

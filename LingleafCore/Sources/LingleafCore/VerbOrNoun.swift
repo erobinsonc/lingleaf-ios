@@ -101,12 +101,6 @@ extension IrregularVerbs {
         default: verb.past.contains(w) ? "past" : w == verb.s ? "s" : nil
         }
     }
-
-    /// Forms of have and be before a participle; not get ("got read" is rare), not 'd ("I'd read"
-    /// can be "I would read").
-    private var participleHelpers: Set<String> {
-        context.haveAndBe.filter { !["get", "gets", "got", "getting", "gotten"].contains($0) && !$0.hasSuffix("'d") }
-    }
 }
 
 /// The words of a text, for looking at a word's neighbours.
@@ -136,9 +130,10 @@ struct Words {
 
     func token(_ k: Int) -> String { TextTools.normalize(surface(k)) }
 
-    /// The text between word `a` and the next word `b`.
+    /// The text between word `a` and the next word `b` (empty if they overlap).
     func gap(_ a: Int, _ b: Int) -> String {
-        ns.substring(with: NSRange(location: ranges[a].end, length: ranges[b].start - ranges[a].end))
+        guard ranges[b].start >= ranges[a].end else { return "" }
+        return ns.substring(with: NSRange(location: ranges[a].end, length: ranges[b].start - ranges[a].end))
     }
 
     /// Words `a` and `b` (= a + 1) exist and only spaces are between them.

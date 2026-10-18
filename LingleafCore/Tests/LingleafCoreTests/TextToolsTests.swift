@@ -182,6 +182,21 @@ final class TextToolsTests: XCTestCase {
                        "a range outside the text links nothing")
     }
 
+    func testRangesOutOfOrderOrOverlappingAreNotTrusted() {
+        let text = "Turn left, then she left."
+        let words = TextTools.wordRanges(text)
+        let shuffled = [words[4], words[1], WordRange(2, 7), WordRange(7, 7)]
+        let keys = TextTools.matchKeys(in: text, words: shuffled)
+        XCTAssertEqual(keys.count, shuffled.count)
+        XCTAssertEqual(keys[0], ["leave"], "found among the text's own words and read in its sentence")
+        XCTAssertEqual(keys[1], ["left"])
+        XCTAssertEqual(keys[2], TextTools.matchKeys("rn le"), "not a word: its letters alone")
+        XCTAssertEqual(keys[3], [], "empty")
+        let overlapping = Words("ab cd" as NSString, ranges: [WordRange(0, 4), WordRange(2, 5)])
+        XCTAssertEqual(overlapping.gap(0, 1), "", "no negative range")
+        XCTAssertNil(overlapping.index(of: WordRange(1, 2)))
+    }
+
     /// Linear time: ten times the text must not take a hundred times as long (it did when every
     /// word tokenized the whole paragraph again), and the reader's longest paragraph stays fast.
     func testReadingAParagraphTakesLinearTime() {

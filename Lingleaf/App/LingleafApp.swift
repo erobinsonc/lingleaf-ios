@@ -84,6 +84,8 @@ final class AppModel {
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
         }
+        // Read the irregular-verb table now, off the main thread, not on the first word shown.
+        Task.detached(priority: .utility) { _ = IrregularVerbs.shared }
     }
 
     static func make() -> AppModel {
@@ -196,10 +198,7 @@ final class AppModel {
     /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,
     /// read in their sentences, in one pass over the paragraph.
     func learningRanges(_ text: String, _ words: [WordRange]) -> Set<WordRange> {
-        let learning = state.learningWords
-        guard !learning.isEmpty else { return [] }
-        let keys = TextTools.matchKeys(in: text, words: words)
-        return Set(zip(words, keys).filter { !$0.1.isDisjoint(with: learning) }.map { $0.0 })
+        library.learningRanges(text, words)
     }
 
     /// The saved choice, else the one picked from the device; nil means ask on the word card.

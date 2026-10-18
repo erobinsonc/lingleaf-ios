@@ -18,10 +18,34 @@ final class VerbOrNounTests: XCTestCase {
     }
 
     private func assertReading(
-        _ word: String, _ sentence: String, _ kind: Reading.Kind, _ base: String, _ step: Reading.Step,
+        _ word: String, _ sentence: String, _ kind: Reading.Kind, _ base: String, _ step: Reading.Step, _ why: String = "",
         file: StaticString = #filePath, line: UInt = #line
     ) {
-        XCTAssertEqual(reading(word, sentence), Reading(kind: kind, base: base, step: step), sentence, file: file, line: line)
+        XCTAssertEqual(reading(word, sentence), Reading(kind: kind, base: base, step: step), "\(sentence) \(why)", file: file, line: line)
+    }
+
+    func testTheWordListVersionsAgreeWithTheRangeOnes() {
+        let text = "Turn left. She left; Uncle Drew had read it, and the wound bled."
+        let ns = text as NSString
+        let words = Words(ns)
+        for (i, range) in words.ranges.enumerated() {
+            let surface = TextTools.substring(text, range)
+            XCTAssertEqual(table.resolve(text, range), table.resolve(words, i), surface)
+            XCTAssertEqual(table.isName(text, range), table.isName(words, i), surface)
+            XCTAssertEqual(table.base(in: text, at: range), table.base(words, i), surface)
+            XCTAssertEqual(table.spokenForm(in: text, at: range), table.spokenForm(words, i) ?? surface, surface)
+            XCTAssertEqual(TextTools.matchKeys(in: text, at: range), TextTools.matchKeys(words, i), surface)
+            XCTAssertEqual(TextTools.baseFormCandidates(in: text, at: range), TextTools.baseFormCandidates(words, i), surface)
+        }
+        XCTAssertEqual(TextTools.matchKeys(in: text, words: words.ranges), words.ranges.map { TextTools.matchKeys(in: text, at: $0) })
+        let absent = WordRange(1, 3)
+        XCTAssertNil(table.resolve(text, absent))
+        XCTAssertNil(table.base(in: text, at: absent))
+        XCTAssertEqual(table.spokenForm(in: "I read.", at: WordRange(3, 5)), "ea", "not a word of the text: as written")
+        XCTAssertEqual(TextTools.matchKeys(in: text, at: absent), TextTools.matchKeys("ur"))
+        XCTAssertEqual(TextTools.baseFormCandidates(in: text, at: absent), TextTools.baseFormCandidates("ur"))
+        XCTAssertEqual(table.spokenForm(in: text, at: range("read", in: text)), "red")
+        XCTAssertTrue(table.isName(text, range("Drew", in: text)))
     }
 
     func testEachStepDecides() {
@@ -65,6 +89,9 @@ final class VerbOrNounTests: XCTestCase {
         assertReading("lay", "We lay the cloth on the grass.", .verb, "lay", .subject)
         assertReading("left", "He quietly left.", .verb, "leave", .subject)
         assertReading("leaves", "Tom's leaves are green.", .noun, "leaf", .noun)
+        assertReading("bit", "Tom's bit was small.", .noun, "bit", .noun)
+        assertReading("wound", "The soldier's wound was deep.", .unsure, "wound", .unsure, "may be \"has wound\"")
+        assertReading("bound", "With one bound he was free.", .unsure, "bound", .unsure)
     }
 
     func testOnlyHomographsHaveAReading() {
@@ -86,7 +113,7 @@ final class VerbOrNounTests: XCTestCase {
         XCTAssertNil(base("Drew", "I met Uncle Drew today."), "a name")
         XCTAssertNil(base("cat", "The cat sat."))
         XCTAssertNil(table.base(in: "cat", at: WordRange(0, 9)))
-        XCTAssertEqual(table.base(in: "Drews", at: WordRange(0, 4)), "draw", "not a word of the text: no name")
+        XCTAssertNil(table.base(in: "Drews", at: WordRange(0, 4)), "not a word of the text")
     }
 
     func testListenRespellsOnlyTheSlotTheSentenceProves() {

@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// The irregular-verb table (`Resources/irregular-verbs.json`, identical in lingleaf-android):
 /// the only list of irregular forms. Base forms (`TextTools`), past participles and base forms
@@ -15,8 +16,10 @@ public struct IrregularVerbs: Sendable {
     /// Longest Spanish meaning, group title or example kept.
     static let maxText = 100
 
-    /// The shipped table, read once. A table that fails to load stops debug builds and tests;
-    /// a reader gets an empty table: base forms then come from the regular rules alone.
+    /// The shipped table, read once. `Bundle.module` itself stops the app if the package's
+    /// resource bundle is not in it (an app UI test checks it is). A file that is missing from the
+    /// bundle, unreadable or refused stops debug builds and tests; a reader in a release build
+    /// gets an empty table instead: base forms then come from the regular rules alone.
     public static let shared: IrregularVerbs = {
         do {
             guard let url = Bundle.module.url(forResource: "irregular-verbs", withExtension: "json") else {
@@ -27,6 +30,8 @@ public struct IrregularVerbs: Sendable {
             // One byte past the cap is enough to know the file is too large.
             return try load(handle.read(upToCount: maxBytes + 1) ?? Data())
         } catch {
+            // A static message: nothing from the file reaches the log.
+            Logger(subsystem: "app.lingleaf", category: "IrregularVerbs").fault("irregular-verbs.json refused; using an empty table")
             assertionFailure("irregular-verbs.json: \(error)")
             return IrregularVerbs()
         }
@@ -44,6 +49,9 @@ public struct IrregularVerbs: Sendable {
     public let bases: Set<String>
     /// The bases not marked as mostly nouns: verbs after "had better" ("light" is not one).
     let hadBetterBases: Set<String>
+    /// Forms of have and be before a participle, for respellings; not get ("got read" is rare),
+    /// not 'd ("I'd read" can be "I would read").
+    let participleHelpers: Set<String>
     let homographs: [String: Homograph]
     let context: Context
     private let verbsByBase: [String: IrregularVerb]
@@ -72,6 +80,8 @@ public struct IrregularVerbs: Sendable {
         baseLikeParticiples = participles.intersection(bases)
         hadBetterBases = Set(verbs.filter { !$0.nounFirst }.map(\.base))
         verbsByBase = Dictionary(verbs.map { ($0.base, $0) }) { first, _ in first }
+        let getForms: Set<String> = ["get", "gets", "got", "getting", "gotten"]
+        participleHelpers = context.haveAndBe.filter { !getForms.contains($0) && !$0.hasSuffix("'d") }
     }
 
     /// The verb whose base is `base`, for its forms, meanings and spoken forms.
@@ -87,7 +97,7 @@ public struct IrregularVerbs: Sendable {
         let w = TextTools.normalize(ns.substring(with: range.nsRange))
         guard homographs[w] != nil || formToBase[w] != nil else { return nil }
         let words = Words(ns)
-        guard let i = words.index(of: range) else { return homographs[w] == nil ? formToBase[w] : nil }
+        guard let i = words.index(of: range) else { return nil }
         return base(words, i)
     }
 

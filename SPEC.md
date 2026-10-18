@@ -98,7 +98,7 @@ the same intent on both platforms. A change to behaviour updates this file in
   I/you/we/they with neither an object word nor a word like down, on, still, awake after it, it is unsure; after
   there/here it is "lie". Without a sentence every homograph is unsure. The word lists are in the table
   (`homographs`, `context`). The card's base form and dictionary look-up and the yellow underline use the same result:
-  a verb looks its base up directly; a noun is looked up as tapped, without following "past tense of …" in its
+  a verb looks its base up directly; a noun looks its own base up first, then the word as tapped, without following "past tense of …" in its
   definition; unsure looks the word up as before. Listen reads a form taken as a verb with the table's spoken form
   when it has one ("to tear" → "tare", "she dove" → "dohv"). A respelling applies only to the slot the reading proves (the base after to, a modal or do; the past in a past reading; the participle after have or a passive be); otherwise the form is spoken as written.
 - Helper and modal verbs (see `FunctionWords`), within the tapped word's sentence:
