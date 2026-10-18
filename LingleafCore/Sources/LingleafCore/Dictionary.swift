@@ -51,8 +51,15 @@ public actor DictionaryClient {
     public init(http: HttpFetcher) { self.http = http }
 
     /// Looks `word` up, resolving inflected forms: "walked" → "walk", "animals" → "animal".
-    public func lookup(_ word: String) async -> DictionaryEntry? {
+    /// With a reading of the word in its sentence (`IrregularVerbs.resolve`), a verb or a noun
+    /// looks its base up first ("stole" → "steal", "leaves" → "leaf"), then the word as tapped,
+    /// without following "past tense of …" (a noun "left" is not "leave"); unsure is as without one.
+    public func lookup(_ word: String, reading: Reading? = nil) async -> DictionaryEntry? {
         let w = TextTools.normalize(word)
+        if let reading, reading.kind != .unsure {
+            if reading.base != w, let entry = await get(reading.base) { return entry }
+            return await get(w)
+        }
         if let direct = await get(w) {
             if let definition = direct.definition,
                let match = inflectionOf.firstMatch(in: definition, range: NSRange(location: 0, length: (definition as NSString).length)),

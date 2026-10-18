@@ -357,7 +357,7 @@ struct ReaderView: View {
                 attributed[attributedRange].backgroundColor = Brand.marker
                 attributed[attributedRange].foregroundColor = .black
                 attributed[attributedRange].accessibilityTextCustom = [String(localized: "Selected")]
-            } else if model.isLearning(word) {
+            } else if model.isLearning(text, range) {
                 attributed[attributedRange].underlineStyle = Text.LineStyle(pattern: .solid, color: Brand.markerLine)
                 attributed[attributedRange].backgroundColor = Brand.marker.opacity(0.18)
                 // Assistive technologies describe custom text attributes alongside the text.

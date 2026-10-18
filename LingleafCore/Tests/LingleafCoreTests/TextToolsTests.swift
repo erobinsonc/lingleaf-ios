@@ -108,6 +108,74 @@ final class TextToolsTests: XCTestCase {
         XCTAssertTrue(TextTools.matchKeys("Animals").isSuperset(of: ["animals", "animal"]))
         XCTAssertTrue(TextTools.matchKeys("was").contains("be"))
     }
+
+    func testIrregularFormsComeFromTheTable() {
+        XCTAssertEqual(TextTools.baseFormCandidates("stolen"), ["steal"])
+        XCTAssertEqual(TextTools.baseFormCandidates("learnt").first, "learn")
+        XCTAssertEqual(TextTools.baseFormCandidates("became"), ["become"])
+        XCTAssertEqual(TextTools.baseFormCandidates("being"), ["be"])
+        XCTAssertEqual(TextTools.baseFormCandidates("lying"), ["lie"])
+        XCTAssertEqual(TextTools.baseFormCandidates("lied"), ["lie"])
+        XCTAssertEqual(TextTools.baseFormCandidates("Knives"), ["knife", "knive", "kniv"])
+    }
+
+    func testDoubledLAfterTwoVowelGroupsGivesTheSingleL() {
+        XCTAssertEqual(TextTools.baseFormCandidates("travelled").first, "travel")
+        XCTAssertEqual(TextTools.baseFormCandidates("travelling").first, "travel")
+        XCTAssertEqual(TextTools.baseFormCandidates("cancelled").first, "cancel")
+        XCTAssertEqual(TextTools.baseFormCandidates("controlled").first, "control")
+        XCTAssertEqual(TextTools.baseFormCandidates("quarrelling").first, "quarrel")
+        XCTAssertEqual(TextTools.baseFormCandidates("called"), ["call", "calle"], "one vowel group: as before")
+        XCTAssertEqual(TextTools.baseFormCandidates("filled"), ["fill", "fille"])
+    }
+
+    func testWithoutItsSentenceAHomographLinksOnlyToASharedBase() {
+        XCTAssertTrue(TextTools.baseFormCandidates("left").isEmpty)
+        XCTAssertTrue(TextTools.baseFormCandidates("leaves").isEmpty)
+        XCTAssertTrue(TextTools.baseFormCandidates("found").isEmpty)
+        XCTAssertEqual(TextTools.baseFormCandidates("tears"), ["tear"])
+        XCTAssertEqual(TextTools.matchKeys("left"), ["left"])
+    }
+
+    private func range(_ word: String, in text: String) -> WordRange {
+        let ranges = TextTools.wordRanges(text).filter { TextTools.substring(text, $0) == word }
+        XCTAssertFalse(ranges.isEmpty, "\(word) not in \(text)")
+        return ranges.last ?? WordRange(0, 0)
+    }
+
+    func testInItsSentenceAHomographLinksToItsReading() {
+        let she = "She left early."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: she, at: range("left", in: she)), ["leave"])
+        XCTAssertEqual(TextTools.matchKeys(in: she, at: range("left", in: she)), ["leave"], "a saved \"left\" (the side) is not marked")
+        let turn = "Turn left here."
+        XCTAssertTrue(TextTools.baseFormCandidates(in: turn, at: range("left", in: turn)).isEmpty)
+        XCTAssertEqual(TextTools.matchKeys(in: turn, at: range("left", in: turn)), ["left"])
+        let tears = "Tears fell."
+        XCTAssertEqual(TextTools.matchKeys(in: tears, at: range("Tears", in: tears)), ["tears", "tear"], "unsure, one base")
+        let leaves = "The dead leaves fell."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: leaves, at: range("leaves", in: leaves)), ["leaf"])
+        let stolen = "It was stolen."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: stolen, at: range("stolen", in: stolen)), ["steal"])
+        let drew = "I met Drew there."
+        XCTAssertTrue(TextTools.baseFormCandidates(in: drew, at: range("Drew", in: drew)).isEmpty, "a name")
+        let drawing = "Drew a line."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: drawing, at: range("Drew", in: drawing)), ["draw"])
+        let animals = "All animals are equal."
+        XCTAssertEqual(TextTools.matchKeys(in: animals, at: range("animals", in: animals)), TextTools.matchKeys("animals"))
+        XCTAssertTrue(TextTools.matchKeys(in: animals, at: WordRange(4, 99)).isEmpty, "out of range")
+        XCTAssertTrue(TextTools.baseFormCandidates(in: animals, at: WordRange(4, 4)).isEmpty, "empty")
+    }
+
+    func testOccurrencesReadEachFormInTheSentence() {
+        let sentence = "Turn left, then she left."
+        let found = TextTools.occurrences(of: "leave", in: sentence)
+        XCTAssertEqual(found, [range("left", in: sentence)], "only the verb")
+        XCTAssertEqual(TextTools.occurrences(of: "left", in: sentence).count, 1, "only the side")
+        let stolen = "He stole it; it was stolen."
+        XCTAssertEqual(TextTools.occurrences(of: "steal", in: stolen).map { TextTools.substring(stolen, $0) }, ["stole", "stolen"])
+        let travel = "We travelled far."
+        XCTAssertEqual(TextTools.occurrences(of: "travel", in: travel).map { TextTools.substring(travel, $0) }, ["travelled"])
+    }
 }
 
 final class LearningTests: XCTestCase {

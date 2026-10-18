@@ -264,9 +264,11 @@ public final class Library {
         return state.words.filter { !$0.learned && $0.nextReview > now && $0.nextReview < end }.count
     }
 
-    public func isLearning(_ token: String) -> Bool {
+    /// Whether the word at `range` of `text` is a form of a word being learned, read in its
+    /// sentence ("leave" marks "she left", not "turn left").
+    public func isLearning(_ text: String, _ range: WordRange) -> Bool {
         let learning = state.learningWords
-        return !learning.isEmpty && !TextTools.matchKeys(token).isDisjoint(with: learning)
+        return !learning.isEmpty && !TextTools.matchKeys(in: text, at: range).isDisjoint(with: learning)
     }
 
     /// Saves the word as being learned or as known and returns the record it

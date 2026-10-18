@@ -243,6 +243,49 @@ final class DictionaryTests: XCTestCase {
         XCTAssertEqual(result?.phonetic, "/walk/")
     }
 
+    /// A client answering from `entries` (word → definition), recording what it asked for.
+    private static func client(_ entries: [String: String], _ recorder: Recorder) -> DictionaryClient {
+        DictionaryClient(http: ClosureFetcher { url in
+            let word = String(url.split(separator: "/").last ?? "")
+            await recorder.add(word)
+            return entries[word].map { Self.entry(word, $0) } ?? notFound
+        })
+    }
+
+    func testAVerbReadingLooksItsBaseUpFirst() async {
+        let recorder = Recorder()
+        let client = Self.client(["steal": "To take without permission.", "stole": "A long scarf."], recorder)
+        let result = await client.lookup("stole", reading: Reading(kind: .verb, base: "steal", step: .subject))
+        XCTAssertEqual(result?.word, "steal")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["steal"])
+    }
+
+    func testANounReadingDoesNotFollowPastTenseOf() async {
+        let recorder = Recorder()
+        let client = Self.client(["left": "simple past tense and past participle of leave", "leave": "To go away."], recorder)
+        let result = await client.lookup("left", reading: Reading(kind: .noun, base: "left", step: .fixed))
+        XCTAssertEqual(result?.word, "left")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["left"])
+    }
+
+    func testAReadingFallsBackToTheTappedWord() async {
+        let recorder = Recorder()
+        let client = Self.client(["leaves": "plural of leaf"], recorder)
+        let result = await client.lookup("Leaves", reading: Reading(kind: .noun, base: "leaf", step: .noun))
+        XCTAssertEqual(result?.word, "leaves", "no entry for the base: the word as tapped")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["leaf", "leaves"])
+    }
+
+    func testAnUnsureReadingLooksUpAsBefore() async {
+        let recorder = Recorder()
+        let client = Self.client(["left": "simple past tense and past participle of leave", "leave": "To go away."], recorder)
+        let result = await client.lookup("left", reading: Reading(kind: .unsure, base: "left", step: .unsure))
+        XCTAssertEqual(result?.word, "leave", "as without a reading: follows \"past tense of\"")
+    }
+
     func testHugeAnswersAreCutToSaneLengths() async {
         let huge = String(repeating: "plural ", count: 200_000)
         let client = DictionaryClient(http: ClosureFetcher { _ in Self.entry("big", huge, phonetic: String(repeating: "x", count: 5_000)) })

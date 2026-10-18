@@ -30,11 +30,38 @@ struct WordCardView: View {
     @State private var configuration: TranslationSession.Configuration?
 
     /// The dictionary's base form ("animal") when it differs from the tapped word ("animals");
+    /// when the dictionary can't be reached or has no entry, the irregular-verb table's ("stolen" →
+    /// "steal", "she left" → "leave"), never over an entry for the form itself ("a human being");
     /// for a helper or modal verb, its own base form ("do" for "did").
     private var headword: String {
         if let function = selection.function { return function.base }
-        guard let base = entry?.word, base != TextTools.normalize(selection.word) else { return selection.word }
+        if let base = entry?.word { return base == TextTools.normalize(selection.word) ? selection.word : base }
+        guard entryLoaded, let base = tableBase else { return selection.word }
         return base
+    }
+
+    /// How a form that is also another word reads in its sentence ("she left": the verb "leave").
+    private var reading: Reading? {
+        guard selection.function == nil, let range = selection.rangeInSentence else { return nil }
+        return IrregularVerbs.shared.resolve(selection.sentence, range)
+    }
+
+    /// The irregular-verb table's base form of the tapped word in its sentence, if it has one.
+    private var tableBase: String? {
+        guard selection.function == nil else { return nil }
+        guard let range = selection.rangeInSentence else { return IrregularVerbs.shared.formToBase[TextTools.normalize(selection.word)] }
+        return IrregularVerbs.shared.base(in: selection.sentence, at: range)
+    }
+
+    /// What Listen says: the headword; when the headword is the tapped form, with the table's
+    /// respelling where its sentence proves the slot ("She had read it" → "red"). A helper or
+    /// modal verb: how its verb group sounds ("didn't go", not "do").
+    private var spokenHeadwordAloud: String {
+        if selection.function != nil { return selection.chunk ?? selection.word }
+        guard TextTools.normalize(headword) == TextTools.normalize(selection.word), let range = selection.rangeInSentence else {
+            return headword
+        }
+        return IrregularVerbs.shared.spokenForm(in: selection.sentence, at: range)
     }
 
     /// The headword as a screen reader says it: "he had or he would", not "slash".
@@ -126,9 +153,7 @@ struct WordCardView: View {
         VStack(spacing: 4) {
             HStack(spacing: 10) {
                 Button {
-                    // A helper or modal verb: how the verb group sounds ("didn't go", not "do").
-                    let spoken = selection.function == nil ? headword : selection.chunk ?? selection.word
-                    model.speaker.speak(spoken, rate: model.state.settings.speechRate)
+                    model.speaker.speak(spokenHeadwordAloud, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill")
                         .labelStyle(.iconOnly)
@@ -418,12 +443,13 @@ struct WordCardView: View {
     private func load() async {
         let dictionary = model.dictionary
         let word = selection.word
+        let reading = self.reading
         // A helper or modal verb needs no dictionary: its definition and IPA would be the
         // base form's ("do"), not what the learner sees ("didn't go").
         let isFunction = selection.function != nil
         let task = Task { () -> DictionaryEntry? in
             if isFunction { return nil }
-            return await dictionary.lookup(word)
+            return await dictionary.lookup(word, reading: reading)
         }
         lookup = task
         startTranslation()
@@ -483,7 +509,8 @@ struct WordCardView: View {
             }
             guard selection.function == nil, let tapped else { return }
             let looked: DictionaryEntry? = await lookup?.value
-            guard let base = looked.map({ TextTools.normalize($0.word) }), base != tapped else { return }
+            // The dictionary's base form, else (offline) the irregular-verb table's.
+            guard let base = looked.map({ TextTools.normalize($0.word) }) ?? tableBase, base != tapped else { return }
             let response = try await session.translate(base)
             if translatedInto == target { translations[base] = response.targetText }
         } catch {
