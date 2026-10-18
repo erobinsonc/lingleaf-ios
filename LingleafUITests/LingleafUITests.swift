@@ -267,6 +267,18 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(element(labelled: "beach").waitForExistence(timeout: 5), "the word is saved offline")
     }
 
+    /// S3 offline: the card's base form of an irregular form comes from the irregular-verb table,
+    /// so this also proves the table is inside the built app ("sees" would show as "sees" without it).
+    func testOfflineCardShowsTheBaseFormFromTheIrregularVerbTable() {
+        relaunch("-ui-testing-offline")
+        button(startingWith: "The Red Boat").tap()
+        let word = app.links["sees"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10), "the reader opens offline")
+        word.tap()
+        XCTAssertTrue(app.staticTexts["In the text: sees"].waitForExistence(timeout: 10), "the card shows a base form")
+        XCTAssertTrue(app.staticTexts["see"].exists, "the table's base form, without the dictionary")
+    }
+
     /// S12: a word saved offline has no translation yet; Review says so when the meaning is shown.
     func testReviewSaysWhenAWordHasNoTranslationYet() {
         relaunch("-ui-testing-offline", "-ui-testing-due")

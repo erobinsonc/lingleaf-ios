@@ -9,12 +9,13 @@ let package = Package(
     platforms: [.iOS(.v18), .macOS(.v14)],
     products: [.library(name: "LingleafCore", targets: ["LingleafCore"])],
     targets: [
-        .target(name: "LingleafCore"),
+        // The irregular-verb table, shared with lingleaf-android (core/src/main/resources): identical file.
+        .target(name: "LingleafCore", resources: [.copy("Resources/irregular-verbs.json")]),
         .testTarget(
             name: "LingleafCoreTests",
             dependencies: ["LingleafCore"],
-            // Shared with lingleaf-android (core/src/test/resources): identical file.
-            resources: [.copy("Resources/function-words-corpus.json")]
+            // Shared with lingleaf-android (core/src/test/resources): identical files.
+            resources: [.copy("Resources/function-words-corpus.json"), .copy("Resources/homograph-corpus.json")]
         ),
     ],
     // Swift 6 strict concurrency can come later; the app target also uses Swift 5 mode.

@@ -28,6 +28,13 @@ final class LibraryTests: XCTestCase {
         return library
     }
 
+    /// Whether the first `word` of `sentence` is underlined as a word being learned.
+    private func learning(_ library: Library, _ word: String, in sentence: String) -> Bool {
+        let found = (sentence as NSString).range(of: word)
+        XCTAssertNotEqual(found.location, NSNotFound, "\(word) not in \(sentence)")
+        return library.isLearning(sentence, WordRange(found.location, found.location + found.length))
+    }
+
     func testRestoredSettingsAndBooksAreBroughtBackIntoRange() {
         storage.files["settings.json"] = #"{"dailyGoalMinutes": 0, "fontSize": 900, "speechRate": -3}"#
         let library = library()
@@ -90,14 +97,14 @@ final class LibraryTests: XCTestCase {
         library.onChange = { _ in changes += 1 }
         library.saveWord("Animal", learned: false, translation: "animal", context: "All animals are equal.", source: "The Red Boat")
         XCTAssertGreaterThan(changes, 0)
-        XCTAssertTrue(library.isLearning("animals"))
-        XCTAssertFalse(library.isLearning("equal"))
+        XCTAssertTrue(learning(library, "animals", in: "All animals are equal."))
+        XCTAssertFalse(learning(library, "equal", in: "All animals are equal."))
         XCTAssertTrue(library.dueWords().isEmpty, "a new word is first reviewed tomorrow")
         now = ISO8601DateFormatter().date(from: "2026-10-10T04:00:00Z")!
         XCTAssertEqual(library.dueWords().map(\.word), ["animal"], "due from 04:00 the next day")
 
         library.saveWord("animal", learned: true, translation: " ")
-        XCTAssertFalse(library.isLearning("animals"))
+        XCTAssertFalse(learning(library, "animals", in: "All animals are equal."))
         let saved = self.library().state.word("animal")
         XCTAssertEqual(saved?.learned, true)
         XCTAssertEqual(saved?.translation, "animal", "blank values don't overwrite saved ones")
@@ -252,6 +259,32 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(word.base)
     }
 
+    func testLearningWordsAreMarkedOnlyWhereTheirSentenceMakesThemThatWord() {
+        let library = library()
+        library.saveWord("leaf", learned: false)
+        XCTAssertTrue(learning(library, "leaves", in: "The dead leaves fell."))
+        XCTAssertFalse(learning(library, "leaves", in: "She leaves at nine."), "\"leaves\" here is \"leave\", not \"leaf\"")
+        library.saveWord("leave", learned: false)
+        XCTAssertTrue(learning(library, "leaves", in: "She leaves at nine."))
+        XCTAssertTrue(learning(library, "left", in: "She left the house early."))
+        XCTAssertFalse(learning(library, "left", in: "Turn left at the church."), "the side, not the verb")
+        library.saveWord("steal", learned: false)
+        XCTAssertTrue(learning(library, "stole", in: "He stole the bread."))
+        XCTAssertTrue(learning(library, "stolen", in: "It was stolen."))
+    }
+
+    func testLearningRangesMarkAWholeParagraphInOnePass() {
+        let library = library()
+        let paragraph = "Turn left, then she left. The dead leaves fell."
+        let words = TextTools.wordRanges(paragraph)
+        XCTAssertTrue(library.learningRanges(paragraph, words).isEmpty, "nothing being learned")
+        library.saveWord("leave", learned: false)
+        library.saveWord("leaf", learned: false)
+        let marked = library.learningRanges(paragraph, words).sorted { $0.start < $1.start }.map { TextTools.substring(paragraph, $0) }
+        XCTAssertEqual(marked, ["left", "leaves"], "the verb \"left\" and the noun \"leaves\", not the side")
+        XCTAssertEqual(library.learningRanges(paragraph, words), Set(words.filter { library.isLearning(paragraph, $0) }))
+    }
+
     func testHelperAndModalVerbsAreSavedAsTheirVerbGroup() throws {
         let library = library()
         library.saveWord("did not go", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, base: "do")
@@ -265,7 +298,7 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(reloaded.state.word("doesn't like")?.base, "do")
         XCTAssertNil(reloaded.state.word("do")?.kind, "\"do\" as a word stays separate")
         XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["doesn't like"])
-        XCTAssertFalse(library.isLearning("did"), "a verb group doesn't underline the helper everywhere")
+        XCTAssertFalse(learning(library, "did", in: "He did it."), "a verb group doesn't underline the helper everywhere")
     }
 
     func testReadingTimeFeedsTodayAndTheStreak() {
