@@ -271,6 +271,15 @@ public final class Library {
         return !learning.isEmpty && !TextTools.matchKeys(in: text, at: range).isDisjoint(with: learning)
     }
 
+    /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,
+    /// read in their sentences, in one pass over the paragraph.
+    public func learningRanges(_ text: String, _ words: [WordRange]) -> Set<WordRange> {
+        let learning = state.learningWords
+        guard !learning.isEmpty else { return [] }
+        let keys = TextTools.matchKeys(in: text, words: words)
+        return Set(zip(words, keys).filter { !$0.1.isDisjoint(with: learning) }.map { $0.0 })
+    }
+
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.

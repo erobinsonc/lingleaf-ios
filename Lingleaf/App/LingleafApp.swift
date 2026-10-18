@@ -193,11 +193,13 @@ final class AppModel {
         }
     }
 
-    /// Whether the word at `range` of `text` is a form of a word being learned, read in its
-    /// sentence ("leave" marks "she left", not "turn left").
-    func isLearning(_ text: String, _ range: WordRange) -> Bool {
+    /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,
+    /// read in their sentences, in one pass over the paragraph.
+    func learningRanges(_ text: String, _ words: [WordRange]) -> Set<WordRange> {
         let learning = state.learningWords
-        return !learning.isEmpty && !TextTools.matchKeys(in: text, at: range).isDisjoint(with: learning)
+        guard !learning.isEmpty else { return [] }
+        let keys = TextTools.matchKeys(in: text, words: words)
+        return Set(zip(words, keys).filter { !$0.1.isDisjoint(with: learning) }.map { $0.0 })
     }
 
     /// The saved choice, else the one picked from the device; nil means ask on the word card.

@@ -85,11 +85,20 @@ public struct IrregularVerbs: Sendable {
         let ns = text as NSString
         guard range.start >= 0, range.start < range.end, range.end <= ns.length else { return nil }
         let w = TextTools.normalize(ns.substring(with: range.nsRange))
+        guard homographs[w] != nil || formToBase[w] != nil else { return nil }
+        let words = Words(ns)
+        guard let i = words.index(of: range) else { return homographs[w] == nil ? formToBase[w] : nil }
+        return base(words, i)
+    }
+
+    /// `base(in:at:)` for word `i` of `words`.
+    func base(_ words: Words, _ i: Int) -> String? {
+        let w = words.token(i)
         if homographs[w] != nil {
-            guard let reading = resolve(text, range), reading.kind != .unsure, reading.base != w else { return nil }
+            guard let reading = resolve(words, i), reading.kind != .unsure, reading.base != w else { return nil }
             return reading.base
         }
-        guard let base = formToBase[w], !isName(text, range) else { return nil }
+        guard let base = formToBase[w], !isName(words, i) else { return nil }
         return base
     }
 

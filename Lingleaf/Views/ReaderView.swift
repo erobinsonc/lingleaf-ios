@@ -28,6 +28,25 @@ private struct MarkedParagraph {
     var learning: [LearningWord] = []
 }
 
+/// The words being learned in each paragraph, computed once per paragraph and set of learning
+/// words. A class on purpose: filling it while the body runs changes no view state.
+private final class LearningCache {
+    private struct Entry {
+        let text: String
+        let learning: Set<String>
+        let ranges: Set<WordRange>
+    }
+
+    private var entries: [Int: Entry] = [:]
+
+    func ranges(_ index: Int, _ text: String, _ learning: Set<String>, compute: () -> Set<WordRange>) -> Set<WordRange> {
+        if let entry = entries[index], entry.learning == learning, entry.text == text { return entry.ranges }
+        let ranges = compute()
+        entries[index] = Entry(text: text, learning: learning, ranges: ranges)
+        return ranges
+    }
+}
+
 /// A word being learned, located in its paragraph (for the VoiceOver rotor).
 private struct LearningWord: Identifiable {
     let id: Int
@@ -46,6 +65,9 @@ struct ReaderView: View {
     @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
+    /// Each paragraph's words being learned, kept while the paragraph and the learning words stay
+    /// the same: the body runs again on every step of reading aloud.
+    @State private var learningCache = LearningCache()
     @State private var selection: WordSelection?
     @State private var position: Int?
     @State private var restored = false
@@ -336,6 +358,9 @@ struct ReaderView: View {
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
+        let learningRanges = learningCache.ranges(index, text, model.state.learningWords) {
+            model.learningRanges(text, words[index])
+        }
         for range in words[index] {
             guard let stringRange = Range(range.nsRange, in: text),
                   let attributedRange = Range(stringRange, in: attributed) else { continue }
@@ -357,7 +382,7 @@ struct ReaderView: View {
                 attributed[attributedRange].backgroundColor = Brand.marker
                 attributed[attributedRange].foregroundColor = .black
                 attributed[attributedRange].accessibilityTextCustom = [String(localized: "Selected")]
-            } else if model.isLearning(text, range) {
+            } else if learningRanges.contains(range) {
                 attributed[attributedRange].underlineStyle = Text.LineStyle(pattern: .solid, color: Brand.markerLine)
                 attributed[attributedRange].backgroundColor = Brand.marker.opacity(0.18)
                 // Assistive technologies describe custom text attributes alongside the text.

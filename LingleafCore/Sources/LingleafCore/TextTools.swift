@@ -245,12 +245,19 @@ public enum TextTools {
     /// form of the irregular-verb table except as a name ("Drew"), then the regular rules.
     public static func baseFormCandidates(in text: String, at range: WordRange) -> [String] {
         guard isInside(text, range) else { return [] }
-        let w = normalize(substring(text, range))
+        let words = Words(text as NSString)
+        guard let i = words.index(of: range) else { return baseFormCandidates(substring(text, range)) }
+        return baseFormCandidates(words, i)
+    }
+
+    /// `baseFormCandidates(in:at:)` for word `i` of `words`: only its neighbours are looked at.
+    static func baseFormCandidates(_ words: Words, _ i: Int) -> [String] {
+        let w = words.token(i)
         let table = IrregularVerbs.shared
         if let homograph = table.homographs[w] {
-            return filtered(homographBase(homograph, table.resolve(text, range)).map { [$0] } ?? [], w)
+            return filtered(homographBase(homograph, table.resolve(words, i)).map { [$0] } ?? [], w)
         }
-        let verbLink = table.formToBase[w].flatMap { table.isName(text, range) ? nil : $0 }
+        let verbLink = table.formToBase[w].flatMap { table.isName(words, i) ? nil : $0 }
         return candidates(w, link: verbLink ?? nonVerb[w])
     }
 
@@ -319,7 +326,8 @@ public enum TextTools {
             let range = (normalize(sentence) as NSString).range(of: key)
             return range.location == NSNotFound ? [] : [WordRange(range.location, range.location + range.length)]
         }
-        return wordRanges(sentence).filter { matchKeys(in: sentence, at: $0).contains(key) }
+        let words = Words(sentence as NSString)
+        return words.ranges.indices.filter { matchKeys(words, $0).contains(key) }.map { words.ranges[$0] }
     }
 
     /// The word plus its likely base forms, without its sentence: what to match against saved words.
@@ -329,12 +337,27 @@ public enum TextTools {
 
     /// The word at `range` of `text` plus its likely base forms, read in its sentence. A form that
     /// is also another word, read as the one with another base, leaves out its own spelling: a saved
-    /// "left" (the side) doesn't mark "she left".
+    /// "left" (the side) doesn't mark "she left". For every word of a paragraph, use
+    /// `matchKeys(in:words:)`: it reads the paragraph once.
     public static func matchKeys(in text: String, at range: WordRange) -> Set<String> {
         guard isInside(text, range) else { return [] }
-        let w = normalize(substring(text, range))
-        let candidates = baseFormCandidates(in: text, at: range)
-        if IrregularVerbs.shared.homographs[w] != nil, let reading = IrregularVerbs.shared.resolve(text, range),
+        let words = Words(text as NSString)
+        guard let i = words.index(of: range) else { return matchKeys(substring(text, range)) }
+        return matchKeys(words, i)
+    }
+
+    /// The match keys of every word of `text` (`words`: its `wordRanges`), in one pass.
+    public static func matchKeys(in text: String, words ranges: [WordRange]) -> [Set<String>] {
+        let words = Words(text as NSString, ranges: ranges.filter { isInside(text, $0) })
+        guard words.ranges.count == ranges.count else { return ranges.map { matchKeys(in: text, at: $0) } }
+        return words.ranges.indices.map { matchKeys(words, $0) }
+    }
+
+    /// `matchKeys(in:at:)` for word `i` of `words`.
+    static func matchKeys(_ words: Words, _ i: Int) -> Set<String> {
+        let w = words.token(i)
+        let candidates = baseFormCandidates(words, i)
+        if IrregularVerbs.shared.homographs[w] != nil, let reading = IrregularVerbs.shared.resolve(words, i),
            reading.kind != .unsure, reading.base != w {
             return Set(candidates)
         }

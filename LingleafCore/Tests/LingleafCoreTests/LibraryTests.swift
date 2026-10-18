@@ -273,6 +273,18 @@ final class LibraryTests: XCTestCase {
         XCTAssertTrue(learning(library, "stolen", in: "It was stolen."))
     }
 
+    func testLearningRangesMarkAWholeParagraphInOnePass() {
+        let library = library()
+        let paragraph = "Turn left, then she left. The dead leaves fell."
+        let words = TextTools.wordRanges(paragraph)
+        XCTAssertTrue(library.learningRanges(paragraph, words).isEmpty, "nothing being learned")
+        library.saveWord("leave", learned: false)
+        library.saveWord("leaf", learned: false)
+        let marked = library.learningRanges(paragraph, words).sorted { $0.start < $1.start }.map { TextTools.substring(paragraph, $0) }
+        XCTAssertEqual(marked, ["left", "leaves"], "the verb \"left\" and the noun \"leaves\", not the side")
+        XCTAssertEqual(library.learningRanges(paragraph, words), Set(words.filter { library.isLearning(paragraph, $0) }))
+    }
+
     func testHelperAndModalVerbsAreSavedAsTheirVerbGroup() throws {
         let library = library()
         library.saveWord("did not go", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, base: "do")

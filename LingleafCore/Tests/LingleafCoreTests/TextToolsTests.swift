@@ -166,6 +166,40 @@ final class TextToolsTests: XCTestCase {
         XCTAssertTrue(TextTools.baseFormCandidates(in: animals, at: WordRange(4, 4)).isEmpty, "empty")
     }
 
+    /// A paragraph full of homographs and capitalised names, the worst case for reading words in
+    /// their sentences: about `length` UTF-16 units.
+    private func hostileParagraph(_ length: Int) -> String {
+        let piece = "Rose left. Aunt Rose saw Drew and left, then Tom's leaves fell; they lay down. Left Felt Bound. "
+        return String(String(repeating: piece, count: length / piece.count + 1).prefix(length))
+    }
+
+    func testAWholeParagraphIsReadInOnePass() {
+        let text = hostileParagraph(TextTools.maxParagraph)
+        let words = TextTools.wordRanges(text)
+        let keys = TextTools.matchKeys(in: text, words: words)
+        XCTAssertEqual(keys, words.map { TextTools.matchKeys(in: text, at: $0) }, "one pass gives what each word alone gives")
+        XCTAssertEqual(TextTools.matchKeys(in: text, words: [WordRange(0, 4), WordRange(5, 999_999)]).last, Set<String>(),
+                       "a range outside the text links nothing")
+    }
+
+    /// Linear time: ten times the text must not take a hundred times as long (it did when every
+    /// word tokenized the whole paragraph again), and the reader's longest paragraph stays fast.
+    func testReadingAParagraphTakesLinearTime() {
+        func seconds(_ length: Int) -> Double {
+            let text = hostileParagraph(length)
+            let words = TextTools.wordRanges(text)
+            let start = Date()
+            _ = TextTools.matchKeys(in: text, words: words)
+            _ = TextTools.occurrences(of: "leave", in: text)
+            return Date().timeIntervalSince(start)
+        }
+        _ = seconds(500)  // warm up the shared table
+        let short = seconds(TextTools.maxParagraph)
+        let long = seconds(TextTools.maxParagraph * 10)
+        XCTAssertLessThan(short, 0.5, "a 2000-unit paragraph took \(short) s")
+        XCTAssertLessThan(long, max(short, 0.005) * 30, "10× the text took \(long / max(short, 0.005))× as long")
+    }
+
     func testOccurrencesReadEachFormInTheSentence() {
         let sentence = "Turn left, then she left."
         let found = TextTools.occurrences(of: "leave", in: sentence)

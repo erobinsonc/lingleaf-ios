@@ -30,14 +30,20 @@ public struct Reading: Equatable, Sendable {
 extension IrregularVerbs {
     /// How the word at `range` of `text` reads, or nil when it is not a homograph of the table.
     /// Only the words next to it (spaces between) count, so a paragraph works as well as its sentence.
+    /// For every word of a paragraph, tokenize once and use `resolve(_:_:)` with `Words`.
     public func resolve(_ text: String, _ range: WordRange) -> Reading? {
         let ns = text as NSString
         guard range.start >= 0, range.start < range.end, range.end <= ns.length else { return nil }
-        let form = TextTools.normalize(ns.substring(with: range.nsRange))
+        guard homographs[TextTools.normalize(ns.substring(with: range.nsRange))] != nil else { return nil }
+        let words = Words(ns)
+        return words.index(of: range).flatMap { resolve(words, $0) }
+    }
+
+    /// How word `i` of `words` reads: nil when it is not a homograph. Looks only at its neighbours.
+    func resolve(_ words: Words, _ i: Int) -> Reading? {
+        let form = words.token(i)
         guard let homograph = homographs[form] else { return nil }
-        let words = Words(ns: ns, ranges: TextTools.wordRanges(text))
-        guard let index = words.ranges.firstIndex(of: range) else { return nil }
-        return Resolver(table: self, h: homograph, form: form, words: words, i: index).reading()
+        return Resolver(table: self, h: homograph, form: form, words: words, i: i).reading()
     }
 
     /// A word capitalised mid-sentence, not all capitals ("Aunt Rose", "Drew"): a name.
@@ -45,9 +51,12 @@ extension IrregularVerbs {
         let ns = text as NSString
         // Most words aren't capitalised: no need to find the words around them.
         guard range.start >= 0, range.start < ns.length, (0x41...0x5A).contains(ns.character(at: range.start)) else { return false }
-        let words = Words(ns: ns, ranges: TextTools.wordRanges(text))
-        guard let i = words.ranges.firstIndex(of: range) else { return false }
-        return !words.startsSentence(i) && words.titlecase(i) && words.surface(i).contains(where: \.isLowercase)
+        let words = Words(ns)
+        return words.index(of: range).map { isName(words, $0) } ?? false
+    }
+
+    func isName(_ words: Words, _ i: Int) -> Bool {
+        !words.startsSentence(i) && words.titlecase(i) && words.surface(i).contains(where: \.isLowercase)
     }
 
     /// What the voice says for the word at `range` of `text`: the table's respelling of its slot
@@ -60,25 +69,28 @@ extension IrregularVerbs {
         let ns = text as NSString
         guard range.start >= 0, range.start < range.end, range.end <= ns.length else { return "" }
         let surface = ns.substring(with: range.nsRange)
-        let w = TextTools.normalize(surface)
-        let spoken: String?
+        let words = Words(ns)
+        guard let i = words.index(of: range) else { return surface }
+        return spokenForm(words, i) ?? surface
+    }
+
+    /// The respelling of word `i` of `words`, or nil to speak it as written.
+    func spokenForm(_ words: Words, _ i: Int) -> String? {
+        let w = words.token(i)
         if homographs[w] != nil {
-            guard let reading = resolve(text, range), reading.kind == .verb, let entry = verb(base: reading.base) else { return surface }
-            spoken = Self.slot(of: w, in: entry, step: reading.step).flatMap { entry.spokenAs[$0] }
-        } else {
-            guard let entry = verb(base: formToBase[w] ?? w), !entry.spokenAs.isEmpty, !isName(text, range) else { return surface }
-            let words = Words(ns: ns, ranges: TextTools.wordRanges(text))
-            guard let i = words.ranges.firstIndex(of: range), let head = words.head(before: i, skip: context.skip) else { return surface }
-            let slot: String? = if context.toAndModals.contains(head.token) && w == entry.base {
-                "base"
-            } else if participleHelpers.contains(head.token) && entry.participle.contains(w) {
-                "participle"
-            } else {
-                nil
-            }
-            spoken = slot.flatMap { entry.spokenAs[$0] }
+            guard let reading = resolve(words, i), reading.kind == .verb, let entry = verb(base: reading.base) else { return nil }
+            return Self.slot(of: w, in: entry, step: reading.step).flatMap { entry.spokenAs[$0] }
         }
-        return spoken ?? surface
+        guard let entry = verb(base: formToBase[w] ?? w), !entry.spokenAs.isEmpty, !isName(words, i),
+              let head = words.head(before: i, skip: context.skip) else { return nil }
+        let slot: String? = if context.toAndModals.contains(head.token) && w == entry.base {
+            "base"
+        } else if participleHelpers.contains(head.token) && entry.participle.contains(w) {
+            "participle"
+        } else {
+            nil
+        }
+        return slot.flatMap { entry.spokenAs[$0] }
     }
 
     /// The slot of a homograph read as a verb, from the step that read it.
@@ -98,9 +110,25 @@ extension IrregularVerbs {
 }
 
 /// The words of a text, for looking at a word's neighbours.
+/// Tokenized once per text: every look at a word's neighbours is then constant time.
 struct Words {
     let ns: NSString
     let ranges: [WordRange]
+
+    init(_ ns: NSString, ranges: [WordRange]? = nil) {
+        self.ns = ns
+        self.ranges = ranges ?? TextTools.wordRanges(ns as String)
+    }
+
+    /// Which word `range` is (binary search: the ranges are in order).
+    func index(of range: WordRange) -> Int? {
+        var low = 0, high = ranges.count
+        while low < high {
+            let mid = (low + high) / 2
+            if ranges[mid].start < range.start { low = mid + 1 } else { high = mid }
+        }
+        return low < ranges.count && ranges[low] == range ? low : nil
+    }
 
     var count: Int { ranges.count }
 
