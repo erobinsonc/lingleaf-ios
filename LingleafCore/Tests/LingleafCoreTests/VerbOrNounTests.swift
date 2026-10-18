@@ -66,7 +66,27 @@ final class VerbOrNounTests: XCTestCase {
         assertReading("rose", "The sun rose slowly.", .verb, "rise", .subjectNoun)
         assertReading("left", "She saw it and left.", .verb, "leave", .conjunction)
         assertReading("lay", "They lay bricks.", .unsure, "lay", .unsure)
-        assertReading("Left", "Left alone, she cried.", .unsure, "left", .unsure)
+        assertReading("Left", "Left is the answer.", .unsure, "left", .unsure)
+    }
+
+    func testTheStepsOfTheTablesV2Lists() {
+        assertReading("found", "Check the lost and found first.", .noun, "found", .phrase)
+        assertReading("found", "She lost and found her keys.", .verb, "find", .conjunction, "a subject before the phrase")
+        assertReading("Left", "Left alone, she cried.", .verb, "leave", .participleOpen)
+        assertReading("Found", "Found guilty, he went to jail.", .verb, "find", .participleOpen)
+        assertReading("Felt", "Felt hats, they said, were warm.", .noun, "felt", .fixed)
+        assertReading("lives", "Tom lives in a small house.", .verb, "live", .nameS)
+        assertReading("lives", "Double lives in fiction are common.", .unsure, "lives", .unsure, "a finite verb later")
+        assertReading("lives", "Wasted lives are sad.", .unsure, "lives", .unsure, "a verb form, not a name")
+        assertReading("leaves", "Holly leaves at six.", .unsure, "leaves", .unsure, "a plant that is also a name")
+        assertReading("lives", "The old man lives alone.", .verb, "live", .nounS)
+        assertReading("leaves", "The bus leaves at six.", .verb, "leave", .nounS)
+        assertReading("left", "Many people left early.", .verb, "leave", .quantifier)
+        assertReading("left", "Some of the guests left.", .verb, "leave", .quantifier)
+        assertReading("lay", "Two men lay down.", .verb, "lie", .quantifier)
+        assertReading("bore", "Long speeches bore me.", .unsure, "bore", .unsure, "no quantifier step for bore")
+        assertReading("bit", "The dog bit him.", .verb, "bite", .subjectNoun)
+        assertReading("bit", "The funny bit was long.", .unsure, "bit", .unsure, "bit needs an object word after it")
     }
 
     func testFixedPhrasesAndBound() {
@@ -108,7 +128,8 @@ final class VerbOrNounTests: XCTestCase {
         XCTAssertEqual(base("stole", "He stole the bread."), "steal")
         XCTAssertEqual(base("leaves", "The dead leaves fell."), "leaf")
         XCTAssertNil(base("left", "Turn left here."), "the noun \"left\": no other base")
-        XCTAssertNil(base("Left", "Left alone, she cried."), "unsure")
+        XCTAssertNil(base("Left", "Left is the answer."), "unsure")
+        XCTAssertEqual(base("Left", "Left alone, she cried."), "leave", "an opening participle")
         XCTAssertEqual(base("Drew", "Drew a line."), "draw", "the first word: not a name")
         XCTAssertNil(base("Drew", "I met Uncle Drew today."), "a name")
         XCTAssertNil(base("cat", "The cat sat."))

@@ -127,6 +127,12 @@ final class TextToolsTests: XCTestCase {
         XCTAssertEqual(TextTools.baseFormCandidates("quarrelling").first, "quarrel")
         XCTAssertEqual(TextTools.baseFormCandidates("called"), ["call", "calle"], "one vowel group: as before")
         XCTAssertEqual(TextTools.baseFormCandidates("filled"), ["fill", "fille"])
+        // The table's US double-l bases come first, then the single-l stem.
+        XCTAssertEqual(TextTools.baseFormCandidates("installed").first, "install")
+        XCTAssertEqual(Array(TextTools.baseFormCandidates("enrolled").prefix(2)), ["enroll", "enrol"])
+        XCTAssertEqual(TextTools.baseFormCandidates("recalled").first, "recall")
+        XCTAssertEqual(TextTools.baseFormCandidates("misspelling").first, "misspell")
+        XCTAssertEqual(TextTools.baseFormCandidates("installs"), ["install"])
     }
 
     func testWithoutItsSentenceAHomographLinksOnlyToASharedBase() {

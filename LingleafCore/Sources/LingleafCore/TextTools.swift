@@ -281,7 +281,11 @@ public enum TextTools {
         // A stem that doubled its last letter also gives the single one, first: stopped → stop,
         // and -ll after two vowel groups: travelled → travel (not called → cal).
         func addStem(_ stem: String) {
-            if stem.hasSuffix("ll"), vowelGroups(String(stem.dropLast())) >= 2 {
+            if IrregularVerbs.shared.llBases.contains(stem) {
+                // A US double-l base first: installed → install, then instal.
+                add(stem)
+                add(String(stem.dropLast()))
+            } else if stem.hasSuffix("ll"), vowelGroups(String(stem.dropLast())) >= 2 {
                 add(String(stem.dropLast()))
             } else if isDoubled(stem) {
                 add(String(stem.dropLast()))
@@ -384,7 +388,7 @@ public enum TextTools {
     private static func hasVowel(_ s: String) -> Bool { s.contains { "aeiouy".contains($0) } }
 
     /// Runs of vowels ("travel" has 2, "call" 1).
-    private static func vowelGroups(_ s: String) -> Int {
+    static func vowelGroups(_ s: String) -> Int {
         var groups = 0
         var inGroup = false
         for c in s {

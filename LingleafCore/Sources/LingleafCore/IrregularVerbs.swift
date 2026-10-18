@@ -15,6 +15,15 @@ public struct IrregularVerbs: Sendable {
     static let spokenSlots: Set<String> = ["base", "past", "participle", "ing", "s"]
     /// Longest Spanish meaning, group title or example kept.
     static let maxText = 100
+    /// Letters an IPA transcription may use (no slashes): a–z, the IPA letters and marks English
+    /// needs, and the combining syllabic mark and tilde.
+    static let ipaScalars: Set<Unicode.Scalar> = {
+        var set = Set((UInt32(0x61)...UInt32(0x7A)).compactMap { Unicode.Scalar($0) })
+        for scalar in "æðŋɑɒɔəɚɛɜɝɡɪɹɾʃʊʌʒʔθʤʧˈˌːˑ.".unicodeScalars { set.insert(scalar) }
+        set.insert("\u{0329}")
+        set.insert("\u{0303}")
+        return set
+    }()
 
     /// The shipped table, read once. `Bundle.module` itself stops the app if the package's
     /// resource bundle is not in it (an app UI test checks it is). A file that is missing from the
@@ -54,15 +63,22 @@ public struct IrregularVerbs: Sendable {
     let participleHelpers: Set<String>
     let homographs: [String: Homograph]
     let context: Context
+    /// US double-l bases tried before the single-l stem ("installed" → "install", then "instal").
+    let llBases: Set<String>
+    /// Past forms that are not also a base or a homograph ("shone", "told", "went"): a finite verb.
+    let pastForms: Set<String>
+    /// Forms only of a verb's regular homonym ("lied", "hanged"), and forms of both ("lying", "lies").
+    let homonymOnlyForms: Set<String>
+    let sharedHomonymForms: Set<String>
     private let verbsByBase: [String: IrregularVerb]
 
     /// An empty table.
     init() {
-        self.init(groups: [], verbs: [], homographs: [], context: Context())
+        self.init(groups: [], verbs: [], homographs: [], context: Context(), llBases: [])
     }
 
     /// The table and what is derived from it (SPEC.md, Shared logic). `validate` checks it.
-    private init(groups: [VerbGroup], verbs: [IrregularVerb], homographs: [Homograph], context: Context) {
+    private init(groups: [VerbGroup], verbs: [IrregularVerb], homographs: [Homograph], context: Context, llBases: [String]) {
         let byForm = Dictionary(homographs.map { ($0.form, $0) }) { first, _ in first }
         let bases = Set(verbs.map(\.base))
         let participles = Set(verbs.flatMap { $0.participle + ($0.homonym?.participle ?? []) }).subtracting(["got"])
@@ -82,6 +98,18 @@ public struct IrregularVerbs: Sendable {
         verbsByBase = Dictionary(verbs.map { ($0.base, $0) }) { first, _ in first }
         let getForms: Set<String> = ["get", "gets", "got", "getting", "gotten"]
         participleHelpers = context.haveAndBe.filter { !getForms.contains($0) && !$0.hasSuffix("'d") }
+        self.llBases = Set(llBases)
+        pastForms = Set(verbs.flatMap(\.past)).subtracting(bases).filter { byForm[$0] == nil }
+        var homonymOnly: Set<String> = [], shared: Set<String> = []
+        for verb in verbs {
+            guard let homonym = verb.homonym else { continue }
+            let own = Set(verb.past + verb.participle + [verb.ing, verb.s] + verb.present)
+            for form in homonym.past + homonym.participle + [homonym.ing, homonym.s] {
+                if own.contains(form) { shared.insert(form) } else { homonymOnly.insert(form) }
+            }
+        }
+        homonymOnlyForms = homonymOnly
+        sharedHomonymForms = shared
     }
 
     /// The verb whose base is `base`, for its forms, meanings and spoken forms.
@@ -119,12 +147,14 @@ public struct IrregularVerbs: Sendable {
         guard data.count <= maxBytes else { throw IrregularVerbsError.tooLarge }
         guard JSONGuard.isShallow(data, maxDepth: maxDepth) else { throw IrregularVerbsError.tooDeep }
         let file = try JSONDecoder().decode(TableFile.self, from: data)
-        let table = IrregularVerbs(groups: file.groups, verbs: file.verbs, homographs: file.homographs, context: file.context)
-        try table.validate(homographList: file.homographs)
+        let table = IrregularVerbs(
+            groups: file.groups, verbs: file.verbs, homographs: file.homographs, context: file.context, llBases: file.llBases
+        )
+        try table.validate(homographList: file.homographs, llBaseList: file.llBases)
         return table
     }
 
-    private func validate(homographList: [Homograph]) throws {
+    private func validate(homographList: [Homograph], llBaseList: [String]) throws {
         func check(_ ok: Bool, _ problem: @autoclosure () -> String) throws {
             if !ok { throw IrregularVerbsError.invalid(problem()) }
         }
@@ -145,6 +175,8 @@ public struct IrregularVerbs: Sendable {
             try check(Self.levels.contains(verb.level), "\(verb.base): unknown level \(verb.level)")
             try check(Set(verb.spokenAs.keys).isSubset(of: Self.spokenSlots), "\(verb.base): unknown spokenAs slot")
             try check(verb.spokenAs.values.allSatisfy(Self.isForm), "\(verb.base): spokenAs not a–z")
+            try check(Set(verb.ipa.keys).isSubset(of: Self.spokenSlots), "\(verb.base): unknown ipa slot")
+            try check(verb.ipa.values.allSatisfy(Self.isIPA), "\(verb.base): ipa")
             try check(verb.present.count <= 2 && (verb.freq ?? 0) >= 0, "\(verb.base): present or freq")
             if let homonym = verb.homonym {
                 try check(Self.isFormList(homonym.past) && Self.isFormList(homonym.participle), "\(verb.base): homonym forms")
@@ -166,6 +198,18 @@ public struct IrregularVerbs: Sendable {
                 try check(h.form == verb.base || verb.forms.contains(h.form), "homograph \(h.form): not a form of \(h.verb)")
             }
             try check(!h.rules.contains(.imperative) || h.baseVerb != nil, "homograph \(h.form): imperative without baseVerb")
+            for phrase in h.nounPhrases {
+                try check((2...4).contains(phrase.count) && phrase.contains(h.form) && phrase.allSatisfy(Self.isForm),
+                          "homograph \(h.form): noun phrase")
+            }
+            try check((h.subjectNounNext ?? []).allSatisfy(Self.isForm), "homograph \(h.form): subjectNounNext")
+        }
+        try check(Set(llBaseList).count == llBaseList.count, "duplicate llBase")
+        let tableForms = bases.union(verbs.flatMap(\.forms)).union(homographs.keys)
+        for base in llBaseList {
+            let shape = (3...20).contains(base.utf8.count) && Self.isForm(base) && base.hasSuffix("ll")
+            try check(shape && TextTools.vowelGroups(String(base.dropLast())) >= 2, "llBase \(base)")
+            try check(!tableForms.contains(base), "llBase \(base) is a form of the table")
         }
         try check(context.allWords.allSatisfy(Self.isContextWord), "context: a word that is not a–z")
     }
@@ -186,6 +230,13 @@ public struct IrregularVerbs: Sendable {
 
     private static func isMeanings(_ es: [String]) -> Bool {
         (1...2).contains(es.count) && es.allSatisfy(isText)
+    }
+
+    /// An IPA transcription: 1–40 allowed characters, already in NFC.
+    static func isIPA(_ s: String) -> Bool {
+        let count = s.unicodeScalars.count
+        return (1...40).contains(count) && s.unicodeScalars.allSatisfy(ipaScalars.contains)
+            && s.precomposedStringWithCanonicalMapping.unicodeScalars.elementsEqual(s.unicodeScalars)
     }
 
     private static func isText(_ s: String) -> Bool {
@@ -218,6 +269,8 @@ public struct IrregularVerb: Equatable, Sendable {
     public let present: [String]
     /// What a voice should say instead of a form it reads wrong, by slot (base, past, participle, ing, s).
     public let spokenAs: [String: String]
+    /// IPA of a slot's first form, without slashes, where the dictionary can't tell (read: "rɛd").
+    public let ipa: [String: String]
     /// A regular verb with the same base and another meaning (lie/lied "mentir").
     public let homonym: Homonym?
     /// The base is used more often as a noun ("light"): not a verb after "had better".
@@ -256,7 +309,7 @@ public struct VerbGroup: Equatable, Sendable {
 /// A form that is also another word ("left", "saw", "leaves"): its sentence decides.
 struct Homograph: Sendable {
     enum Rule: String, Sendable {
-        case participle, subjectNoun, conjunction, imperative, plural
+        case participle, subjectNoun, conjunction, imperative, plural, sVerb, quantifier
     }
 
     let form: String
@@ -272,6 +325,10 @@ struct Homograph: Sendable {
     let verbAfter: Set<String>
     let nounPair: String?
     let noTo: Bool
+    /// Noun phrases holding the form ("lost and found"): the word itself, not a verb.
+    let nounPhrases: [[String]]
+    /// When set, step 7 (subject noun) needs one of these words right after the form ("The dog bit him").
+    let subjectNounNext: Set<String>?
 }
 
 /// The word lists of the verb-or-noun rule.
@@ -280,14 +337,20 @@ struct Context: Sendable {
         "determiners", "pluralDeterminers", "prepositions", "adjectives", "pluralAdjectives", "subjects",
         "singularSubjects", "skip", "toAndModals", "haveAndBe", "subjectDeterminers", "oneAfter", "clauseOpeners",
         "lieAfter", "conjunctions", "notNames", "objectStarts", "layTime", "boundAdjective",
+        "sFormNext", "notNameStarts", "nameOrPlant", "pluralNouns", "notPlural", "quantifiers",
+        "quantifiersBeforeDeterminer", "quantifiersBeforeOf", "finiteVerbs", "participleOpenNext",
     ]
 
     private let lists: [String: Set<String>]
     let determiners, pluralDeterminers, prepositions, adjectives, pluralAdjectives, subjects: Set<String>
     let singularSubjects, skip, toAndModals, haveAndBe, subjectDeterminers, oneAfter, clauseOpeners: Set<String>
     let lieAfter, conjunctions, notNames, objectStarts, layTime, boundAdjective: Set<String>
+    let sFormNext, notNameStarts, nameOrPlant, pluralNouns, notPlural, quantifiers: Set<String>
+    let quantifiersBeforeDeterminer, quantifiersBeforeOf, finiteVerbs, participleOpenNext: Set<String>
     /// Words that can't be the noun of a subject ("the finest felt" aside): function words and listed adjectives.
     let closed: Set<String>
+    /// `closed` and the adjectives only listed before plurals: words that can't head a noun phrase.
+    let nounClosed: Set<String>
 
     init(_ lists: [String: [String]] = [:]) {
         let sets = lists.mapValues { Set($0) }
@@ -312,8 +375,19 @@ struct Context: Sendable {
         objectStarts = list("objectStarts")
         layTime = list("layTime")
         boundAdjective = list("boundAdjective")
+        sFormNext = list("sFormNext")
+        notNameStarts = list("notNameStarts")
+        nameOrPlant = list("nameOrPlant")
+        pluralNouns = list("pluralNouns")
+        notPlural = list("notPlural")
+        quantifiers = list("quantifiers")
+        quantifiersBeforeDeterminer = list("quantifiersBeforeDeterminer")
+        quantifiersBeforeOf = list("quantifiersBeforeOf")
+        finiteVerbs = list("finiteVerbs")
+        participleOpenNext = list("participleOpenNext")
         closed = determiners.union(pluralDeterminers).union(adjectives).union(subjects).union(notNames).union(skip)
             .union(prepositions).union(toAndModals).union(haveAndBe).union(conjunctions)
+        nounClosed = closed.union(pluralAdjectives)
     }
 
     var allWords: [String] { lists.values.flatMap { $0 } }
@@ -354,9 +428,10 @@ private struct TableFile: Decodable {
     let verbs: [IrregularVerb]
     let homographs: [Homograph]
     let context: Context
+    let llBases: [String]
 
     init(from decoder: Decoder) throws {
-        let c = try decoder.strict(["schemaVersion", "about", "groups", "verbs", "homographs", "context"])
+        let c = try decoder.strict(["schemaVersion", "about", "groups", "verbs", "homographs", "context", "llBases"])
         // First: a future schema is refused as such, whatever else it holds.
         let version: Int = try c.value("schemaVersion")
         guard version == IrregularVerbs.schemaVersion else { throw IrregularVerbsError.invalid("schemaVersion \(version)") }
@@ -366,6 +441,7 @@ private struct TableFile: Decodable {
         verbs = try c.value("verbs")
         homographs = try c.value("homographs")
         context = try c.value("context")
+        llBases = try c.value("llBases")
     }
 }
 
@@ -390,7 +466,7 @@ extension IrregularVerb: Decodable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.strict(
             ["base", "past", "participle", "ing", "s", "group", "level", "es"],
-            optional: ["present", "spokenAs", "homonym", "nounFirst", "freq"]
+            optional: ["present", "spokenAs", "ipa", "homonym", "nounFirst", "freq"]
         )
         base = try c.value("base")
         past = try c.value("past")
@@ -402,6 +478,7 @@ extension IrregularVerb: Decodable {
         es = try c.value("es")
         present = try c.optional("present") ?? []
         spokenAs = try c.optional("spokenAs") ?? [:]
+        ipa = try c.optional("ipa") ?? [:]
         homonym = try c.optional("homonym")
         nounFirst = try c.optional("nounFirst") ?? false
         freq = try c.optional("freq")
@@ -423,7 +500,7 @@ extension Homograph: Decodable {
     init(from decoder: Decoder) throws {
         let c = try decoder.strict(
             ["form", "noun", "verb", "rules"],
-            optional: ["baseVerb", "nounAfter", "nounBefore", "verbAfter", "nounPair", "noTo"]
+            optional: ["baseVerb", "nounAfter", "nounBefore", "verbAfter", "nounPair", "noTo", "nounPhrases", "subjectNounNext"]
         )
         form = try c.value("form")
         // Required, but null when the form is not a noun.
@@ -442,6 +519,9 @@ extension Homograph: Decodable {
         self.verbAfter = Set(verbAfter)
         nounPair = try c.optional("nounPair")
         noTo = try c.optional("noTo") ?? false
+        nounPhrases = try c.optional("nounPhrases") ?? []
+        let next: [String]? = try c.optional("subjectNounNext")
+        subjectNounNext = next.map { Set($0) }
     }
 }
 

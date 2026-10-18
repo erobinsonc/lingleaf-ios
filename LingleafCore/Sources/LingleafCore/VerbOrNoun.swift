@@ -9,7 +9,8 @@ public struct Reading: Equatable, Sendable {
 
     /// The step that decided (`unsure` when none did).
     public enum Step: String, Sendable, CaseIterable {
-        case name, fixed, noun, base, participle, subject, subjectNoun, conjunction, unsure
+        case name, phrase, fixed, noun, participleOpen, base, participle, subject, nameS, subjectNoun, nounS, quantifier
+        case conjunction, unsure
     }
 
     public let kind: Kind
@@ -220,7 +221,7 @@ private struct Resolver {
     }
 
     func reading() -> Reading {
-        if let reading = name() ?? fixed() ?? afterDeterminer() { return reading }
+        if let reading = name() ?? phrase() ?? fixed() ?? afterDeterminer() ?? openingParticiple() { return reading }
         let head = words.head(before: i, skip: c.skip)
         return baseOrParticiple(head) ?? afterSubject(head) ?? unsure
     }
@@ -244,7 +245,9 @@ private struct Resolver {
     private func fixed() -> Reading? {
         let p1 = previous(1), p2 = previous(2), n1 = next(1), n2 = next(2)
         if h.noun != nil {
-            if let p1, h.nounAfter.contains(p1) { return noun(.fixed) }
+            // A capitalised plant word that is also a name ("Holly leaves at six") is not the plant.
+            let plantName = p1.map(c.nameOrPlant.contains) == true && words.titlecase(i - 1)
+            if let p1, h.nounAfter.contains(p1), !plantName { return noun(.fixed) }
             if let n1, h.nounBefore.contains(n1) { return noun(.fixed) }
             if let pair = h.nounPair {
                 let joiners: Set<String> = ["and", "or"]
@@ -302,12 +305,18 @@ private struct Resolver {
             if !opensSentence || (!c.notNames.contains(t) && !c.adjectives.contains(t) && !t.hasSuffix("ly") && !plural) {
                 return verb(.subject)
             }
+            // nameS: a name opening the sentence + an -s form + a preposition or adverb ("Tom lives in…").
+            if h.rules.contains(.sVerb), sFormNext, looksLikeName(k), !finiteVerbLater() { return verb(.nameS) }
         }
-        if h.rules.contains(.subjectNoun), !words.titlecase(k), let d = subjectDeterminer(k, t), opensClause(d) {
+        if h.rules.contains(.subjectNoun), !words.titlecase(k), let d = subjectDeterminer(k, t), opensClause(d),
+           h.subjectNounNext.map({ allowed in next(1).map(allowed.contains) == true }) ?? true {
             return verb(.subjectNoun)
         }
-        if h.rules.contains(.conjunction), c.conjunctions.contains(t) { return verb(.conjunction) }
-        return nil
+        return nounAndSForm(k, t) ?? quantifierSubject(k, t) ?? conjunction(t)
+    }
+
+    private func conjunction(_ t: String) -> Reading? {
+        h.rules.contains(.conjunction) && c.conjunctions.contains(t) ? verb(.conjunction) : nil
     }
 
     /// The determiner before the noun `t` at `k` ("the sun", "the red sun"), if `t` can be a noun.
@@ -326,5 +335,148 @@ private struct Resolver {
         if words.startsSentence(d) { return true }
         if words.gap(d - 1, d).contains(where: { ",;—–".contains($0) }) { return true }
         return words.gapOK(d - 1, d) && c.clauseOpeners.contains(words.token(d - 1))
+    }
+}
+
+// MARK: Steps added with the table's v2 lists (SPEC.md: 2, 3b, 6 nameS, 7b, 7c)
+
+private extension Resolver {
+    /// An -s form before a listed preposition or adverb (not "of") or a word in -ly: "lives in", "leaves at".
+    var sFormNext: Bool {
+        guard let n1 = next(1), n1 != "of" else { return false }
+        return c.sFormNext.contains(n1) || (n1.hasSuffix("ly") && n1.count > 3)
+    }
+
+    /// 2. A listed noun phrase ("the lost and found") → the word itself, not a verb, unless what is
+    /// before the phrase makes it a verb ("she lost and found her keys") or an object word follows it.
+    func phrase() -> Reading? {
+        for phrase in h.nounPhrases {
+            guard let at = phrase.firstIndex(of: form) else { continue }
+            let first = i - at, last = i - at + phrase.count - 1
+            guard first >= 0, last < words.count, (first..<last).allSatisfy({ words.gapOK($0, $0 + 1) }),
+                  (first...last).map(words.token) == phrase else { continue }
+            let before = first >= 1 && words.gapOK(first - 1, first) ? words.token(first - 1) : nil
+            let after = last + 1 < words.count && words.gapOK(last, last + 1) ? words.token(last + 1) : nil
+            let verbal = before.map { word in
+                c.subjects.contains(word) || c.haveAndBe.contains(word) || words.isSkip(first - 1, c.skip)
+                    || (words.titlecase(first - 1) && !words.startsSentence(first - 1))
+            } ?? false
+            if !verbal, after.map(c.objectStarts.contains) != true {
+                return Reading(kind: .noun, base: h.noun ?? form, step: .phrase)
+            }
+        }
+        return nil
+    }
+
+    /// 3b. A participle opening the sentence, before a listed word or a word in -ly, with a comma later
+    /// in the sentence ("Left alone, she cried"; not "Felt hats, …").
+    func openingParticiple() -> Reading? {
+        guard h.rules.contains(.participle), words.startsSentence(i), let n1 = next(1), next(2) != form,
+              c.participleOpenNext.contains(n1) || (n1.hasSuffix("ly") && n1.count > 3) else { return nil }
+        let rest = words.ns.substring(from: words.ranges[i].end)
+        let clause = rest.prefix { !".!?".contains($0) }
+        return clause.contains(",") ? verb(.participleOpen) : nil
+    }
+
+    /// 7b. Determiner (+ adjective) + a singular noun + an -s form + a preposition or adverb, the
+    /// determiner opening the sentence or a clause ("The old man lives alone", "The bus leaves at six").
+    func nounAndSForm(_ k: Int, _ t: String) -> Reading? {
+        guard h.rules.contains(.sVerb), sFormNext, !words.titlecase(k), isNounWord(t), !isPlural(t),
+              let d = nounPhraseStart(k), opensClause(d), !finiteVerbLater() else { return nil }
+        return verb(.nounS)
+    }
+
+    /// 7c. A quantifier or number (+ of (+ determiner)) (+ adjective) + a plural noun, the quantifier
+    /// opening the sentence or a clause ("Many people left", "Some of the guests left").
+    func quantifierSubject(_ k: Int, _ t: String) -> Reading? {
+        guard h.rules.contains(.quantifier), !words.titlecase(k), isNounWord(t), isPlural(t),
+              let q = quantifierStart(k), opensClause(q) else { return nil }
+        return verb(.quantifier, subject: "they")
+    }
+
+    /// A word that can head a noun phrase: not a listed function word or adjective, not in -ly or 's.
+    func isNounWord(_ t: String) -> Bool {
+        !c.nounClosed.contains(t) && !t.hasSuffix("ly") && !t.hasSuffix("'s")
+    }
+
+    /// "men", "people", "girls", "buses"; not "bus", "glass", "news".
+    func isPlural(_ t: String) -> Bool {
+        if c.pluralNouns.contains(t) { return true }
+        let singularEnding = ["ss", "us", "is", "'s"].contains { t.hasSuffix($0) }
+        return t.count > 3 && t.hasSuffix("s") && !singularEnding && !c.notPlural.contains(t)
+    }
+
+    /// The word before `k` when only spaces are between them.
+    func back(_ k: Int) -> Int? {
+        k >= 1 && words.gapOK(k - 1, k) ? k - 1 : nil
+    }
+
+    /// The determiner of "determiner (+ adjective) + the noun at `k`".
+    func nounPhraseStart(_ k: Int) -> Int? {
+        var j = back(k)
+        if let adjective = j, c.adjectives.contains(words.token(adjective)) { j = back(adjective) }
+        guard let j, c.subjectDeterminers.contains(words.token(j)) else { return nil }
+        return j
+    }
+
+    /// The quantifier of "Q [of] [determiner] (+ adjective) + the plural noun at `k`".
+    func quantifierStart(_ k: Int) -> Int? {
+        var j = back(k)
+        if let adjective = j {
+            let word = words.token(adjective)
+            if (c.adjectives.contains(word) || c.pluralAdjectives.contains(word)) && !c.quantifiers.contains(word) {
+                j = back(adjective)
+            }
+        }
+        guard let start = j else { return nil }
+        var q: Int?
+        var current: Int? = start
+        if c.quantifiers.contains(words.token(start)) {
+            q = start  // "many people", "these boys"
+        } else if c.determiners.contains(words.token(start)) {
+            // "all the guests", "both my sisters", "some of the guests"
+            let before = back(start)
+            if let before, c.quantifiersBeforeDeterminer.contains(words.token(before)) { q = before }
+            current = before
+        }
+        guard let current else { return q }
+        // "hundreds of people", "some of these people"
+        let of = words.token(current) == "of" ? current : back(current)
+        if let of, words.token(of) == "of", let before = back(of) {
+            let word = words.token(before)
+            if c.quantifiers.contains(word) || c.quantifiersBeforeOf.contains(word) { return before }
+        }
+        return q
+    }
+
+    /// A finite verb after the form in its clause: the form is then a noun ("Double lives in fiction
+    /// are common"); the clause ends at punctuation or a clause opener.
+    func finiteVerbLater() -> Bool {
+        var j = i + 1
+        while j < words.count {
+            if words.gap(j - 1, j).contains(where: { ",;:.!?—–()".contains($0) }) { return false }
+            let t = words.token(j)
+            if c.clauseOpeners.contains(t) || ["who", "which", "whose", "whom"].contains(t) { return false }
+            if c.finiteVerbs.contains(t) || table.pastForms.contains(t) { return true }
+            j += 1
+        }
+        return false
+    }
+
+    /// A capitalised word opening the sentence that is probably a name ("Tom", "Mrs"), not a verb form.
+    func looksLikeName(_ k: Int) -> Bool {
+        let t = words.token(k)
+        if c.nounClosed.contains(t) || c.notNameStarts.contains(t) || c.nameOrPlant.contains(t)
+            || ["ly", "ful", "less", "ous"].contains(where: { t.hasSuffix($0) }) {
+            return false
+        }
+        func isVerb(_ stem: String) -> Bool { table.bases.contains(stem) || Verbs.regular.contains(stem) }
+        // "Wasted", "Saved", "Saving": a verb form, not a name.
+        for (suffix, cut) in [("ed", 2), ("ed", 1), ("ing", 3)] where t.hasSuffix(suffix) && t.count > suffix.count + 2 {
+            let stem = String(t.dropLast(cut))
+            let doubled = stem.count > 2 && stem.last == stem.dropLast().last && isVerb(String(stem.dropLast()))
+            if isVerb(stem) || isVerb(stem + "e") || doubled { return false }
+        }
+        return true
     }
 }

@@ -39,6 +39,7 @@ final class IrregularVerbsTests: XCTestCase {
             ],
             "homographs": [["form": "left", "noun": "left", "verb": "leave", "rules": ["participle"]]],
             "context": context,
+            "llBases": ["install"],
         ]
         edit(&json)
         return try JSONSerialization.data(withJSONObject: json)
@@ -191,6 +192,47 @@ final class IrregularVerbsTests: XCTestCase {
             let lives: [String: Any] = ["form": "lives", "noun": "life", "verb": "live", "rules": ["plural"]]
             $0["homographs"] = ($0["homographs"] as? [[String: Any]] ?? []) + [lives]
         }))
+    }
+
+    func testV2FieldsLoadAndAreChecked() throws {
+        let loaded = try IrregularVerbs.load(table {
+            self.editVerb(&$0) { $0["ipa"] = ["base": "stiːl", "past": "stoʊl"] }
+            self.editHomograph(&$0) {
+                $0["rules"] = ["participle", "sVerb", "quantifier"]
+                $0["nounPhrases"] = [["left", "and", "right"]]
+                $0["subjectNounNext"] = ["him"]
+            }
+        })
+        XCTAssertEqual(loaded.verb(base: "steal")?.ipa["past"], "stoʊl")
+        XCTAssertEqual(loaded.llBases, ["install"])
+        XCTAssertEqual(loaded.homographs["left"]?.nounPhrases, [["left", "and", "right"]])
+        XCTAssertEqual(loaded.homographs["left"]?.subjectNounNext, ["him"])
+        XCTAssertNil(try IrregularVerbs.load(table()).homographs["left"]?.subjectNounNext, "absent: no condition")
+        assertRefused(try table { $0["llBases"] = nil }, "llBases is required")
+        assertRefused(try table { self.editVerb(&$0) { $0["ipa"] = ["future": "x"] } }, "unknown ipa slot")
+        assertRefused(try table { self.editVerb(&$0) { $0["ipa"] = ["base": "/stiːl/"] } }, "slashes")
+        assertRefused(try table { self.editVerb(&$0) { $0["ipa"] = ["base": "STEAL"] } }, "not IPA")
+        assertRefused(try table { self.editVerb(&$0) { $0["ipa"] = ["base": String(repeating: "a", count: 41)] } }, "over 40")
+        assertRefused(try table { self.editVerb(&$0) { $0["ipa"] = ["base": "e\u{0303}"] } }, "not NFC (ẽ is precomposed)")
+        XCTAssertNoThrow(try IrregularVerbs.load(table { self.editVerb(&$0) { $0["ipa"] = ["base": "n\u{0329}"] } }), "a syllabic n")
+        for bad in ["stall", "inst", "toll", "leaves", "Install"] {
+            assertRefused(try table { $0["llBases"] = [bad] }, "llBase \(bad)")
+        }
+        assertRefused(try table { $0["llBases"] = ["install", "install"] }, "duplicate llBase")
+        assertRefused(try table {
+            $0["llBases"] = ["leavell"]
+            self.editVerb(&$0) { $0["s"] = "leavell" }
+        }, "an llBase that is a form of the table")
+        assertRefused(try table { self.editHomograph(&$0) { $0["nounPhrases"] = [["left"]] } }, "one word")
+        assertRefused(try table { self.editHomograph(&$0) { $0["nounPhrases"] = [["right", "and", "wrong"]] } }, "without the form")
+        assertRefused(try table { self.editHomograph(&$0) { $0["nounPhrases"] = [["a", "b", "c", "d", "left"]] } }, "five words")
+        assertRefused(try table { self.editHomograph(&$0) { $0["subjectNounNext"] = ["Him"] } }, "not a–z")
+        assertRefused(try table { self.editHomograph(&$0) { $0["rules"] = ["sverb"] } }, "unknown rule")
+        assertRefused(try table {
+            var context = $0["context"] as? [String: Any] ?? [:]
+            context["finiteVerbs"] = nil
+            $0["context"] = context
+        }, "a v2 context list is required")
     }
 
     func testIsFormAndIsContextWord() {
