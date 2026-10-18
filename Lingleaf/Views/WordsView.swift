@@ -26,6 +26,16 @@ struct WordsView: View {
                     }
                 }
 
+                if !model.state.corrections.isEmpty {
+                    Section {
+                        CorrectionsCard(corrections: model.state.corrections) {
+                            model.library.undoCorrections()
+                        } onClose: {
+                            model.library.closeCorrections()
+                        }
+                    }
+                }
+
                 Picker("Filter", selection: $showLearned) {
                     Text("Learning").tag(false)
                     Text("Known").tag(true)
@@ -59,9 +69,9 @@ struct WordsView: View {
     /// Deletes at once (no confirmation) and offers Undo for 5 s, which puts the word back as it was.
     private func delete(_ word: VocabWord) {
         let library = model.library
-        library.deleteWord(word.word)
+        library.deleteWord(word.word, sense: word.sense)
         undo = UndoMessage(text: String(localized: "“\(word.word)” deleted"), seconds: 5) {
-            library.restoreWord(word.word, previous: word)
+            library.restoreWord(word.word, previous: word, sense: word.sense)
         }
     }
 
@@ -97,7 +107,7 @@ private struct WordRow: View {
         HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
-                    Text(word.word).font(.headline)
+                    Text(verbatim: model.state.displayName(word)).font(.headline)
                     if !word.phonetic.isEmpty, word.kind == nil {
                         Text(word.phonetic).font(.caption).foregroundStyle(Brand.secondaryText)
                     }
@@ -130,7 +140,7 @@ private struct WordRow: View {
         }
         .swipeActions(edge: .leading) {
             Button {
-                model.library.setLearned(word.word, !word.learned)
+                model.library.setLearned(word.word, !word.learned, sense: word.sense)
             } label: {
                 stateActionTitle
             }
@@ -140,7 +150,7 @@ private struct WordRow: View {
             Button("Delete word", role: .destructive, action: onDelete)
         }
         .accessibilityAction(named: stateActionTitle) {
-            model.library.setLearned(word.word, !word.learned)
+            model.library.setLearned(word.word, !word.learned, sense: word.sense)
         }
         .accessibilityAction(named: Text("Delete word"), onDelete)
     }
@@ -151,5 +161,47 @@ private struct WordRow: View {
             return Text("Review again")
         }
         return Text("Mark as known")
+    }
+}
+
+/// Words corrected to match their sentences after updating (SPEC S18), until closed:
+/// "Fixed to match its sentence: “leave” → “left”." with Undo (puts all back) and Close.
+private struct CorrectionsCard: View {
+    let corrections: [Correction]
+    let onUndo: () -> Void
+    let onClose: () -> Void
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
+                if corrections.count == 1, let only = corrections.first {
+                    Text("Fixed to match its sentence: “\(only.from)” → “\(only.to)”.")
+                        .accessibilityLabel(Text("Fixed to match its sentence: “\(only.from)” is now “\(only.to)”."))
+                } else {
+                    Text("Fixed to match their sentences:")
+                    ForEach(Array(corrections.prefix(3).enumerated()), id: \.offset) { _, correction in
+                        Text(verbatim: "“\(correction.from)” → “\(correction.to)”")
+                            .accessibilityLabel(Text("“\(correction.from)” is now “\(correction.to)”"))
+                    }
+                    if corrections.count > 3 {
+                        Text("and \(corrections.count - 3) more")
+                    }
+                }
+                Button("Undo", action: onUndo)
+                    .font(.body.weight(.semibold))
+                    .frame(minHeight: 44)
+                    .buttonStyle(.borderless)
+            }
+            .fixedSize(horizontal: false, vertical: true)
+            Spacer(minLength: 0)
+            Button(action: onClose) {
+                Label("Close", systemImage: "xmark")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.borderless)
+            .tint(Brand.secondaryText)
+        }
     }
 }

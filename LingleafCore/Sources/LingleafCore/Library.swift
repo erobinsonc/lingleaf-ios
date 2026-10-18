@@ -20,7 +20,7 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
 
 /// A word the user chose to learn or marked as known. `word` is the lowercased base form.
 public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
-    public let word: String
+    public internal(set) var word: String
     public var translation: String
     /// Language `translation` is in ("es", "zh-Hans"); nil when unknown (older data).
     public var translationLanguage: String?
@@ -45,8 +45,59 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var kind: FunctionWord.Kind?
     /// The helper or modal verb's base form ("do" for "did not go").
     public var base: String?
+    /// Which word `word` is when the spelling is two (SPEC S4): `Sense.verb`, `.noun` or
+    /// `.homonym`; nil for a word saved without one.
+    public var sense: String?
+    /// The form tapped in `context` and where it is (UTF-16 offsets), to bold only it in review.
+    public var form: String?
+    public var formStart: Int?
+    public var formEnd: Int?
+    /// A word saved while its sentence didn't tell: the card's two readings with their meanings;
+    /// `word` is then the tapped form.
+    public var meanings: [SavedMeaning]?
 
-    public var id: String { word }
+    /// One spelling is saved once per sense.
+    public var id: String { Self.id(word, sense) }
+
+    public static func id(_ word: String, _ sense: String?) -> String {
+        sense.map { "\(word)#\($0)" } ?? word
+    }
+
+    /// Saved while its sentence didn't tell which word it is.
+    public var isUnsure: Bool { meanings != nil && sense == nil }
+
+    /// The tapped form's range in `context`, when it is still there.
+    public var formRange: WordRange? {
+        guard let formStart, let formEnd else { return nil }
+        return WordRange(formStart, formEnd)
+    }
+
+    /// Fields a restored or edited file may hold out of bounds, made safe: an unknown sense is
+    /// dropped, a range that doesn't hold the form in the sentence too, at most two readings.
+    func bounded() -> VocabWord {
+        var word = self
+        word.context = TextTools.truncated(context, TextTools.maxSentence)
+        if let sense, !Sense.all.contains(sense) { word.sense = nil }
+        if let form, form.utf16.count > 40 || TextTools.wordRanges(form) != [WordRange(0, (form as NSString).length)] {
+            word.form = nil
+        }
+        let ns = word.context as NSString
+        let rangeHoldsForm = word.form.flatMap { form in
+            formRange.map { range in
+                range.start >= 0 && range.start < range.end && range.end <= ns.length
+                    && TextTools.normalize(ns.substring(with: range.nsRange)) == TextTools.normalize(form)
+            }
+        } ?? false
+        if !rangeHoldsForm {
+            word.formStart = nil
+            word.formEnd = nil
+        }
+        if let meanings {
+            let kept = meanings.prefix(2).compactMap { $0.bounded() }
+            word.meanings = kept.isEmpty ? nil : kept
+        }
+        return word
+    }
 
     public func isDue(_ now: Date) -> Bool { !learned && nextReview <= now }
 }
@@ -96,20 +147,52 @@ public struct LibraryState: Equatable, Sendable {
     public var books: [Book] = []
     public var readingLog: [String: Int] = [:]
     public var settings = Settings()
+    /// Words corrected to match their sentences, shown on Words until closed (SPEC S18).
+    public var corrections: [Correction] = []
 
     public init() {}
 
     public var words: [VocabWord] = [] {
-        didSet { learningWords = Set(words.filter { !$0.learned }.map(\.word)) }
+        didSet {
+            let learning = words.filter { !$0.learned }
+            learningWords = Set(learning.map(\.word))
+            learningIndex = LearningIndex(learning)
+        }
     }
 
     /// Base forms of words being learned, kept up to date with `words`: the reader asks for
     /// every word it shows, so it must not rebuild the set each time.
     public private(set) var learningWords: Set<String> = []
+    /// The words being learned, by form and sense, for the underline.
+    public private(set) var learningIndex = LearningIndex()
 
+    /// The saved word spelled `base`: the one without a sense first, else the first saved.
     public func word(_ base: String) -> VocabWord? {
         let key = TextTools.normalize(base)
-        return words.first { $0.word == key }
+        return words.first { $0.word == key && $0.sense == nil } ?? words.first { $0.word == key }
+    }
+
+    /// The saved word spelled `base` with exactly `sense`.
+    public func word(_ base: String, sense: String?) -> VocabWord? {
+        let id = VocabWord.id(TextTools.normalize(base), sense)
+        return words.first { $0.id == id }
+    }
+
+    /// The record a word saved as `sense` is: that one, else the same spelling saved before senses
+    /// existed (it becomes this sense when saved again).
+    public func saved(_ base: String, sense: String?) -> VocabWord? {
+        word(base, sense: sense) ?? sense.flatMap { _ in word(base, sense: nil).flatMap { $0.isUnsure ? nil : $0 } }
+    }
+
+    /// How Words and Review name `word`: "to wind" / "the wind" when two senses of the spelling
+    /// are saved, else the word.
+    public func displayName(_ word: VocabWord) -> String {
+        guard let sense = word.sense, words.contains(where: { $0.word == word.word && $0.id != word.id }) else { return word.word }
+        if sense == Sense.noun { return "the \(word.word)" }
+        if sense == Sense.homonym, let es = IrregularVerbs.shared.spanishMeaning(of: word.word, sense: sense, all: false) {
+            return "to \(word.word) (\(es))"
+        }
+        return "to \(word.word)"
     }
 
     public var lastOpened: Book? {
@@ -133,16 +216,16 @@ public protocol Storage {
 /// Books, words, reading time and settings, persisted as small JSON files;
 /// each book's text lives in its own file. Mirrors `Library` in lingleaf-android.
 public final class Library {
-    public private(set) var state = LibraryState() {
+    public internal(set) var state = LibraryState() {
         didSet { onChange?(state) }
     }
 
     /// Called after every change, e.g. to refresh the UI.
     public var onChange: ((LibraryState) -> Void)?
 
-    private let storage: Storage
-    private let now: () -> Date
-    private let calendar: Calendar
+    let storage: Storage
+    let now: () -> Date
+    let calendar: Calendar
     private let encoder: JSONEncoder = {
         let e = JSONEncoder()
         e.dateEncodingStrategy = .iso8601
@@ -170,14 +253,12 @@ public final class Library {
             book.progressParagraph = min(max(book.progressParagraph, 0), max(book.paragraphCount - 1, 0))
             return book
         }
-        // Saved before contexts were capped, or restored from a backup: cut to size.
-        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { word in
-            var word = word
-            word.context = TextTools.truncated(word.context, TextTools.maxSentence)
-            return word
-        }
+        // Saved before contexts were capped, or restored from a backup: within bounds, once per id.
+        var ids: Set<String> = []
+        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { $0.bounded() }.filter { ids.insert($0.id).inserted }
         loaded.readingLog = decode([String: Int].self, "reading-log.json") ?? [:]
         loaded.settings = (decode(Settings.self, "settings.json") ?? Settings()).bounded()
+        loaded.corrections = loadCorrections()?.corrections ?? []
         state = loaded
     }
 
@@ -267,43 +348,71 @@ public final class Library {
     /// Whether the word at `range` of `text` is a form of a word being learned, read in its
     /// sentence ("leave" marks "she left", not "turn left").
     public func isLearning(_ text: String, _ range: WordRange) -> Bool {
-        let learning = state.learningWords
-        return !learning.isEmpty && !TextTools.matchKeys(in: text, at: range).isDisjoint(with: learning)
+        learningRanges(text, TextTools.wordRanges(text)).contains(range)
     }
 
     /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,
     /// read in their sentences, in one pass over the paragraph.
     public func learningRanges(_ text: String, _ words: [WordRange]) -> Set<WordRange> {
-        let learning = state.learningWords
-        guard !learning.isEmpty else { return [] }
-        let keys = TextTools.matchKeys(in: text, words: words)
-        return Set(zip(words, keys).filter { !$0.1.isDisjoint(with: learning) }.map { $0.0 })
+        let index = state.learningIndex
+        guard !index.isEmpty else { return [] }
+        let matches = TextTools.learningMatches(in: text, words: words, index: index)
+        return Set(zip(words, matches).filter { $0.1 }.map { $0.0 })
     }
 
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.
     /// For a helper or modal verb, `word` is its verb group and `kind`/`base` say what it is.
+    /// A word read in its sentence has a `sense` (SPEC S4); one saved while its sentence didn't
+    /// tell is the tapped form with `meanings`. Saving a sense of a form saved unsure (`form`)
+    /// replaces that record, keeping its review progress (undo with `restoreWords`).
     @discardableResult
     public func saveWord(
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
         phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = "",
-        kind: FunctionWord.Kind? = nil, base: String? = nil
+        kind: FunctionWord.Kind? = nil, base: String? = nil,
+        sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil
     ) -> VocabWord? {
         let key = TextTools.normalize(word)
-        let existing = state.words.first { $0.word == key }
-        var entry = existing ?? VocabWord(
+        let sense = kind == nil ? sense.flatMap { Sense.all.contains($0) ? $0 : nil } : nil
+        let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)
+        // The same form saved unsure, now saved as one of its readings: it takes its place.
+        let unsure = sense == nil ? nil : form
+            .flatMap { state.word(TextTools.normalize($0), sense: nil) }
+            .flatMap { $0.isUnsure ? $0 : nil }
+        var entry = existing ?? unsure.map { previous in
+            var carried = VocabWord(
+                word: key, translation: "", translationLanguage: nil, phonetic: "", context: "", source: "",
+                learned: previous.learned, box: previous.box, createdAt: previous.createdAt, nextReview: previous.nextReview
+            )
+            carried.context = previous.context
+            carried.contextTranslation = previous.contextTranslation
+            carried.contextTranslationLanguage = previous.contextTranslationLanguage
+            carried.source = previous.source
+            return carried
+        } ?? VocabWord(
             word: key, translation: "", translationLanguage: nil, phonetic: "", context: "", source: "",
             learned: learned, box: 0, createdAt: now(), nextReview: now()
         )
         // A new word is first reviewed tomorrow, after a night's sleep (S7).
-        if !learned, existing == nil || existing?.learned == true {
+        if !learned, unsure == nil, existing == nil || existing?.learned == true {
             entry.box = 0
             entry.nextReview = Srs.startOfDay(1, after: now(), calendar: calendar)
         }
+        if let unsure, unsure.id != VocabWord.id(key, sense) { state.words.removeAll { $0.id == unsure.id } }
+        // A word saved before senses existed becomes this sense.
+        if let existing, existing.id != VocabWord.id(key, sense) { state.words.removeAll { $0.id == existing.id } }
         entry.learned = learned
         entry.kind = kind
         entry.base = kind == nil ? nil : base
+        entry.sense = sense
+        if kind == nil, let form {
+            entry.form = form
+            entry.formStart = formRange?.start
+            entry.formEnd = formRange?.end
+        }
+        if kind == nil, sense == nil, let meanings { entry.meanings = Array(meanings.prefix(2)) }
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             entry.translation = translation
             entry.translationLanguage = translationLanguage
@@ -327,20 +436,26 @@ public final class Library {
 
     /// Undo: puts back exactly `previous` (what `saveWord` returned, or the word
     /// before it was deleted); nil removes the word.
-    public func restoreWord(_ word: String, previous: VocabWord?) {
+    public func restoreWord(_ word: String, previous: VocabWord?, sense: String? = nil) {
         if let previous {
             replace(previous)
         } else {
-            deleteWord(TextTools.normalize(word))
+            deleteWord(TextTools.normalize(word), sense: sense)
         }
+    }
+
+    /// Undo of several changes at once: puts back exactly `words` (a copy of `state.words`).
+    public func restoreWords(_ words: [VocabWord]) {
+        state.words = words.map { $0.bounded() }
+        save(state.words, "words.json")
     }
 
     /// Records a translation that arrived after the word was saved. Does nothing
     /// when the word no longer exists, the text is blank, or the word already has
     /// a translation in that language.
-    public func setTranslation(_ word: String, _ text: String, language: String) {
-        let key = TextTools.normalize(word)
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, var entry = state.words.first(where: { $0.word == key }),
+    public func setTranslation(_ word: String, _ text: String, language: String, sense: String? = nil) {
+        let id = VocabWord.id(TextTools.normalize(word), sense)
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, var entry = state.words.first(where: { $0.id == id }),
               entry.translation.isEmpty || entry.translationLanguage != language else { return }
         entry.translation = text
         entry.translationLanguage = language
@@ -348,10 +463,10 @@ public final class Library {
     }
 
     /// Records the translation of a word's sentence that arrived after it was saved.
-    public func setContextTranslation(_ word: String, _ text: String, language: String) {
-        let key = TextTools.normalize(word)
+    public func setContextTranslation(_ word: String, _ text: String, language: String, sense: String? = nil) {
+        let id = VocabWord.id(TextTools.normalize(word), sense)
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              var entry = state.words.first(where: { $0.word == key }), !entry.context.isEmpty else { return }
+              var entry = state.words.first(where: { $0.id == id }), !entry.context.isEmpty else { return }
         entry.contextTranslation = text
         entry.contextTranslationLanguage = language
         replace(entry)
@@ -365,11 +480,13 @@ public final class Library {
     /// Words to translate into `target`: no translation yet, or one recorded in
     /// another language (or in an unknown one).
     public func wordsNeedingTranslation(_ target: String) -> [VocabWord] {
-        state.words.filter { $0.translation.isEmpty || $0.translationLanguage != target }
+        // A word saved unsure is translated by its readings (`meaningsNeedingTranslation`).
+        state.words.filter { !$0.isUnsure && ($0.translation.isEmpty || $0.translationLanguage != target) }
     }
 
-    public func answerReview(_ word: String, correct: Bool) {
-        guard var entry = state.words.first(where: { $0.word == word }) else { return }
+    public func answerReview(_ word: String, sense: String? = nil, correct: Bool) {
+        let id = VocabWord.id(word, sense)
+        guard var entry = state.words.first(where: { $0.id == id }) else { return }
         let result = Srs.review(box: entry.box, correct: correct, now: now(), calendar: calendar)
         entry.box = result.box
         entry.nextReview = result.nextReview
@@ -377,8 +494,9 @@ public final class Library {
         replace(entry)
     }
 
-    public func setLearned(_ word: String, _ learned: Bool) {
-        guard var entry = state.words.first(where: { $0.word == word }) else { return }
+    public func setLearned(_ word: String, _ learned: Bool, sense: String? = nil) {
+        let id = VocabWord.id(word, sense)
+        guard var entry = state.words.first(where: { $0.id == id }) else { return }
         entry.learned = learned
         if !learned {
             entry.box = 0
@@ -387,20 +505,20 @@ public final class Library {
         replace(entry)
     }
 
-    public func deleteWord(_ word: String) {
-        state.words.removeAll { $0.word == word }
+    public func deleteWord(_ word: String, sense: String? = nil) {
+        let id = VocabWord.id(word, sense)
+        state.words.removeAll { $0.id == id }
         save(state.words, "words.json")
     }
 
     /// A translation can be longer than its sentence; twice the sentence's limit.
     private static let maxContextTranslation = 2 * TextTools.maxSentence
 
-    private func replace(_ entry: VocabWord) {
+    func replace(_ entry: VocabWord) {
         // Every saved word passes here: whatever a caller hands in, nothing huge is kept.
-        var entry = entry
-        entry.context = TextTools.truncated(entry.context, TextTools.maxSentence)
+        var entry = entry.bounded()
         entry.contextTranslation = entry.contextTranslation.map { TextTools.truncated($0, Self.maxContextTranslation) }
-        var words = state.words.filter { $0.word != entry.word }
+        var words = state.words.filter { $0.id != entry.id }
         words.append(entry)
         state.words = words.sorted { $0.createdAt > $1.createdAt }
         save(state.words, "words.json")
@@ -430,14 +548,14 @@ public final class Library {
 
     private func saveBooks() { save(state.books, "books.json") }
 
-    private func save<T: Encodable>(_ value: T, _ name: String) {
+    func save<T: Encodable>(_ value: T, _ name: String) {
         guard let data = try? encoder.encode(value) else { return }
         storage.write(name, String(decoding: data, as: UTF8.self))
     }
 
     /// A file that exists but can't be read is kept as `<name>.corrupt` before the
     /// next save replaces it, so a damaged library or word list can be recovered.
-    private func decode<T: Decodable>(_ type: T.Type, _ name: String) -> T? {
+    func decode<T: Decodable>(_ type: T.Type, _ name: String) -> T? {
         guard let text = storage.read(name) else { return nil }
         guard JSONGuard.isShallow(Data(text.utf8)), let value = try? decoder.decode(type, from: Data(text.utf8)) else {
             storage.write("\(name).corrupt", text)

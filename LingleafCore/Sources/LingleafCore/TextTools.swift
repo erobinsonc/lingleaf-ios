@@ -273,7 +273,7 @@ public enum TextTools {
     }
 
     /// `link` (an irregular form's base), then the plural, past and -ing rules.
-    private static func candidates(_ w: String, link: String?) -> [String] {
+    static func candidates(_ w: String, link: String?) -> [String] {
         var out: [String] = []
         func add(_ candidate: String) {
             if candidate.count >= 2, candidate != w, !out.contains(candidate) { out.append(candidate) }

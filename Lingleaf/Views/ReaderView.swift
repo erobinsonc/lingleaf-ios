@@ -33,13 +33,13 @@ private struct MarkedParagraph {
 private final class LearningCache {
     private struct Entry {
         let text: String
-        let learning: Set<String>
+        let learning: LearningIndex
         let ranges: Set<WordRange>
     }
 
     private var entries: [Int: Entry] = [:]
 
-    func ranges(_ index: Int, _ text: String, _ learning: Set<String>, compute: () -> Set<WordRange>) -> Set<WordRange> {
+    func ranges(_ index: Int, _ text: String, _ learning: LearningIndex, compute: () -> Set<WordRange>) -> Set<WordRange> {
         if let entry = entries[index], entry.learning == learning, entry.text == text { return entry.ranges }
         let ranges = compute()
         entries[index] = Entry(text: text, learning: learning, ranges: ranges)
@@ -136,9 +136,10 @@ struct ReaderView: View {
             ) { message in
                 undo = message
             }
-            // With accessibility text sizes a half-height card shows almost nothing; open it full height.
-            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large], selection: $cardDetent)
-            .onAppear { cardDetent = dynamicTypeSize.isAccessibilitySize ? .large : .medium }
+            // With accessibility text sizes a half-height card shows almost nothing, and a word whose
+            // sentence doesn't tell needs its readings in view (SPEC S3): open it full height.
+            .presentationDetents(fullHeightCard(selection) ? [.large] : [.medium, .large], selection: $cardDetent)
+            .onAppear { cardDetent = fullHeightCard(selection) ? .large : .medium }
             .presentationDragIndicator(.visible)
         }
         .environment(\.openURL, OpenURLAction { url in
@@ -361,7 +362,7 @@ struct ReaderView: View {
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
-        let learningRanges = learningCache.ranges(index, text, model.state.learningWords) {
+        let learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
             model.learningRanges(text, words[index])
         }
         for range in words[index] {
@@ -467,6 +468,12 @@ struct ReaderView: View {
             paragraph: index,
             range: WordRange(start, end)
         )
+    }
+
+    private func fullHeightCard(_ selection: WordSelection) -> Bool {
+        if dynamicTypeSize.isAccessibilitySize { return true }
+        guard selection.function == nil, let range = selection.rangeInSentence else { return false }
+        return !IrregularVerbs.shared.choices(in: selection.sentence, at: range).isEmpty
     }
 
     private func startTimer() {

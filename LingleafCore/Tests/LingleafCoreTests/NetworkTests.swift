@@ -286,6 +286,25 @@ final class DictionaryTests: XCTestCase {
         XCTAssertEqual(result?.word, "leave", "as without a reading: follows \"past tense of\"")
     }
 
+    func testAReadingTakesTheMeaningOfItsPartOfSpeechWithItsEntrysIPA() async {
+        let answer = ok(#"""
+        [{"word": "wind", "phonetic": "/wɪnd/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Moving air."}]}]},
+         {"word": "wind", "phonetic": "/waɪnd/", "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To turn."}]}]}]
+        """#)
+        let client = DictionaryClient(http: ClosureFetcher { _ in answer })
+        let verb = await client.lookup("wound", reading: Reading(kind: .verb, base: "wind", step: .subject))
+        XCTAssertEqual(verb?.definition, "To turn.")
+        XCTAssertEqual(verb?.phonetic, "/waɪnd/", "the IPA of the entry the meaning is in")
+        let noun = await client.lookup("wind", reading: Reading(kind: .noun, base: "wind", step: .noun))
+        XCTAssertEqual(noun?.definition, "Moving air.")
+        let plain = await client.lookup("wind")
+        XCTAssertEqual(plain?.definition, "Moving air.", "without a reading: the first meaning")
+        XCTAssertEqual(DictionaryEntry.parseAll([["word": "x"]]).first?.definition, nil, "an entry without meanings")
+        XCTAssertTrue(DictionaryEntry.parseAll([["meanings": [[String: Any]]()]]).isEmpty, "no word: nothing")
+        let many = [[String: Any]](repeating: ["word": "x", "meanings": [["partOfSpeech": "noun"], ["partOfSpeech": "verb"]]], count: 40)
+        XCTAssertEqual(DictionaryEntry.parseAll(many).count, DictionaryEntry.maxMeanings)
+    }
+
     func testHugeAnswersAreCutToSaneLengths() async {
         let huge = String(repeating: "plural ", count: 200_000)
         let client = DictionaryClient(http: ClosureFetcher { _ in Self.entry("big", huge, phonetic: String(repeating: "x", count: 5_000)) })

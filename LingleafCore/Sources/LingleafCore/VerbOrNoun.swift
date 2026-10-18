@@ -98,7 +98,7 @@ extension IrregularVerbs {
     private static func slot(of w: String, in verb: IrregularVerb, step: Reading.Step) -> String? {
         switch step {
         case .base: w == verb.base ? "base" : nil
-        case .participle: verb.participle.contains(w) ? "participle" : nil
+        case .participle, .participleOpen: verb.participle.contains(w) ? "participle" : nil
         default: verb.past.contains(w) ? "past" : w == verb.s ? "s" : nil
         }
     }

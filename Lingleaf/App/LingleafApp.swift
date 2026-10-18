@@ -80,6 +80,8 @@ final class AppModel {
         self.autoLanguage = autoLanguage
         library.load()
         library.seedIfNeeded(Self.bundledStories)
+        // Once after updating: saved words read again against their sentences (SPEC S18).
+        library.correctWordsIfNeeded()
         self.state = library.state
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
@@ -233,16 +235,24 @@ final class AppModel {
     /// language (just saved, saved offline, or the language changed). UI tests use
     /// the fake translator; otherwise `TranslationWorker` runs `translatePending`.
     func translateMissing() {
-        guard let target = targetLanguage,
-              !library.wordsNeedingTranslation(target).isEmpty || !library.contextsNeedingTranslation(target).isEmpty else { return }
+        guard let target = targetLanguage else { return }
+        library.fillTableTranslations(target)
+        let words = library.wordsNeedingTranslation(target)
+        let contexts = library.contextsNeedingTranslation(target)
+        let meanings = library.meaningsNeedingTranslation(target)
+        guard !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         if let fakeTranslator {
-            for word in library.wordsNeedingTranslation(target) {
-                guard let text = try? fakeTranslator(word.word) else { return }
-                library.setTranslation(word.word, text, language: target)
+            for word in words {
+                guard let text = try? fakeTranslator(ReadingTranslation.source(word: word.word, sense: word.sense)) else { return }
+                library.setTranslation(word.word, Self.cleaned(text, sense: word.sense, target), language: target, sense: word.sense)
             }
-            for word in library.contextsNeedingTranslation(target) {
+            for word in contexts {
                 guard let text = try? fakeTranslator(word.context) else { return }
-                library.setContextTranslation(word.word, text, language: target)
+                library.setContextTranslation(word.word, text, language: target, sense: word.sense)
+            }
+            for meaning in meanings {
+                guard let text = try? fakeTranslator(meaning.label) else { return }
+                library.setMeaning(meaning.id, index: meaning.index, text: text, language: target)
             }
             return
         }
@@ -254,28 +264,43 @@ final class AppModel {
         }
     }
 
+    /// A word's translation without the article or "to" that came from translating its sense
+    /// as "the …" or "to …".
+    private static func cleaned(_ text: String, sense: String?, _ language: String) -> String {
+        sense == nil ? text : ReadingTranslation.cleaned(text, noun: sense == Sense.noun, language: language)
+    }
+
     /// Called by `TranslationWorker` with a session for `workerConfiguration`.
     /// Failures leave the words as they are; they are tried again the next time.
     func translatePending(using session: TranslationSession) async {
         guard let target = targetLanguage else { return }
         let language = Locale.Language(identifier: target)
-        let words = library.wordsNeedingTranslation(target)
-        let contexts = library.contextsNeedingTranslation(target)
-        guard workerConfiguration?.target == language, !words.isEmpty || !contexts.isEmpty else { return }
+        let words = Dictionary(library.wordsNeedingTranslation(target).map { ($0.id, $0) }) { first, _ in first }
+        let contexts = Dictionary(library.contextsNeedingTranslation(target).map { ($0.id, $0) }) { first, _ in first }
+        let meanings = library.meaningsNeedingTranslation(target)
+        guard workerConfiguration?.target == language, !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         // Only with the language already on the device: in the background the app
         // doesn't ask to download it (the word card does).
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
-        // A saved sentence is told apart from its word by a prefix on the identifier.
-        let requests = words.map { TranslationSession.Request(sourceText: $0.word, clientIdentifier: $0.word) }
-            + contexts.map { TranslationSession.Request(sourceText: $0.context, clientIdentifier: "context:\($0.word)") }
+        // A saved sentence and a reading are told apart from the word by a prefix on the identifier.
+        let wordRequests = words.values.map { word in
+            let source = ReadingTranslation.source(word: word.word, sense: word.sense)
+            return TranslationSession.Request(sourceText: source, clientIdentifier: "word:\(word.id)")
+        }
+        let requests = wordRequests
+            + contexts.values.map { TranslationSession.Request(sourceText: $0.context, clientIdentifier: "context:\($0.id)") }
+            + meanings.enumerated().map { TranslationSession.Request(sourceText: $1.label, clientIdentifier: "meaning:\($0)") }
         guard let responses = try? await session.translations(from: requests) else { return }
         for response in responses {
             guard let id = response.clientIdentifier else { continue }
-            if id.hasPrefix("context:") {
-                library.setContextTranslation(String(id.dropFirst("context:".count)), response.targetText, language: target)
-            } else {
-                library.setTranslation(id, response.targetText, language: target)
+            if id.hasPrefix("context:"), let word = contexts[String(id.dropFirst("context:".count))] {
+                library.setContextTranslation(word.word, response.targetText, language: target, sense: word.sense)
+            } else if id.hasPrefix("word:"), let word = words[String(id.dropFirst("word:".count))] {
+                let text = Self.cleaned(response.targetText, sense: word.sense, target)
+                library.setTranslation(word.word, text, language: target, sense: word.sense)
+            } else if id.hasPrefix("meaning:"), let index = Int(id.dropFirst("meaning:".count)), meanings.indices.contains(index) {
+                library.setMeaning(meanings[index].id, index: meanings[index].index, text: response.targetText, language: target)
             }
         }
     }
