@@ -17,7 +17,7 @@ jobs:
     name: Core logic (tests, coverage ≥90%)
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Test
         run: swift test --package-path LingleafCore --enable-code-coverage
       - name: Coverage gate (Sources only, ≥90% of lines)
@@ -39,7 +39,7 @@ jobs:
     name: App (SwiftLint, build, UI + accessibility tests)
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/use-xcode-26
       - name: Install tools
         run: brew install xcodegen swiftlint
@@ -92,7 +92,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/download-artifact@v4
