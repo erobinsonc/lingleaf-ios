@@ -63,9 +63,8 @@ final class SensesTests: XCTestCase {
         XCTAssertEqual(table.sense(of: Reading(kind: .noun, base: "left", step: .fixed)), Sense.noun)
         XCTAssertNil(table.sense(of: Reading(kind: .noun, base: "rose", step: .name)), "a name is no sense")
         XCTAssertNil(table.sense(of: Reading(kind: .unsure, base: "left", step: .unsure)))
-        XCTAssertEqual(table.linkSense("lied"), Sense.homonym)
-        XCTAssertNil(table.linkSense("lying"), "both verbs")
-        XCTAssertEqual(table.linkSense("stolen"), Sense.verb)
+        XCTAssertEqual(table.sense(of: Reading(kind: .homonym, base: "lie", step: .table)), Sense.homonym)
+        XCTAssertNil(table.sense(of: Reading(kind: .word, base: "lights", step: .ordinary)), "an ordinary word has no sense")
     }
 
     // MARK: Listen (S6)
@@ -94,7 +93,8 @@ final class SensesTests: XCTestCase {
         library.saveWord("wind", learned: false, sense: Sense.noun)
         XCTAssertEqual(marked(library, "The wind was cold. She wound the clock. The winds blew."), ["wind", "winds"])
         library.saveWord("wind", learned: false, sense: Sense.verb)
-        XCTAssertEqual(marked(library, "She wound the clock. A winding road."), ["wound", "winding"])
+        XCTAssertEqual(marked(library, "She wound the clock. A winding road. She is winding it."), ["wound", "winding"],
+                       "an -s or -ing form only where its sentence proves the verb")
         library.deleteWord("wind", sense: Sense.noun)
         XCTAssertEqual(marked(library, "The wind was cold."), [], "only the verb is left")
         library.saveWord("leaf", learned: false, sense: Sense.noun)
@@ -102,7 +102,9 @@ final class SensesTests: XCTestCase {
         library.saveWord("left", learned: false, sense: Sense.noun)
         XCTAssertEqual(marked(library, "Turn left. He left early. Left is the answer."), ["left"], "unsure marks no sense")
         library.saveWord("lie", learned: false, sense: Sense.homonym)
-        XCTAssertEqual(marked(library, "He lied. She is lying. They lay down."), ["lied", "lying"])
+        XCTAssertEqual(marked(library, "He lied. She is lying. He is lying to me. She is lying down. They lay down."), ["lied", "lying"])
+        library.saveWord("tear", learned: false, sense: Sense.noun)
+        XCTAssertEqual(marked(library, "Tears fell. Her tears fell."), ["tears"], "unsure marks no sensed word, even with one base")
     }
 
     func testAWordSavedUnsureMarksItsSpellingEverywhere() {
@@ -140,6 +142,7 @@ final class SensesTests: XCTestCase {
     }
 
     func testOneSpellingIsSavedOncePerSenseAndNamedByIt() {
+        storage.files["settings.json"] = #"{"targetLanguage": "es"}"#
         let library = library()
         library.saveWord("wind", learned: false, sense: Sense.noun)
         XCTAssertEqual(library.state.displayName(library.state.words[0]), "wind", "alone: as today")
@@ -149,8 +152,14 @@ final class SensesTests: XCTestCase {
         let names = Set(library.state.words.map(library.state.displayName))
         XCTAssertEqual(names, ["to wind", "the wind"])
         library.saveWord("lie", learned: false, sense: Sense.verb)
+        XCTAssertEqual(library.state.displayName(library.state.word("lie", sense: Sense.verb)!), "lie", "one sense: as today")
         library.saveWord("lie", learned: false, sense: Sense.homonym)
-        XCTAssertTrue(library.state.words.map(library.state.displayName).contains("to lie (mentir)"))
+        let lies = Set(library.state.words.filter { $0.word == "lie" }.map(library.state.displayName))
+        XCTAssertEqual(lies, ["to lie (estar acostado, tumbarse)", "to lie (mentir)"], "two verb senses: their first meaning")
+        library.updateSettings { $0.targetLanguage = "pt" }
+        library.setTranslation("lie", "mentir (pt)", language: "pt", sense: Sense.homonym)
+        let translated = Set(library.state.words.filter { $0.word == "lie" }.map(library.state.displayName))
+        XCTAssertEqual(translated, ["to lie", "to lie (mentir (pt))"], "another language: the translated meaning, when there is one")
         library.saveWord("odd", learned: false, sense: "colour")
         XCTAssertNil(library.state.word("odd")?.sense, "an unknown sense is not kept")
     }
@@ -195,10 +204,10 @@ final class SensesTests: XCTestCase {
             label: String(repeating: "a", count: 99), sense: Sense.noun, base: "left",
             text: String(repeating: "b", count: 999), language: String(repeating: "c", count: 30)
         ).bounded()
-        XCTAssertEqual(long?.label.count, SavedMeaning.maxLabel)
+        XCTAssertEqual(long?.label, "the left", "the label is made from the sense and base, never read from the file")
         XCTAssertEqual(long?.text.count, SavedMeaning.maxText)
         XCTAssertNil(long?.language)
-        XCTAssertNil(SavedMeaning(label: " ", sense: Sense.noun, base: "left", text: "", language: nil).bounded())
+        XCTAssertEqual(SavedMeaning(label: "x", sense: Sense.homonym, base: "lie", text: "", language: nil).bounded()?.label, "to lie")
         XCTAssertNil(SavedMeaning(label: "x", sense: Sense.noun, base: "Left", text: "", language: nil).bounded())
     }
 
@@ -266,6 +275,11 @@ final class SensesTests: XCTestCase {
         let left = try XCTUnwrap(library.state.word("left", sense: Sense.noun))
         XCTAssertEqual(left.translation, "", "translated again")
         XCTAssertEqual(left.nextReview, now, "due now")
+        XCTAssertEqual(left.box, 0, "it starts its review again")
+        XCTAssertEqual(left.waitsForMeaning, true)
+        XCTAssertFalse(library.dueWords().contains { $0.id == left.id }, "not due until it has a meaning")
+        library.setTranslation("left", "izquierda", language: "es", sense: Sense.noun)
+        XCTAssertTrue(library.dueWords().contains { $0.id == left.id }, "due once its meaning arrives")
         XCTAssertEqual(left.formRange, WordRange(5, 9))
         XCTAssertEqual(library.state.word("live", sense: Sense.verb)?.form, "lives", "Tom lives: now a certain verb")
         XCTAssertEqual(library.state.word("feel")?.translation, "sentir", "read the same in its sentence: unchanged")
@@ -277,6 +291,7 @@ final class SensesTests: XCTestCase {
         library.saveWord("new", learned: false)
         library.undoCorrections()
         XCTAssertEqual(Set(library.state.words.map(\.id)), Set(before.map(\.id) + ["new"]), "all back; a word saved since stays")
+        XCTAssertEqual(library.state.word("leave")?.box, before.first { $0.id == "leave" }?.box, "with its review box")
         XCTAssertTrue(library.state.corrections.isEmpty)
         library.closeCorrections()
         library.undoCorrections()
@@ -305,5 +320,121 @@ final class SensesTests: XCTestCase {
         library.correctWordsIfNeeded()
         XCTAssertEqual(library.state.words.map(\.id), ["left#noun"])
         XCTAssertEqual(library.state.words.first?.translation, "izquierda", "the one saved stays")
+    }
+
+    func testUndoPutsBackOnlyWhatTheCorrectionChanged() throws {
+        let library = library()
+        library.saveWord("left", learned: false, translation: "izquierda", context: "She left early.")
+        library.saveWord("leave", learned: false, translation: "irse", context: "Some left.")
+        library.saveWord("cat", learned: false, translation: "gato", context: "The cat sat.")
+        library.saveWord("see", learned: false, translation: "ver", context: "The old man saw it.")
+        let before = library.state.words
+        let corrections = library.correctWordsIfNeeded()
+        XCTAssertEqual(Set(corrections), [Correction(from: "left", to: "leave"), Correction(from: "leave", to: "left")])
+        XCTAssertNotNil(library.state.word("leave", sense: Sense.verb), "She left: the verb")
+        XCTAssertEqual(library.state.word("left", sense: nil)?.isUnsure, true, "Some left: unsure, the tapped form")
+        // Review after the correction: an uncorrected word keeps its progress through Undo.
+        library.answerReview("cat", correct: true)
+        let cat = try XCTUnwrap(library.state.word("cat"))
+        library.undoCorrections()
+        XCTAssertEqual(library.state.word("left", sense: nil), before.first { $0.id == "left" }, "both originals back, by id")
+        XCTAssertEqual(library.state.word("leave", sense: nil), before.first { $0.id == "leave" })
+        XCTAssertNil(library.state.word("leave", sense: Sense.verb))
+        XCTAssertEqual(library.state.word("cat"), cat, "progress made since stays")
+    }
+
+    func testUndoLeavesAWordReviewedOrDeletedSinceAsItIsNow() throws {
+        let library = library()
+        library.saveWord("leave", learned: false, translation: "irse", context: "Turn left now.")
+        library.saveWord("feel", learned: false, translation: "sentir", context: "She wore a felt hat.")
+        library.correctWordsIfNeeded()
+        library.setTranslation("left", "izquierda", language: "es", sense: Sense.noun)
+        library.answerReview("left", sense: Sense.noun, correct: true)
+        let reviewed = try XCTUnwrap(library.state.word("left", sense: Sense.noun))
+        library.deleteWord("felt", sense: Sense.noun)
+        library.undoCorrections()
+        XCTAssertEqual(library.state.word("left", sense: Sense.noun), reviewed, "reviewed since: it stays")
+        XCTAssertNil(library.state.word("leave"), "and the old one doesn't come back over it")
+        XCTAssertNil(library.state.word("feel"), "deleted since: not brought back")
+    }
+
+    func testAWordChangedWhileCorrectionsRanIsLeftAlone() {
+        let library = library()
+        library.saveWord("leave", learned: false, context: "Turn left now.")
+        let words = library.beginCorrections() ?? []
+        XCTAssertNil(library.beginCorrections(), "the flag is written before anything is read")
+        let planned = Library.plannedCorrections(words, target: nil, now: now)
+        XCTAssertEqual(planned.count, 1)
+        library.saveWord("leave", learned: true, context: "Turn left now.")
+        XCTAssertTrue(library.applyCorrections(planned).isEmpty, "changed meanwhile: left as it is")
+        XCTAssertEqual(library.state.word("leave")?.learned, true)
+    }
+
+    func testACorrectedVerbGetsTheTablesMeaningAndIPAAndAnotherLinkKeepsAWord() throws {
+        storage.files["settings.json"] = #"{"targetLanguage": "es"}"#
+        let library = library()
+        library.saveWord("wound", learned: true, context: "She wound the clock.")
+        library.saveWord("leave", learned: false, context: "He left, and she was leaving too.")
+        library.correctWordsIfNeeded()
+        let wind = try XCTUnwrap(library.state.word("wind", sense: Sense.verb))
+        XCTAssertEqual(wind.phonetic, "/waɪnd/")
+        XCTAssertEqual(wind.translation, "enrollar, dar cuerda · serpentear")
+        XCTAssertTrue(wind.learned, "a known word stays known")
+        XCTAssertNotNil(library.state.word("leave"), "leaving still leads to it: left as it is")
+    }
+
+    func testRestoredCorrectionsAreBoundedOnLoad() throws {
+        func word(_ name: String, _ date: String) -> String {
+            """
+            {"word": "\(name)", "translation": "", "phonetic": "", "context": "", "source": "", "learned": false, "box": 2,
+             "createdAt": "\(date)", "nextReview": "\(date)"}
+            """
+        }
+        storage.files["corrections.json"] = """
+        {"corrections": [{"from": "\(String(repeating: "a", count: 99))", "to": "b\u{202E}"}],
+         "changes": [{"before": \(word("ok", "2026-10-01T00:00:00Z")), "after": \(word("ok2", "2026-10-01T00:00:00Z"))},
+                     {"before": \(word("old", "1990-01-01T00:00:00Z"))},
+                     {"before": \(word("ok3", "2026-10-01T00:00:00Z")), "after": \(word("bad", "2200-01-01T00:00:00Z"))}]}
+        """
+        let library = library()
+        let correction = try XCTUnwrap(library.state.corrections.first)
+        XCTAssertEqual(correction.from.count, 40)
+        XCTAssertEqual(correction.to, "b", "no invisible formatting")
+        XCTAssertEqual(library.loadCorrections()?.changes.map(\.before.word), ["ok"], "out-of-range dates refused")
+    }
+
+    func testListenInReviewSaysAVerbWithItsSpokenBase() {
+        XCTAssertEqual(table.spokenHeadword("wind", sense: Sense.verb), "wined")
+        XCTAssertEqual(table.spokenHeadword("wind", sense: Sense.noun), "wind")
+        XCTAssertEqual(table.spokenHeadword("tear", sense: Sense.verb), "tare")
+        XCTAssertEqual(table.spokenHeadword("tear", sense: nil), "tear")
+        XCTAssertEqual(table.spokenHeadword("sow", sense: Sense.verb), "so")
+        XCTAssertEqual(table.spokenHeadword("steal", sense: Sense.verb), "steal")
+    }
+
+    func testLayAfterAPluralSubjectOffersTwoVerbs() {
+        let text = "Two men lay bricks."
+        XCTAssertEqual(table.choices(in: text, at: range("lay", in: text)).map(\.label), ["to lie", "to lay"])
+        let lying = "She is lying."
+        let rows = table.choices(in: lying, at: range("lying", in: lying))
+        XCTAssertEqual(rows.map(\.label), ["to lie", "to lie"], "the verb and its twin")
+        XCTAssertEqual(rows.map(\.sense), [Sense.verb, Sense.homonym])
+        XCTAssertEqual(table.spanishMeaning(of: "lie", sense: rows[1].sense, all: false), "mentir")
+    }
+
+    func testNoFormInTheBundledStoriesGetsATableMeaningAgainstItsSentence() throws {
+        struct Case: Decodable {
+            let source: String, sentence: String, word: String, expectedBase: String, expectedVerb: Bool
+        }
+        struct Corpus: Decodable { let cases: [Case] }
+        let url = try XCTUnwrap(Bundle.module.url(forResource: "homograph-corpus", withExtension: "json"))
+        let stories = try JSONDecoder().decode(Corpus.self, from: Data(contentsOf: url)).cases.filter { $0.source == "stories" }
+        XCTAssertFalse(stories.isEmpty)
+        for story in stories where !story.expectedVerb {
+            let range = range(story.word, in: story.sentence)
+            let base = table.base(in: story.sentence, at: range)
+            XCTAssertTrue(base == nil || table.homographs[TextTools.normalize(story.word)]?.noun == base,
+                          "\(story.sentence) [\(story.word)]: a verb's meaning for a word that isn't one (\(base ?? ""))")
+        }
     }
 }

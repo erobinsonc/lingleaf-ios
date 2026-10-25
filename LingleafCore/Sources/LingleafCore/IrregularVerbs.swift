@@ -67,9 +67,9 @@ public struct IrregularVerbs: Sendable {
     let llBases: Set<String>
     /// Past forms that are not also a base or a homograph ("shone", "told", "went"): a finite verb.
     let pastForms: Set<String>
-    /// Forms only of a verb's regular homonym ("lied", "hanged"), and forms of both ("lying", "lies").
-    let homonymOnlyForms: Set<String>
-    let sharedHomonymForms: Set<String>
+    /// Every form of the table that is not a base or a homograph, and what it is (SPEC.md, "Other
+    /// forms of the table"): a past or participle (certain), or an -s or -ing form a step must prove.
+    let tableForms: [String: TableForm]
     private let verbsByBase: [String: IrregularVerb]
 
     /// An empty table.
@@ -100,16 +100,24 @@ public struct IrregularVerbs: Sendable {
         participleHelpers = context.haveAndBe.filter { !getForms.contains($0) && !$0.hasSuffix("'d") }
         self.llBases = Set(llBases)
         pastForms = Set(verbs.flatMap(\.past)).subtracting(bases).filter { byForm[$0] == nil }
-        var homonymOnly: Set<String> = [], shared: Set<String> = []
+        var forms: [String: TableForm] = [:]
         for verb in verbs {
-            guard let homonym = verb.homonym else { continue }
-            let own = Set(verb.past + verb.participle + [verb.ing, verb.s] + verb.present)
-            for form in homonym.past + homonym.participle + [homonym.ing, homonym.s] {
-                if own.contains(form) { shared.insert(form) } else { homonymOnly.insert(form) }
+            let homonym = verb.homonym
+            var slots: [(String, TableForm.Kind, String)] = (verb.past + verb.participle + verb.present)
+                .map { ($0, TableForm.Kind.certain, Sense.verb) }
+            slots += [(verb.s, TableForm.Kind.s, Sense.verb), (verb.ing, TableForm.Kind.ing, Sense.verb)]
+            if let homonym {
+                let own = verb.past + verb.participle
+                slots += (homonym.past + homonym.participle).filter { !own.contains($0) }
+                    .map { ($0, TableForm.Kind.certain, Sense.homonym) }
+            }
+            for (form, kind, sense) in slots where form != verb.base && byForm[form] == nil {
+                if let existing = forms[form], existing.kind == .certain || kind != .certain { continue }
+                let sharesHomonym = homonym != nil && kind != .certain && (form == homonym?.s || form == homonym?.ing)
+                forms[form] = TableForm(base: verb.base, kind: kind, sense: sense, shared: sharesHomonym ? homonym : nil)
             }
         }
-        homonymOnlyForms = homonymOnly
-        sharedHomonymForms = shared
+        tableForms = forms
     }
 
     /// The verb whose base is `base`, for its forms, meanings and spoken forms.
@@ -129,15 +137,13 @@ public struct IrregularVerbs: Sendable {
         return base(words, i)
     }
 
-    /// `base(in:at:)` for word `i` of `words`.
+    /// `base(in:at:)` for word `i` of `words`: a homograph's or another form's certain or proven
+    /// reading, never an unsure one, a name or an ordinary word ("the lights").
     func base(_ words: Words, _ i: Int) -> String? {
         let w = words.token(i)
-        if homographs[w] != nil {
-            guard let reading = resolve(words, i), reading.kind != .unsure, reading.base != w else { return nil }
-            return reading.base
-        }
-        guard let base = formToBase[w], !isName(words, i) else { return nil }
-        return base
+        guard let reading = resolve(words, i), reading.kind != .unsure, reading.base != w else { return nil }
+        if homographs[w] != nil { return reading.base }
+        return reading.isVerb ? reading.base : nil
     }
 
     // MARK: Loading
@@ -181,6 +187,7 @@ public struct IrregularVerbs: Sendable {
             if let homonym = verb.homonym {
                 try check(Self.isFormList(homonym.past) && Self.isFormList(homonym.participle), "\(verb.base): homonym forms")
                 try check(Self.isMeanings(homonym.es), "\(verb.base): homonym meanings")
+                try check(homonym.homonymBefore.union(homonym.verbBefore).allSatisfy(Self.isForm), "\(verb.base): homonym next words")
             }
             // A form leads to one base, and is no other verb's base, unless context decides (homographs).
             for form in verb.forms where form != verb.base && homographs[form] == nil {
@@ -239,8 +246,9 @@ public struct IrregularVerbs: Sendable {
             && s.precomposedStringWithCanonicalMapping.unicodeScalars.elementsEqual(s.unicodeScalars)
     }
 
-    private static func isText(_ s: String) -> Bool {
-        !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && s.count <= maxText
+    static func isText(_ s: String) -> Bool {
+        // Code points, as on Android: a combining mark counts.
+        !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && s.unicodeScalars.count <= maxText
             && !s.unicodeScalars.contains { $0.properties.generalCategory == .control || $0.properties.generalCategory == .format }
     }
 }
@@ -284,6 +292,10 @@ public struct IrregularVerb: Equatable, Sendable {
         public let participle: [String]
         public let ing: String
         public let s: String
+        /// The next words that make a shared form ("lying", "hangs") the homonym ("lying to") or
+        /// the verb ("lying on").
+        public let homonymBefore: Set<String>
+        public let verbBefore: Set<String>
     }
 
     /// Every form: past, participle, -ing, -s, present forms and the homonym's (may repeat the base).
@@ -292,6 +304,23 @@ public struct IrregularVerb: Equatable, Sendable {
         if let homonym { out += homonym.past + homonym.participle + [homonym.ing, homonym.s] }
         return out
     }
+}
+
+/// A form of the table that is not a base or a homograph ("tore", "lights", "lying").
+struct TableForm: Sendable {
+    enum Kind: Sendable {
+        /// A past or participle (and am, are): always that verb.
+        case certain
+        case s
+        case ing
+    }
+
+    let base: String
+    let kind: Kind
+    /// `Sense.verb`, or `Sense.homonym` for a form only of the regular twin ("lied").
+    let sense: String
+    /// The homonym whose -s or -ing form this also is ("lies", "lying"): the next word tells which.
+    let shared: IrregularVerb.Homonym?
 }
 
 /// A pattern group ("think · thought · thought").
@@ -339,6 +368,7 @@ struct Context: Sendable {
         "lieAfter", "conjunctions", "notNames", "objectStarts", "layTime", "boundAdjective",
         "sFormNext", "notNameStarts", "nameOrPlant", "pluralNouns", "notPlural", "quantifiers",
         "quantifiersBeforeDeterminer", "quantifiersBeforeOf", "finiteVerbs", "participleOpenNext",
+        "sSubjects", "beForms", "ingAfter",
     ]
 
     private let lists: [String: Set<String>]
@@ -347,6 +377,7 @@ struct Context: Sendable {
     let lieAfter, conjunctions, notNames, objectStarts, layTime, boundAdjective: Set<String>
     let sFormNext, notNameStarts, nameOrPlant, pluralNouns, notPlural, quantifiers: Set<String>
     let quantifiersBeforeDeterminer, quantifiersBeforeOf, finiteVerbs, participleOpenNext: Set<String>
+    let sSubjects, beForms, ingAfter: Set<String>
     /// Words that can't be the noun of a subject ("the finest felt" aside): function words and listed adjectives.
     let closed: Set<String>
     /// `closed` and the adjectives only listed before plurals: words that can't head a noun phrase.
@@ -385,6 +416,9 @@ struct Context: Sendable {
         quantifiersBeforeOf = list("quantifiersBeforeOf")
         finiteVerbs = list("finiteVerbs")
         participleOpenNext = list("participleOpenNext")
+        sSubjects = list("sSubjects")
+        beForms = list("beForms")
+        ingAfter = list("ingAfter")
         closed = determiners.union(pluralDeterminers).union(adjectives).union(subjects).union(notNames).union(skip)
             .union(prepositions).union(toAndModals).union(haveAndBe).union(conjunctions)
         nounClosed = closed.union(pluralAdjectives)
@@ -487,12 +521,16 @@ extension IrregularVerb: Decodable {
 
 extension IrregularVerb.Homonym: Decodable {
     public init(from decoder: Decoder) throws {
-        let c = try decoder.strict(["es", "past", "participle", "ing", "s"])
+        let c = try decoder.strict(["es", "past", "participle", "ing", "s"], optional: ["homonymBefore", "verbBefore"])
         es = try c.value("es")
         past = try c.value("past")
         participle = try c.value("participle")
         ing = try c.value("ing")
         s = try c.value("s")
+        let homonymNext: [String] = try c.optional("homonymBefore") ?? []
+        let verbNext: [String] = try c.optional("verbBefore") ?? []
+        homonymBefore = Set(homonymNext)
+        verbBefore = Set(verbNext)
     }
 }
 

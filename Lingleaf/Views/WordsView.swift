@@ -118,7 +118,10 @@ private struct WordRow: View {
                     Text(verbatim: detail.joined(separator: " · "))
                         .font(.caption).foregroundStyle(Brand.secondaryText)
                 }
-                if !word.translation.isEmpty { Text(word.translation) }
+                if !word.translation.isEmpty {
+                    // A word saved unsure: its readings' meanings, isolated like the card's rows.
+                    Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: word.isUnsure))
+                }
                 // A verb group saved without one is the sentence itself: not twice.
                 if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
                     Text(word.context).font(.caption).italic().foregroundStyle(Brand.secondaryText)
@@ -130,7 +133,8 @@ private struct WordRow: View {
             .accessibilityElement(children: .combine)
             Spacer()
             Button {
-                model.speaker.speak(word.word, rate: model.state.settings.speechRate)
+                let spoken = word.kind == nil ? IrregularVerbs.shared.spokenHeadword(word.word, sense: word.sense) : word.word
+                model.speaker.speak(spoken, rate: model.state.settings.speechRate)
             } label: {
                 Label { Text("Listen to \(word.word)") } icon: { Image(systemName: "speaker.wave.2") }.labelStyle(.iconOnly)
                     .frame(minWidth: 44, minHeight: 44)

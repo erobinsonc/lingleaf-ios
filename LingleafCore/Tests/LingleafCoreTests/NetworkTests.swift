@@ -203,12 +203,14 @@ final class GutenbergTests: XCTestCase {
 }
 
 final class DictionaryTests: XCTestCase {
-    private static func entry(_ word: String, _ definition: String, phonetic: String? = nil) -> HttpResponse {
+    private static func entry(
+        _ word: String, _ definition: String, phonetic: String? = nil, partOfSpeech: String = "noun"
+    ) -> HttpResponse {
         let phoneticField = phonetic.map { #""phonetic": "\#($0)","# } ?? ""
         return ok(#"""
         [{"word": "\#(word)", \#(phoneticField)
           "phonetics": [{"audio": ""}, {"text": "/\#(word)/"}],
-          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "\#(definition)"}]}]}]
+          "meanings": [{"partOfSpeech": "\#(partOfSpeech)", "definitions": [{"definition": "\#(definition)"}]}]}]
         """#)
     }
 
@@ -244,17 +246,17 @@ final class DictionaryTests: XCTestCase {
     }
 
     /// A client answering from `entries` (word → definition), recording what it asked for.
-    private static func client(_ entries: [String: String], _ recorder: Recorder) -> DictionaryClient {
+    private static func client(_ entries: [String: String], _ recorder: Recorder, verbs: Set<String> = []) -> DictionaryClient {
         DictionaryClient(http: ClosureFetcher { url in
             let word = String(url.split(separator: "/").last ?? "")
             await recorder.add(word)
-            return entries[word].map { Self.entry(word, $0) } ?? notFound
+            return entries[word].map { Self.entry(word, $0, partOfSpeech: verbs.contains(word) ? "verb" : "noun") } ?? notFound
         })
     }
 
     func testAVerbReadingLooksItsBaseUpFirst() async {
         let recorder = Recorder()
-        let client = Self.client(["steal": "To take without permission.", "stole": "A long scarf."], recorder)
+        let client = Self.client(["steal": "To take without permission.", "stole": "A long scarf."], recorder, verbs: ["steal"])
         let result = await client.lookup("stole", reading: Reading(kind: .verb, base: "steal", step: .subject))
         XCTAssertEqual(result?.word, "steal")
         let requested = await recorder.urls
@@ -302,7 +304,79 @@ final class DictionaryTests: XCTestCase {
         XCTAssertEqual(DictionaryEntry.parseAll([["word": "x"]]).first?.definition, nil, "an entry without meanings")
         XCTAssertTrue(DictionaryEntry.parseAll([["meanings": [[String: Any]]()]]).isEmpty, "no word: nothing")
         let many = [[String: Any]](repeating: ["word": "x", "meanings": [["partOfSpeech": "noun"], ["partOfSpeech": "verb"]]], count: 40)
-        XCTAssertEqual(DictionaryEntry.parseAll(many).count, DictionaryEntry.maxMeanings)
+        XCTAssertEqual(DictionaryEntry.parseAll(many).count, DictionaryEntry.maxEntries * 2, "10 entries of at most 10 meanings")
+        let meanings = [[String: Any]](repeating: ["partOfSpeech": "noun"], count: 20)
+        let wide: [[String: Any]] = [["word": "x", "meanings": meanings]]
+        XCTAssertEqual(DictionaryEntry.parseAll(wide).count, DictionaryEntry.maxMeanings)
+    }
+
+    /// Answers shaped like dictionaryapi.dev's (Wiktionary): one entry per pronunciation, each
+    /// with meanings of several parts of speech.
+    private static let fixtures: [String: String] = [
+        "wind": #"""
+        [{"word": "wind", "phonetic": "/wɪnd/", "phonetics": [{"text": "/wɪnd/", "audio": ""}],
+          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Real or perceived movement of atmospheric air."}]},
+                       {"partOfSpeech": "verb", "definitions": [{"definition": "To blow air through a wind instrument."}]}]},
+         {"word": "wind", "phonetic": "/waɪnd/", "phonetics": [{"text": "/waɪnd/", "audio": ""}],
+          "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To turn coils of something around something else."}]},
+                       {"partOfSpeech": "noun", "definitions": [{"definition": "The act of winding or turning."}]}]}]
+        """#,
+        "tear": #"""
+        [{"word": "tear", "phonetic": "/tɪɹ/", "phonetics": [{"text": "/tɪɹ/"}],
+          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "A drop of clear, salty liquid from the eye."}]},
+                       {"partOfSpeech": "verb", "definitions": [{"definition": "To produce tears."}]}]},
+         {"word": "tear", "phonetics": [{"text": "/tɛɹ/"}],
+          "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To pull apart or into pieces."}]},
+                       {"partOfSpeech": "noun", "definitions": [{"definition": "A hole or break caused by tearing."}]}]}]
+        """#,
+        "lead": #"""
+        [{"word": "lead", "phonetic": "/liːd/",
+          "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To guide or conduct."}]},
+                       {"partOfSpeech": "noun", "definitions": [{"definition": "The front or winning position."}]}]},
+         {"word": "lead", "phonetic": "/lɛd/",
+          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "A heavy, pliable metal."}]}]}]
+        """#,
+        "lie": #"""
+        [{"word": "lie", "phonetic": "/laɪ/",
+          "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To rest in a horizontal position."}]},
+                       {"partOfSpeech": "noun", "definitions": [{"definition": "The way something lies."}]}]},
+         {"word": "lie", "phonetic": "/laɪ/",
+          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "An intentionally false statement."}]},
+                       {"partOfSpeech": "verb", "definitions": [{"definition": "To give false information intentionally."}]}]}]
+        """#,
+        "bear": #"""
+        [{"word": "bear", "phonetic": "/bɛɹ/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "A large mammal."}]}]},
+         {"word": "bear", "phonetic": "/bɛɹ/",
+          "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To carry something."}]}]}]
+        """#,
+    ]
+
+    func testAReadingTakesTheEntryPronouncedAsTheTableSaysAndNeverAnotherPartOfSpeech() async {
+        let client = DictionaryClient(http: ClosureFetcher { url in
+            Self.fixtures[String(url.split(separator: "/").last ?? "")].map(ok) ?? notFound
+        })
+        func definition(_ word: String, _ kind: Reading.Kind, _ base: String) async -> String? {
+            await client.lookup(word, reading: Reading(kind: kind, base: base, step: .subject))?.definition
+        }
+        let windVerb = await definition("wound", .verb, "wind")
+        XCTAssertEqual(windVerb, "To turn coils of something around something else.", "/waɪnd/, the table's IPA")
+        let windNoun = await definition("wind", .noun, "wind")
+        XCTAssertEqual(windNoun, "Real or perceived movement of atmospheric air.")
+        let tearVerb = await definition("tore", .verb, "tear")
+        XCTAssertEqual(tearVerb, "To pull apart or into pieces.", "/tɛɹ/ is the table's /tɛr/")
+        let leadVerb = await definition("led", .verb, "lead")
+        XCTAssertEqual(leadVerb, "To guide or conduct.")
+        let lieVerb = await definition("lay", .verb, "lie")
+        XCTAssertEqual(lieVerb, "To rest in a horizontal position.")
+        let lieTwin = await definition("lied", .homonym, "lie")
+        XCTAssertNil(lieTwin, "the regular twin's sense has no definition")
+        let bearVerb = await definition("bore", .verb, "bear")
+        XCTAssertEqual(bearVerb, "To carry something.")
+        let nothing = DictionaryClient(http: ClosureFetcher { _ in Self.entry("light", "Brightness.") })
+        let noVerb = await nothing.lookup("lit", reading: Reading(kind: .verb, base: "light", step: .table))
+        XCTAssertNil(noVerb, "no verb meaning: none, not the noun's")
+        XCTAssertEqual(DictionaryClient.bareIPA("/ˈwaɪnd/"), "waɪnd")
+        XCTAssertEqual(DictionaryClient.bareIPA("[tɛɹ]"), "tɛr")
     }
 
     func testHugeAnswersAreCutToSaneLengths() async {

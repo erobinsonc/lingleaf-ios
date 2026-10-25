@@ -89,10 +89,32 @@ final class VerbOrNounTests: XCTestCase {
         assertReading("bit", "The funny bit was long.", .unsure, "bit", .unsure, "bit needs an object word after it")
     }
 
+    func testOtherFormsOfTheTable() {
+        assertReading("tore", "She tore it.", .verb, "tear", .table)
+        assertReading("lied", "He lied.", .homonym, "lie", .table)
+        assertReading("hanged", "They hanged him.", .homonym, "hang", .table)
+        assertReading("Drew", "I met Uncle Drew today.", .noun, "drew", .name)
+        assertReading("Drew", "Drew a line.", .verb, "draw", .table, "the first word: not a name")
+        assertReading("lights", "The lights were on.", .word, "lights", .ordinary)
+        assertReading("lights", "The sun lights the room.", .verb, "light", .sSubject)
+        assertReading("runs", "Tom runs home.", .verb, "run", .sSubject)
+        assertReading("says", "\"Look!\" says Tom.", .verb, "say", .quote)
+        assertReading("winding", "She is winding the clock.", .verb, "wind", .ing)
+        assertReading("winding", "A winding road.", .word, "winding", .ordinary)
+        assertReading("meeting", "The meeting ended.", .word, "meeting", .ordinary)
+        assertReading("lying", "He is lying to me.", .homonym, "lie", .sense)
+        assertReading("lying", "She is lying down.", .verb, "lie", .sense)
+        assertReading("hangs", "It hangs on the wall.", .verb, "hang", .sense)
+        assertReading("lying", "She is lying.", .unsure, "lying", .unsure, "the next word doesn't tell")
+        XCTAssertTrue(Reading(kind: .homonym, base: "lie", step: .table).isVerb)
+        XCTAssertFalse(Reading(kind: .word, base: "lights", step: .ordinary).isVerb)
+    }
+
     func testFixedPhrasesAndBound() {
         assertReading("left", "He looked right and left.", .noun, "left", .fixed)
         assertReading("left", "He looked left and right.", .noun, "left", .fixed)
         assertReading("bound", "The ship was bound for Spain.", .noun, "bound", .fixed)
+        assertReading("Bound", "Bound for London, the ship left.", .noun, "bound", .fixed, "not an opening participle")
         assertReading("bound", "It is bound to rain.", .noun, "bound", .fixed)
         assertReading("felt", "She wore a felt hat.", .noun, "felt", .fixed)
     }
@@ -115,7 +137,8 @@ final class VerbOrNounTests: XCTestCase {
     }
 
     func testOnlyHomographsHaveAReading() {
-        XCTAssertNil(reading("stolen", "It was stolen."))
+        XCTAssertEqual(reading("stolen", "It was stolen."), Reading(kind: .verb, base: "steal", step: .table), "a form of the table")
+        XCTAssertNil(reading("walked", "She walked home."), "neither a homograph nor a form of the table")
         XCTAssertNil(table.resolve("She left.", WordRange(4, 20)), "out of range")
         XCTAssertNil(table.resolve("She left.", WordRange(4, 4)), "empty")
         XCTAssertEqual(table.resolve("She left.", WordRange(5, 8)), nil, "not a word of the text: \"eft\"")

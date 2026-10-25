@@ -235,6 +235,38 @@ final class IrregularVerbsTests: XCTestCase {
         }, "a v2 context list is required")
     }
 
+    func testV3HomonymNextWordsAndTableForms() throws {
+        let homonym: [String: Any] = [
+            "es": ["x"], "past": ["stealed"], "participle": ["stealed"], "ing": "stealing", "s": "steals",
+            "homonymBefore": ["to"], "verbBefore": ["on"],
+        ]
+        let loaded = try IrregularVerbs.load(table { self.editVerb(&$0) { $0["homonym"] = homonym } })
+        XCTAssertEqual(loaded.verb(base: "steal")?.homonym?.homonymBefore, ["to"])
+        XCTAssertEqual(loaded.tableForms["stealed"]?.sense, Sense.homonym)
+        XCTAssertEqual(loaded.tableForms["stolen"]?.kind, .certain)
+        XCTAssertEqual(loaded.tableForms["steals"]?.kind, .s)
+        XCTAssertNotNil(loaded.tableForms["steals"]?.shared, "an -s form the twin shares")
+        XCTAssertNil(loaded.tableForms["left"], "a homograph is not one of them")
+        XCTAssertNil(loaded.tableForms["steal"], "nor a base")
+        var bad = homonym
+        bad["verbBefore"] = ["On"]
+        assertRefused(try table { self.editVerb(&$0) { $0["homonym"] = bad } }, "a next word not a–z")
+        bad["verbBefore"] = nil
+        bad["afterWords"] = ["x"]
+        assertRefused(try table { self.editVerb(&$0) { $0["homonym"] = bad } }, "an unknown homonym key")
+        assertRefused(try table {
+            var context = $0["context"] as? [String: Any] ?? [:]
+            context["ingAfter"] = nil
+            $0["context"] = context
+        }, "a v3 context list is required")
+        let shipped = IrregularVerbs.shared
+        XCTAssertEqual(shipped.tableForms["lying"]?.shared?.es, ["mentir"])
+        XCTAssertEqual(shipped.tableForms["lied"]?.sense, Sense.homonym)
+        XCTAssertEqual(shipped.tableForms["am"]?.kind, .certain, "a present form is certain")
+        XCTAssertEqual(Set(shipped.tableForms.keys), Set(shipped.formToBase.keys))
+        XCTAssertTrue(IrregularVerbs.isText("e\u{301}" + String(repeating: "a", count: 99)) == false, "code points are counted")
+    }
+
     func testIsFormAndIsContextWord() {
         XCTAssertTrue(IrregularVerbs.isForm("stole"))
         XCTAssertFalse(IrregularVerbs.isForm(""))

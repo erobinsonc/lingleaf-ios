@@ -11,12 +11,18 @@ public struct Correction: Codable, Hashable, Sendable {
     }
 }
 
-/// The corrections still shown on Words and the words as they were, for Undo.
+/// One word the correction changed: as it was, and what it became (nil when it merged into
+/// `mergedInto`, an entry saved before).
+struct CorrectionChange: Codable, Equatable, Sendable {
+    var before: VocabWord
+    var after: VocabWord?
+    var mergedInto: String?
+}
+
+/// The corrections still shown on Words and what Undo puts back.
 struct CorrectionsRecord: Codable {
     var corrections: [Correction]
-    var before: [VocabWord]
-    /// The ids of the corrected words, so Undo keeps words saved since.
-    var corrected: [String]
+    var changes: [CorrectionChange]
 }
 
 /// A reading of a word saved unsure whose meaning is still to be translated.
@@ -31,8 +37,9 @@ public struct MeaningRequest: Equatable, Sendable {
 extension Library {
     static let correctionsFile = "corrections.json"
     static let correctionsDone = "corrections-v2"
-    /// Most corrections kept for the card; Undo still puts every word back.
-    static let maxCorrections = 500
+    /// Most corrections kept, and most words read again in one run (same limits as lingleaf-android).
+    static let maxCorrections = 1000
+    static let maxCorrectedWords = 5000
 
     /// Spellings the irregular-verb list linked before the table (no sentence read): what a word
     /// saved then may have been tapped as.
@@ -41,50 +48,81 @@ extension Library {
         "rose": "rise", "spoke": "speak", "lives": "life", "leaves": "leaf",
     ]
 
+    /// Dates a saved word can have; anything else in a restored file is refused.
+    private static let dateRange = Date(timeIntervalSince1970: 946_684_800)...Date(timeIntervalSince1970: 4_102_444_800)
+
+    private static func bounded(_ word: VocabWord) -> VocabWord? {
+        guard dateRange.contains(word.createdAt), dateRange.contains(word.nextReview) else { return nil }
+        return word.bounded()
+    }
+
     func loadCorrections() -> CorrectionsRecord? {
         guard var record = decode(CorrectionsRecord.self, Self.correctionsFile) else { return nil }
         record.corrections = record.corrections.prefix(Self.maxCorrections).map {
-            Correction(from: TextTools.truncated($0.from, 40), to: TextTools.truncated($0.to, 40))
+            Correction(
+                from: TextTools.truncated(TextTools.cleanLabel($0.from), 40), to: TextTools.truncated(TextTools.cleanLabel($0.to), 40)
+            )
         }
-        record.before = record.before.map { $0.bounded() }
-        record.corrected = record.corrected.map { TextTools.truncated($0, 60) }
+        record.changes = record.changes.prefix(Self.maxCorrections).compactMap { change in
+            guard let before = Self.bounded(change.before) else { return nil }
+            let after = change.after.flatMap(Self.bounded)
+            guard change.after == nil || after != nil else { return nil }
+            return CorrectionChange(before: before, after: after, mergedInto: change.mergedInto.map { TextTools.truncated($0, 80) })
+        }
         return record
     }
 
-    /// Once after updating, on the device: re-reads each saved word against its sentence (SPEC S18).
-    /// A certain different reading becomes that word with its sense; an unsure one whose base
-    /// came from the old list becomes the tapped form with both readings. Corrected words are
-    /// translated again and due now; one that becomes a word already saved merges into it.
-    @discardableResult
-    public func correctWordsIfNeeded() -> [Correction] {
-        guard storage.read(Self.correctionsDone) == nil else { return [] }
+    /// Once after updating (SPEC S18): the saved words to read again, or nil when that is done or
+    /// can't be done. The flag is written now, before anything is read or saved, so a correction
+    /// that crashes doesn't run on every launch; not at all when the table didn't load.
+    public func beginCorrections() -> [VocabWord]? {
+        guard storage.read(Self.correctionsDone) == nil, !IrregularVerbs.shared.verbs.isEmpty else { return nil }
         storage.write(Self.correctionsDone, "1")
-        let before = state.words
+        return Array(state.words.prefix(Self.maxCorrectedWords))
+    }
+
+    /// Each word read again in its sentence, as it was and what it becomes; pure, so it can run off
+    /// the main thread.
+    public static func plannedCorrections(_ words: [VocabWord], target: String?, now: Date) -> [(VocabWord, VocabWord)] {
+        words.compactMap { word in corrected(word, target: target, now: now).map { (word, $0) } }
+    }
+
+    /// Applies `planned` (from `plannedCorrections`) to the words as they are now: a word changed
+    /// meanwhile is left alone; one that becomes a word already saved merges into it.
+    @discardableResult
+    public func applyCorrections(_ planned: [(VocabWord, VocabWord)]) -> [Correction] {
+        var words = state.words
         var corrections: [Correction] = []
-        var unchanged: [VocabWord] = []
-        var changed: [VocabWord] = []
-        for word in before {
-            if let corrected = corrected(word) {
-                corrections.append(Correction(from: word.word, to: corrected.word))
-                changed.append(corrected)
+        var changes: [CorrectionChange] = []
+        for (before, after) in planned {
+            guard let index = words.firstIndex(where: { $0.id == before.id }), words[index] == before else { continue }
+            words.remove(at: index)
+            if words.contains(where: { $0.id == after.id }) {
+                changes.append(CorrectionChange(before: before, after: nil, mergedInto: after.id))
             } else {
-                unchanged.append(word)
+                words.append(after)
+                changes.append(CorrectionChange(before: before, after: after, mergedInto: nil))
             }
+            corrections.append(Correction(from: before.word, to: after.word))
         }
         guard !corrections.isEmpty else { return [] }
-        // Merged into a word already saved under the same name and sense: that one stays.
-        var ids = Set(unchanged.map(\.id))
-        let merged = unchanged + changed.filter { ids.insert($0.id).inserted }
-        state.words = merged.sorted { $0.createdAt > $1.createdAt }
+        state.words = words.sorted { $0.createdAt > $1.createdAt }
         state.corrections = Array(corrections.prefix(Self.maxCorrections))
         save(state.words, "words.json")
-        let record = CorrectionsRecord(corrections: state.corrections, before: before, corrected: changed.map(\.id))
-        save(record, Self.correctionsFile)
+        save(CorrectionsRecord(corrections: state.corrections, changes: Array(changes.prefix(Self.maxCorrections))), Self.correctionsFile)
         return corrections
     }
 
+    /// `beginCorrections`, `plannedCorrections` and `applyCorrections` at once (tests, and when
+    /// there is no other thread to use).
+    @discardableResult
+    public func correctWordsIfNeeded() -> [Correction] {
+        guard let words = beginCorrections() else { return [] }
+        return applyCorrections(Self.plannedCorrections(words, target: state.settings.targetLanguage, now: now()))
+    }
+
     /// `word` read again in its sentence, or nil when it stays as it is.
-    func corrected(_ word: VocabWord) -> VocabWord? {
+    static func corrected(_ word: VocabWord, target: String?, now: Date) -> VocabWord? {
         guard word.kind == nil, word.sense == nil, word.meanings == nil, !word.context.isEmpty else { return nil }
         let table = IrregularVerbs.shared
         let words = Words(word.context as NSString)
@@ -93,10 +131,15 @@ extension Library {
             let token = words.token(k)
             guard table.homographs[token] != nil else { return false }
             var old: Set<String> = [token]
-            if let link = Self.oldLinks[token] { old.insert(link) }
+            if let link = oldLinks[token] { old.insert(link) }
             old.formUnion(TextTools.candidates(token, link: nil))
             return old.contains(word.word)
         }), let reading = table.resolve(words, i) else { return nil }
+        // Another word of the sentence still leads to it: it may have been tapped there.
+        let elsewhere = words.ranges.indices.contains { k in
+            k != i && table.homographs[words.token(k)] == nil && TextTools.matchKeys(words, k).contains(word.word)
+        }
+        guard !elsewhere else { return nil }
         let token = words.token(i)
         var corrected = word
         if reading.kind != .unsure {
@@ -105,11 +148,10 @@ extension Library {
             corrected.sense = table.sense(of: reading)
         } else {
             guard !TextTools.matchKeys(words, i).contains(word.word) else { return nil }
-            let target = state.settings.targetLanguage
             corrected.word = token
             corrected.meanings = table.choices(words, i).map { choice in
-                let spanish = ReadingTranslation.isSpanish(target) && choice.kind == .verb
-                    ? table.spanishMeaning(of: choice.base, all: false) : nil
+                let spanish = ReadingTranslation.isSpanish(target) && choice.kind != .noun
+                    ? table.spanishMeaning(of: choice.base, sense: choice.sense, all: false) : nil
                 return SavedMeaning(label: choice.label, sense: choice.sense, base: choice.base, text: spanish ?? "",
                                     language: spanish == nil ? nil : target)
             }
@@ -117,23 +159,46 @@ extension Library {
         corrected.form = words.surface(i)
         corrected.formStart = words.ranges[i].start
         corrected.formEnd = words.ranges[i].end
-        // Translated again (later when offline); due now: it was rehearsed with a wrong meaning.
-        corrected.translation = ""
-        corrected.translationLanguage = nil
-        corrected.phonetic = ""
-        if !corrected.learned { corrected.nextReview = min(corrected.nextReview, now()) }
+        // Translated again: a verb in Spanish from the table now, the rest later (S12).
+        let sense = corrected.sense
+        let spanish = sense == Sense.noun || !ReadingTranslation.isSpanish(target) ? nil
+            : sense.flatMap { table.spanishMeaning(of: corrected.word, sense: $0) }
+        corrected.translation = corrected.meanings.flatMap { joined($0, target) } ?? spanish ?? ""
+        corrected.translationLanguage = corrected.translation.isEmpty ? nil : target
+        corrected.phonetic = sense == Sense.verb || sense == Sense.homonym ? table.baseIPA(corrected.word) ?? "" : ""
+        // In Learning it starts again: it was rehearsed with a wrong meaning. Due now, once it has one.
+        if !corrected.learned {
+            corrected.box = 0
+            corrected.nextReview = now
+            corrected.waitsForMeaning = corrected.translation.isEmpty ? true : nil
+        }
         return corrected
     }
 
-    /// Undo on the card: every word as it was before the corrections.
+    /// Undo on the card (SPEC S18): each entry the correction changed or merged back as it was,
+    /// latest first; one changed since (reviewed) or deleted since stays as it is now.
     public func undoCorrections() {
         guard let record = loadCorrections() else { return }
-        let before = Set(record.before.map(\.id)), corrected = Set(record.corrected)
-        // Words saved since stay; the corrected ones go back to what they were.
-        let since = state.words.filter { !before.contains($0.id) && !corrected.contains($0.id) }
-        state.words = (record.before + since).sorted { $0.createdAt > $1.createdAt }
+        var words = state.words
+        for change in record.changes.reversed() {
+            if let after = change.after {
+                guard let index = words.firstIndex(where: { $0.id == after.id }),
+                      Self.sameProgress(words[index], after) else { continue }
+                words.remove(at: index)
+            } else if let target = change.mergedInto, !words.contains(where: { $0.id == target }) {
+                continue
+            }
+            guard !words.contains(where: { $0.id == change.before.id }) else { continue }
+            words.append(change.before.bounded())
+        }
+        state.words = words.sorted { $0.createdAt > $1.createdAt }
         save(state.words, "words.json")
         closeCorrections()
+    }
+
+    /// Not reviewed or moved since: a translation that arrived meanwhile doesn't count.
+    private static func sameProgress(_ a: VocabWord, _ b: VocabWord) -> Bool {
+        a.box == b.box && a.learned == b.learned && a.nextReview == b.nextReview && a.sense == b.sense
     }
 
     /// Close on the card: the corrections stay.
@@ -169,6 +234,7 @@ extension Library {
                 word.meanings = meanings
                 word.translation = Self.joined(meanings, target) ?? word.translation
             }
+            if changed, !word.translation.isEmpty { word.waitsForMeaning = nil }
             if changed { replace(word) }
         }
     }
@@ -193,6 +259,7 @@ extension Library {
         word.meanings = meanings
         word.translation = Self.joined(meanings, language) ?? word.translation
         word.translationLanguage = language
+        if !word.translation.isEmpty { word.waitsForMeaning = nil }
         replace(word)
     }
 

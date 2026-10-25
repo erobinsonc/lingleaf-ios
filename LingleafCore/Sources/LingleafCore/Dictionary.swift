@@ -19,8 +19,9 @@ public struct DictionaryEntry: Equatable, Sendable {
     static let maxDefinition = 500
     static let maxShortField = 100
 
-    /// Meanings kept from one answer, over all its entries.
-    static let maxMeanings = 30
+    /// Entries, and meanings of each, kept from one answer (same limits as lingleaf-android).
+    static let maxEntries = 10
+    static let maxMeanings = 10
 
     /// The first entry's first meaning (what the card showed before readings).
     static func parse(_ json: [String: Any]) -> DictionaryEntry? { parseAll([json]).first }
@@ -29,7 +30,7 @@ public struct DictionaryEntry: Equatable, Sendable {
     /// reading can take the first meaning of its part of speech ("verb", "noun").
     static func parseAll(_ entries: [[String: Any]]) -> [DictionaryEntry] {
         var out: [DictionaryEntry] = []
-        for json in entries {
+        for json in entries.prefix(maxEntries) {
             guard let word = (json["word"] as? String).map({ TextTools.truncated($0, maxShortField) }) else { continue }
             var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : TextTools.truncated($0, maxShortField) }
             if phonetic == nil {
@@ -40,7 +41,7 @@ public struct DictionaryEntry: Equatable, Sendable {
             }
             let meanings = (json["meanings"] as? [[String: Any]]) ?? []
             if meanings.isEmpty { out.append(DictionaryEntry(word: word, phonetic: phonetic, partOfSpeech: nil, definition: nil)) }
-            for meaning in meanings {
+            for meaning in meanings.prefix(maxMeanings) {
                 let definition = (meaning["definitions"] as? [[String: Any]])?.first
                 out.append(DictionaryEntry(
                     word: word,
@@ -48,7 +49,6 @@ public struct DictionaryEntry: Equatable, Sendable {
                     partOfSpeech: (meaning["partOfSpeech"] as? String).map { TextTools.truncated($0, maxShortField) },
                     definition: (definition?["definition"] as? String).map { TextTools.truncated($0, maxDefinition) }
                 ))
-                if out.count >= maxMeanings { return out }
             }
         }
         return out
@@ -68,17 +68,21 @@ public actor DictionaryClient {
 
     /// Looks `word` up, resolving inflected forms: "walked" → "walk", "animals" → "animal".
     /// With a reading of the word in its sentence (`IrregularVerbs.resolve`), a verb or a noun
-    /// looks its base up first ("stole" → "steal", "leaves" → "leaf"), then the word as tapped,
-    /// without following "past tense of …" (a noun "left" is not "leave"), and takes the first
-    /// meaning of the reading's part of speech, with that entry's IPA; unsure is as without one.
+    /// looks its base up first ("stole" → "steal", "leaves" → "leaf"), without following "past
+    /// tense of …" (a noun "left" is not "leave"), and takes the first meaning of the reading's part
+    /// of speech, from the entry whose IPA is the table's for a verb's base ("wind" /waɪnd/); with
+    /// none of that part of speech, the word as tapped, else nothing (never another part of
+    /// speech's). The regular twin's sense has no definition; unsure or an ordinary word is as
+    /// without a reading.
     public func lookup(_ word: String, reading: Reading? = nil) async -> DictionaryEntry? {
         let w = TextTools.normalize(word)
-        if let reading, reading.kind != .unsure {
+        if let reading, reading.kind == .homonym { return nil }
+        if let reading, reading.kind == .verb || reading.kind == .noun {
             let partOfSpeech = reading.kind == .verb ? "verb" : "noun"
-            if reading.base != w, let entries = await get(reading.base), !entries.isEmpty {
-                return Self.first(partOfSpeech, in: entries)
-            }
-            return await get(w).flatMap { Self.first(partOfSpeech, in: $0) }
+            let ipa = reading.kind == .verb ? IrregularVerbs.shared.verb(base: reading.base)?.ipa["base"] : nil
+            if let entries = await get(reading.base), let entry = Self.first(partOfSpeech, ipa: ipa, in: entries) { return entry }
+            guard reading.base != w else { return nil }
+            return await get(w).flatMap { Self.first(partOfSpeech, ipa: nil, in: $0) }
         }
         if let direct = await get(w)?.first {
             if let definition = direct.definition,
@@ -95,9 +99,20 @@ public actor DictionaryClient {
         return nil
     }
 
-    /// The first meaning that is `partOfSpeech`, else the first one.
-    private static func first(_ partOfSpeech: String, in entries: [DictionaryEntry]) -> DictionaryEntry? {
-        entries.first { $0.partOfSpeech?.lowercased() == partOfSpeech } ?? entries.first
+    /// The first meaning that is `partOfSpeech`, from an entry pronounced `ipa` when one is.
+    private static func first(_ partOfSpeech: String, ipa: String?, in entries: [DictionaryEntry]) -> DictionaryEntry? {
+        let matching = entries.filter { $0.partOfSpeech?.lowercased() == partOfSpeech }
+        if let ipa, let pronounced = matching.first(where: { $0.phonetic.map(Self.bareIPA) == Self.bareIPA(ipa) }) {
+            return pronounced
+        }
+        return matching.first
+    }
+
+    /// An IPA transcription without slashes, brackets, stress marks, dots or spaces, and with
+    /// Wiktionary's "ɹ" as the table's "r", to compare.
+    static func bareIPA(_ ipa: String) -> String {
+        let kept = ipa.unicodeScalars.filter { !"/[]()ˈˌ. ".unicodeScalars.contains($0) }.map { $0 == "ɹ" ? "r" : Character($0) }
+        return String(kept).lowercased()
     }
 
     /// Every meaning of `word`'s answer; nil when there is none (missing, offline, refused).

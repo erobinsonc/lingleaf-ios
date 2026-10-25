@@ -473,7 +473,7 @@ struct ReaderView: View {
     private func fullHeightCard(_ selection: WordSelection) -> Bool {
         if dynamicTypeSize.isAccessibilitySize { return true }
         guard selection.function == nil, let range = selection.rangeInSentence else { return false }
-        return !IrregularVerbs.shared.choices(in: selection.sentence, at: range).isEmpty
+        return IrregularVerbs.shared.choices(in: selection.sentence, at: range).count == 2
     }
 
     private func startTimer() {

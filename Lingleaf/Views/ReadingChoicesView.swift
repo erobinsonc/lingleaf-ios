@@ -69,7 +69,7 @@ struct ReadingChoicesView: View {
         } else {
             HStack(spacing: 8) {
                 label
-                if translating { ProgressView().controlSize(.small) }
+                if translating { ProgressView().controlSize(.small).accessibilityLabel(Text("Translating…")) }
             }
         }
     }
@@ -78,7 +78,14 @@ struct ReadingChoicesView: View {
     /// English around it so a right-to-left language keeps its order.
     private func meaning(_ choice: ReadingChoice) -> AttributedString? {
         guard let text = meanings[choice.id], !text.isEmpty else { return nil }
-        var meaning = AttributedString("\u{2068}\(text)\u{2069}")
+        return Self.meaningText(text, language: language)
+    }
+
+    /// A meaning in `language`, tagged with it (VoiceOver reads it with that voice) and, among
+    /// English, isolated (a right-to-left language keeps its order). Empty stays empty.
+    static func meaningText(_ text: String, language: String?, isolated: Bool = true) -> AttributedString {
+        guard !text.isEmpty else { return AttributedString() }
+        var meaning = AttributedString(isolated ? "\u{2068}\(text)\u{2069}" : text)
         if let language { meaning.languageIdentifier = language }
         return meaning
     }

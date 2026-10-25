@@ -1389,6 +1389,17 @@
         }
       }
     },
+    "Translating…": {
+      "comment": "VoiceOver label of the progress indicator while a meaning is being translated.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduciendo…"
+          }
+        }
+      }
+    },
     "Translation": {
       "localizations": {
         "es": {

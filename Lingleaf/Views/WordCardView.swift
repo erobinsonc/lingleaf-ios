@@ -44,7 +44,7 @@ struct WordCardView: View {
     private var headword: String {
         if let function = selection.function { return function.base }
         // Unsure: the tapped word stays the headword, chosen reading or not.
-        if isUnsure { return selection.word }
+        if isUnsure { return TextTools.normalize(selection.word) }
         if let base = entry?.word { return base == TextTools.normalize(selection.word) ? selection.word : base }
         guard entryLoaded, let base = tableBase else { return selection.word }
         return base
@@ -69,15 +69,17 @@ struct WordCardView: View {
         return IrregularVerbs.shared.choices(in: selection.sentence, at: range)
     }
 
-    private var isUnsure: Bool { !choices.isEmpty }
+    /// Unsure: the sentence doesn't tell, and there are exactly two readings to choose from.
+    private var isUnsure: Bool { choices.count == 2 }
 
     /// The verb or noun the word is read as, for its meaning (SPEC S3): its sentence's reading,
     /// or a form of the irregular-verb table ("stolen": the verb "steal").
     private var meaningReading: Reading? {
         guard selection.function == nil, !isUnsure else { return nil }
-        // A name ("Aunt Rose") is no reading: it is looked up and translated as tapped.
-        if let reading { return reading.kind == .unsure || reading.step == .name ? nil : reading }
-        return tableBase.map { Reading(kind: .verb, base: $0, step: .subject) }
+        // A name ("Aunt Rose") or an ordinary word ("the lights") is no reading: it is looked up
+        // and translated as tapped.
+        guard let reading, reading.kind != .unsure, reading.kind != .word, reading.step != .name else { return nil }
+        return reading
     }
 
     /// The sense a certain reading saves with (SPEC S4); nil for a word that isn't a homograph.
@@ -101,10 +103,10 @@ struct WordCardView: View {
         let table = IrregularVerbs.shared
         if isUnsure {
             guard let chosen else { return nil }
-            if chosen.kind == .verb, let ipa = table.ipa(of: selection.word, verb: chosen.base) { return ipa }
+            if chosen.kind != .noun, let ipa = table.ipa(of: selection.word, verb: chosen.base) { return ipa }
             return TextTools.normalize(selection.word) == chosen.base ? choiceEntry?.phonetic : nil
         }
-        if let reading = meaningReading, reading.kind == .verb, TextTools.normalize(headword) == reading.base,
+        if let reading = meaningReading, reading.isVerb, TextTools.normalize(headword) == reading.base,
            let ipa = table.baseIPA(reading.base) {
             return ipa
         }
@@ -134,6 +136,8 @@ struct WordCardView: View {
     /// whole sentence when it has none, so there's always something to recall and translate).
     private var savedKey: String {
         if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
+        // A certain reading saves its base, whatever headword the dictionary gave.
+        if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }
         return selection.chunk ?? selection.sentence
     }
@@ -148,7 +152,8 @@ struct WordCardView: View {
 
     /// How messages name what was saved: "did not go"; without a verb group, the start of the sentence.
     private var savedName: String {
-        if isUnsure { return chosen?.base ?? selection.word }
+        if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
+        if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }
         if let chunk = selection.chunk { return chunk }
         return selection.sentence.count > 30 ? String(selection.sentence.prefix(30)) + "…" : selection.sentence
@@ -298,7 +303,7 @@ struct WordCardView: View {
                         .foregroundStyle(Brand.secondaryText)
                         .multilineTextAlignment(.center)
                 } else {
-                    ProgressView()
+                    ProgressView().accessibilityLabel(Text("Translating…"))
                 }
                 languageMenu(target)
             }
@@ -598,11 +603,12 @@ struct WordCardView: View {
     /// What to translate for a reading's meaning ("to leave", "the left"), or nil when the table
     /// already has it in the target language (Spanish), which is then filled in.
     private func readingSource(kind: Reading.Kind, base: String, target: String, all: Bool) -> (text: String?, direct: String?) {
-        if kind == .verb, ReadingTranslation.isSpanish(target),
-           let spanish = IrregularVerbs.shared.spanishMeaning(of: base, all: all) {
+        let sense = kind == .noun ? Sense.noun : kind == .homonym ? Sense.homonym : Sense.verb
+        if kind != .noun, ReadingTranslation.isSpanish(target),
+           let spanish = IrregularVerbs.shared.spanishMeaning(of: base, sense: sense, all: all) {
             return (nil, spanish)
         }
-        return (ReadingTranslation.source(word: base, sense: kind == .noun ? Sense.noun : Sense.verb), nil)
+        return (ReadingTranslation.source(word: base, sense: sense), nil)
     }
 
     /// The texts to translate, by identifier: the word (or its reading), each unsure reading, and

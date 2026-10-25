@@ -109,7 +109,9 @@ struct ReviewView: View {
                 // A helper or modal verb is saved as its verb group ("did not go").
                 Text(verbatim: model.state.displayName(word)).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
-                    model.speaker.speak(word.word, rate: model.state.settings.speechRate)
+                    // A verb with the table's spoken base ("tare" for "tear"), a noun as written (SPEC S7).
+                    let spoken = word.kind == nil ? IrregularVerbs.shared.spokenHeadword(word.word, sense: word.sense) : word.word
+                    model.speaker.speak(spoken, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill").labelStyle(.iconOnly).font(.title)
                         .frame(minWidth: 44, minHeight: 44)
@@ -153,7 +155,8 @@ struct ReviewView: View {
             if let meanings = word.meanings, word.isUnsure {
                 // Saved while its sentence didn't tell: both readings, as on the card (SPEC S7).
                 ForEach(Array(meanings.enumerated()), id: \.offset) { _, meaning in
-                    Text(verbatim: meaning.text.isEmpty ? meaning.label : "\(meaning.label) — \(meaning.text)")
+                    (Text(verbatim: meaning.text.isEmpty ? meaning.label : "\(meaning.label) — ")
+                        + Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)))
                         .font(.title3)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -165,7 +168,8 @@ struct ReviewView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text(word.translation).font(.title2).multilineTextAlignment(.center)
+                Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: false))
+                    .font(.title2).multilineTextAlignment(.center)
             }
         }
         // A verb group saved without one is the sentence itself: not twice.

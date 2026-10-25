@@ -55,6 +55,8 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     /// A word saved while its sentence didn't tell: the card's two readings with their meanings;
     /// `word` is then the tapped form.
     public var meanings: [SavedMeaning]?
+    /// A corrected word waiting for its meaning (SPEC S18): not due until it has one.
+    public var waitsForMeaning: Bool?
 
     /// One spelling is saved once per sense.
     public var id: String { Self.id(word, sense) }
@@ -99,7 +101,7 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         return word
     }
 
-    public func isDue(_ now: Date) -> Bool { !learned && nextReview <= now }
+    public func isDue(_ now: Date) -> Bool { !learned && nextReview <= now && waitsForMeaning != true }
 }
 
 public struct Settings: Codable, Equatable, Sendable {
@@ -186,13 +188,17 @@ public struct LibraryState: Equatable, Sendable {
 
     /// How Words and Review name `word`: "to wind" / "the wind" when two senses of the spelling
     /// are saved, else the word.
+    /// Two verb senses show their first meaning: "to lie (estar acostado, tumbarse)" / "to lie (mentir)"
+    /// (the table's in Spanish, else the translated one). Only when two of the spelling have a sense.
     public func displayName(_ word: VocabWord) -> String {
-        guard let sense = word.sense, words.contains(where: { $0.word == word.word && $0.id != word.id }) else { return word.word }
+        let others = words.filter { $0.word == word.word && $0.sense != nil && $0.id != word.id }
+        guard let sense = word.sense, !others.isEmpty else { return word.word }
         if sense == Sense.noun { return "the \(word.word)" }
-        if sense == Sense.homonym, let es = IrregularVerbs.shared.spanishMeaning(of: word.word, sense: sense, all: false) {
-            return "to \(word.word) (\(es))"
-        }
-        return "to \(word.word)"
+        guard others.contains(where: { $0.sense != Sense.noun }) else { return "to \(word.word)" }
+        let meaning = ReadingTranslation.isSpanish(settings.targetLanguage)
+            ? IrregularVerbs.shared.spanishMeaning(of: word.word, sense: sense, all: false)
+            : word.translation.isEmpty ? nil : word.translation
+        return meaning.map { "to \(word.word) (\($0))" } ?? "to \(word.word)"
     }
 
     public var lastOpened: Book? {
@@ -459,6 +465,7 @@ public final class Library {
               entry.translation.isEmpty || entry.translationLanguage != language else { return }
         entry.translation = text
         entry.translationLanguage = language
+        entry.waitsForMeaning = nil
         replace(entry)
     }
 

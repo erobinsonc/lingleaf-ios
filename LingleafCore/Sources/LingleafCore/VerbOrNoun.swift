@@ -1,16 +1,19 @@
 import Foundation
 
-/// How a homograph of the irregular-verb table ("left", "saw", "leaves") reads in its sentence
-/// (SPEC.md, Shared logic, "Verb or noun"). Same names as `Reading` in lingleaf-android.
+/// How a homograph of the irregular-verb table ("left", "saw", "leaves") or another form of the
+/// table ("tore", "lights", "lying") reads in its sentence (SPEC.md, Shared logic, "Verb or noun",
+/// "Other forms of the table"). Same names as `Reading` in lingleaf-android.
 public struct Reading: Equatable, Sendable {
     public enum Kind: String, Sendable {
-        case noun, verb, unsure
+        /// `homonym`: the regular twin's sense ("lied": "lie", "mentir"); `word`: an ordinary word,
+        /// no table link and no sense ("the lights").
+        case noun, verb, homonym, word, unsure
     }
 
     /// The step that decided (`unsure` when none did).
     public enum Step: String, Sendable, CaseIterable {
         case name, phrase, fixed, noun, participleOpen, base, participle, subject, nameS, subjectNoun, nounS, quantifier
-        case conjunction, unsure
+        case conjunction, table, quote, sSubject, ing, sense, ordinary, unsure
     }
 
     public let kind: Kind
@@ -19,32 +22,51 @@ public struct Reading: Equatable, Sendable {
     public let base: String
     public let step: Step
 
+    /// Unsure because "lay" follows a plural subject: its readings are "to lie" and "to lay".
+    var layVerbs = false
+
     public init(kind: Kind, base: String, step: Step) {
         self.kind = kind
         self.base = base
         self.step = step
     }
 
-    public var isVerb: Bool { kind == .verb }
+    /// A verb, the regular twin's sense included.
+    public var isVerb: Bool { kind == .verb || kind == .homonym }
+
+    public static func == (lhs: Reading, rhs: Reading) -> Bool {
+        lhs.kind == rhs.kind && lhs.base == rhs.base && lhs.step == rhs.step
+    }
 }
 
 extension IrregularVerbs {
-    /// How the word at `range` of `text` reads, or nil when it is not a homograph of the table.
+    /// How the word at `range` of `text` reads, or nil when it is neither a homograph nor another
+    /// form of the table.
     /// Only the words next to it (spaces between) count, so a paragraph works as well as its sentence.
     /// For every word of a paragraph, tokenize once and use `resolve(_:_:)` with `Words`.
     public func resolve(_ text: String, _ range: WordRange) -> Reading? {
         let ns = text as NSString
         guard range.start >= 0, range.start < range.end, range.end <= ns.length else { return nil }
-        guard homographs[TextTools.normalize(ns.substring(with: range.nsRange))] != nil else { return nil }
+        let form = TextTools.normalize(ns.substring(with: range.nsRange))
+        guard homographs[form] != nil || tableForms[form] != nil else { return nil }
         let words = Words(ns)
         return words.index(of: range).flatMap { resolve(words, $0) }
     }
 
-    /// How word `i` of `words` reads: nil when it is not a homograph. Looks only at its neighbours.
+    /// How word `i` of `words` reads: nil when it is neither a homograph nor a form of the table.
+    /// Looks only at its neighbours.
     func resolve(_ words: Words, _ i: Int) -> Reading? {
         let form = words.token(i)
-        guard let homograph = homographs[form] else { return nil }
-        return Resolver(table: self, h: homograph, form: form, words: words, i: i).reading()
+        if let homograph = homographs[form] {
+            return Resolver(table: self, h: homograph, form: form, words: words, i: i).reading()
+        }
+        guard let tableForm = tableForms[form] else { return nil }
+        // The steps for other forms look only at the words around; they need no homograph entry.
+        let around = Homograph(
+            form: form, noun: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
+            nounPair: nil, noTo: false, nounPhrases: [], subjectNounNext: nil
+        )
+        return Resolver(table: self, h: around, form: form, words: words, i: i).tableFormReading(tableForm)
     }
 
     /// A word capitalised mid-sentence, not all capitals ("Aunt Rose", "Drew"): a name.
@@ -215,7 +237,9 @@ private struct Resolver {
         let object = n1.map(c.objectStarts.contains) == true && !(article && n2.map(c.layTime.contains) == true)
         // "they lay bricks": the present of "lay" or the past of "lie".
         if let subject, ["i", "you", "we", "they"].contains(subject), !object, n1.map(c.lieAfter.contains) != true {
-            return unsure
+            var reading = unsure
+            reading.layVerbs = true
+            return reading
         }
         return Reading(kind: .verb, base: object ? (h.baseVerb ?? h.verb) : h.verb, step: step)
     }
@@ -371,7 +395,9 @@ private extension Resolver {
     /// 3b. A participle opening the sentence, before a listed word or a word in -ly, with a comma later
     /// in the sentence ("Left alone, she cried"; not "Felt hats, …").
     func openingParticiple() -> Reading? {
+        // "Bound for London, …" is step 2.
         guard h.rules.contains(.participle), words.startsSentence(i), let n1 = next(1), next(2) != form,
+              !(form == "bound" && c.boundAdjective.contains(n1)),
               c.participleOpenNext.contains(n1) || (n1.hasSuffix("ly") && n1.count > 3) else { return nil }
         let rest = words.ns.substring(from: words.ranges[i].end)
         let clause = rest.prefix { !".!?".contains($0) }
@@ -478,5 +504,85 @@ private extension Resolver {
             if isVerb(stem) || isVerb(stem + "e") || doubled { return false }
         }
         return true
+    }
+}
+
+// MARK: Other forms of the table (SPEC.md, "Other forms of the table")
+
+private extension Resolver {
+    /// A form of the table that is not a homograph: a name is the word itself; a past or
+    /// participle is that verb (or the regular twin's sense); an -s or -ing form is the verb only
+    /// where a step proves it, else an ordinary word; "lying", "lies", "hanging", "hangs" take
+    /// their sense from the next word, else unsure.
+    func tableFormReading(_ entry: TableForm) -> Reading {
+        if let reading = name() { return reading }
+        if entry.kind == .certain {
+            return Reading(kind: entry.sense == Sense.homonym ? .homonym : .verb, base: entry.base, step: .table)
+        }
+        let n1 = next(1), p1 = previous(1), p2 = previous(2)
+        let determiners = c.determiners.union(c.pluralDeterminers)
+        let afterDeterminer = p1.map(determiners.contains) == true
+            || p1.map { $0.hasSuffix("'s") && !c.haveAndBe.contains($0) } == true
+            || (p1.map(c.adjectives.contains) == true && p2.map(determiners.contains) == true)
+        let proven = afterDeterminer ? nil : provenStep(entry, n1: n1, p1: p1)
+        if let shared = entry.shared, !afterDeterminer {
+            // lying, lies, hanging, hangs: the next word tells the sense.
+            if let n1, shared.homonymBefore.contains(n1) { return Reading(kind: .homonym, base: entry.base, step: .sense) }
+            if let n1, shared.verbBefore.contains(n1) { return Reading(kind: .verb, base: entry.base, step: .sense) }
+            return unsure
+        }
+        if let proven { return Reading(kind: .verb, base: entry.base, step: proven) }
+        return Reading(kind: .word, base: form, step: .ordinary)
+    }
+
+    /// The step that proves an -s or -ing form a verb (not right after a determiner), or nil.
+    func provenStep(_ entry: TableForm, n1: String?, p1: String?) -> Reading.Step? {
+        let surface = words.surface(i)
+        // '"Look!" says Tom.': lower case after the quote, so the sentence goes on.
+        if entry.kind == .s, i >= 1, words.gap(i - 1, i).contains(where: { "\"”".contains($0) }), surface.first?.isLowercase == true {
+            return .quote
+        }
+        if let head = words.head(before: i, skip: c.skip) {
+            let k = head.index, t = head.token
+            if entry.kind == .s {
+                if sSubject(entry, k, t, n1: n1) { return .sSubject }
+            } else if c.beForms.contains(t) || c.ingAfter.contains(t) {
+                return .ing
+            }
+        }
+        guard entry.kind == .ing, let n1 else { return nil }
+        // -ing after a comma, "and" or "or", before an object word, a preposition or an adverb
+        // ("…, telling the children").
+        let joined = i >= 1 && (words.gap(i - 1, i).contains(",") || p1 == "and" || p1 == "or")
+        if joined, c.objectStarts.contains(n1) || c.participleOpenNext.contains(n1) || c.prepositions.contains(n1) || n1.hasSuffix("ly") {
+            return .ing
+        }
+        // Opening the sentence before an object word, a listed word or an adverb, with a comma later.
+        let opens = c.objectStarts.contains(n1) || c.participleOpenNext.contains(n1) || (n1.hasSuffix("ly") && n1.count > 3)
+        if words.startsSentence(i), opens {
+            let clause = words.ns.substring(from: words.ranges[i].end).prefix { !".!?".contains($0) }
+            if clause.contains(",") { return .ing }
+        }
+        return nil
+    }
+
+    /// An -s form after its subject (`k`, `t` the word before, past up to 2 adverbs).
+    func sSubject(_ entry: TableForm, _ k: Int, _ t: String, n1: String?) -> Bool {
+        if c.sSubjects.contains(t) { return true }
+        if words.titlecase(k), t != "i", !c.subjects.contains(t), !words.startsSentence(k) { return true }
+        // A base more often a noun (light, ring, bear: `nounFirst`) after a noun subject needs an object word
+        // after it ("The sun lights the room"; not "the street lights in the city").
+        let nounLike = table.verb(base: entry.base)?.nounFirst == true
+        let object = n1.map(c.objectStarts.contains) == true
+        let nextOK = object || (!nounLike && (n1 == nil || entry.shared == nil
+            || n1.map(c.sFormNext.contains) == true || n1?.hasSuffix("ly") == true))
+        guard k == i - 1, nextOK else { return false }
+        // The cheap checks first: the clause is read to its end only when the rest fits.
+        if words.titlecase(k) {
+            guard words.startsSentence(k), looksLikeName(k) else { return false }
+        } else {
+            guard isNounWord(t), !isPlural(t), let d = nounPhraseStart(k), opensClause(d) else { return false }
+        }
+        return object || !finiteVerbLater()
     }
 }

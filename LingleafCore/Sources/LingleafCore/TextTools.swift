@@ -257,8 +257,16 @@ public enum TextTools {
         if let homograph = table.homographs[w] {
             return filtered(homographBase(homograph, table.resolve(words, i)).map { [$0] } ?? [], w)
         }
-        let verbLink = table.formToBase[w].flatMap { table.isName(words, i) ? nil : $0 }
-        return candidates(w, link: verbLink ?? nonVerb[w])
+        guard let link = table.formToBase[w] else { return candidates(w, link: nonVerb[w]) }
+        switch table.resolve(words, i)?.kind {
+        // The regular twin's sense: its base alone ("lied" → "lie").
+        case .homonym?: return filtered([link], w)
+        // An ordinary word: no table link; the -s rules, none for -ing ("the lights" → "light", "a meeting").
+        case .word?: return w.hasSuffix("ing") ? [] : candidates(w, link: nil)
+        // A name ("Uncle Drew"): no irregular link.
+        case .noun?: return candidates(w, link: nonVerb[w])
+        default: return candidates(w, link: link)
+        }
     }
 
     /// The base a homograph's reading gives: its noun's or its verb's; when unsure, the base both

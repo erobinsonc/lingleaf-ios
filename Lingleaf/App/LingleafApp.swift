@@ -80,14 +80,24 @@ final class AppModel {
         self.autoLanguage = autoLanguage
         library.load()
         library.seedIfNeeded(Self.bundledStories)
-        // Once after updating: saved words read again against their sentences (SPEC S18).
-        library.correctWordsIfNeeded()
         self.state = library.state
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
         }
         // Read the irregular-verb table now, off the main thread, not on the first word shown.
         Task.detached(priority: .utility) { _ = IrregularVerbs.shared }
+        // Once after updating: saved words read again against their sentences (SPEC S18), off the
+        // main thread; the result is applied to the words as they are by then.
+        if let words = library.beginCorrections() {
+            let target = library.state.settings.targetLanguage
+            let now = Date()
+            Task { [library] in
+                let planned = await Task.detached(priority: .utility) {
+                    Library.plannedCorrections(words, target: target, now: now)
+                }.value
+                library.applyCorrections(planned)
+            }
+        }
     }
 
     static func make() -> AppModel {

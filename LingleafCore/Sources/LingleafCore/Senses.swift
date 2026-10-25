@@ -27,18 +27,17 @@ public struct SavedMeaning: Codable, Hashable, Sendable {
         self.language = language
     }
 
-    static let maxLabel = 60
     static let maxText = 200
 
     /// Within bounds, or nil when it can't be one of a card's readings (a restored or edited file).
     func bounded() -> SavedMeaning? {
         guard Sense.all.contains(sense), IrregularVerbs.isForm(base) else { return nil }
         var meaning = self
-        meaning.label = TextTools.cleanLabel(label)
+        // Made from the sense and base, never taken from the file.
+        meaning.label = sense == Sense.noun ? "the \(base)" : "to \(base)"
         meaning.text = TextTools.truncated(TextTools.cleanLabel(text), Self.maxText)
-        meaning.label = TextTools.truncated(meaning.label, Self.maxLabel)
         meaning.language = language.flatMap { $0.count <= 20 ? $0 : nil }
-        return meaning.label.isEmpty ? nil : meaning
+        return meaning
     }
 }
 
@@ -69,13 +68,17 @@ extension IrregularVerbs {
 
     func choices(_ words: Words, _ i: Int) -> [ReadingChoice] {
         let form = words.token(i)
-        guard let h = homographs[form], resolve(words, i)?.kind == .unsure else { return [] }
-        let twoVerbs: Bool
-        if form == "lay", let head = words.head(before: i, skip: context.skip) {
-            twoVerbs = ["i", "you", "we", "they"].contains(head.token)
-        } else {
-            twoVerbs = h.noun == nil
+        guard let reading = resolve(words, i), reading.kind == .unsure else { return [] }
+        guard let h = homographs[form] else {
+            // "lying", "lies", "hanging", "hangs" the next word doesn't tell: the verb and its twin.
+            guard let entry = tableForms[form], entry.shared != nil else { return [] }
+            return [
+                ReadingChoice(kind: .verb, base: entry.base, sense: Sense.verb),
+                ReadingChoice(kind: .homonym, base: entry.base, sense: Sense.homonym),
+            ]
         }
+        // "lay" after a plural subject (they, "two men"): "to lie" or "to lay".
+        let twoVerbs = form == "lay" ? reading.layVerbs : h.noun == nil
         if twoVerbs, let other = h.baseVerb, other != h.verb {
             return [
                 ReadingChoice(kind: .verb, base: h.verb, sense: Sense.verb),
@@ -93,16 +96,17 @@ extension IrregularVerbs {
     public func sense(of reading: Reading) -> String? {
         switch reading.kind {
         case .verb: Sense.verb
+        case .homonym: Sense.homonym
         case .noun: reading.step == .name ? nil : Sense.noun
-        case .unsure: nil
+        case .word, .unsure: nil
         }
     }
 
-    /// The sense a form of the table links to: the homonym's for its own forms ("lied"), any for
-    /// forms both share ("lying": nil), else the verb's.
-    func linkSense(_ form: String) -> String? {
-        if homonymOnlyForms.contains(form) { return Sense.homonym }
-        return sharedHomonymForms.contains(form) ? nil : Sense.verb
+    /// What Listen in Review and Words says for a saved word (SPEC S7): a verb or the regular twin
+    /// with the table's spoken base ("tare" for "tear"), a noun or a word without a sense as written.
+    public func spokenHeadword(_ word: String, sense: String?) -> String {
+        guard sense == Sense.verb || sense == Sense.homonym else { return word }
+        return verb(base: TextTools.normalize(word))?.spokenAs["base"] ?? word
     }
 
     /// The table's Spanish meanings of a verb (or its homonym's): all of them joined with " · ",
@@ -144,7 +148,7 @@ extension IrregularVerbs {
     /// What Listen says for the tapped form as a chosen reading: a verb's respelling when every slot
     /// the form fills agrees, else the form as written.
     public func spokenForm(of form: String, as choice: ReadingChoice) -> String {
-        guard choice.kind == .verb, let spoken = agreed(TextTools.normalize(form), choice.base, { $0.spokenAs }) else { return form }
+        guard choice.kind != .noun, let spoken = agreed(TextTools.normalize(form), choice.base, { $0.spokenAs }) else { return form }
         return spoken
     }
 
@@ -164,7 +168,7 @@ extension IrregularVerbs {
         }
         let formSpoken = spokenForm(in: text, at: range)
         guard TextTools.normalize(headword) != TextTools.normalize(form) else { return formSpoken }
-        let isVerb = resolve(text, range).map { $0.kind == .verb } ?? (base(in: text, at: range) != nil)
+        let isVerb = resolve(text, range)?.isVerb ?? false
         let head = isVerb ? verb(base: TextTools.normalize(headword))?.spokenAs["base"] ?? headword : headword
         return "\(head), \(formSpoken)"
     }
@@ -220,24 +224,24 @@ extension TextTools {
         let w = words.token(i)
         let table = IrregularVerbs.shared
         let keys = matchKeys(words, i)
-        if let homograph = table.homographs[w] {
-            if let reading = table.resolve(words, i), reading.kind != .unsure {
-                let senses = table.sense(of: reading).map { [reading.base: $0] } ?? [:]
-                return Occurrence(form: w, keys: keys, senses: senses, anySense: [])
-            }
-            // Unsure: only a base both readings share (tears → tear) can be either sense.
-            let shared: Set<String> = homograph.noun == homograph.verb ? [homograph.verb] : []
-            return Occurrence(form: w, keys: keys, senses: [:], anySense: shared)
+        let isHomograph = table.homographs[w] != nil
+        guard let reading = table.resolve(words, i) else {
+            // An ordinary word: any sense of its forms.
+            return Occurrence(form: w, keys: keys, senses: [:], anySense: keys)
         }
-        var anySense = keys
-        var senses: [String: String] = [:]
-        if let link = table.formToBase[w], !table.isName(words, i) {
-            if let sense = table.linkSense(w) {
-                anySense.remove(link)
-                senses[link] = sense
-            }
+        // A certain reading: its sense of its base; the spelling itself may be any sense ("stolen").
+        if let sense = table.sense(of: reading) {
+            let anySense = isHomograph ? [] : keys.subtracting([reading.base])
+            return Occurrence(form: w, keys: keys, senses: [reading.base: sense], anySense: anySense)
         }
-        return Occurrence(form: w, keys: keys, senses: senses, anySense: anySense)
+        // Unsure: no word saved with a sense, whatever the bases (SPEC Shared logic). A name or an
+        // ordinary word ("the lights"): no sense of the table's verb ("light"), as written otherwise.
+        switch reading.kind {
+        case .unsure: return Occurrence(form: w, keys: keys, senses: [:], anySense: [])
+        default:
+            let verbBase: Set<String> = table.tableForms[w].map { [$0.base] } ?? []
+            return Occurrence(form: w, keys: keys, senses: [:], anySense: isHomograph ? [] : keys.subtracting(verbBase))
+        }
     }
 
     /// Whether each word of `text` (`words`: its `wordRanges`) is a form of a word in `index`,
