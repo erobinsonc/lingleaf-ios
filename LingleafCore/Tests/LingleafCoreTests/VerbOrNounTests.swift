@@ -24,6 +24,57 @@ final class VerbOrNounTests: XCTestCase {
         XCTAssertEqual(reading(word, sentence), Reading(kind: kind, base: base, step: step), "\(sentence) \(why)", file: file, line: line)
     }
 
+    func testTheBundledStoriesLeaveNothingUnsureAndTheLightsAreLights() throws {
+        let folder = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appending(path: "../../../Lingleaf/Resources/Books").standardizedFileURL
+        let books = try FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
+            .filter { $0.pathExtension == "txt" }
+        XCTAssertEqual(books.count, 3, "the bundled stories")
+        var unsure: [String] = []
+        var lights = 0
+        for book in books {
+            for paragraph in TextTools.splitParagraphs(try String(contentsOf: book, encoding: .utf8)) {
+                let words = Words(paragraph as NSString)
+                for i in words.ranges.indices {
+                    guard let reading = table.resolve(words, i) else { continue }
+                    let surface = words.surface(i)
+                    if reading.kind == .unsure { unsure.append("\(book.lastPathComponent): \(surface)") }
+                    if surface == "lights" {
+                        lights += 1
+                        XCTAssertEqual(reading.kind, .word, "the lights that guide")
+                    }
+                }
+            }
+        }
+        XCTAssertEqual(unsure, [])
+        XCTAssertGreaterThan(lights, 0, "the stories have lights")
+    }
+
+    /// The best of a few runs of reading every word of `text`, in nanoseconds.
+    private func bestNanos(_ text: String) -> UInt64 {
+        (0..<5).map { _ in
+            let start = DispatchTime.now().uptimeNanoseconds
+            let words = Words(text as NSString)
+            for i in words.ranges.indices { _ = table.resolve(words, i) }
+            return DispatchTime.now().uptimeNanoseconds - start
+        }.min() ?? 0
+    }
+
+    func testReadingEveryWordStaysLinearInTheParagraphsLength() {
+        // Homographs, capitalised forms and names everywhere, and a long run without punctuation:
+        // the worst cases for the rule (the finite-verb scan stops after 60 words).
+        for unit in ["Left left Rose saw Drew leaves, the Lay wound; Tom Read read. She left. ", "Tom lives in a small house by the sea "] {
+            let small = String(repeating: unit, count: TextTools.maxParagraph / unit.count)
+            let large = String(repeating: unit, count: 10 * TextTools.maxParagraph / unit.count)
+            _ = bestNanos(large)
+            let tSmall = bestNanos(small)
+            let tLarge = bestNanos(large)
+            // 10× the text: about 10× the time when linear, 100× when quadratic.
+            XCTAssertLessThanOrEqual(tLarge, 30 * tSmall + 50_000_000, "10× the text took \(tLarge / max(tSmall, 1))× the time")
+            XCTAssertLessThan(tLarge, 10_000_000_000, "\(large.count) characters took \(tLarge / 1_000_000) ms")
+        }
+    }
+
     func testTheWordListVersionsAgreeWithTheRangeOnes() {
         let text = "Turn left. She left; Uncle Drew had read it, and the wound bled."
         let ns = text as NSString

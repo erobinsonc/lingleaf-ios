@@ -15,7 +15,11 @@ let package = Package(
             name: "LingleafCoreTests",
             dependencies: ["LingleafCore"],
             // Shared with lingleaf-android (core/src/test/resources): identical files.
-            resources: [.copy("Resources/function-words-corpus.json"), .copy("Resources/homograph-corpus.json")]
+            resources: [
+                .copy("Resources/function-words-corpus.json"), .copy("Resources/homograph-corpus.json"),
+                // dictionary/: lingleaf-android's real answers (identical) and tear-reversed.json.
+                .copy("Resources/dictionary"),
+            ]
         ),
     ],
     // Swift 6 strict concurrency can come later; the app target also uses Swift 5 mode.

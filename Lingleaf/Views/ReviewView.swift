@@ -107,10 +107,13 @@ struct ReviewView: View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
                 // A helper or modal verb is saved as its verb group ("did not go").
-                Text(verbatim: model.state.displayName(word)).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
+                // Before "Show meaning", named without a meaning: recall first (SPEC S7).
+                Text(verbatim: model.state.displayName(word, withMeaning: revealed))
+                    .font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
-                    // A verb with the table's spoken base ("tare" for "tear"), a noun as written (SPEC S7).
-                    let spoken = word.kind == nil ? IrregularVerbs.shared.spokenHeadword(word.word, sense: word.sense) : word.word
+                    // A verb with the table's spoken base ("tare" for "tear"), a noun as written, a word
+                    // saved unsure in each reading (SPEC S7).
+                    let spoken = word.kind == nil ? IrregularVerbs.shared.spokenSaved(word) : word.word
                     model.speaker.speak(spoken, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill").labelStyle(.iconOnly).font(.title)
@@ -121,6 +124,13 @@ struct ReviewView: View {
             if revealed {
                 meaning(word)
             } else {
+                // Named by its sense ("to lie"): the sentence tells which, its translation not yet.
+                if model.state.displayName(word, withMeaning: false) != word.word, !word.context.isEmpty,
+                   TextTools.normalize(word.context) != word.word {
+                    Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Button {
                     withAnimation { revealed = true }
                     announceMeaning(of: word)

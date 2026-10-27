@@ -98,8 +98,14 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
             let kept = meanings.prefix(2).compactMap { $0.bounded() }
             word.meanings = kept.isEmpty ? nil : kept
         }
+        // A word that has its meaning waits for nothing, however it got it.
+        if word.waitsForMeaning == true, word.hasMeaning { word.waitsForMeaning = nil }
         return word
     }
+
+    /// It has a meaning to review with: its translation (a word saved unsure has one once every
+    /// reading has its meaning).
+    public var hasMeaning: Bool { !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     public func isDue(_ now: Date) -> Bool { !learned && nextReview <= now && waitsForMeaning != true }
 }
@@ -186,18 +192,22 @@ public struct LibraryState: Equatable, Sendable {
         word(base, sense: sense) ?? sense.flatMap { _ in word(base, sense: nil).flatMap { $0.isUnsure ? nil : $0 } }
     }
 
-    /// How Words and Review name `word`: "to wind" / "the wind" when two senses of the spelling
-    /// are saved, else the word.
-    /// Two verb senses show their first meaning: "to lie (estar acostado, tumbarse)" / "to lie (mentir)"
-    /// (the table's in Spanish, else the translated one). Only when two of the spelling have a sense.
-    public func displayName(_ word: VocabWord) -> String {
+    /// How Words and Review name `word` (SPEC S4): its spelling, or "to wind" / "the wind" when
+    /// another sense of the spelling is saved too, or always for a spelling that is also another
+    /// word (a homograph, a base mostly a noun, a verb with a twin). Two verb senses add their first
+    /// meaning: "to lie (estar acostado, tumbarse)" / "to lie (mentir)" (the table's in Spanish, else
+    /// the first group of the translated one), except `withMeaning` false (Review's prompt).
+    public func displayName(_ word: VocabWord, withMeaning: Bool = true) -> String {
+        guard let sense = word.sense else { return word.word }
         let others = words.filter { $0.word == word.word && $0.sense != nil && $0.id != word.id }
-        guard let sense = word.sense, !others.isEmpty else { return word.word }
+        guard !others.isEmpty || IrregularVerbs.shared.namesItsSense(word.word) else { return word.word }
         if sense == Sense.noun { return "the \(word.word)" }
-        guard others.contains(where: { $0.sense != Sense.noun }) else { return "to \(word.word)" }
+        // Review's prompt names it without its meaning: recall comes first (SPEC S7).
+        guard withMeaning, others.contains(where: { $0.sense != Sense.noun }) else { return "to \(word.word)" }
+        let translated = word.translation.components(separatedBy: " · ").first?.trimmingCharacters(in: .whitespaces) ?? ""
         let meaning = ReadingTranslation.isSpanish(settings.targetLanguage)
             ? IrregularVerbs.shared.spanishMeaning(of: word.word, sense: sense, all: false)
-            : word.translation.isEmpty ? nil : word.translation
+            : translated.isEmpty ? nil : translated
         return meaning.map { "to \(word.word) (\($0))" } ?? "to \(word.word)"
     }
 
@@ -372,7 +382,7 @@ public final class Library {
     /// For a helper or modal verb, `word` is its verb group and `kind`/`base` say what it is.
     /// A word read in its sentence has a `sense` (SPEC S4); one saved while its sentence didn't
     /// tell is the tapped form with `meanings`. Saving a sense of a form saved unsure (`form`)
-    /// replaces that record, keeping its review progress (undo with `restoreWords`).
+    /// replaces that record, keeping its review progress (undo with `undoChange`).
     @discardableResult
     public func saveWord(
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
@@ -453,6 +463,21 @@ public final class Library {
     /// Undo of several changes at once: puts back exactly `words` (a copy of `state.words`).
     public func restoreWords(_ words: [VocabWord]) {
         state.words = words.map { $0.bounded() }
+        save(state.words, "words.json")
+    }
+
+    /// Undo of one change on the card (`before` and `after` are `state.words` around it): takes out
+    /// the records it added or changed and puts back the ones it replaced (a word saved unsure that
+    /// a reading took the place of), leaving every other word as it is now.
+    public func undoChange(before: [VocabWord], after: [VocabWord]) {
+        let old = Set(before)
+        let new = Set(after)
+        let added = Set(after.filter { !old.contains($0) }.map(\.id))
+        var words = state.words.filter { !added.contains($0.id) }
+        for previous in before where !new.contains(previous) && !words.contains(where: { $0.id == previous.id }) {
+            words.append(previous.bounded())
+        }
+        state.words = words.sorted { $0.createdAt > $1.createdAt }
         save(state.words, "words.json")
     }
 

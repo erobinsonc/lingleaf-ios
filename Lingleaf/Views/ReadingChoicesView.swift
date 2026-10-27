@@ -82,10 +82,12 @@ struct ReadingChoicesView: View {
     }
 
     /// A meaning in `language`, tagged with it (VoiceOver reads it with that voice) and, among
-    /// English, isolated (a right-to-left language keeps its order). Empty stays empty.
+    /// English, isolated, each meaning of "irse · izquierda" on its own (a right-to-left language
+    /// keeps its order). Empty stays empty.
     static func meaningText(_ text: String, language: String?, isolated: Bool = true) -> AttributedString {
         guard !text.isEmpty else { return AttributedString() }
-        var meaning = AttributedString(isolated ? "\u{2068}\(text)\u{2069}" : text)
+        let shown = isolated ? text.components(separatedBy: " · ").map { "\u{2068}\($0)\u{2069}" }.joined(separator: " · ") : text
+        var meaning = AttributedString(shown)
         if let language { meaning.languageIdentifier = language }
         return meaning
     }

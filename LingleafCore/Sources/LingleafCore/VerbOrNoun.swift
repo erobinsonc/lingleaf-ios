@@ -200,6 +200,9 @@ struct Words {
 /// The verb-or-noun rule for one homograph, step by step (SPEC.md, steps 1–9; reference
 /// implementation shared with lingleaf-android).
 private struct Resolver {
+    /// The most words a clause is scanned for its finite verb (same as lingleaf-android).
+    static let maxClauseWords = 60
+
     let table: IrregularVerbs
     let h: Homograph
     let form: String
@@ -479,7 +482,8 @@ private extension Resolver {
     /// are common"); the clause ends at punctuation or a clause opener.
     func finiteVerbLater() -> Bool {
         var j = i + 1
-        while j < words.count {
+        // At most a long clause's words: a text without punctuation can't make every word scan to its end.
+        while j < min(words.count, i + 1 + Self.maxClauseWords) {
             if words.gap(j - 1, j).contains(where: { ",;:.!?—–()".contains($0) }) { return false }
             let t = words.token(j)
             if c.clauseOpeners.contains(t) || ["who", "which", "whose", "whom"].contains(t) { return false }

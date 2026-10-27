@@ -137,22 +137,28 @@ final class SensesTests: XCTestCase {
         XCTAssertEqual(chosen.box, progress.box, "review progress kept")
         XCTAssertEqual(chosen.nextReview, progress.nextReview)
         XCTAssertNil(chosen.meanings)
-        library.restoreWords(before)
-        XCTAssertEqual(library.state.words, before, "Undo puts it back")
+        let after = library.state.words
+        // Meanwhile another word is saved and translated: Undo leaves it.
+        library.saveWord("cat", learned: false, context: "The cat sat.")
+        library.setTranslation("cat", "gato", language: "es")
+        let cat = try XCTUnwrap(library.state.word("cat"))
+        library.undoChange(before: before, after: after)
+        XCTAssertEqual(Set(library.state.words), Set(before + [cat]), "Undo puts back only what the save touched")
+        XCTAssertNil(library.state.word("leave", sense: Sense.verb))
     }
 
     func testOneSpellingIsSavedOncePerSenseAndNamedByIt() {
         storage.files["settings.json"] = #"{"targetLanguage": "es"}"#
         let library = library()
         library.saveWord("wind", learned: false, sense: Sense.noun)
-        XCTAssertEqual(library.state.displayName(library.state.words[0]), "wind", "alone: as today")
+        XCTAssertEqual(library.state.displayName(library.state.words[0]), "the wind", "a homograph: always its sense")
         library.saveWord("wind", learned: false, sense: Sense.verb)
         library.saveWord("wind", learned: true, sense: Sense.verb)
         XCTAssertEqual(library.state.words.count, 2)
         let names = Set(library.state.words.map(library.state.displayName))
         XCTAssertEqual(names, ["to wind", "the wind"])
         library.saveWord("lie", learned: false, sense: Sense.verb)
-        XCTAssertEqual(library.state.displayName(library.state.word("lie", sense: Sense.verb)!), "lie", "one sense: as today")
+        XCTAssertEqual(library.state.displayName(library.state.word("lie", sense: Sense.verb)!), "to lie", "a verb with a twin")
         library.saveWord("lie", learned: false, sense: Sense.homonym)
         let lies = Set(library.state.words.filter { $0.word == "lie" }.map(library.state.displayName))
         XCTAssertEqual(lies, ["to lie (estar acostado, tumbarse)", "to lie (mentir)"], "two verb senses: their first meaning")
@@ -162,6 +168,58 @@ final class SensesTests: XCTestCase {
         XCTAssertEqual(translated, ["to lie", "to lie (mentir (pt))"], "another language: the translated meaning, when there is one")
         library.saveWord("odd", learned: false, sense: "colour")
         XCTAssertNil(library.state.word("odd")?.sense, "an unknown sense is not kept")
+    }
+
+    func testTwoVerbSensesAreNamedByTheFirstGroupOfTheTranslatedMeaning() throws {
+        storage.files["settings.json"] = #"{"targetLanguage": "es"}"#
+        let library = library()
+        library.saveWord("lie", learned: false, sense: Sense.verb)
+        library.saveWord("lie", learned: false, sense: Sense.homonym)
+        let twin = try XCTUnwrap(library.state.word("lie", sense: Sense.homonym))
+        XCTAssertEqual(library.state.displayName(twin), "to lie (mentir)")
+        XCTAssertEqual(library.state.displayName(twin, withMeaning: false), "to lie", "Review's prompt: no meaning before recall")
+        library.updateSettings { $0.targetLanguage = "fr" }
+        library.setTranslation("lie", "mentir · tromper", language: "fr", sense: Sense.homonym)
+        let fr = library.state
+        XCTAssertEqual(fr.displayName(try XCTUnwrap(fr.word("lie", sense: Sense.homonym))), "to lie (mentir)", "the first group")
+        XCTAssertEqual(fr.displayName(try XCTUnwrap(fr.word("lie", sense: Sense.verb))), "to lie", "no meaning yet")
+    }
+
+    func testASpellingThatIsAlsoAnotherWordIsAlwaysNamedByItsSense() throws {
+        let library = library()
+        library.saveWord("left", learned: false, sense: Sense.noun)
+        library.saveWord("lie", learned: false, sense: Sense.homonym)
+        library.saveWord("light", learned: false, sense: Sense.verb)
+        library.saveWord("leave", learned: false, sense: Sense.verb)
+        library.saveWord("wind", learned: false)
+        let state = library.state
+        func name(_ word: String, _ sense: String?) throws -> String { state.displayName(try XCTUnwrap(state.word(word, sense: sense))) }
+        XCTAssertEqual(try name("left", Sense.noun), "the left", "a homograph")
+        XCTAssertEqual(try name("lie", Sense.homonym), "to lie", "a verb with a twin")
+        XCTAssertEqual(try name("light", Sense.verb), "to light", "mostly a noun")
+        XCTAssertEqual(try name("leave", Sense.verb), "leave", "only a verb: its spelling")
+        XCTAssertEqual(try name("wind", nil), "wind", "saved without a sense: as before")
+        XCTAssertTrue(table.namesItsSense("Wind"))
+        XCTAssertFalse(table.namesItsSense("cat"))
+    }
+
+    func testReviewAndWordsSayAWordSavedUnsureInEachReading() {
+        func unsure(_ word: String, _ meanings: [(String, String)], sense: String? = nil) -> VocabWord {
+            var entry = VocabWord(
+                word: word, translation: "", translationLanguage: nil, phonetic: "", context: "", source: "",
+                learned: false, box: 0, createdAt: now, nextReview: now
+            )
+            entry.sense = sense
+            entry.meanings = meanings.isEmpty ? nil : meanings.map {
+                SavedMeaning(label: "", sense: $0.0, base: $0.1, text: "", language: nil)
+            }
+            return entry
+        }
+        XCTAssertEqual(table.spokenSaved(unsure("wound", [(Sense.noun, "wound"), (Sense.verb, "wind")])), "wound, wownd")
+        XCTAssertEqual(table.spokenSaved(unsure("left", [(Sense.verb, "leave"), (Sense.noun, "left")])), "left", "once when the same")
+        XCTAssertEqual(table.spokenSaved(unsure("lying", [(Sense.verb, "lie"), (Sense.homonym, "lie")])), "lying")
+        XCTAssertEqual(table.spokenSaved(unsure("tear", [], sense: Sense.verb)), "tare")
+        XCTAssertEqual(table.spokenSaved(unsure("tear", [])), "tear")
     }
 
     func testAWordSavedBeforeSensesBecomesTheSenseItIsSavedAs() {
@@ -358,16 +416,143 @@ final class SensesTests: XCTestCase {
         XCTAssertNil(library.state.word("feel"), "deleted since: not brought back")
     }
 
-    func testAWordChangedWhileCorrectionsRanIsLeftAlone() {
+    func testAWordChangedWhileCorrectionsRanIsLeftAlone() throws {
         let library = library()
         library.saveWord("leave", learned: false, context: "Turn left now.")
-        let words = library.beginCorrections() ?? []
-        XCTAssertNil(library.beginCorrections(), "the flag is written before anything is read")
-        let planned = Library.plannedCorrections(words, target: nil, now: now)
-        XCTAssertEqual(planned.count, 1)
+        let run = try XCTUnwrap(library.beginCorrections())
+        let planned = Library.plannedCorrections(run, target: nil, now: now)
+        XCTAssertEqual(planned.changes.count, 1)
         library.saveWord("leave", learned: true, context: "Turn left now.")
         XCTAssertTrue(library.applyCorrections(planned).isEmpty, "changed meanwhile: left as it is")
         XCTAssertEqual(library.state.word("leave")?.learned, true)
+        XCTAssertEqual(storage.read(Library.correctionsDone), "done")
+    }
+
+    func testAWordThatHasItsMeaningWaitsForNothing() throws {
+        let library = library()
+        library.saveWord("leave", learned: false, context: "Turn left at the bank.")
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(library.state.word("left", sense: Sense.noun)?.waitsForMeaning, true)
+        XCTAssertTrue(library.dueWords().isEmpty)
+        // Saved again from the card, with its translation.
+        library.saveWord("left", learned: false, translation: "izquierda", translationLanguage: "es", sense: Sense.noun)
+        XCTAssertNil(library.state.word("left", sense: Sense.noun)?.waitsForMeaning)
+        XCTAssertEqual(library.dueWords().map(\.id), ["left#noun"])
+        // A restored file can't keep a word with a meaning waiting.
+        let restored = MemoryStorage()
+        restored.files["corrections-v2"] = "done"
+        restored.files["words.json"] = """
+        [{"word": "cat", "translation": "gato", "translationLanguage": "es", "phonetic": "", "context": "", "source": "",
+          "learned": false, "box": 0, "createdAt": "2026-01-01T00:00:00Z", "nextReview": "2026-01-01T00:00:00Z",
+          "waitsForMeaning": true}]
+        """
+        let other = Library(storage: restored, now: { [unowned self] in self.now })
+        other.load()
+        XCTAssertNil(other.state.words.first?.waitsForMeaning)
+        XCTAssertEqual(other.dueWords().count, 1)
+    }
+
+    private func vocab(_ word: String, _ context: String, _ created: Date, box: Int = 0) -> VocabWord {
+        VocabWord(
+            word: word, translation: "x", translationLanguage: nil, phonetic: "", context: context, source: "",
+            learned: false, box: box, createdAt: created, nextReview: created
+        )
+    }
+
+    /// `words` as the saved file, read by a new library.
+    private func saved(_ words: [VocabWord]) -> Library {
+        let writer = library()
+        writer.state.words = words
+        writer.save(words, "words.json")
+        return library()
+    }
+
+    func testTiesAtARunsEndAreReadOnTheNextRun() {
+        let same = now
+        // "leave" comes after every "a…" of the same moment: past the first run's end.
+        let library = saved((0..<Library.maxCorrectedWords).map { vocab("a\($0)", "A cat.", same) }
+            + [vocab("leave", "Turn left at the bank.", same)])
+        XCTAssertEqual(library.state.words.count, Library.maxCorrectedWords + 1)
+        library.correctWordsIfNeeded()
+        XCTAssertTrue(storage.read(Library.correctionsDone)?.hasPrefix("after:") == true)
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(storage.read(Library.correctionsDone), "done")
+        XCTAssertNotNil(library.state.word("left", sense: Sense.noun))
+        XCTAssertNil(library.state.word("leave"))
+    }
+
+    func testAnUnsortedFileIsReadNewestFirstSoNothingIsSkipped() {
+        let old = now - 86_400 * 365
+        let library = saved((0..<Library.maxCorrectedWords).map { vocab("w\($0)", "A cat.", old) }
+            + [vocab("leave", "Turn left at the bank.", now)])
+        for _ in 0..<3 { library.correctWordsIfNeeded() }
+        XCTAssertEqual(storage.read(Library.correctionsDone), "done")
+        XCTAssertNotNil(library.state.word("left", sense: Sense.noun))
+    }
+
+    func testAHostileCorrectionsFlagStartsOver() {
+        let date = now.timeIntervalSinceReferenceDate
+        let flags = [
+            "after:", "after:zzzz", "after:" + String(repeating: "9", count: 100_000), "after:\(date)\t", "garbage",
+            "after:\(date)|left", "after:1e308\tx", "after:\(Date.distantPast.timeIntervalSinceReferenceDate)\tx",
+            "after:\(date + 1)\t" + String(repeating: "a", count: 201),
+        ]
+        for flag in flags {
+            storage.files.removeAll()
+            storage.files["corrections-v2"] = flag
+            let library = saved([vocab("leave", "Turn left at the bank.", now)])
+            library.correctWordsIfNeeded()
+            XCTAssertEqual(storage.read(Library.correctionsDone), "done", String(flag.prefix(12)))
+            XCTAssertNotNil(library.state.word("left", sense: Sense.noun), String(flag.prefix(12)))
+        }
+        storage.files["corrections-v2"] = "1"
+        XCTAssertNil(library().beginCorrections(), "done before runs")
+    }
+
+    func testEachRunCorrectsAtMostWhatUndoCanHold() throws {
+        let records = (1..<Library.maxCorrections).map { #"{"from": "a\#($0)", "to": "b"}"# }.joined(separator: ",")
+        storage.files["corrections.json"] = #"{"corrections": [\#(records)], "changes": []}"#
+        var library = saved([vocab("leave", "Turn left at the bank.", now), vocab("feel", "The felt hat.", now - 86_400)])
+        XCTAssertEqual(library.state.corrections.count, Library.maxCorrections - 1)
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(library.state.corrections.count, Library.maxCorrections)
+        XCTAssertNotNil(library.state.word("left", sense: Sense.noun))
+        XCTAssertNotNil(library.state.word("feel"), "no room left to undo it: the next run")
+        let cursor = try XCTUnwrap(storage.read(Library.correctionsDone))
+        XCTAssertTrue(cursor.hasPrefix("after:"))
+        library = self.library()
+        XCTAssertTrue(library.correctWordsIfNeeded().isEmpty, "no room at all: nothing read")
+        XCTAssertEqual(storage.read(Library.correctionsDone), cursor, "and the cursor is kept")
+        library.closeCorrections()
+        library.correctWordsIfNeeded()
+        XCTAssertNotNil(library.state.word("felt", sense: Sense.noun))
+        XCTAssertEqual(storage.read(Library.correctionsDone), "done")
+    }
+
+    func testCorrectionsOfTwoRunsAreOneCardAndUndoPutsBackBoth() throws {
+        let library = saved([vocab("think", "They found it, the old thought.", now), vocab("leave", "Turn left now.", now - 60)])
+        let before = library.state.words
+        let run = try XCTUnwrap(library.beginCorrections())
+        // As if Undo had room for one only.
+        let first = Library.plannedCorrections(CorrectionsRun(words: run.words, eligible: run.eligible, room: 1), target: nil, now: now)
+        library.applyCorrections(first)
+        XCTAssertEqual(library.state.corrections, [Correction(from: "think", to: "thought")])
+        let next = self.library()
+        XCTAssertEqual(next.correctWordsIfNeeded(), [Correction(from: "leave", to: "left")], "the next launch: the rest")
+        XCTAssertEqual(next.state.corrections.count, 2, "added to the card still open")
+        next.undoCorrections()
+        XCTAssertEqual(Set(next.state.words), Set(before), "Undo puts back both runs")
+    }
+
+    func testUndoDoesntBringBackAWordMergedIntoOneDeletedSince() {
+        var left = vocab("left", "", now)
+        left.sense = Sense.noun
+        let library = saved([vocab("leave", "Turn left.", now - 60), left])
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(library.loadCorrections()?.changes.first?.mergedInto, "left#noun")
+        library.deleteWord("left", sense: Sense.noun)
+        library.undoCorrections()
+        XCTAssertTrue(library.state.words.isEmpty)
     }
 
     func testACorrectedVerbGetsTheTablesMeaningAndIPAAndAnotherLinkKeepsAWord() throws {

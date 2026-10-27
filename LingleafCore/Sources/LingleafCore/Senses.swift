@@ -109,6 +109,28 @@ extension IrregularVerbs {
         return verb(base: TextTools.normalize(word))?.spokenAs["base"] ?? word
     }
 
+    /// What Listen in Review and Words says for a saved word (SPEC S7): a word saved unsure, its
+    /// form in each saved reading (once when they sound the same), as on the card; else
+    /// `spokenHeadword`.
+    public func spokenSaved(_ word: VocabWord) -> String {
+        guard word.isUnsure, let meanings = word.meanings else { return spokenHeadword(word.word, sense: word.sense) }
+        let form = word.form ?? word.word
+        let spoken = meanings.map { meaning in
+            let kind: Reading.Kind = meaning.sense == Sense.noun ? .noun : meaning.sense == Sense.homonym ? .homonym : .verb
+            return spokenForm(of: form, as: ReadingChoice(kind: kind, base: meaning.base, sense: meaning.sense))
+        }
+        return spoken.reduce(into: [String]()) { out, said in if !out.contains(said) { out.append(said) } }.joined(separator: ", ")
+    }
+
+    /// Whether a word saved with a sense is always named by it in Words and Review ("to wind",
+    /// "the left", "to lie"; SPEC S4): a homograph of the table, a base used mostly as a noun
+    /// (`nounFirst`) or one with a regular twin.
+    public func namesItsSense(_ word: String) -> Bool {
+        let w = TextTools.normalize(word)
+        let entry = verb(base: w)
+        return homographs[w] != nil || entry?.nounFirst == true || entry?.homonym != nil
+    }
+
     /// The table's Spanish meanings of a verb (or its homonym's): all of them joined with " · ",
     /// or only the first group; nil for a verb the table doesn't have.
     public func spanishMeaning(of base: String, sense: String = Sense.verb, all: Bool = true) -> String? {

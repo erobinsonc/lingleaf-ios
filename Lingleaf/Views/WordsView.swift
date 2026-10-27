@@ -133,7 +133,7 @@ private struct WordRow: View {
             .accessibilityElement(children: .combine)
             Spacer()
             Button {
-                let spoken = word.kind == nil ? IrregularVerbs.shared.spokenHeadword(word.word, sense: word.sense) : word.word
+                let spoken = word.kind == nil ? IrregularVerbs.shared.spokenSaved(word) : word.word
                 model.speaker.speak(spoken, rate: model.state.settings.speechRate)
             } label: {
                 Label { Text("Listen to \(word.word)") } icon: { Image(systemName: "speaker.wave.2") }.labelStyle(.iconOnly)

@@ -565,11 +565,13 @@ struct WordCardView: View {
         finish(String(localized: "“\(savedName)” removed from Words"), before: before)
     }
 
-    /// Undo puts every saved word back as it was: also a word saved unsure that a reading replaced.
+    /// Undo puts back only what this change touched: the word as it was, and a word saved unsure
+    /// that a reading replaced; a word saved or translated since stays.
     private func finish(_ text: String, before: [VocabWord]) {
         let library = model.library
+        let after = library.state.words
         onAction(UndoMessage(text: text, seconds: 4) {
-            library.restoreWords(before)
+            library.undoChange(before: before, after: after)
         })
         dismiss()
     }

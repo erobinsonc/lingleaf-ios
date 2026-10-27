@@ -25,6 +25,22 @@ struct CorrectionsRecord: Codable {
     var changes: [CorrectionChange]
 }
 
+/// The saved words one run of the corrections reads (`Library.beginCorrections`).
+public struct CorrectionsRun: Sendable {
+    /// Newest first, at most `Library.maxCorrectedWords`.
+    let words: [VocabWord]
+    /// How many words are still to read, these and the next runs'.
+    let eligible: Int
+    /// How many more corrections Undo can hold.
+    let room: Int
+}
+
+/// What a run changes (`Library.plannedCorrections`) and the flag for after it (nil: kept).
+public struct CorrectionsPlan: Sendable {
+    let changes: [(VocabWord, VocabWord)]
+    let progress: String?
+}
+
 /// A reading of a word saved unsure whose meaning is still to be translated.
 public struct MeaningRequest: Equatable, Sendable {
     /// The saved word's `id`.
@@ -36,8 +52,12 @@ public struct MeaningRequest: Equatable, Sendable {
 
 extension Library {
     static let correctionsFile = "corrections.json"
+    /// "done" (or "1", before runs), or "after:" and where the next run starts.
     static let correctionsDone = "corrections-v2"
-    /// Most corrections kept, and most words read again in one run (same limits as lingleaf-android).
+    static let correctionsAfter = "after:"
+    static let maxCursorID = 200
+    /// Most corrections kept (what Undo can hold: a run stops there), and most words read again in
+    /// one run (same limits as lingleaf-android).
     static let maxCorrections = 1000
     static let maxCorrectedWords = 5000
 
@@ -72,29 +92,70 @@ extension Library {
         return record
     }
 
-    /// Once after updating (SPEC S18): the saved words to read again, or nil when that is done or
-    /// can't be done. The flag is written now, before anything is read or saved, so a correction
-    /// that crashes doesn't run on every launch; not at all when the table didn't load.
-    public func beginCorrections() -> [VocabWord]? {
-        guard storage.read(Self.correctionsDone) == nil, !IrregularVerbs.shared.verbs.isEmpty else { return nil }
-        storage.write(Self.correctionsDone, "1")
-        return Array(state.words.prefix(Self.maxCorrectedWords))
+    /// After updating (SPEC S18), one run per launch: the saved words still to read again, newest
+    /// first (ties by id), at most `maxCorrectedWords`, and how many more corrections Undo can
+    /// hold; nil when that is done or can't be done (the table didn't load). A flag that isn't
+    /// "done" (or "1", before runs) or a readable "after:" starts over.
+    public func beginCorrections() -> CorrectionsRun? {
+        let flag = storage.read(Self.correctionsDone)
+        guard flag != "done", flag != "1", !IrregularVerbs.shared.verbs.isEmpty else { return nil }
+        let cursor = flag.flatMap(Self.cursor)
+        let eligible = state.words.sorted(by: Self.newestFirst).filter { word in
+            cursor.map { word.createdAt < $0.0 || (word.createdAt == $0.0 && word.id > $0.1) } ?? true
+        }
+        return CorrectionsRun(
+            words: Array(eligible.prefix(Self.maxCorrectedWords)), eligible: eligible.count,
+            room: max(Self.maxCorrections - state.corrections.count, 0)
+        )
     }
 
-    /// Each word read again in its sentence, as it was and what it becomes; pure, so it can run off
-    /// the main thread.
-    public static func plannedCorrections(_ words: [VocabWord], target: String?, now: Date) -> [(VocabWord, VocabWord)] {
-        words.compactMap { word in corrected(word, target: target, now: now).map { (word, $0) } }
+    private static func newestFirst(_ a: VocabWord, _ b: VocabWord) -> Bool {
+        a.createdAt != b.createdAt ? a.createdAt > b.createdAt : a.id < b.id
     }
 
-    /// Applies `planned` (from `plannedCorrections`) to the words as they are now: a word changed
-    /// meanwhile is left alone; one that becomes a word already saved merges into it.
+    /// "after:752000000.25\tleft#noun" (seconds since 2001, exact, and the id) → its date and id;
+    /// nil for anything else.
+    private static func cursor(_ flag: String) -> (Date, String)? {
+        guard flag.hasPrefix(correctionsAfter) else { return nil }
+        let value = flag.dropFirst(correctionsAfter.count)
+        guard let tab = value.firstIndex(of: "\t"), let seconds = Double(value[..<tab]), seconds.isFinite else { return nil }
+        let id = String(value[value.index(after: tab)...])
+        let date = Date(timeIntervalSinceReferenceDate: seconds)
+        guard !id.isEmpty, id.count <= maxCursorID, dateRange.contains(date) else { return nil }
+        return (date, id)
+    }
+
+    /// Each word of `run` read again in its sentence, as it was and what it becomes, until Undo
+    /// has no room for more; and the flag for after it. Pure, so it can run off the main thread.
+    public static func plannedCorrections(_ run: CorrectionsRun, target: String?, now: Date) -> CorrectionsPlan {
+        var changes: [(VocabWord, VocabWord)] = []
+        var read = 0
+        for word in run.words {
+            if changes.count >= run.room { break }
+            read += 1
+            if let after = corrected(word, target: target, now: now) { changes.append((word, after)) }
+        }
+        let progress: String? = if read == run.eligible {
+            "done"
+        } else if read == 0 {
+            // No room to undo anything: the next launch, once the card is closed.
+            nil
+        } else {
+            correctionsAfter + "\(run.words[read - 1].createdAt.timeIntervalSinceReferenceDate)\t\(run.words[read - 1].id)"
+        }
+        return CorrectionsPlan(changes: changes, progress: progress)
+    }
+
+    /// Applies `plan` to the words as they are now: a word changed or deleted meanwhile is left
+    /// alone; one that becomes a word already saved merges into it. The flag is written first, so
+    /// a crash while saving doesn't run the same words on every launch.
     @discardableResult
-    public func applyCorrections(_ planned: [(VocabWord, VocabWord)]) -> [Correction] {
+    public func applyCorrections(_ plan: CorrectionsPlan) -> [Correction] {
+        if let progress = plan.progress { storage.write(Self.correctionsDone, progress) }
         var words = state.words
         var corrections: [Correction] = []
         var changes: [CorrectionChange] = []
-        for (before, after) in planned {
+        for (before, after) in plan.changes {
             guard let index = words.firstIndex(where: { $0.id == before.id }), words[index] == before else { continue }
             words.remove(at: index)
             if words.contains(where: { $0.id == after.id }) {
@@ -106,19 +167,24 @@ extension Library {
             corrections.append(Correction(from: before.word, to: after.word))
         }
         guard !corrections.isEmpty else { return [] }
+        // Added to the card of an earlier run still open.
+        let open = loadCorrections()
         state.words = words.sorted { $0.createdAt > $1.createdAt }
-        state.corrections = Array(corrections.prefix(Self.maxCorrections))
+        state.corrections = Array(((open?.corrections ?? []) + corrections).prefix(Self.maxCorrections))
         save(state.words, "words.json")
-        save(CorrectionsRecord(corrections: state.corrections, changes: Array(changes.prefix(Self.maxCorrections))), Self.correctionsFile)
+        let record = CorrectionsRecord(
+            corrections: state.corrections, changes: Array(((open?.changes ?? []) + changes).prefix(Self.maxCorrections))
+        )
+        save(record, Self.correctionsFile)
         return corrections
     }
 
-    /// `beginCorrections`, `plannedCorrections` and `applyCorrections` at once (tests, and when
-    /// there is no other thread to use).
+    /// `beginCorrections`, `plannedCorrections` and `applyCorrections` at once, for one batch
+    /// (tests, and when there is no other thread to use).
     @discardableResult
     public func correctWordsIfNeeded() -> [Correction] {
-        guard let words = beginCorrections() else { return [] }
-        return applyCorrections(Self.plannedCorrections(words, target: state.settings.targetLanguage, now: now()))
+        guard let run = beginCorrections() else { return [] }
+        return applyCorrections(Self.plannedCorrections(run, target: state.settings.targetLanguage, now: now()))
     }
 
     /// `word` read again in its sentence, or nil when it stays as it is.
