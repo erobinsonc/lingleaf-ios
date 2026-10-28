@@ -250,15 +250,18 @@ extension Library {
     public func undoCorrections() {
         guard let record = loadCorrections() else { return }
         var words = state.words
-        for change in record.changes.reversed() {
+        // What can be undone: an entry still as the correction left it, or one merged into an
+        // entry still there. Every such entry leaves first, so an original whose id another
+        // correction took ("left" saved unsure from "leave") comes back too.
+        let undone = record.changes.filter { change in
             if let after = change.after {
-                guard let index = words.firstIndex(where: { $0.id == after.id }),
-                      Self.sameProgress(words[index], after) else { continue }
-                words.remove(at: index)
-            } else if let target = change.mergedInto, !words.contains(where: { $0.id == target }) {
-                continue
+                return words.contains { $0.id == after.id && Self.sameProgress($0, after) }
             }
-            guard !words.contains(where: { $0.id == change.before.id }) else { continue }
+            return change.mergedInto.map { target in words.contains { $0.id == target } } ?? false
+        }
+        let leaving = Set(undone.compactMap { $0.after?.id })
+        words.removeAll { leaving.contains($0.id) }
+        for change in undone.reversed() where !words.contains(where: { $0.id == change.before.id }) {
             words.append(change.before.bounded())
         }
         state.words = words.sorted { $0.createdAt > $1.createdAt }
