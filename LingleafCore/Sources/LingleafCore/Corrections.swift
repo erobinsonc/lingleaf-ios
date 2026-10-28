@@ -155,9 +155,13 @@ extension Library {
         var words = state.words
         var corrections: [Correction] = []
         var changes: [CorrectionChange] = []
-        for (before, after) in plan.changes {
-            guard let index = words.firstIndex(where: { $0.id == before.id }), words[index] == before else { continue }
-            words.remove(at: index)
+        // Only words still as they were read; all of them leave first, so a word merges only into
+        // an entry that stays ("leave" → "left" while that "left" itself becomes "leave").
+        let current = Dictionary(words.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        let valid = plan.changes.filter { before, _ in current[before.id] == before }
+        let leaving = Set(valid.map { $0.0.id })
+        words.removeAll { leaving.contains($0.id) }
+        for (before, after) in valid {
             if words.contains(where: { $0.id == after.id }) {
                 changes.append(CorrectionChange(before: before, after: nil, mergedInto: after.id))
             } else {
