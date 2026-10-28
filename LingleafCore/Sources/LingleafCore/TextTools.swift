@@ -258,7 +258,10 @@ public enum TextTools {
             return filtered(homographBase(homograph, table.resolve(words, i)).map { [$0] } ?? [], w)
         }
         guard let link = table.formToBase[w] else { return candidates(w, link: nonVerb[w]) }
-        switch table.resolve(words, i)?.kind {
+        let reading = table.resolve(words, i)
+        // The twin's noun ("his lies"): its noun only.
+        if let reading, reading.step == .twinNoun { return filtered([reading.base], w) }
+        switch reading?.kind {
         // The regular twin's sense: its base alone ("lied" → "lie").
         case .homonym?: return filtered([link], w)
         // An ordinary word: no table link; the -s rules, none for -ing ("the lights" → "light", "a meeting").
@@ -273,7 +276,8 @@ public enum TextTools {
     /// share ("tears" → "tear"), else none.
     private static func homographBase(_ homograph: Homograph, _ reading: Reading?) -> String? {
         guard let reading, reading.kind != .unsure else { return homograph.noun == homograph.verb ? homograph.verb : nil }
-        return reading.base
+        // An expression ("bound for") is saved as its text, with no base form.
+        return reading.kind == .expression ? nil : reading.base
     }
 
     private static func filtered(_ bases: [String], _ w: String) -> [String] {

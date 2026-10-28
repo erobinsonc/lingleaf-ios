@@ -273,7 +273,7 @@ final class SensesTests: XCTestCase {
 
     func testReadingsAreTranslatedAsToOrTheAndCleanedAgain() {
         XCTAssertEqual(ReadingTranslation.source(word: "leave", sense: Sense.verb), "to leave")
-        XCTAssertEqual(ReadingTranslation.source(word: "lie", sense: Sense.homonym), "to lie")
+        XCTAssertEqual(ReadingTranslation.source(word: "lie", sense: Sense.homonym), "to tell a lie", "the twin's own English query")
         XCTAssertEqual(ReadingTranslation.source(word: "left", sense: Sense.noun), "the left")
         XCTAssertEqual(ReadingTranslation.source(word: "cat", sense: nil), "cat")
         XCTAssertEqual(ReadingTranslation.cleaned("la izquierda", noun: true, language: "es"), "izquierda")

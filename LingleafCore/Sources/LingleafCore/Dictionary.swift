@@ -108,12 +108,26 @@ public actor DictionaryClient {
     /// nothing; when the base has none of that part of speech, the word as tapped, else nothing
     /// (never another part of speech's). The regular twin's sense has no definition; unsure or an ordinary word is as
     /// without a reading.
-    public func lookup(_ word: String, reading: Reading? = nil) async -> DictionaryEntry? {
+    /// A noun of tear, lead or wind takes the entry pronounced `nounIPA` (its sentence's,
+    /// `IrregularVerbs.nounIPA`), none when nothing proves it; the twin's noun ("lies": a lie) has
+    /// none; an expression ("bound for"), the adjective's definition of the word.
+    public func lookup(_ word: String, reading: Reading? = nil, nounIPA: String? = nil) async -> DictionaryEntry? {
         let w = TextTools.normalize(word)
+        let table = IrregularVerbs.shared
         if let reading, reading.kind == .homonym { return nil }
+        if let reading, reading.kind == .noun, table.twinNounEs(reading.base) != nil { return nil }
+        if let reading, reading.kind == .expression {
+            return await get(w)?.first { $0.partOfSpeech?.lowercased() == "adjective" }
+        }
+        if let reading, reading.kind == .noun, table.hasNounIPA(w) {
+            guard let nounIPA else { return nil }
+            return await get(TextTools.normalize(reading.base))?.first { entry in
+                entry.partOfSpeech?.lowercased() == "noun" && entry.phonetics.contains { DictionaryEntry.sameIPA($0, nounIPA) }
+            }
+        }
         if let reading, reading.kind == .verb || reading.kind == .noun {
             let partOfSpeech = reading.kind == .verb ? "verb" : "noun"
-            let ipa = reading.kind == .verb ? IrregularVerbs.shared.verb(base: reading.base)?.ipa["base"] : nil
+            let ipa = reading.kind == .verb ? table.verb(base: reading.base)?.ipa["base"] : nil
             let matching = (await get(reading.base) ?? []).filter { $0.partOfSpeech?.lowercased() == partOfSpeech }
             if !matching.isEmpty {
                 // The table's IPA says which entry: none pronounced so, no definition (the card shows the table's IPA).

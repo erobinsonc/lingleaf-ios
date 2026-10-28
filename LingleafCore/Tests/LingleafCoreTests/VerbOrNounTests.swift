@@ -161,12 +161,12 @@ final class VerbOrNounTests: XCTestCase {
         XCTAssertFalse(Reading(kind: .word, base: "lights", step: .ordinary).isVerb)
     }
 
-    func testFixedPhrasesAndBound() {
+    func testFixedPhrasesAndExpressions() {
         assertReading("left", "He looked right and left.", .noun, "left", .fixed)
         assertReading("left", "He looked left and right.", .noun, "left", .fixed)
-        assertReading("bound", "The ship was bound for Spain.", .noun, "bound", .fixed)
-        assertReading("Bound", "Bound for London, the ship left.", .noun, "bound", .fixed, "not an opening participle")
-        assertReading("bound", "It is bound to rain.", .noun, "bound", .fixed)
+        assertReading("bound", "The ship was bound for Spain.", .expression, "bound for", .expression)
+        assertReading("Bound", "Bound for London, the ship left.", .expression, "bound for", .expression, "not an opening participle")
+        assertReading("bound", "It is bound to rain.", .expression, "bound to", .expression)
         assertReading("felt", "She wore a felt hat.", .noun, "felt", .fixed)
     }
 

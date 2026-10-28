@@ -220,8 +220,8 @@ extension Library {
             guard !TextTools.matchKeys(words, i).contains(word.word) else { return nil }
             corrected.word = token
             corrected.meanings = table.choices(words, i).map { choice in
-                let spanish = ReadingTranslation.isSpanish(target) && choice.kind != .noun
-                    ? table.spanishMeaning(of: choice.base, sense: choice.sense, all: false) : nil
+                let spanish = ReadingTranslation.isSpanish(target)
+                    ? table.tableMeaning(choice.kind, base: choice.base, form: choice.form, first: true) : nil
                 return SavedMeaning(label: choice.label, sense: choice.sense, base: choice.base, text: spanish ?? "",
                                     language: spanish == nil ? nil : target)
             }
@@ -229,13 +229,24 @@ extension Library {
         corrected.form = words.surface(i)
         corrected.formStart = words.ranges[i].start
         corrected.formEnd = words.ranges[i].end
-        // Translated again: a verb in Spanish from the table now, the rest later (S12).
+        // Translated again: a verb or an expression ("bound for") in Spanish from the table now, the
+        // rest later (S12).
         let sense = corrected.sense
-        let spanish = sense == Sense.noun || !ReadingTranslation.isSpanish(target) ? nil
-            : sense.flatMap { table.spanishMeaning(of: corrected.word, sense: $0) }
+        let spanish: String? = if !ReadingTranslation.isSpanish(target) {
+            nil
+        } else if reading.kind == .expression {
+            table.tableMeaning(.expression, base: corrected.word)
+        } else {
+            sense == Sense.noun ? nil : sense.flatMap { table.spanishMeaning(of: corrected.word, sense: $0) }
+        }
         corrected.translation = corrected.meanings.flatMap { joined($0, target) } ?? spanish ?? ""
         corrected.translationLanguage = corrected.translation.isEmpty ? nil : target
-        corrected.phonetic = sense == Sense.verb || sense == Sense.homonym ? table.baseIPA(corrected.word) ?? "" : ""
+        // A verb the table's IPA for its base; a noun of tear, lead or wind its sentence's.
+        corrected.phonetic = if sense == Sense.verb || sense == Sense.homonym {
+            table.baseIPA(corrected.word) ?? ""
+        } else {
+            sense == Sense.noun ? table.nounIPA(words, i).map { "/\($0)/" } ?? "" : ""
+        }
         // In Learning it starts again: it was rehearsed with a wrong meaning. Due now, once it has one.
         if !corrected.learned {
             corrected.box = 0
@@ -283,22 +294,23 @@ extension Library {
     // MARK: Translations of readings
 
     /// Fills in, from the table, what needs no translator in `target` (Spanish): a saved verb's
-    /// meanings and a verb reading of a word saved unsure.
+    /// meanings, an expression's ("bound for"), the twin's noun's ("lie": "mentira") and the
+    /// readings of a word saved unsure.
     public func fillTableTranslations(_ target: String) {
         guard ReadingTranslation.isSpanish(target) else { return }
         let table = IrregularVerbs.shared
         for var word in state.words where word.kind == nil {
             var changed = false
-            if let sense = word.sense, sense != Sense.noun, word.translation.isEmpty || word.translationLanguage != target,
-               let spanish = table.spanishMeaning(of: word.word, sense: sense) {
+            if let kind = Self.readingKind(word), word.translation.isEmpty || word.translationLanguage != target,
+               let spanish = table.tableMeaning(kind, base: word.word) {
                 word.translation = spanish
                 word.translationLanguage = target
                 changed = true
             }
             if var meanings = word.meanings {
-                for index in meanings.indices where meanings[index].sense != Sense.noun
-                    && (meanings[index].text.isEmpty || meanings[index].language != target) {
-                    if let spanish = table.spanishMeaning(of: meanings[index].base, sense: meanings[index].sense, all: false) {
+                // The first group of the table's meaning: a verb's, the twin's or the twin's noun's ("mentira").
+                for index in meanings.indices where meanings[index].text.isEmpty || meanings[index].language != target {
+                    if let spanish = table.tableMeaning(Self.kind(of: meanings[index]), base: meanings[index].base, first: true) {
                         meanings[index].text = spanish
                         meanings[index].language = target
                         changed = true
@@ -312,13 +324,31 @@ extension Library {
         }
     }
 
-    /// The readings of words saved unsure still to translate into `target`.
+    /// The reading a saved word is, for its table meaning: its sense's, or an expression saved as
+    /// a unit ("bound for"); nil for any other word.
+    static func readingKind(_ word: VocabWord) -> Reading.Kind? {
+        switch word.sense {
+        case Sense.noun: .noun
+        case Sense.homonym: .homonym
+        case Sense.verb: .verb
+        default: word.meanings == nil && IrregularVerbs.shared.expression(word.word) != nil ? .expression : nil
+        }
+    }
+
+    /// The readings of words saved unsure still to translate into `target`, each as its sense's
+    /// English query ("to lie down", "the left").
     public func meaningsNeedingTranslation(_ target: String) -> [MeaningRequest] {
         state.words.flatMap { word in
-            (word.meanings ?? []).enumerated().compactMap { index, meaning in
-                meaning.text.isEmpty || meaning.language != target ? MeaningRequest(id: word.id, index: index, label: meaning.label) : nil
+            (word.meanings ?? []).enumerated().compactMap { index, meaning -> MeaningRequest? in
+                guard meaning.text.isEmpty || meaning.language != target else { return nil }
+                let query = IrregularVerbs.shared.query(Self.kind(of: meaning), base: meaning.base)
+                return MeaningRequest(id: word.id, index: index, label: query)
             }
         }
+    }
+
+    static func kind(of meaning: SavedMeaning) -> Reading.Kind {
+        meaning.sense == Sense.noun ? .noun : meaning.sense == Sense.homonym ? .homonym : .verb
     }
 
     /// Records the translation of a reading of a word saved unsure ("the left" → "la izquierda"),
@@ -329,6 +359,12 @@ extension Library {
         let cleaned = ReadingTranslation.cleaned(text, noun: meanings[index].sense == Sense.noun, language: language)
         meanings[index].text = cleaned
         meanings[index].language = language
+        // Two readings that come out the same each add their sense's gloss ("mentir (recline)").
+        if meanings.count == 2, meanings.allSatisfy({ $0.language == language && !$0.text.isEmpty }) {
+            let rows = meanings.map { ReadingChoice(kind: Self.kind(of: $0), base: $0.base, sense: $0.sense) }
+            let told = IrregularVerbs.shared.distinguished(rows, meanings.map(\.text))
+            for k in meanings.indices { meanings[k].text = told[k] ?? meanings[k].text }
+        }
         word.meanings = meanings
         word.translation = Self.joined(meanings, language) ?? word.translation
         word.translationLanguage = language

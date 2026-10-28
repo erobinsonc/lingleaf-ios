@@ -297,7 +297,7 @@ final class DictionaryTests: XCTestCase {
         let verb = await client.lookup("wound", reading: Reading(kind: .verb, base: "wind", step: .subject))
         XCTAssertEqual(verb?.definition, "To turn.")
         XCTAssertEqual(verb?.phonetic, "/waɪnd/", "the IPA of the entry the meaning is in")
-        let noun = await client.lookup("wind", reading: Reading(kind: .noun, base: "wind", step: .noun))
+        let noun = await client.lookup("wind", reading: Reading(kind: .noun, base: "wind", step: .noun), nounIPA: "wɪnd")
         XCTAssertEqual(noun?.definition, "Moving air.")
         let plain = await client.lookup("wind")
         XCTAssertEqual(plain?.definition, "Moving air.", "without a reading: the first meaning")
@@ -329,13 +329,15 @@ final class DictionaryTests: XCTestCase {
     func testAReadingTakesTheEntryPronouncedAsTheTableSaysAndNeverAnotherPartOfSpeech() async {
         XCTAssertNotNil(Self.fixture("tear-reversed"), "the fixtures ship with the tests")
         let client = Self.fixtureClient()
-        func lookup(_ word: String, _ kind: Reading.Kind, _ base: String, _ step: Reading.Step = .subject) async -> DictionaryEntry? {
-            await client.lookup(word, reading: Reading(kind: kind, base: base, step: step))
+        func lookup(
+            _ word: String, _ kind: Reading.Kind, _ base: String, _ step: Reading.Step = .subject, nounIPA: String? = nil
+        ) async -> DictionaryEntry? {
+            await client.lookup(word, reading: Reading(kind: kind, base: base, step: step), nounIPA: nounIPA)
         }
         let wind = await lookup("wound", .verb, "wind")
         XCTAssertTrue(wind?.definition?.hasPrefix("To turn coils") == true, "/waɪnd/, not /wɪnd/")
         XCTAssertEqual(wind?.phonetic, "/waɪnd/")
-        let windNoun = await lookup("wind", .noun, "wind", .noun)
+        let windNoun = await lookup("wind", .noun, "wind", .noun, nounIPA: "wɪnd")
         XCTAssertTrue(windNoun?.definition?.hasPrefix("Real or perceived") == true)
         let tear = await lookup("tore", .verb, "tear", .table)
         XCTAssertTrue(tear?.definition?.hasPrefix("To rend") == true, "/tɛɹ/ is the table's tɛr")

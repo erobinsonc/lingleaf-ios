@@ -6,14 +6,20 @@ import Foundation
 public struct Reading: Equatable, Sendable {
     public enum Kind: String, Sendable {
         /// `homonym`: the regular twin's sense ("lied": "lie", "mentir"); `word`: an ordinary word,
-        /// no table link and no sense ("the lights").
-        case noun, verb, homonym, word, unsure
+        /// no table link and no sense ("the lights"); `expression`: the form and the next word as a
+        /// unit ("bound for"), its base.
+        case noun, verb, homonym, word, expression, unsure
     }
 
     /// The step that decided (`unsure` when none did).
     public enum Step: String, Sendable, CaseIterable {
         case name, phrase, fixed, noun, participleOpen, base, participle, subject, nameS, subjectNoun, nounS, quantifier
-        case conjunction, table, quote, sSubject, ing, sense, ordinary, unsure
+        case conjunction, table, quote, sSubject, ing, sense, ordinary
+        /// v4: an expression; the twin's noun after a determiner ("his lies"); unsure between the
+        /// twin's noun and the verb ("She tells lies"), or between a mostly-noun verb and the word
+        /// as a noun ("The bell rings").
+        case expression, twinNoun, unsureNoun, unsureNounFirst
+        case unsure
     }
 
     public let kind: Kind
@@ -64,7 +70,7 @@ extension IrregularVerbs {
         // The steps for other forms look only at the words around; they need no homograph entry.
         let around = Homograph(
             form: form, noun: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
-            nounPair: nil, noTo: false, nounPhrases: [], subjectNounNext: nil
+            nounPair: nil, noTo: false, nounPhrases: [], subjectNounNext: nil, nounIpa: [], expressions: []
         )
         return Resolver(table: self, h: around, form: form, words: words, i: i).tableFormReading(tableForm)
     }
@@ -268,7 +274,8 @@ private struct Resolver {
         return nil
     }
 
-    /// 2. A listed phrase ("turn left", "left hand", "right and left"); "bound for", "bound to" + a verb.
+    /// 2. A listed phrase ("turn left", "left hand", "right and left"); an expression of the form
+    /// ("bound for", "bound to" + a verb): the unit.
     private func fixed() -> Reading? {
         let p1 = previous(1), p2 = previous(2), n1 = next(1), n2 = next(2)
         if h.noun != nil {
@@ -283,11 +290,17 @@ private struct Resolver {
                 }
             }
         }
-        if form == "bound", let n1 {
-            let toVerb = n1 == "to" && n2.map { table.bases.contains($0) || Verbs.regular.contains($0) } == true
-            if c.boundAdjective.contains(n1) || toVerb { return Reading(kind: .noun, base: "bound", step: .fixed) }
+        if let unit = expression(n1, n2) {
+            return Reading(kind: .expression, base: "\(form) \(unit.next)", step: .expression)
         }
         return nil
+    }
+
+    /// The form's expression the next words make ("bound for"; "bound to" + a base verb), else nil.
+    private func expression(_ n1: String?, _ n2: String?) -> Homograph.Expression? {
+        h.expressions.first { expression in
+            n1 == expression.next && (!expression.nextBase || n2.map { table.bases.contains($0) || Verbs.regular.contains($0) } == true)
+        }
     }
 
     /// 3. A noun after a determiner (+ one listed adjective); an -s form also after a quantifier or a preposition.
@@ -398,9 +411,8 @@ private extension Resolver {
     /// 3b. A participle opening the sentence, before a listed word or a word in -ly, with a comma later
     /// in the sentence ("Left alone, she cried"; not "Felt hats, …").
     func openingParticiple() -> Reading? {
-        // "Bound for London, …" is step 2.
-        guard h.rules.contains(.participle), words.startsSentence(i), let n1 = next(1), next(2) != form,
-              !(form == "bound" && c.boundAdjective.contains(n1)),
+        // "Bound for London, …" is an expression (step 2).
+        guard h.rules.contains(.participle), words.startsSentence(i), let n1 = next(1), next(2) != form, expression(n1, next(2)) == nil,
               c.participleOpenNext.contains(n1) || (n1.hasSuffix("ly") && n1.count > 3) else { return nil }
         let rest = words.ns.substring(from: words.ranges[i].end)
         let clause = rest.prefix { !".!?".contains($0) }
@@ -529,6 +541,13 @@ private extension Resolver {
             || p1.map { $0.hasSuffix("'s") && !c.haveAndBe.contains($0) } == true
             || (p1.map(c.adjectives.contains) == true && p2.map(determiners.contains) == true)
         let proven = afterDeterminer ? nil : provenStep(entry, n1: n1, p1: p1)
+        // "The bell rings": a mostly-noun verb after a noun subject, no object (provenStep).
+        if proven == .unsureNounFirst { return Reading(kind: .unsure, base: entry.base, step: .unsureNounFirst) }
+        // "lies" can be the twin's noun ("his lies"); unproven, unsure between that noun and the verb.
+        if let noun = entry.shared?.noun, entry.kind == .s {
+            if afterDeterminer { return Reading(kind: .noun, base: noun, step: .twinNoun) }
+            if proven == nil { return Reading(kind: .unsure, base: entry.base, step: .unsureNoun) }
+        }
         if let shared = entry.shared, !afterDeterminer {
             // lying, lies, hanging, hangs: the next word tells the sense.
             if let n1, shared.homonymBefore.contains(n1) { return Reading(kind: .homonym, base: entry.base, step: .sense) }
@@ -550,6 +569,7 @@ private extension Resolver {
             let k = head.index, t = head.token
             if entry.kind == .s {
                 if sSubject(entry, k, t, n1: n1) { return .sSubject }
+                if mostlyNounWithoutObject(entry, k, t, n1: n1) { return .unsureNounFirst }
             } else if c.beForms.contains(t) || c.ingAfter.contains(t) {
                 return .ing
             }
@@ -568,6 +588,17 @@ private extension Resolver {
             if clause.contains(",") { return .ing }
         }
         return nil
+    }
+
+    /// v4: an -s form of a mostly-noun base (`nounFirst`) after determiner (+ adjective) + a
+    /// singular noun opening the sentence or a clause, no object word after it and no finite verb
+    /// later ("The bell rings"): unsure between the verb and the word as a noun. Only when
+    /// `sSubject` didn't prove it.
+    func mostlyNounWithoutObject(_ entry: TableForm, _ k: Int, _ t: String, n1: String?) -> Bool {
+        guard table.verb(base: entry.base)?.nounFirst == true, entry.shared == nil, !c.sSubjects.contains(t), k == i - 1,
+              !words.titlecase(k), isNounWord(t), !isPlural(t), n1.map(c.objectStarts.contains) != true,
+              let d = nounPhraseStart(k), opensClause(d) else { return false }
+        return !finiteVerbLater()
     }
 
     /// An -s form after its subject (`k`, `t` the word before, past up to 2 adverbs).

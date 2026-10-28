@@ -45,6 +45,8 @@ struct WordCardView: View {
         if let function = selection.function { return function.base }
         // Unsure: the tapped word stays the headword, chosen reading or not.
         if isUnsure { return TextTools.normalize(selection.word) }
+        // An expression is shown as the unit ("bound for").
+        if let meaningReading, meaningReading.kind == .expression { return meaningReading.base }
         if let base = entry?.word { return base == TextTools.normalize(selection.word) ? selection.word : base }
         guard entryLoaded, let base = tableBase else { return selection.word }
         return base
@@ -82,6 +84,20 @@ struct WordCardView: View {
         return reading
     }
 
+    /// A noun of tear, lead or wind (`kind` noun): its pronunciation as its sentence proves it.
+    private func nounIPA(_ kind: Reading.Kind?) -> String? {
+        guard kind == .noun, let range = selection.rangeInSentence else { return nil }
+        return IrregularVerbs.shared.nounIPA(in: selection.sentence, at: range)
+    }
+
+    /// Each row's meaning, told apart when both read the same ("mentir (recline)").
+    private var rowMeanings: [String: String] {
+        let told = IrregularVerbs.shared.distinguished(choices, choices.map { choiceMeanings[$0.id] })
+        var out: [String: String] = [:]
+        for (choice, meaning) in zip(choices, told) { out[choice.id] = meaning }
+        return out
+    }
+
     /// The sense a certain reading saves with (SPEC S4); nil for a word that isn't a homograph.
     private var certainSense: String? {
         reading.flatMap { IrregularVerbs.shared.sense(of: $0) }
@@ -101,8 +117,13 @@ struct WordCardView: View {
     private var phonetic: String? {
         guard selection.function == nil else { return nil }
         let table = IrregularVerbs.shared
+        let kind = isUnsure ? chosen?.kind : meaningReading?.kind
+        // A noun of tear, lead or wind: only the pronunciation its sentence proves, never the dictionary's guess.
+        if kind == .noun, table.hasNounIPA(selection.word) { return nounIPA(kind).map { "/\($0)/" } }
         if isUnsure {
             guard let chosen else { return nil }
+            // The regular twin: the base's IPA from the table (lie /laɪ/).
+            if chosen.kind == .homonym { return table.baseIPA(chosen.base) }
             if chosen.kind != .noun, let ipa = table.ipa(of: selection.word, verb: chosen.base) { return ipa }
             return TextTools.normalize(selection.word) == chosen.base ? choiceEntry?.phonetic : nil
         }
@@ -127,7 +148,7 @@ struct WordCardView: View {
     /// A helper or modal verb means little alone ("did" → "hizo"): its verb group's translation.
     private var translation: String? {
         if selection.function != nil { return selection.chunk.flatMap { translations[TextTools.normalize($0)] } }
-        if isUnsure { return chosen.flatMap { choiceMeanings[$0.id] } }
+        if isUnsure { return chosen.flatMap { rowMeanings[$0.id] } }
         if meaningReading != nil { return translations[Self.readingKey] }
         return translations[TextTools.normalize(headword)] ?? translations[TextTools.normalize(selection.word)]
     }
@@ -203,7 +224,7 @@ struct WordCardView: View {
         .task(id: chosen) {
             guard let chosen else { return }
             choiceEntry = nil
-            choiceEntry = await model.dictionary.lookup(selection.word, reading: chosen.reading)
+            choiceEntry = await model.dictionary.lookup(selection.word, reading: chosen.reading, nounIPA: nounIPA(chosen.kind))
         }
         // A language chosen on this card (or changed with its menu) translates in place.
         .onChange(of: model.targetLanguage) { _, _ in
@@ -227,7 +248,7 @@ struct WordCardView: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
         ReadingChoicesView(
-            choices: choices, chosen: $chosen, meanings: choiceMeanings, language: translatedInto,
+            choices: choices, chosen: $chosen, meanings: rowMeanings, language: translatedInto,
             translating: translatedInto != nil && !translationFailed
         )
         .padding(.top, 4)
@@ -545,7 +566,7 @@ struct WordCardView: View {
     /// Both readings as the card shows them, for a word saved unsure.
     private var savedMeanings: [SavedMeaning] {
         choices.map { choice in
-            let text = choiceMeanings[choice.id] ?? ""
+            let text = rowMeanings[choice.id] ?? ""
             return SavedMeaning(label: choice.label, sense: choice.sense, base: choice.base, text: text,
                                 language: text.isEmpty ? nil : translatedInto)
         }
@@ -553,7 +574,8 @@ struct WordCardView: View {
 
     /// "irse, salir · izquierda" once both meanings are there.
     private var joinedMeanings: String? {
-        let texts = choices.compactMap { choiceMeanings[$0.id] }.filter { !$0.isEmpty }
+        let meanings = rowMeanings
+        let texts = choices.compactMap { meanings[$0.id] }.filter { !$0.isEmpty }
         return texts.count == choices.count ? texts.joined(separator: " · ") : nil
     }
 
@@ -584,12 +606,13 @@ struct WordCardView: View {
         let dictionary = model.dictionary
         let word = selection.word
         let reading = meaningReading
+        let ipa = nounIPA(reading?.kind)
         // A helper or modal verb needs no dictionary: its definition and IPA would be the
         // base form's ("do"), not what the learner sees ("didn't go").
         let skip = selection.function != nil || isUnsure
         let task = Task { () -> DictionaryEntry? in
             if skip { return nil }
-            return await dictionary.lookup(word, reading: reading)
+            return await dictionary.lookup(word, reading: reading, nounIPA: ipa)
         }
         lookup = task
         startTranslation()
@@ -602,15 +625,17 @@ struct WordCardView: View {
         }
     }
 
-    /// What to translate for a reading's meaning ("to leave", "the left"), or nil when the table
-    /// already has it in the target language (Spanish), which is then filled in.
-    private func readingSource(kind: Reading.Kind, base: String, target: String, all: Bool) -> (text: String?, direct: String?) {
-        let sense = kind == .noun ? Sense.noun : kind == .homonym ? Sense.homonym : Sense.verb
-        if kind != .noun, ReadingTranslation.isSpanish(target),
-           let spanish = IrregularVerbs.shared.spanishMeaning(of: base, sense: sense, all: all) {
+    /// What to translate for a reading's meaning (its sense's English query: "to leave", "to lie
+    /// down", "the left", "heading for"), or nil when the table already has it in the target
+    /// language (Spanish), which is then filled in.
+    private func readingSource(
+        kind: Reading.Kind, base: String, form: String? = nil, target: String, all: Bool
+    ) -> (text: String?, direct: String?) {
+        let table = IrregularVerbs.shared
+        if ReadingTranslation.isSpanish(target), let spanish = table.tableMeaning(kind, base: base, form: form, first: !all) {
             return (nil, spanish)
         }
-        return (ReadingTranslation.source(word: base, sense: sense), nil)
+        return (table.query(kind, base: base), nil)
     }
 
     /// The texts to translate, by identifier: the word (or its reading), each unsure reading, and
@@ -625,7 +650,7 @@ struct WordCardView: View {
             texts["word"] = wordSource
         }
         for choice in choices {
-            let source = readingSource(kind: choice.kind, base: choice.base, target: target, all: false)
+            let source = readingSource(kind: choice.kind, base: choice.base, form: choice.form, target: target, all: false)
             if let direct = source.direct { choiceMeanings[choice.id] = direct }
             if let text = source.text { texts["choice:\(choice.id)"] = text }
         }

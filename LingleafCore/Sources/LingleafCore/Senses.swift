@@ -46,6 +46,15 @@ public struct ReadingChoice: Equatable, Sendable, Identifiable {
     public let kind: Reading.Kind
     public let base: String
     public let sense: String
+    /// The form as tapped, when its slot changes the verb's meaning ("lies": "estar, encontrarse").
+    public let form: String?
+
+    public init(kind: Reading.Kind, base: String, sense: String, form: String? = nil) {
+        self.kind = kind
+        self.base = base
+        self.sense = sense
+        self.form = form
+    }
 
     public var id: String { "\(sense):\(base)" }
 
@@ -70,12 +79,21 @@ extension IrregularVerbs {
         let form = words.token(i)
         guard let reading = resolve(words, i), reading.kind == .unsure else { return [] }
         guard let h = homographs[form] else {
-            // "lying", "lies", "hanging", "hangs" the next word doesn't tell: the verb and its twin.
-            guard let entry = tableForms[form], entry.shared != nil else { return [] }
-            return [
-                ReadingChoice(kind: .verb, base: entry.base, sense: Sense.verb),
-                ReadingChoice(kind: .homonym, base: entry.base, sense: Sense.homonym),
-            ]
+            guard let entry = tableForms[form] else { return [] }
+            let verbRow = ReadingChoice(kind: .verb, base: entry.base, sense: Sense.verb, form: form)
+            switch reading.step {
+            // "She tells lies": the twin's noun or the verb ("the lie — mentira" / "to lie — estar, encontrarse").
+            case .unsureNoun: return [ReadingChoice(kind: .noun, base: entry.shared?.noun ?? form, sense: Sense.noun), verbRow]
+            // "The bell rings": the verb or the word as a noun ("to ring" / "the rings").
+            case .unsureNounFirst: return [verbRow, ReadingChoice(kind: .noun, base: form, sense: Sense.noun)]
+            default:
+                // "lying", "lies", "hanging", "hangs" the next word doesn't tell: the verb and its twin.
+                guard entry.shared != nil else { return [] }
+                return [
+                    ReadingChoice(kind: .verb, base: entry.base, sense: Sense.verb),
+                    ReadingChoice(kind: .homonym, base: entry.base, sense: Sense.homonym),
+                ]
+            }
         }
         // "lay" after a plural subject (they, "two men"): "to lie" or "to lay".
         let twoVerbs = form == "lay" ? reading.layVerbs : h.noun == nil
@@ -98,7 +116,7 @@ extension IrregularVerbs {
         case .verb: Sense.verb
         case .homonym: Sense.homonym
         case .noun: reading.step == .name ? nil : Sense.noun
-        case .word, .unsure: nil
+        case .word, .expression, .unsure: nil
         }
     }
 
@@ -129,6 +147,97 @@ extension IrregularVerbs {
         let w = TextTools.normalize(word)
         let entry = verb(base: w)
         return homographs[w] != nil || entry?.nounFirst == true || entry?.homonym != nil
+    }
+
+    /// Whether the homograph `form`'s noun is pronounced as its sentence says (`nounIpa`: tear, lead, wind).
+    public func hasNounIPA(_ form: String) -> Bool {
+        homographs[TextTools.normalize(form)].map { !$0.nounIpa.isEmpty } ?? false
+    }
+
+    /// How the homograph at `range` of `text` is pronounced as a noun in its sentence ("tears in her
+    /// eyes" → tɪr; "a tear in my shirt" → tɛr; "made of lead" → lɛd), or nil when nothing proves it.
+    public func nounIPA(in text: String, at range: WordRange) -> String? {
+        let words = Words(text as NSString)
+        return words.index(of: range).flatMap { nounIPA(words, $0) }
+    }
+
+    func nounIPA(_ words: Words, _ i: Int) -> String? {
+        guard let h = homographs[words.token(i)], !h.nounIpa.isEmpty else { return nil }
+        let before = i >= 1 && words.gapOK(i - 1, i) ? words.token(i - 1) : nil
+        let after = i + 1 < words.count && words.gapOK(i, i + 1) ? words.token(i + 1) : nil
+        let sentence = Set(words.ranges.indices.filter { $0 != i }.map(words.token))
+        for rule in h.nounIpa {
+            if let allowed = rule.after, !(before.map(allowed.contains) ?? false) { continue }
+            if let allowed = rule.before, !(after.map(allowed.contains) ?? false) { continue }
+            if let near = rule.near, near.isDisjoint(with: sentence) { continue }
+            return rule.ipa
+        }
+        return nil
+    }
+
+    /// The table's Spanish meaning of a reading (SPEC S3): a verb's (the -s form's own when `form`
+    /// is it: "lies" "estar, encontrarse"), the twin's, an expression's ("bound for") or the twin's
+    /// noun's ("lie": "mentira"); all joined with " · ", or only the first; nil when the table has none.
+    public func tableMeaning(_ kind: Reading.Kind, base: String, form: String? = nil, first: Bool = false) -> String? {
+        let meanings: [String] = switch kind {
+        case .verb: sEs(base, form: form).map { [$0] } ?? verb(base: base)?.es ?? []
+        case .homonym: verb(base: base).map { $0.homonym?.es ?? $0.es } ?? []
+        case .expression: expression(base)?.es ?? []
+        case .noun: twinNounEs(base) ?? []
+        case .word, .unsure: []
+        }
+        guard let head = meanings.first else { return nil }
+        return first ? head : meanings.joined(separator: " · ")
+    }
+
+    /// The -s form's Spanish meaning of the verb `base` ("lies": "estar, encontrarse"), when `form` is that form.
+    func sEs(_ base: String, form: String?) -> String? {
+        guard let form, let entry = verb(base: base), entry.s == TextTools.normalize(form) else { return nil }
+        return entry.sEs
+    }
+
+    /// The twin's noun meanings in Spanish ("lie": ["mentira"]), when `noun` is a twin's noun.
+    public func twinNounEs(_ noun: String) -> [String]? {
+        verbs.lazy.compactMap { $0.homonym?.noun == noun ? $0.homonym?.nounEs : nil }.first
+    }
+
+    /// The expression `unit` is ("bound for"), if the table has it.
+    func expression(_ unit: String) -> Homograph.Expression? {
+        let parts = unit.split(separator: " ", maxSplits: 1).map(String.init)
+        guard parts.count == 2 else { return nil }
+        return homographs[parts[0]]?.expressions.first { $0.next == parts[1] }
+    }
+
+    /// The English text to translate for a reading outside Spanish: the sense's own query ("to lie
+    /// down", "to tell a lie", "heading for"), else "to {base}" / "the {noun}".
+    public func query(_ kind: Reading.Kind, base: String) -> String {
+        let entry = verb(base: base)
+        switch kind {
+        case .noun: return "the \(base)"
+        case .homonym: return entry?.homonym?.query ?? "to \(base)"
+        case .expression: return expression(base)?.query ?? base
+        default: return entry?.query ?? "to \(base)"
+        }
+    }
+
+    /// The sense's short English gloss ("recline", "say what isn't true"), to tell two rows apart.
+    public func gloss(_ kind: Reading.Kind, base: String) -> String? {
+        switch kind {
+        case .verb: verb(base: base)?.gloss
+        case .homonym: verb(base: base)?.homonym?.gloss
+        case .expression: expression(base)?.gloss
+        default: nil
+        }
+    }
+
+    /// The two rows' meanings told apart (SPEC S3): when both come out the same ("mentir" /
+    /// "mentir"), each adds its sense's gloss ("mentir (say what isn't true)"); a noun adds none.
+    public func distinguished(_ rows: [ReadingChoice], _ meanings: [String?]) -> [String?] {
+        guard rows.count == 2, meanings.count == 2, let a = meanings[0], let b = meanings[1],
+              a.lowercased() == b.lowercased() else { return meanings }
+        return zip(rows, meanings).map { row, meaning in
+            gloss(row.kind, base: row.base).map { "\(meaning ?? "") (\($0))" } ?? meaning
+        }
     }
 
     /// The table's Spanish meanings of a verb (or its homonym's): all of them joined with " · ",
@@ -190,7 +299,10 @@ extension IrregularVerbs {
         }
         let formSpoken = spokenForm(in: text, at: range)
         guard TextTools.normalize(headword) != TextTools.normalize(form) else { return formSpoken }
-        let isVerb = resolve(text, range)?.isVerb ?? false
+        let reading = resolve(text, range)
+        // An expression ("bound for") is said as the unit.
+        if reading?.kind == .expression { return headword }
+        let isVerb = reading?.isVerb ?? false
         let head = isVerb ? verb(base: TextTools.normalize(headword))?.spokenAs["base"] ?? headword : headword
         return "\(head), \(formSpoken)"
     }
@@ -259,7 +371,8 @@ extension TextTools {
         // Unsure: no word saved with a sense, whatever the bases (SPEC Shared logic). A name or an
         // ordinary word ("the lights"): no sense of the table's verb ("light"), as written otherwise.
         switch reading.kind {
-        case .unsure: return Occurrence(form: w, keys: keys, senses: [:], anySense: [])
+        // An expression ("bound for") marks only words saved without a sense.
+        case .unsure, .expression: return Occurrence(form: w, keys: keys, senses: [:], anySense: [])
         default:
             let verbBase: Set<String> = table.tableForms[w].map { [$0.base] } ?? []
             return Occurrence(form: w, keys: keys, senses: [:], anySense: isHomograph ? [] : keys.subtracting(verbBase))
@@ -295,10 +408,16 @@ extension TextTools {
 /// "to {base}", a noun as "the {noun}", and the infinitive marker or article the translator may
 /// keep is taken off again; in Spanish, a verb of the table uses the table's meanings.
 public enum ReadingTranslation {
-    /// What to translate for a saved word with a sense: "to leave", "the left"; else the word.
+    /// What to translate for a saved word with a sense: its sense's English query ("to leave",
+    /// "to lie down", "the left"); an expression saved as a unit, its query ("heading for"); else the word.
     public static func source(word: String, sense: String?) -> String {
-        if sense == Sense.noun { return "the \(word)" }
-        return sense == Sense.verb || sense == Sense.homonym ? "to \(word)" : word
+        let table = IrregularVerbs.shared
+        switch sense {
+        case Sense.noun: return table.query(.noun, base: word)
+        case Sense.verb: return table.query(.verb, base: word)
+        case Sense.homonym: return table.query(.homonym, base: word)
+        default: return table.expression(word) == nil ? word : table.query(.expression, base: word)
+        }
     }
 
     public static func isSpanish(_ language: String?) -> Bool {

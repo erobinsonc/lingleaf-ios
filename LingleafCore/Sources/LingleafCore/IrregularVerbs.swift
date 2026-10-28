@@ -15,11 +15,12 @@ public struct IrregularVerbs: Sendable {
     static let spokenSlots: Set<String> = ["base", "past", "participle", "ing", "s"]
     /// Longest Spanish meaning, group title or example kept.
     static let maxText = 100
-    /// Letters an IPA transcription may use (no slashes): a–z, the IPA letters and marks English
-    /// needs, and the combining syllabic mark and tilde.
+    /// Letters an IPA transcription may use (no slashes): the a–z letters IPA uses for English (no
+    /// c, q or y), the IPA letters and marks English needs, and the combining syllabic mark and
+    /// tilde (same set as lingleaf-android).
     static let ipaScalars: Set<Unicode.Scalar> = {
-        var set = Set((UInt32(0x61)...UInt32(0x7A)).compactMap { Unicode.Scalar($0) })
-        for scalar in "æðŋɑɒɔəɚɛɜɝɡɪɹɾʃʊʌʒʔθʤʧˈˌːˑ.".unicodeScalars { set.insert(scalar) }
+        var set = Set<Unicode.Scalar>()
+        for scalar in "abdefghijklmnoprstuvwxzæðŋɑɒɔəɚɛɜɝɡɪɹɾʃʊʌʒʔθʤʧˈˌːˑ.".unicodeScalars { set.insert(scalar) }
         set.insert("\u{0329}")
         set.insert("\u{0303}")
         return set
@@ -184,9 +185,17 @@ public struct IrregularVerbs: Sendable {
             try check(Set(verb.ipa.keys).isSubset(of: Self.spokenSlots), "\(verb.base): unknown ipa slot")
             try check(verb.ipa.values.allSatisfy(Self.isIPA), "\(verb.base): ipa")
             try check(verb.present.count <= 2 && (verb.freq ?? 0) >= 0, "\(verb.base): present or freq")
+            try check([verb.query, verb.gloss].compactMap { $0 }.allSatisfy(Self.isEnglish), "\(verb.base): query or gloss")
+            try check(verb.sEs.map(Self.isSpanish) ?? true, "\(verb.base): sEs")
             if let homonym = verb.homonym {
                 try check(Self.isFormList(homonym.past) && Self.isFormList(homonym.participle), "\(verb.base): homonym forms")
                 try check(Self.isMeanings(homonym.es), "\(verb.base): homonym meanings")
+                let english = [homonym.query, homonym.gloss].compactMap { $0 }
+                try check(english.allSatisfy(Self.isEnglish), "\(verb.base): homonym query or gloss")
+                // The twin's noun and its meanings come together.
+                try check((homonym.noun == nil) == (homonym.nounEs == nil), "\(verb.base): homonym noun")
+                try check(homonym.noun.map(Self.isForm) ?? true, "\(verb.base): homonym noun")
+                try check(homonym.nounEs.map(Self.isSpanishMeanings) ?? true, "\(verb.base): homonym noun meanings")
                 try check(homonym.homonymBefore.union(homonym.verbBefore).allSatisfy(Self.isForm), "\(verb.base): homonym next words")
             }
             // A form leads to one base, and is no other verb's base, unless context decides (homographs).
@@ -210,6 +219,16 @@ public struct IrregularVerbs: Sendable {
                           "homograph \(h.form): noun phrase")
             }
             try check((h.subjectNounNext ?? []).allSatisfy(Self.isForm), "homograph \(h.form): subjectNounNext")
+            // Pronunciation rules: words a–z, a rule with no condition only as the last.
+            for (n, rule) in h.nounIpa.enumerated() {
+                let conditions = [rule.near, rule.after, rule.before].compactMap { $0 }
+                try check(Self.isIPA(rule.ipa) && conditions.allSatisfy { $0.allSatisfy(Self.isForm) }, "homograph \(h.form): nounIpa")
+                try check(!conditions.isEmpty || n == h.nounIpa.count - 1, "homograph \(h.form): nounIpa default not last")
+            }
+            for expression in h.expressions {
+                try check(Self.isForm(expression.next) && Self.isSpanishMeanings(expression.es)
+                          && Self.isEnglish(expression.query) && Self.isEnglish(expression.gloss), "homograph \(h.form): expression")
+            }
         }
         try check(Set(llBaseList).count == llBaseList.count, "duplicate llBase")
         let tableForms = bases.union(verbs.flatMap(\.forms)).union(homographs.keys)
@@ -244,6 +263,25 @@ public struct IrregularVerbs: Sendable {
         let count = s.unicodeScalars.count
         return (1...40).contains(count) && s.unicodeScalars.allSatisfy(ipaScalars.contains)
             && s.precomposedStringWithCanonicalMapping.unicodeScalars.elementsEqual(s.unicodeScalars)
+    }
+
+    /// An English query or gloss: lower-case words, apostrophes and spaces, 2–40 characters.
+    static func isEnglish(_ s: String) -> Bool {
+        let scalars = Array(s.unicodeScalars)
+        func letter(_ c: Unicode.Scalar) -> Bool { (0x61...0x7A).contains(c.value) }
+        guard (2...40).contains(scalars.count), let first = scalars.first, let last = scalars.last, letter(first), letter(last) else {
+            return false
+        }
+        return scalars.allSatisfy { letter($0) || $0 == "'" || $0 == " " }
+    }
+
+    /// A Spanish meaning of the v4 fields: text with no surrounding space.
+    static func isSpanish(_ s: String) -> Bool {
+        isText(s) && s.trimmingCharacters(in: .whitespacesAndNewlines) == s
+    }
+
+    private static func isSpanishMeanings(_ es: [String]) -> Bool {
+        (1...2).contains(es.count) && es.allSatisfy(isSpanish)
     }
 
     static func isText(_ s: String) -> Bool {
@@ -285,9 +323,20 @@ public struct IrregularVerb: Equatable, Sendable {
     public let nounFirst: Bool
     /// Lemma frequency per million, for ordering only.
     public let freq: Int?
+    /// An unambiguous English phrase to translate for this sense outside Spanish ("to lie down").
+    public let query: String?
+    /// A short English gloss of this sense ("recline"), when two translated rows come out the same.
+    public let gloss: String?
+    /// The verb's meaning on a row against the twin's noun ("estar, encontrarse" against "mentira").
+    public let sEs: String?
 
     public struct Homonym: Equatable, Sendable {
         public let es: [String]
+        public let query: String?
+        public let gloss: String?
+        /// The noun the shared -s form can be ("lies" → "lie") and its Spanish meanings ("mentira").
+        public let noun: String?
+        public let nounEs: [String]?
         public let past: [String]
         public let participle: [String]
         public let ing: String
@@ -358,6 +407,27 @@ struct Homograph: Sendable {
     let nounPhrases: [[String]]
     /// When set, step 7 (subject noun) needs one of these words right after the form ("The dog bit him").
     let subjectNounNext: Set<String>?
+    /// The noun's pronunciation from its sentence, the first rule that matches ("tears" + "eyes" → tɪr).
+    let nounIpa: [NounIPA]
+    /// The form and the next word as a unit with its own meanings ("bound for", "bound to" + a verb).
+    let expressions: [Expression]
+
+    struct NounIPA: Sendable {
+        let ipa: String
+        /// A word of the sentence; the word right before; the word right after (none: the default).
+        let near: Set<String>?
+        let after: Set<String>?
+        let before: Set<String>?
+    }
+
+    struct Expression: Sendable {
+        let next: String
+        /// The word after `next` must be a base verb ("bound to go").
+        let nextBase: Bool
+        let es: [String]
+        let query: String
+        let gloss: String
+    }
 }
 
 /// The word lists of the verb-or-noun rule.
@@ -365,7 +435,7 @@ struct Context: Sendable {
     static let names: Set<String> = [
         "determiners", "pluralDeterminers", "prepositions", "adjectives", "pluralAdjectives", "subjects",
         "singularSubjects", "skip", "toAndModals", "haveAndBe", "subjectDeterminers", "oneAfter", "clauseOpeners",
-        "lieAfter", "conjunctions", "notNames", "objectStarts", "layTime", "boundAdjective",
+        "lieAfter", "conjunctions", "notNames", "objectStarts", "layTime",
         "sFormNext", "notNameStarts", "nameOrPlant", "pluralNouns", "notPlural", "quantifiers",
         "quantifiersBeforeDeterminer", "quantifiersBeforeOf", "finiteVerbs", "participleOpenNext",
         "sSubjects", "beForms", "ingAfter",
@@ -374,7 +444,7 @@ struct Context: Sendable {
     private let lists: [String: Set<String>]
     let determiners, pluralDeterminers, prepositions, adjectives, pluralAdjectives, subjects: Set<String>
     let singularSubjects, skip, toAndModals, haveAndBe, subjectDeterminers, oneAfter, clauseOpeners: Set<String>
-    let lieAfter, conjunctions, notNames, objectStarts, layTime, boundAdjective: Set<String>
+    let lieAfter, conjunctions, notNames, objectStarts, layTime: Set<String>
     let sFormNext, notNameStarts, nameOrPlant, pluralNouns, notPlural, quantifiers: Set<String>
     let quantifiersBeforeDeterminer, quantifiersBeforeOf, finiteVerbs, participleOpenNext: Set<String>
     let sSubjects, beForms, ingAfter: Set<String>
@@ -405,7 +475,6 @@ struct Context: Sendable {
         notNames = list("notNames")
         objectStarts = list("objectStarts")
         layTime = list("layTime")
-        boundAdjective = list("boundAdjective")
         sFormNext = list("sFormNext")
         notNameStarts = list("notNameStarts")
         nameOrPlant = list("nameOrPlant")
@@ -500,7 +569,7 @@ extension IrregularVerb: Decodable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.strict(
             ["base", "past", "participle", "ing", "s", "group", "level", "es"],
-            optional: ["present", "spokenAs", "ipa", "homonym", "nounFirst", "freq"]
+            optional: ["present", "spokenAs", "ipa", "homonym", "nounFirst", "freq", "query", "gloss", "sEs"]
         )
         base = try c.value("base")
         past = try c.value("past")
@@ -516,13 +585,22 @@ extension IrregularVerb: Decodable {
         homonym = try c.optional("homonym")
         nounFirst = try c.optional("nounFirst") ?? false
         freq = try c.optional("freq")
+        query = try c.optional("query")
+        gloss = try c.optional("gloss")
+        sEs = try c.optional("sEs")
     }
 }
 
 extension IrregularVerb.Homonym: Decodable {
     public init(from decoder: Decoder) throws {
-        let c = try decoder.strict(["es", "past", "participle", "ing", "s"], optional: ["homonymBefore", "verbBefore"])
+        let c = try decoder.strict(
+            ["es", "past", "participle", "ing", "s"], optional: ["homonymBefore", "verbBefore", "query", "gloss", "noun", "nounEs"]
+        )
         es = try c.value("es")
+        query = try c.optional("query")
+        gloss = try c.optional("gloss")
+        noun = try c.optional("noun")
+        nounEs = try c.optional("nounEs")
         past = try c.value("past")
         participle = try c.value("participle")
         ing = try c.value("ing")
@@ -538,7 +616,10 @@ extension Homograph: Decodable {
     init(from decoder: Decoder) throws {
         let c = try decoder.strict(
             ["form", "noun", "verb", "rules"],
-            optional: ["baseVerb", "nounAfter", "nounBefore", "verbAfter", "nounPair", "noTo", "nounPhrases", "subjectNounNext"]
+            optional: [
+                "baseVerb", "nounAfter", "nounBefore", "verbAfter", "nounPair", "noTo", "nounPhrases", "subjectNounNext",
+                "nounIpa", "expressions",
+            ]
         )
         form = try c.value("form")
         // Required, but null when the form is not a noun.
@@ -560,6 +641,32 @@ extension Homograph: Decodable {
         nounPhrases = try c.optional("nounPhrases") ?? []
         let next: [String]? = try c.optional("subjectNounNext")
         subjectNounNext = next.map { Set($0) }
+        nounIpa = try c.optional("nounIpa") ?? []
+        expressions = try c.optional("expressions") ?? []
+    }
+}
+
+extension Homograph.NounIPA: Decodable {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.strict(["ipa"], optional: ["near", "after", "before"])
+        ipa = try c.value("ipa")
+        let near: [String]? = try c.optional("near")
+        let after: [String]? = try c.optional("after")
+        let before: [String]? = try c.optional("before")
+        self.near = near.map { Set($0) }
+        self.after = after.map { Set($0) }
+        self.before = before.map { Set($0) }
+    }
+}
+
+extension Homograph.Expression: Decodable {
+    init(from decoder: Decoder) throws {
+        let c = try decoder.strict(["next", "es", "query", "gloss"], optional: ["nextBase"])
+        next = try c.value("next")
+        nextBase = try c.optional("nextBase") ?? false
+        es = try c.value("es")
+        query = try c.value("query")
+        gloss = try c.value("gloss")
     }
 }
 
