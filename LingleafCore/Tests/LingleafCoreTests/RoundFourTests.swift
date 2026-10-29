@@ -128,7 +128,8 @@ final class RoundFourTests: XCTestCase {
         spanish.saveWord("lies", learned: false, context: "She tells lies.", meanings: rows)
         spanish.saveWord("bound for", learned: false, context: "The ship was bound for Spain.")
         spanish.fillTableTranslations("es")
-        XCTAssertEqual(spanish.state.word("lies")?.meanings?.map(\.text), ["mentira", "estar acostado, tumbarse"])
+        XCTAssertEqual(spanish.state.word("lies")?.meanings?.map(\.text), ["mentira", "estar, encontrarse"],
+                       "the -s form's own meaning, from the form saved")
         XCTAssertEqual(spanish.state.word("bound for")?.translation, "rumbo a, con destino a")
     }
 
@@ -266,5 +267,11 @@ final class RoundFourTests: XCTestCase {
         context["boundAdjective"] = ["for"]
         old["context"] = context
         try refused(old, "the list v4 removed")
+        // The Spanish fields pass the same text check as the rest of the table.
+        for bad in ["a\u{202E}b", "a\u{200B}b", "a\nb", "a\u{0}b", "a\u{2068}b\u{2069}"] {
+            try refused(withVerb("lie") { $0["sEs"] = bad }, "sEs: \(bad.unicodeScalars.map(\.value))")
+            try refused(withHomonym { $0["nounEs"] = [bad] }, "nounEs: \(bad.unicodeScalars.map(\.value))")
+            try refused(withHomograph("bound") { $0["expressions"] = [changed("es", [bad])] }, "es: \(bad.unicodeScalars.map(\.value))")
+        }
     }
 }

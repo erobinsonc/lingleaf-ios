@@ -178,7 +178,8 @@ struct ReviewView: View {
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: false))
+                // A sensed word's meanings each isolated ("irse, salir · dejar"), as in Words.
+                Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: word.sense != nil))
                     .font(.title2).multilineTextAlignment(.center)
             }
         }

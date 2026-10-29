@@ -38,7 +38,7 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var source: String
     public var learned: Bool
     public var box: Int
-    public let createdAt: Date
+    public internal(set) var createdAt: Date
     public var nextReview: Date
     /// Set when `word` is the verb group of a helper or modal verb ("did not go"): what is
     /// learned and translated, since the helper alone means little. Nil for other words.
@@ -76,8 +76,18 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
 
     /// Fields a restored or edited file may hold out of bounds, made safe: an unknown sense is
     /// dropped, a range that doesn't hold the form in the sentence too, at most two readings.
+    /// Longest saved word (UTF-16 units): a verb group without one is its sentence, at most
+    /// `TextTools.maxSentence`; its id ("…#homonym") is then always short enough for the
+    /// corrections cursor to read back.
+    static let maxWord = TextTools.maxSentence
+    /// Dates a saved word can have (2000–2100); others are brought inside.
+    static let dateRange = Date(timeIntervalSince1970: 946_684_800)...Date(timeIntervalSince1970: 4_102_444_800)
+
     func bounded() -> VocabWord {
         var word = self
+        word.word = TextTools.truncated(self.word, Self.maxWord)
+        word.createdAt = min(max(createdAt, Self.dateRange.lowerBound), Self.dateRange.upperBound)
+        word.nextReview = min(max(nextReview, Self.dateRange.lowerBound), Self.dateRange.upperBound)
         word.context = TextTools.truncated(context, TextTools.maxSentence)
         if let sense, !Sense.all.contains(sense) { word.sense = nil }
         if let form, form.utf16.count > 40 || TextTools.wordRanges(form) != [WordRange(0, (form as NSString).length)] {
@@ -390,7 +400,7 @@ public final class Library {
         kind: FunctionWord.Kind? = nil, base: String? = nil,
         sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil
     ) -> VocabWord? {
-        let key = TextTools.normalize(word)
+        let key = TextTools.truncated(TextTools.normalize(word), VocabWord.maxWord)
         let sense = kind == nil ? sense.flatMap { Sense.all.contains($0) ? $0 : nil } : nil
         let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)
         // The same form saved unsure, now saved as one of its readings: it takes its place.

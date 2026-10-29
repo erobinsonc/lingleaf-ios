@@ -371,8 +371,9 @@ extension TextTools {
         // Unsure: no word saved with a sense, whatever the bases (SPEC Shared logic). A name or an
         // ordinary word ("the lights"): no sense of the table's verb ("light"), as written otherwise.
         switch reading.kind {
-        // An expression ("bound for") marks only words saved without a sense.
-        case .unsure, .expression: return Occurrence(form: w, keys: keys, senses: [:], anySense: [])
+        // An expression ("bound for") marks the unit saved as one entry, and words saved without a sense.
+        case .expression: return Occurrence(form: w, keys: keys.union([reading.base]), senses: [:], anySense: [])
+        case .unsure: return Occurrence(form: w, keys: keys, senses: [:], anySense: [])
         default:
             let verbBase: Set<String> = table.tableForms[w].map { [$0.base] } ?? []
             return Occurrence(form: w, keys: keys, senses: [:], anySense: isHomograph ? [] : keys.subtracting(verbBase))

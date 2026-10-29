@@ -55,7 +55,8 @@ extension Library {
     /// "done" (or "1", before runs), or "after:" and where the next run starts.
     static let correctionsDone = "corrections-v2"
     static let correctionsAfter = "after:"
-    static let maxCursorID = 200
+    /// A saved word's id: `VocabWord.maxWord` and its "#sense".
+    static let maxCursorID = VocabWord.maxWord + 10
     /// Most corrections kept (what Undo can hold: a run stops there), and most words read again in
     /// one run (same limits as lingleaf-android).
     static let maxCorrections = 1000
@@ -69,7 +70,7 @@ extension Library {
     ]
 
     /// Dates a saved word can have; anything else in a restored file is refused.
-    private static let dateRange = Date(timeIntervalSince1970: 946_684_800)...Date(timeIntervalSince1970: 4_102_444_800)
+    private static var dateRange: ClosedRange<Date> { VocabWord.dateRange }
 
     private static func bounded(_ word: VocabWord) -> VocabWord? {
         guard dateRange.contains(word.createdAt), dateRange.contains(word.nextReview) else { return nil }
@@ -103,9 +104,11 @@ extension Library {
         let eligible = state.words.sorted(by: Self.newestFirst).filter { word in
             cursor.map { word.createdAt < $0.0 || (word.createdAt == $0.0 && word.id > $0.1) } ?? true
         }
+        // What Undo holds: the card's lines and the changes behind them, whichever is more.
+        let held = max(state.corrections.count, loadCorrections()?.changes.count ?? 0)
         return CorrectionsRun(
             words: Array(eligible.prefix(Self.maxCorrectedWords)), eligible: eligible.count,
-            room: max(Self.maxCorrections - state.corrections.count, 0)
+            room: max(Self.maxCorrections - held, 0)
         )
     }
 
@@ -121,7 +124,7 @@ extension Library {
         guard let tab = value.firstIndex(of: "\t"), let seconds = Double(value[..<tab]), seconds.isFinite else { return nil }
         let id = String(value[value.index(after: tab)...])
         let date = Date(timeIntervalSinceReferenceDate: seconds)
-        guard !id.isEmpty, id.count <= maxCursorID, dateRange.contains(date) else { return nil }
+        guard !id.isEmpty, id.utf16.count <= maxCursorID, dateRange.contains(date) else { return nil }
         return (date, id)
     }
 
@@ -237,7 +240,9 @@ extension Library {
         } else if reading.kind == .expression {
             table.tableMeaning(.expression, base: corrected.word)
         } else {
-            sense == Sense.noun ? nil : sense.flatMap { table.spanishMeaning(of: corrected.word, sense: $0) }
+            // The twin's noun has its own ("lie": "mentira"); another noun is translated later.
+            sense == Sense.noun ? table.tableMeaning(.noun, base: corrected.word)
+                : sense.flatMap { table.spanishMeaning(of: corrected.word, sense: $0) }
         }
         corrected.translation = corrected.meanings.flatMap { joined($0, target) } ?? spanish ?? ""
         corrected.translationLanguage = corrected.translation.isEmpty ? nil : target
@@ -310,7 +315,9 @@ extension Library {
             if var meanings = word.meanings {
                 // The first group of the table's meaning: a verb's, the twin's or the twin's noun's ("mentira").
                 for index in meanings.indices where meanings[index].text.isEmpty || meanings[index].language != target {
-                    if let spanish = table.tableMeaning(Self.kind(of: meanings[index]), base: meanings[index].base, first: true) {
+                    // The tapped form ("lies"): the -s form's own meaning ("estar, encontrarse").
+                    let kind = Self.kind(of: meanings[index])
+                    if let spanish = table.tableMeaning(kind, base: meanings[index].base, form: word.form ?? word.word, first: true) {
                         meanings[index].text = spanish
                         meanings[index].language = target
                         changed = true

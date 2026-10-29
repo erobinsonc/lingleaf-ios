@@ -495,7 +495,7 @@ final class SensesTests: XCTestCase {
         let flags = [
             "after:", "after:zzzz", "after:" + String(repeating: "9", count: 100_000), "after:\(date)\t", "garbage",
             "after:\(date)|left", "after:1e308\tx", "after:\(Date.distantPast.timeIntervalSinceReferenceDate)\tx",
-            "after:\(date + 1)\t" + String(repeating: "a", count: 201),
+            "after:\(date + 1)\t" + String(repeating: "a", count: Library.maxCursorID + 1),
         ]
         for flag in flags {
             storage.files.removeAll()
@@ -542,6 +542,85 @@ final class SensesTests: XCTestCase {
         XCTAssertEqual(next.state.corrections.count, 2, "added to the card still open")
         next.undoCorrections()
         XCTAssertEqual(Set(next.state.words), Set(before), "Undo puts back both runs")
+    }
+
+    func testTwoWordsThatSwapAreBothKeptAndUndoGivesBothBack() throws {
+        // The newer "leave" (from "Left.") becomes the unsure "left" while the older "left" becomes "leave".
+        let words = [vocab("leave", "Left.", now), vocab("left", "She left early.", now - 86_400)]
+        let library = saved(words)
+        let before = library.state.words
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(Set(library.state.words.map(\.id)), ["left", "leave#verb"])
+        XCTAssertEqual(library.state.word("left")?.context, "Left.")
+        XCTAssertEqual(library.state.word("leave", sense: Sense.verb)?.context, "She left early.")
+        XCTAssertEqual(library.state.corrections.count, 2)
+        XCTAssertTrue(try XCTUnwrap(library.loadCorrections()).changes.allSatisfy { $0.mergedInto == nil }, "none merged")
+        library.undoCorrections()
+        XCTAssertEqual(Set(library.state.words), Set(before), "both originals back, each as it was")
+    }
+
+    func testUndoPutsBackBothWordsWhateverTheOrder() {
+        for context in ["Nothing left.", "Left.", "What is left?", "Is any left?", "Some left.", "Those left."] {
+            storage.files.removeAll()
+            let b = vocab("left", "She left early.", now)
+            let a = vocab("leave", context, now - 86_400)
+            let library = saved([b, a])
+            let before = library.state.words
+            library.correctWordsIfNeeded()
+            library.undoCorrections()
+            XCTAssertEqual(Set(library.state.words.map(\.id)), ["left", "leave"], context)
+            XCTAssertEqual(Set(library.state.words), Set(before), "each as it was: \(context)")
+        }
+    }
+
+    func testUndoNeverHoldsMoreThanItCanAndItsLimitCountsTheChanges() throws {
+        func word(_ name: String) -> String {
+            """
+            {"word": "\(name)", "translation": "", "phonetic": "", "context": "", "source": "", "learned": false, "box": 0,
+             "createdAt": "2026-10-01T00:00:00Z", "nextReview": "2026-10-01T00:00:00Z"}
+            """
+        }
+        // A record whose changes outnumber its lines (a restored or edited file): Undo is full.
+        let changes = (0..<Library.maxCorrections).map { #"{"before": \#(word("w\($0)")), "mergedInto": "x"}"# }
+        storage.files["corrections.json"] = #"{"corrections": [], "changes": [\#(changes.joined(separator: ","))]}"#
+        let library = saved([vocab("leave", "Turn left at the bank.", now)])
+        XCTAssertEqual(try XCTUnwrap(library.beginCorrections()).room, 0)
+        XCTAssertTrue(library.correctWordsIfNeeded().isEmpty, "no room: nothing read")
+        XCTAssertNil(storage.read(Library.correctionsDone), "and the next run starts where this one would have")
+        XCTAssertNotNil(library.state.word("leave"))
+    }
+
+    func testTheCorrectionsCursorReadsBackWhatItWrote() throws {
+        // The longest word saved (a verb group without one is its sentence), newest.
+        let long = vocab(String(repeating: "a", count: VocabWord.maxWord + 50), "A cat.", now)
+        let library = saved([long, vocab("leave", "Turn left now.", now - 60)])
+        let stored = try XCTUnwrap(library.state.words.first)
+        XCTAssertEqual(stored.word.utf16.count, VocabWord.maxWord, "cut to size when saved and loaded")
+        let run = try XCTUnwrap(library.beginCorrections())
+        // A run that stops after the long word.
+        let plan = Library.plannedCorrections(CorrectionsRun(words: [run.words[0]], eligible: run.eligible, room: 1), target: nil, now: now)
+        library.applyCorrections(plan)
+        XCTAssertTrue(storage.read(Library.correctionsDone)?.hasSuffix("\t" + stored.id) == true)
+        XCTAssertEqual(library.beginCorrections()?.words.map(\.word), ["leave"], "the next run starts after it")
+        library.saveWord(String(repeating: "b", count: 2000), learned: false)
+        XCTAssertNotNil(library.state.words.first { $0.word.utf16.count == VocabWord.maxWord && $0.word.hasPrefix("b") })
+    }
+
+    func testSavedDatesOutsideTheirRangeAreBroughtInsideOnLoad() throws {
+        storage.files["words.json"] = """
+        [{"word": "old", "translation": "", "phonetic": "", "context": "", "source": "", "learned": false, "box": 0,
+          "createdAt": "1990-01-01T00:00:00Z", "nextReview": "2300-01-01T00:00:00Z"}]
+        """
+        let word = try XCTUnwrap(library().state.words.first)
+        XCTAssertEqual(word.createdAt, VocabWord.dateRange.lowerBound)
+        XCTAssertEqual(word.nextReview, VocabWord.dateRange.upperBound)
+    }
+
+    func testASavedExpressionIsMarkedWhereverItIsThatExpression() {
+        let library = library()
+        library.saveWord("bound for", learned: false, context: "The ship was bound for Spain.")
+        let other = "The train was bound for Rome. They bound the books."
+        XCTAssertEqual(marked(library, other), ["bound"], "the expression in another book, not the verb")
     }
 
     func testUndoDoesntBringBackAWordMergedIntoOneDeletedSince() {

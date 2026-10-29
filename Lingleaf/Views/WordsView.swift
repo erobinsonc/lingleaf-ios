@@ -120,7 +120,9 @@ private struct WordRow: View {
                 }
                 if !word.translation.isEmpty {
                     // A word saved unsure: its readings' meanings, isolated like the card's rows.
-                    Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: word.isUnsure))
+                    Text(ReadingChoicesView.meaningText(
+                        word.translation, language: word.translationLanguage, isolated: word.isUnsure || word.sense != nil
+                    ))
                 }
                 // A verb group saved without one is the sentence itself: not twice.
                 if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
