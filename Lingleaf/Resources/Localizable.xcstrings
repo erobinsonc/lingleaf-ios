@@ -341,12 +341,12 @@
         }
       }
     },
-    "Books: Project Gutenberg (public domain). Definitions: dictionaryapi.dev. No accounts, no ads, no tracking.": {
+    "Books: Project Gutenberg. No accounts, no ads, no tracking.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Libros: Project Gutenberg (dominio público). Definiciones: dictionaryapi.dev. Sin cuentas, sin anuncios, sin rastreo."
+            "value": "Libros: Project Gutenberg. Sin cuentas, sin anuncios, sin rastreo."
           }
         }
       }
@@ -418,6 +418,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meta diaria"
+          }
+        }
+      }
+    },
+    "Definition: Wiktionary (CC BY-SA), may be shortened": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definición: Wiktionary (CC BY-SA), puede estar abreviada"
+          }
+        }
+      }
+    },
+    "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definiciones de Wiktionary, CC BY-SA 3.0/4.0, vía Free Dictionary API."
           }
         }
       }
@@ -512,12 +532,12 @@
         }
       }
     },
-    "Free public-domain classics from Project Gutenberg.": {
+    "Free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clásicos gratuitos de dominio público de Project Gutenberg."
+            "value": "Clásicos gratuitos de Project Gutenberg."
           }
         }
       }
@@ -862,12 +882,32 @@
         }
       }
     },
+    "Privacy policy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidad"
+          }
+        }
+      }
+    },
     "Project Gutenberg didn't answer. Try again.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Public domain in the US. Outside the US, check your country's laws.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dominio público en EE. UU. Fuera de EE. UU., revisa las leyes de tu país."
           }
         }
       }

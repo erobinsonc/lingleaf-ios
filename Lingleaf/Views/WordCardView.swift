@@ -93,6 +93,10 @@ struct WordCardView: View {
                             .font(.footnote)
                             .foregroundStyle(Brand.secondaryText)
                             .multilineTextAlignment(.center)
+                        Text(Credits.definitionNote)
+                            .font(.caption)
+                            .foregroundStyle(Brand.secondaryText)
+                            .multilineTextAlignment(.center)
                     } else if entryLoaded {
                         Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
                     }

@@ -114,13 +114,14 @@ final class LingleafUITests: XCTestCase {
 
     func testFilterRecommendedBooksByLevel() {
         app.tabBars.buttons["Discover"].tap()
-        let b1 = app.buttons["level-filter-B1"]
-        XCTAssertTrue(b1.waitForExistence(timeout: 10), "the level chips show above the recommended books")
-        b1.tap()
-        XCTAssertTrue(app.staticTexts["Peter Pan"].waitForExistence(timeout: 5), "B1 books stay")
-        XCTAssertTrue(app.staticTexts["Aesop's Fables"].waitForNonExistence(timeout: 5), "the A2 book is filtered out")
+        let b2 = app.buttons["level-filter-B2"]
+        XCTAssertTrue(b2.waitForExistence(timeout: 10), "the level chips show above the recommended books")
+        XCTAssertFalse(app.buttons["level-filter-A1"].exists, "a level without recommended books has no chip")
+        b2.tap()
+        XCTAssertTrue(app.staticTexts["The Railway Children"].waitForExistence(timeout: 5), "B2 books stay")
+        XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForNonExistence(timeout: 5), "the B1 book is filtered out")
         app.buttons["level-filter-all"].tap()
-        XCTAssertTrue(app.staticTexts["Aesop's Fables"].waitForExistence(timeout: 5), "All shows every book again")
+        XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForExistence(timeout: 5), "All shows every book again")
     }
 
     /// S6 Listen. XCUITest can't hear the speaker, so in -ui-testing mode the app records
@@ -221,13 +222,13 @@ final class LingleafUITests: XCTestCase {
     /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.
     func testDownloadABookFromDiscover() {
         app.tabBars.buttons["Discover"].tap()
-        let get = app.buttons["Get Aesop's Fables"]
+        let get = app.buttons["Get Little Wizard Stories of Oz"]
         XCTAssertTrue(get.waitForExistence(timeout: 10), "recommended books are there at once")
         get.tap()
-        let read = app.buttons["Read Aesop's Fables"]
+        let read = app.buttons["Read Little Wizard Stories of Oz"]
         XCTAssertTrue(read.waitForExistence(timeout: 10), "Get turns into Read")
 
-        app.buttons["Get Peter Pan"].tap()
+        app.buttons["Get The Marvelous Land of Oz"].tap()
         XCTAssertTrue(app.staticTexts["This book isn't available right now."].waitForExistence(timeout: 10))
 
         read.tap()
@@ -236,7 +237,7 @@ final class LingleafUITests: XCTestCase {
         // The tab bar slides back in after the reader: wait for it, with evidence if it doesn't.
         if !app.tabBars.firstMatch.waitForExistence(timeout: 10) { attachEvidence("no-tab-bar-after-reader") }
         app.tabBars.buttons["Library"].tap()
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Aesop's Fables")).firstMatch
+        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Little Wizard Stories of Oz")).firstMatch
         if !row.waitForExistence(timeout: 10) { attachEvidence("library-after-download") }
         XCTAssertTrue(row.exists, "the book is in the library")
     }

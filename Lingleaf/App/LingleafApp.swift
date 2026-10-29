@@ -121,8 +121,8 @@ final class AppModel {
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
             if url.contains("gutendex") { return HttpResponse(status: 200, text: fakeCatalog) }
-            // Peter Pan is "not available right now", to show that message.
-            if url.contains("gutenberg.org/cache/epub/16/") { return HttpResponse(status: 404, text: "") }
+            // The Marvelous Land of Oz is "not available right now", to show that message.
+            if url.contains("gutenberg.org/cache/epub/54/") { return HttpResponse(status: 404, text: "") }
             if url.contains("gutenberg.org/cache/epub/") { return HttpResponse(status: 200, text: fakeBookText) }
             guard url.contains("dictionaryapi.dev") else { return HttpResponse(status: 404, text: "") }
             let word = url.split(separator: "/").last.map(String.init) ?? ""
@@ -155,12 +155,12 @@ final class AppModel {
     /// A small Gutendex answer so Discover has books to show in UI tests.
     nonisolated private static let fakeCatalog = #"""
     {"results": [
-      {"id": 21, "title": "Aesop's Fables", "authors": [{"name": "Aesop"}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/21.txt.utf-8"}},
+      {"id": 25519, "title": "Little Wizard Stories of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/25519.txt.utf-8"}},
       {"id": 55, "title": "The Wonderful Wizard of Oz", "authors": [{"name": "Baum, L. Frank"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/55.txt.utf-8"}},
-      {"id": 16, "title": "Peter Pan", "authors": [{"name": "Barrie, J. M."}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/16.txt.utf-8"}},
+      {"id": 54, "title": "The Marvelous Land of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/54.txt.utf-8"}},
       {"id": 2701, "title": "Moby-Dick; Or, The Whale", "authors": [{"name": "Melville, Herman"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/2701.txt.utf-8"}}
     ]}

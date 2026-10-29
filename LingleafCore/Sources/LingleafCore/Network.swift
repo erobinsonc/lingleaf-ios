@@ -62,8 +62,8 @@ public struct ClosureFetcher: HttpFetcher {
     public func get(_ url: String) async throws -> HttpResponse { try await handler(url) }
 }
 
-/// Size caps for anything read into memory. The longest recommended book
-/// (Middlemarch) is under 2 MB of plain text.
+/// Size caps for anything read into memory. Even long novels (Middlemarch) are
+/// under 2 MB of plain text.
 public enum Limits {
     /// Largest download or imported file accepted.
     public static let maxBytes = 10 * 1024 * 1024

@@ -17,7 +17,7 @@ Android version: [lingleaf-android](https://github.com/erobinsonc/lingleaf-andro
 - **Review** with spaced repetition (1, 3, 7, 14, 30 days).
 - **Read aloud** a word, a sentence or a paragraph (works with the ringer muted).
 - **Thousands of free books** from Project Gutenberg, plus 3 original graded stories (A1–B1). Import your own `.txt`.
-- **Recommended classics from A2 to C2**, filterable by level in Discover.
+- **Recommended classics from B1 to C2**, public domain worldwide, filterable by level in Discover.
 - **Daily goal and streak.**
 - No accounts, no ads, no tracking.
 
@@ -60,7 +60,8 @@ Apple Translation doesn't run in the Simulator; try translations on a real devic
 ## Privacy
 
 Lingleaf has no accounts, ads or analytics, and keeps your books and words on your
-device (and in your iCloud/device backup, if you use one). The app itself talks only to
+device (and in your iCloud/device backup, if you use one). Lingleaf is for ages 13 and up
+(the open Project Gutenberg catalog includes books for adults). The app itself talks only to
 `gutendex.com` / `www.gutenberg.org` (books) and `api.dictionaryapi.dev` (definitions),
 always over HTTPS.
 
@@ -68,9 +69,18 @@ Translation runs on the device with Apple Translation; iOS downloads each langua
 from Apple the first time (it asks you first). Words and sentences are translated on
 the device; only the English word you tap is sent to the dictionary to fetch its
 definition. The app ships a privacy manifest declaring no tracking and no data
-collection. Full policy: [PRIVACY.md](PRIVACY.md).
+collection. Full policy: [PRIVACY.md](PRIVACY.md), also linked in the app (Settings → About).
+
+## Credits
+
+Definitions come from [Wiktionary](https://en.wiktionary.org/) under
+[CC BY-SA 3.0/4.0](https://creativecommons.org/licenses/by-sa/4.0/), via the
+[Free Dictionary API](https://dictionaryapi.dev/); the app may shorten them and says so on the word card.
 
 ## License
 
-[MIT](LICENSE). Bundled stories in `Lingleaf/Resources/Books` are original and dedicated
-to the public domain (CC0). Project Gutenberg books are public domain in the US.
+[MIT](LICENSE) for the code. The MIT licence does not cover the Lingleaf name and icon:
+please don't use them for your own builds or forks. Bundled stories in `Lingleaf/Resources/Books`
+are original and dedicated to the public domain ([CC0 1.0](Lingleaf/Resources/Books/LICENSE)).
+Project Gutenberg books are public domain in the US; outside the US, check your country's laws.
+The recommended books are public domain worldwide (every author died in 1925 or earlier).

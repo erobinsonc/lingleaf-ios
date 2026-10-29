@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check recommended books
         run: |
-          ids=$(sed -n '/^- Recommended books/,/Levels:/p' SPEC.md | sed 's/Levels:.*//' | grep -oE '\b[0-9]{2,4}\b' | sort -u)
+          ids=$(sed -n '/^- Recommended books/,/Levels:/p' SPEC.md | sed 's/Levels:.*//' | grep -oE '\b[0-9]{2,5}\b' | sort -u)
           test -n "$ids"
           failed=0
           for id in $ids; do

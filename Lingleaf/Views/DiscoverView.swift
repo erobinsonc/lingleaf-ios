@@ -32,9 +32,7 @@ struct DiscoverView: View {
     }
 
     /// Levels that have at least one recommended book, easiest first.
-    private static let filterLevels = GutenbergClient.levels.filter { level in
-        GutenbergClient.recommended.contains { $0.level == level }
-    }
+    private static let filterLevels = GutenbergClient.filterLevels
 
     private var recommended: [GutenbergBook] { GutenbergClient.filter(GutenbergClient.recommendedBooks, level: level) }
 
@@ -65,7 +63,10 @@ struct DiscoverView: View {
                     // a section of its own, the audit reported it as not scaling with Dynamic Type.
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Recommended for learners")
-                        Text("Free public-domain classics from Project Gutenberg.")
+                        Text("Free classics from Project Gutenberg.")
+                            .font(.footnote)
+                            .textCase(nil)
+                        Text(Credits.publicDomainNotice)
                             .font(.footnote)
                             .textCase(nil)
                     }
