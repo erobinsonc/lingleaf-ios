@@ -107,8 +107,8 @@ public struct GutenbergClient: Sendable {
     private let http: HttpFetcher
     private static let base = "https://gutendex.com/books"
 
-    /// Hand-picked classics with a CEFR level hint, easiest first: public domain worldwide
-    /// (every author died in 1925 or earlier) and without old spellings such as "to-day". Shipped with the app
+    /// Hand-picked classics with a CEFR level hint, easiest first: public domain in almost
+    /// every country (authors who died in 1925 or earlier) and without old spellings such as "to-day". Shipped with the app
     /// (title, author, level), so Discover shows them at once and without the catalog.
     public static let recommendedBooks: [GutenbergBook] = [
         (25519, "Little Wizard Stories of Oz", "Baum, L. Frank"),
@@ -175,9 +175,11 @@ public struct GutenbergClient: Sendable {
     /// CEFR levels, easiest first.
     public static let levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
 
-    /// Levels that have at least one recommended book, easiest first: the filter's chips.
+    /// Levels that have at least one recommended book or bundled story, easiest first: the filter's chips.
     public static var filterLevels: [String] {
-        levels.filter { level in recommended.contains { $0.level == level } }
+        levels.filter { level in
+            recommended.contains { $0.level == level } || BundledStory.shelf.contains { $0.level == level }
+        }
     }
 
     public init(http: HttpFetcher) { self.http = http }

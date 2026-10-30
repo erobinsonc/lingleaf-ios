@@ -6,12 +6,16 @@ public struct DictionaryEntry: Equatable, Sendable {
     public let phonetic: String?
     public let partOfSpeech: String?
     public let definition: String?
+    /// Whether `definition` was cut to `maxDefinition`, so the card can say it is shortened
+    /// (Wiktionary's CC BY-SA asks to say when the text was changed).
+    public let definitionTruncated: Bool
 
-    public init(word: String, phonetic: String?, partOfSpeech: String?, definition: String?) {
+    public init(word: String, phonetic: String?, partOfSpeech: String?, definition: String?, definitionTruncated: Bool = false) {
         self.word = word
         self.phonetic = phonetic
         self.partOfSpeech = partOfSpeech
         self.definition = definition
+        self.definitionTruncated = definitionTruncated
     }
 
     /// Longest field kept from an answer. Real definitions are a sentence or two; a hostile
@@ -29,12 +33,13 @@ public struct DictionaryEntry: Equatable, Sendable {
                 .map { TextTools.truncated($0, maxShortField) }
         }
         let meaning = (json["meanings"] as? [[String: Any]])?.first
-        let definition = (meaning?["definitions"] as? [[String: Any]])?.first
+        let definition = (meaning?["definitions"] as? [[String: Any]])?.first?["definition"] as? String
         return DictionaryEntry(
             word: word,
             phonetic: phonetic,
             partOfSpeech: (meaning?["partOfSpeech"] as? String).map { TextTools.truncated($0, maxShortField) },
-            definition: (definition?["definition"] as? String).map { TextTools.truncated($0, maxDefinition) }
+            definition: definition.map { TextTools.truncated($0, maxDefinition) },
+            definitionTruncated: (definition?.utf16.count ?? 0) > maxDefinition
         )
     }
 }

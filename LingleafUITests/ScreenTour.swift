@@ -13,15 +13,17 @@ final class ScreenTour: XCTestCase {
         let reviewNow: String
         let showMeaning: String
         let remembered: String
+        let knowIt: String
+        let privacyPolicy: String
     }
 
     private static let english = Labels(
         language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning",
-        remembered: "I remembered"
+        remembered: "I remembered", knowIt: "I know it", privacyPolicy: "Privacy policy"
     )
     private static let spanish = Labels(
         language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado",
-        remembered: "Lo recordé"
+        remembered: "Lo recordé", knowIt: "Ya la sé", privacyPolicy: "Política de privacidad"
     )
 
     private var app: XCUIApplication!
@@ -86,11 +88,42 @@ final class ScreenTour: XCTestCase {
         tab(1)
         _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
         snap("10-discover")
-        app.buttons["level-filter-B1"].tap()
+        app.buttons["level-filter-A2"].tap()
         snap("11-discover-level-filter")
+        app.buttons["level-filter-all"].tap()
+        // A search (the fake catalog answers any query): results end with the public-domain notice.
+        let search = app.searchFields.firstMatch
+        if search.waitForExistence(timeout: 5) {
+            search.tap()
+            search.typeText("oz\n")
+            _ = app.staticTexts["The Marvelous Land of Oz"].waitForExistence(timeout: 10)
+            snap("11b-discover-search-results")
+        }
         tab(3)
         snap("12-settings")
+        let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
+        for _ in 0..<6 where !privacy.isHittable { app.swipeUp() }
+        snap("13-settings-about")
+        longDefinitions(labels)
         app.terminate()
+    }
+
+    /// The fake dictionary gives "sand" a definition of several lines and "waves" one over
+    /// 500 characters, which the card cuts and marks as shortened.
+    private func longDefinitions(_ labels: Labels) {
+        tab(0)
+        let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch
+        guard book.waitForExistence(timeout: 10) else { return }
+        book.tap()
+        for (word, name) in [("sand", "03b-word-card-long-definition"), ("waves", "03c-word-card-shortened-definition")] {
+            let link = app.links[word].firstMatch
+            guard link.waitForExistence(timeout: 10) else { continue }
+            link.tap()
+            _ = app.buttons[labels.knowIt].waitForExistence(timeout: 10)
+            snap(name)
+            app.buttons[labels.knowIt].tap()
+            _ = app.buttons[labels.knowIt].waitForNonExistence(timeout: 10)
+        }
     }
 
     /// Taps a tab. After going back from the reader (which hides the tab bar) the bar slides

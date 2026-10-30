@@ -1,6 +1,6 @@
 # Lingleaf privacy policy
 
-_Last updated: 2026-10-29. Applies to Lingleaf for iOS and Lingleaf for Android._
+_Last updated: 2026-10-30. Applies to Lingleaf for iOS and Lingleaf for Android._
 
 Lingleaf is a free, open-source app for learning English by reading books. It has
 **no accounts, no ads, no analytics and no tracking**. We do not sell personal data.
@@ -22,8 +22,9 @@ Apple or Google. Deleting the app deletes them from the device.
 
 ## What the app sends over the internet
 
-The app connects only to these services, always over HTTPS. It sends no account or
-identifier of yours to them; like any website, they see your IP address:
+The app connects only to these services, always over HTTPS. Lingleaf sends them no
+account of yours; like any website, they see your IP address. The only identifier sent
+is the one ML Kit uses on Android, described below.
 
 - **Project Gutenberg** (`gutendex.com`, `www.gutenberg.org`): to list, search and
   download free books. They receive your search terms and the books you download.
@@ -32,7 +33,7 @@ identifier of yours to them; like any website, they see your IP address:
   Wiktionary (CC BY-SA).
 - **Translation**:
   - iOS uses Apple Translation, which runs on the device. iOS downloads each language
-    from Apple once (it asks you first). Words and sentences are not sent.
+    from Apple once (it asks you first). Words and sentences are not sent to Apple.
   - Android uses Google ML Kit, which runs on the device. It starts only after you
     first tap a word, and the word card tells you. It downloads each language model
     (about 30 MB) from Google once, over Wi‑Fi only. As Google documents for ML Kit,
@@ -40,14 +41,14 @@ identifier of yours to them; like any website, they see your IP address:
     performance metrics and a per-installation identifier
     ([ML Kit data disclosure](https://developers.google.com/ml-kit/android-data-disclosure),
     [ML Kit terms](https://developers.google.com/ml-kit/terms)). Words and sentences
-    are not sent.
+    are not sent to Google.
 
 These services are run by third parties under their own privacy policies; we do not
 receive what they receive.
 
 ## Suggestions you choose to send
 
-Some versions of Lingleaf let you send a suggestion from the app. Nothing is sent
+If a version of Lingleaf lets you send a suggestion from the app, nothing is sent
 unless you tap Send in your own email app. A suggestion can include your text, a
 screenshot or image you choose (which you can mark or cover first), basic device
 information (app version, system version, phone or tablet, app and translation
@@ -63,8 +64,8 @@ issue** so the community can see and discuss it. Your name and email address are
 - On your device: until you delete it or the app.
 - Suggestion emails: deleted once the issue is created and any image is reviewed,
   and in any case within 30 days.
-- Public issues: they stay on GitHub until you ask us to delete them (or the parts
-  that are yours).
+- Public issues: they stay on GitHub while the project exists, or until you ask us to
+  delete them (or the parts that are yours).
 
 ## Transfers
 
@@ -76,8 +77,9 @@ their own safeguards. Your device sends the requests to them directly.
 
 You can ask us to **access**, **rectify** or **delete** any personal data we hold about
 you (in practice: a suggestion email or issue), to object to or restrict its use, and
-to withdraw your consent at any time. Requests are free and we answer within 15
-business days. Data held by the third-party services above is requested from them.
+to withdraw your consent at any time. Requests are free. We answer questions within 10
+business days and complaints within 15 (see the Colombia section). To ask for data held
+by the services above, contact them directly.
 
 If you are not satisfied, you can complain to a data protection authority:
 
@@ -89,7 +91,7 @@ If you are not satisfied, you can complain to a data protection authority:
 
 Lingleaf is for ages 13 and up: the open Project Gutenberg catalog includes books
 written for adults. The app has no accounts and does not knowingly collect personal
-data from children. If a child under 13 sent us a suggestion, ask us and we delete it.
+data from children. If a child under 13 sent us a suggestion, tell us and we'll delete it.
 
 ## Changes
 
@@ -110,8 +112,8 @@ history is public in the repository.
 - **Quién atiende tus solicitudes:** el responsable, en el contacto de arriba.
 - **Procedimiento:** escribe al contacto con tu solicitud y cómo responderte.
   Consultas: respuesta en máximo 10 días hábiles. Reclamos: máximo 15 días hábiles
-  (prorrogables 8 días si te avisamos el motivo).
-- **Vigencia:** esta política rige desde el 29 de octubre de 2026. Los correos de
+  (prorrogables hasta 8 días hábiles más si te avisamos el motivo).
+- **Vigencia:** esta política rige desde el 30 de octubre de 2026. Los correos de
   sugerencias se conservan como se indica arriba; los issues públicos, mientras
   exista el proyecto o hasta que pidas borrarlos.
 
@@ -126,10 +128,10 @@ dispositivo. La app solo se conecta por HTTPS a Project Gutenberg (libros; recib
 búsquedas), a Free Dictionary API (recibe la palabra en inglés que tocaste; las
 definiciones vienen de Wiktionary, CC BY-SA) y, para traducir en el dispositivo, a
 Apple o Google para descargar cada idioma una vez. En Android, ML Kit empieza solo
-cuando tocas la primera palabra, descarga por Wi‑Fi y envía a Google diagnósticos
-seudónimos (modelo del dispositivo, versión del sistema y de la app, métricas de
+cuando tocas la primera palabra, descarga por Wi‑Fi y envía a Google datos de
+diagnóstico seudonimizados (modelo del dispositivo, versión del sistema y de la app, métricas de
 rendimiento y un identificador por instalación). Las sugerencias que decidas enviar
-desde tu correo se publican como issues públicos en GitHub **sin tu nombre ni tu
-correo**; el correo se borra en máximo 30 días. Puedes pedir acceso, corrección o
+desde tu correo se publican como reportes públicos (issues) en GitHub **sin tu nombre
+ni tu correo**; el correo se borra en máximo 30 días. Puedes pedir acceso, corrección o
 borrado, y quejarte ante la SIC (Colombia), la autoridad de tu país en la UE o la ANPD
-(Brasil). Lingleaf es para mayores de 13 años.
+(Brasil). Lingleaf es para personas de 13 años en adelante.

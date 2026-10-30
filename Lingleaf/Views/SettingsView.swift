@@ -80,6 +80,7 @@ struct SettingsView: View {
                         Text("Books: Project Gutenberg. No accounts, no ads, no tracking.")
                         Text(Credits.publicDomainNotice)
                         Text(Credits.definitionsCredit)
+                            .accessibilityHint(Text("Contains links"))
                     }
                     .font(.footnote)
                     .foregroundStyle(Brand.secondaryText)

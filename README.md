@@ -17,7 +17,7 @@ Android version: [lingleaf-android](https://github.com/erobinsonc/lingleaf-andro
 - **Review** with spaced repetition (1, 3, 7, 14, 30 days).
 - **Read aloud** a word, a sentence or a paragraph (works with the ringer muted).
 - **Thousands of free books** from Project Gutenberg, plus 3 original graded stories (A1–B1). Import your own `.txt`.
-- **Recommended classics from B1 to C2**, public domain worldwide, filterable by level in Discover.
+- **Recommended classics from B1 to C2**, public domain in almost every country (authors who died in 1925 or earlier), filterable by level in Discover with the original stories (A1–B1).
 - **Daily goal and streak.**
 - No accounts, no ads, no tracking.
 
@@ -79,8 +79,9 @@ Definitions come from [Wiktionary](https://en.wiktionary.org/) under
 
 ## License
 
-[MIT](LICENSE) for the code. The MIT licence does not cover the Lingleaf name and icon:
+[MIT](LICENSE) for the code. The MIT license does not cover the Lingleaf name and icon:
 please don't use them for your own builds or forks. Bundled stories in `Lingleaf/Resources/Books`
-are original and dedicated to the public domain ([CC0 1.0](Lingleaf/Resources/Books/LICENSE)).
+are original and dedicated to the public domain ([CC0 1.0](Lingleaf/Resources/Books/LICENSE)); that
+license file stays in the repository and is not copied into the app (`project.yml` excludes it).
 Project Gutenberg books are public domain in the US; outside the US, check your country's laws.
-The recommended books are public domain worldwide (every author died in 1925 or earlier).
+The recommended books are public domain in almost every country (authors who died in 1925 or earlier).

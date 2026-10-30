@@ -21,6 +21,26 @@
         }
       }
     },
+    "%@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
+    "%@: %@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
     "%lld books found": {
       "localizations": {
         "en": {
@@ -392,6 +412,16 @@
         }
       }
     },
+    "Contains links": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contiene enlaces"
+          }
+        }
+      }
+    },
     "Continue reading": {
       "localizations": {
         "es": {
@@ -418,16 +448,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meta diaria"
-          }
-        }
-      }
-    },
-    "Definition: Wiktionary (CC BY-SA), may be shortened": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Definición: Wiktionary (CC BY-SA), puede estar abreviada"
           }
         }
       }
@@ -852,6 +872,16 @@
         }
       }
     },
+    "Original story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuento original"
+          }
+        }
+      }
+    },
     "Pause": {
       "localizations": {
         "es": {
@@ -892,22 +922,22 @@
         }
       }
     },
+    "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los libros de Project Gutenberg son de dominio público en EE. UU. En otros países, revisa las leyes locales."
+          }
+        }
+      }
+    },
     "Project Gutenberg didn't answer. Try again.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
-          }
-        }
-      }
-    },
-    "Public domain in the US. Outside the US, check your country's laws.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dominio público en EE. UU. Fuera de EE. UU., revisa las leyes de tu país."
           }
         }
       }
@@ -1213,7 +1243,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Código fuente (open source, MIT)"
+            "value": "Código fuente (código abierto, MIT)"
           }
         }
       }
@@ -1454,6 +1484,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tu biblioteca está vacía"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA, shortened": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA, recortada"
           }
         }
       }

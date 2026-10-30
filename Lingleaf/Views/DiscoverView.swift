@@ -14,7 +14,7 @@ struct DiscoverView: View {
     @State private var slow = false
     @State private var searchError: GutenbergError?
     @State private var downloads: [Int: Download] = [:]
-    /// Level chosen in the filter chips; nil shows every recommended book.
+    /// Level chosen in the filter chips; nil shows every recommended book (no stories).
     @State private var level: String?
 
     /// A download in progress (0…1) or why it failed.
@@ -36,6 +36,12 @@ struct DiscoverView: View {
 
     private var recommended: [GutenbergBook] { GutenbergClient.filter(GutenbergClient.recommendedBooks, level: level) }
 
+    /// The app's own stories at the chosen level, listed before its books so no level is empty.
+    /// "All" keeps to the classics: the stories are already in the library.
+    private var stories: [ShelfStory] {
+        level == nil ? [] : BundledStory.shelf(level: level)
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -46,6 +52,11 @@ struct DiscoverView: View {
                             Text("No books found. Try another title or author.")
                         } else {
                             ForEach(results) { row($0) }
+                            // Search reaches the whole catalog, unlike the recommended books
+                            // (public domain in almost every country). A row: footers fail the Dynamic Type audit.
+                            Text(Credits.publicDomainNotice)
+                                .font(.footnote)
+                                .foregroundStyle(Brand.secondaryText)
                         }
                     } header: {
                         Text("Results").foregroundStyle(Brand.secondaryText)
@@ -53,7 +64,8 @@ struct DiscoverView: View {
                 }
                 Section {
                     levelFilter
-                    if recommended.isEmpty {
+                    ForEach(stories, id: \.resource) { storyRow($0) }
+                    if recommended.isEmpty && stories.isEmpty {
                         Text("No recommended books at this level.")
                     } else {
                         ForEach(recommended) { row($0) }
@@ -64,9 +76,6 @@ struct DiscoverView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Recommended for learners")
                         Text("Free classics from Project Gutenberg.")
-                            .font(.footnote)
-                            .textCase(nil)
-                        Text(Credits.publicDomainNotice)
                             .font(.footnote)
                             .textCase(nil)
                     }
@@ -232,6 +241,42 @@ struct DiscoverView: View {
             }
             Spacer(minLength: 8)
             action(book, failure: failure)
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// One of the app's own stories: it is already in the library (Read), or back in it at once
+    /// if the learner deleted it (Get, no download).
+    private func storyRow(_ story: ShelfStory) -> some View {
+        HStack(spacing: 14) {
+            BookCover(title: story.title)
+                .frame(width: 44, height: 62)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(story.title).font(.headline)
+                HStack(spacing: 6) {
+                    LevelBadge(level: story.level)
+                    Text("Original story").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                }
+            }
+            Spacer(minLength: 8)
+            if let saved = BundledStory.libraryCopy(of: story.title, in: model.state.books) {
+                NavigationLink(value: saved.id) {
+                    Text("Read")
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Brand.ink)
+                .accessibilityLabel(Text("Read \(story.title)"))
+            } else {
+                Button("Get") {
+                    if model.restoreBundledStory(story) != nil {
+                        announce(String(localized: "“\(story.title)” is in your library."))
+                    }
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(Text("Get \(story.title)"))
+            }
         }
         .padding(.vertical, 4)
     }

@@ -42,9 +42,13 @@ enum Brand {
 enum Credits {
     static let privacyPolicyURL = URL(string: "https://github.com/erobinsonc/lingleaf-ios/blob/main/PRIVACY.md")!
     /// Project Gutenberg vouches only for the US; the learner checks the rest.
-    static let publicDomainNotice: LocalizedStringResource = "Public domain in the US. Outside the US, check your country's laws."
-    /// Under a definition on the word card (Wiktionary's CC BY-SA asks for the source and any change).
-    static let definitionNote: LocalizedStringResource = "Definition: Wiktionary (CC BY-SA), may be shortened"
+    static let publicDomainNotice: LocalizedStringResource =
+        "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."
+
+    /// At the end of a definition on the word card: its source and license, and whether the app cut it.
+    static func definitionSource(shortened: Bool) -> LocalizedStringResource {
+        shortened ? "— Wiktionary, CC BY-SA, shortened" : "— Wiktionary, CC BY-SA"
+    }
 
     /// Names that keep their spelling in every language, so each one is found and linked.
     private static let definitionLinks: [(name: String, url: URL)] = [

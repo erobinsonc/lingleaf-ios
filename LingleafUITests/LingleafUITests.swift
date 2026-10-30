@@ -116,12 +116,19 @@ final class LingleafUITests: XCTestCase {
         app.tabBars.buttons["Discover"].tap()
         let b2 = app.buttons["level-filter-B2"]
         XCTAssertTrue(b2.waitForExistence(timeout: 10), "the level chips show above the recommended books")
-        XCTAssertFalse(app.buttons["level-filter-A1"].exists, "a level without recommended books has no chip")
         b2.tap()
         XCTAssertTrue(app.staticTexts["The Railway Children"].waitForExistence(timeout: 5), "B2 books stay")
         XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForNonExistence(timeout: 5), "the B1 book is filtered out")
+        app.buttons["level-filter-A2"].tap()
+        let story = app.buttons["Read A Day at the Market"]
+        XCTAssertTrue(story.waitForExistence(timeout: 5), "a level without classics lists the app's own story")
         app.buttons["level-filter-all"].tap()
         XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForExistence(timeout: 5), "All shows every book again")
+        XCTAssertTrue(story.waitForNonExistence(timeout: 5), "All keeps to the classics: the stories are in the library")
+        app.buttons["level-filter-A2"].tap()
+        XCTAssertTrue(story.waitForExistence(timeout: 5))
+        story.tap()
+        XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the story in the reader")
     }
 
     /// S6 Listen. XCUITest can't hear the speaker, so in -ui-testing mode the app records

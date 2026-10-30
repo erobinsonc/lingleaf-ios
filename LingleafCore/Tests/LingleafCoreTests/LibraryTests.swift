@@ -67,6 +67,24 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(reloaded.state.books.count, 2, "books persist and are not seeded twice")
     }
 
+    func testBundledStoriesAreListedByLevelAndFoundInTheLibrary() {
+        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A2", "B1"])
+        XCTAssertEqual(BundledStory.shelf(level: "A2").map(\.title), ["A Day at the Market"])
+        XCTAssertEqual(BundledStory.shelf(level: nil).count, BundledStory.shelf.count)
+        XCTAssertTrue(BundledStory.shelf(level: "C2").isEmpty)
+
+        let library = library()
+        library.seedIfNeeded { stories }
+        let copy = BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books)
+        XCTAssertEqual(copy?.author, BundledStory.author)
+        let imported = library.addBook(title: "The Lighthouse Keeper", author: "Someone", text: "Text.")
+        let keeper = BundledStory.libraryCopy(of: "The Lighthouse Keeper", in: library.state.books)
+        XCTAssertNil(keeper, "another author's book is not the story")
+        library.deleteBook(imported.id)
+        library.deleteBook(copy!.id)
+        XCTAssertNil(BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books), "deleted: Discover offers it again")
+    }
+
     func testOpenProgressAndDeleteABook() {
         let library = library()
         let book = library.addBook(title: "Alice", author: "Lewis Carroll", text: "One.\n\nTwo.\n\nThree.", level: "B2", gutenbergID: 11)

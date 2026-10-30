@@ -64,7 +64,10 @@ final class GutenbergTests: XCTestCase {
         for removed in [21, 16, 236, 74, 120, 1661, 1342, 84, 174, 1400, 345, 2701, 219, 145, 238, 1429] {
             XCTAssertNil(GutenbergClient.level(for: removed), "\(removed) is no longer recommended")
         }
-        XCTAssertEqual(GutenbergClient.filterLevels, ["B1", "B2", "C1", "C2"], "the filter shows only levels that have books")
+        XCTAssertEqual(
+            GutenbergClient.filterLevels, ["A1", "A2", "B1", "B2", "C1", "C2"],
+            "every level with a recommended book or a bundled story (A1, A2: the app's own stories)"
+        )
         let titles = Dictionary(uniqueKeysWithValues: GutenbergClient.recommendedBooks.map { ($0.id, $0) })
         XCTAssertEqual(titles[25519]?.displayTitle, "Little Wizard Stories of Oz")
         XCTAssertEqual(titles[1874]?.authorName, "E. Nesbit")
@@ -204,6 +207,25 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual(found.count, GutenbergClient.maxResults)
     }
 
+    func testUserAgentNamesTheAppVersion() {
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: "0.3.0"), "Lingleaf/0.3.0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: nil), "Lingleaf/0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: "1.0\r\nX: y"), "Lingleaf/1.0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertTrue(URLSessionFetcher.defaultUserAgent.hasPrefix("Lingleaf/"))
+    }
+
+    /// SPEC.md's "Recommended ids" line (read by the weekly link check) lists the same books.
+    func testSpecListsTheRecommendedIds() throws {
+        let spec = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("SPEC.md")
+        let text = try String(contentsOf: spec, encoding: .utf8)
+        let line = try XCTUnwrap(text.components(separatedBy: "\n").first { $0.hasPrefix("- Recommended ids: ") })
+        let ids = line.dropFirst("- Recommended ids: ".count).trimmingCharacters(in: CharacterSet(charactersIn: ". "))
+            .components(separatedBy: ", ").compactMap(Int.init)
+        XCTAssertEqual(ids, GutenbergClient.recommended.map(\.id))
+    }
+
     func testOnlyHTTPSToTheAppsHostsIsAllowed() async {
         XCTAssertTrue(Hosts.isAllowed(URL(string: "https://www.gutenberg.org/cache/epub/11/pg11.txt")))
         XCTAssertTrue(Hosts.isAllowed(URL(string: "https://gutendex.com/books/?search=alice")))
@@ -270,7 +292,17 @@ final class DictionaryTests: XCTestCase {
         let client = DictionaryClient(http: ClosureFetcher { _ in Self.entry("big", huge, phonetic: String(repeating: "x", count: 5_000)) })
         let result = await client.lookup("big")
         XCTAssertEqual(result?.definition?.count, DictionaryEntry.maxDefinition)
+        XCTAssertEqual(result?.definitionTruncated, true, "the card says the definition is shortened")
         XCTAssertEqual(result?.phonetic?.count, DictionaryEntry.maxShortField)
+    }
+
+    func testADefinitionThatFitsIsNotMarkedShortened() async {
+        let exact = String(repeating: "a", count: DictionaryEntry.maxDefinition)
+        let fits = await DictionaryClient(http: ClosureFetcher { _ in Self.entry("fit", exact) }).lookup("fit")
+        XCTAssertEqual(fits?.definition, exact)
+        XCTAssertEqual(fits?.definitionTruncated, false)
+        let short = await DictionaryClient(http: ClosureFetcher { _ in Self.entry("walk", "To move on the feet.") }).lookup("walk")
+        XCTAssertEqual(short?.definitionTruncated, false)
     }
 
     func testReturnsNilWhenOfflineOnServerErrorsOrBadJSON() async {
