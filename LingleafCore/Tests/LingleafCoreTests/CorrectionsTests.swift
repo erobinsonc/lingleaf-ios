@@ -305,6 +305,20 @@ final class CorrectionsTests: XCTestCase {
         XCTAssertNotNil(library.state.words.first { $0.word.utf16.count == VocabWord.maxWord && $0.word.hasPrefix("b") })
     }
 
+    func testALongSavedWordCantStallTheCorrectionsCursor() {
+        // A full run ends on a word with a 250-character id: the next run must read past it.
+        let filler = (0..<(Library.maxCorrectedWords - 1)).map { vocab("w\($0)", "A cat.", now) }
+        let long = vocab(String(repeating: "z", count: 250), "A cat.", now - 86_400)
+        let library = saved(filler + [long, vocab("leave", "Turn left at the bank.", now - 86_400 * 400)])
+        library.correctWordsIfNeeded()
+        XCTAssertTrue(storage.read(Library.correctionsDone)?.hasPrefix("after:") == true)
+        library.correctWordsIfNeeded()
+        XCTAssertNotNil(library.state.word("left", sense: Sense.noun), "the second run reads the rest")
+        XCTAssertEqual(storage.read(Library.correctionsDone), "done")
+        XCTAssertLessThanOrEqual(VocabWord.id(String(repeating: "a", count: VocabWord.maxWord), Sense.homonym).utf16.count,
+                                 Library.maxCursorID, "every id fits the cursor")
+    }
+
     func testSavedDatesOutsideTheirRangeAreBroughtInsideOnLoad() throws {
         storage.files["words.json"] = """
         [{"word": "old", "translation": "", "phonetic": "", "context": "", "source": "", "learned": false, "box": 0,

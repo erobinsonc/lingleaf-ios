@@ -165,11 +165,9 @@ extension IrregularVerbs {
     func nounIPA(_ words: Words, _ i: Int) -> String? { nounIPARule(words, i)?.ipa }
 
     /// What the voice says for the noun at `i` when its sentence proves a sound it would say wrong
-    /// ("made of lead" → "led", "a tear in my shirt" → "tare"); nil: as written. Only for the
-    /// noun's own spelling ("lead", "tear"): the rule's respelling is of the singular.
+    /// ("made of lead" → "led", "roof leads" → "leds", "a tear in my shirt" → "tare"); nil: as written.
     func nounSpoken(_ words: Words, _ i: Int) -> String? {
-        guard let h = homographs[words.token(i)], h.noun == words.token(i) else { return nil }
-        return nounIPARule(words, i)?.spokenAs
+        nounIPARule(words, i)?.spokenAs
     }
 
     /// The first `nounIpa` rule of the homograph at `i` its sentence matches, in the table's order.
@@ -187,12 +185,11 @@ extension IrregularVerbs {
         return nil
     }
 
-    /// What Listen says for a noun saved with the IPA its sentence proved (`phonetic`, "/lɛd/"): the
-    /// rule's respelling ("led"), else nil (as written).
+    /// What Listen says for a noun saved with the IPA its sentence proved (`phonetic`, "/lɛd/", or the
+    /// dictionary's "/tɛɹ/"): its spelling's rule's respelling for that sound ("led"), else nil (as written).
     func savedNounSpoken(_ word: String, phonetic: String) -> String? {
-        let ipa = phonetic.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        guard !ipa.isEmpty, let h = homographs[TextTools.normalize(word)], h.noun == h.form else { return nil }
-        return h.nounIpa.first { $0.ipa == ipa && $0.spokenAs != nil }?.spokenAs
+        guard let h = homographs[TextTools.normalize(word)], h.noun == h.form else { return nil }
+        return h.nounIpa.first { $0.spokenAs != nil && DictionaryEntry.sameIPA($0.ipa, phonetic) }?.spokenAs
     }
 
     /// The table's Spanish meaning of a reading (SPEC S3): a verb's (the -s form's own when `form`
@@ -311,9 +308,14 @@ extension IrregularVerbs {
         let ns = text as NSString
         guard range.start >= 0, range.start < range.end, range.end <= ns.length else { return headword }
         let form = ns.substring(with: range.nsRange)
-        let rows = choices(in: text, at: range)
+        let words = Words(ns)
+        let index = words.index(of: range)
+        let rows = index.map { choices(words, $0) } ?? []
         if !rows.isEmpty {
-            let spoken = (chosen.map { [$0] } ?? rows).map { spokenForm(of: form, as: $0) }
+            // A noun row as its sentence proves its sound ("roof leads": "leds"), else as written.
+            let spoken = (chosen.map { [$0] } ?? rows).map { row in
+                row.kind == .noun ? index.flatMap { nounSpoken(words, $0) } ?? form : spokenForm(of: form, as: row)
+            }
             return spoken.reduce(into: [String]()) { out, word in if !out.contains(word) { out.append(word) } }
                 .joined(separator: ", ")
         }
@@ -323,10 +325,10 @@ extension IrregularVerbs {
         // An expression ("bound for") is said as the unit.
         if reading?.kind == .expression { return headword }
         let isVerb = reading?.isVerb ?? false
-        // A noun whose sentence proves a sound the voice wouldn't make ("tears" /tɛr/: "tare").
-        let words = Words(text as NSString)
+        // A noun whose sentence proves a sound the voice wouldn't make: the headword (the singular) as
+        // said for that sound ("tears" /tɛr/: "tare, tares").
         let nounHead = reading?.kind == .noun && reading?.step != .name
-            ? words.index(of: range).flatMap { i in nounIPARule(words, i)?.spokenAs } : nil
+            ? index.flatMap { i in nounIPARule(words, i).flatMap { savedNounSpoken(headword, phonetic: $0.ipa) } } : nil
         let head = isVerb ? verb(base: TextTools.normalize(headword))?.spokenAs["base"] ?? headword : nounHead ?? headword
         return "\(head), \(formSpoken)"
     }

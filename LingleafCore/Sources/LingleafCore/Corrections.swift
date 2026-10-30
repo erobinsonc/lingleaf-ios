@@ -55,8 +55,8 @@ extension Library {
     /// "done" (or "1", before runs), or "after:" and where the next run starts.
     static let correctionsDone = "corrections-v2"
     static let correctionsAfter = "after:"
-    /// A saved word's id: `VocabWord.maxWord` and its "#sense".
-    static let maxCursorID = VocabWord.maxWord + 10
+    /// A saved word's id: `VocabWord.maxWord` and its longest "#sense" (same limit as lingleaf-android).
+    static let maxCursorID = VocabWord.maxWord + "#homonym".utf16.count
     /// Most corrections kept (what Undo can hold: a run stops there), and most words read again in
     /// one run (same limits as lingleaf-android).
     static let maxCorrections = 1000

@@ -317,8 +317,8 @@ final class SensesTests: XCTestCase {
     func testASavedExpressionIsMarkedWhereverItIsThatExpression() {
         let library = library()
         library.saveWord("bound for", learned: false, context: "The ship was bound for Spain.")
-        let other = "The train was bound for Rome. They bound the books."
-        XCTAssertEqual(marked(library, other), ["bound"], "the expression in another book, not the verb")
+        let other = "The train was bound for Paris. He was bound to win, and the books were bound."
+        XCTAssertEqual(marked(library, other), ["bound"], "only the bound of bound for, not bound to or the verb")
     }
 
     func testListenInReviewSaysAVerbWithItsSpokenBase() {

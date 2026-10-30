@@ -201,10 +201,27 @@ final class RoundFourTests: XCTestCase {
         XCTAssertEqual(spoken("A tear rolled down her cheek.", "tear"), "tear")
         XCTAssertEqual(spoken("The tear was small.", "tear"), "tear", "nothing proves it")
         let curtain = "The tears in the curtain let the light in."
-        XCTAssertEqual(spoken(curtain, "tears"), "tears", "the respelling is of the singular")
-        XCTAssertEqual(table.listenText(headword: "tear", in: curtain, at: range("tears", in: curtain), chosen: nil), "tare, tears")
-        XCTAssertEqual(table.listenText(headword: "lead", in: "It was made of lead.", at: range("lead", in: "It was made of lead."),
-                                        chosen: nil), "led")
+        XCTAssertEqual(spoken(curtain, "tears"), "tares", "a plural says the plural")
+        func listen(_ text: String, _ word: String, headword: String? = nil) -> String {
+            table.listenText(headword: headword ?? word, in: text, at: range(word, in: text), chosen: nil)
+        }
+        XCTAssertEqual(listen(curtain, "tears", headword: "tear"), "tare, tares")
+        XCTAssertEqual(listen("It was made of lead.", "lead"), "led")
+        XCTAssertEqual(listen("The lead pipes burst.", "lead"), "led")
+        XCTAssertEqual(listen("She was the lead singer.", "lead"), "lead", "liːd: the voice says it right")
+        XCTAssertEqual(listen("There is a tear in my shirt.", "tear"), "tare")
+        XCTAssertEqual(listen("A tear rolled down her cheek.", "tear"), "tear", "tɪr: as written")
+        // A plural says the plural; the headword the singular's spoken form for the same sound.
+        XCTAssertEqual(listen("His leads were made of metal.", "leads", headword: "lead"), "led, leds")
+        // Unsure: the tapped form in each reading, the noun's as its sentence proves.
+        XCTAssertEqual(listen("We need lead pipes and old roof leads.", "leads", headword: "lead"), "leads, leds")
+        XCTAssertEqual(listen("There were tears in the sail.", "tears", headword: "tear"), "tares", "unsure: both readings sound alike")
+        XCTAssertEqual(listen("She mended two tears in her coat.", "tears", headword: "tear"), "tare, tares")
+        XCTAssertEqual(listen("Her tears fell.", "tears", headword: "tear"), "tear, tears", "tɪr: as written")
+        // Next-word rules before previous-word ones: "with lead vocals" is the singer's lead.
+        let vocals = Words("He sang with lead vocals." as NSString)
+        XCTAssertEqual(table.nounIPA(vocals, 3), "liːd")
+        XCTAssertNil(table.nounSpoken(vocals, 3))
         func saved(_ word: String, _ phonetic: String) -> VocabWord {
             var entry = VocabWord(
                 word: word, translation: "", translationLanguage: nil, phonetic: phonetic, context: "", source: "",
@@ -216,6 +233,7 @@ final class RoundFourTests: XCTestCase {
         XCTAssertEqual(table.spokenSaved(saved("lead", "/lɛd/")), "led", "from the saved IPA")
         XCTAssertEqual(table.spokenSaved(saved("lead", "/liːd/")), "lead")
         XCTAssertEqual(table.spokenSaved(saved("tear", "/tɛr/")), "tare")
+        XCTAssertEqual(table.spokenSaved(saved("tear", "/tɛɹ/")), "tare", "the dictionary's ɹ is r")
         XCTAssertEqual(table.spokenSaved(saved("tear", "")), "tear", "no sound proven")
         XCTAssertEqual(table.spokenSaved(saved("left", "/lɛft/")), "left")
     }
@@ -251,6 +269,48 @@ final class RoundFourTests: XCTestCase {
         let ring = try XCTUnwrap(library.state.word("ring", sense: Sense.noun))
         XCTAssertEqual(library.state.displayName(ring), "the ring")
         XCTAssertEqual(ring.form, "rings", "the tapped form stays bold in Review")
+    }
+
+    func testTheNounPronunciationRulesAreChecked() throws {
+        func rule(_ ipa: String, _ fields: [String: Any] = [:], spoken: String? = nil) -> [String: Any] {
+            var out = fields
+            out["ipa"] = ipa
+            if let spoken { out["spokenAs"] = spoken }
+            return out
+        }
+        func loads(_ form: String, _ rules: [[String: Any]]) throws -> Bool {
+            let data = try JSONSerialization.data(withJSONObject: withHomograph(form) { $0["nounIpa"] = rules })
+            return (try? IrregularVerbs.load(data)) != nil
+        }
+        let before: [String: Any] = ["before": ["pipes"]], after: [String: Any] = ["after": ["of"]]
+        XCTAssertTrue(try loads("lead", [rule("lɛd", before, spoken: "led"), rule("lɛd", after, spoken: "led"), rule("liːd")]))
+        XCTAssertFalse(try loads("lead", [rule("lɛd", after, spoken: "led"), rule("lɛd", before, spoken: "led"), rule("liːd")]),
+                       "after before before")
+        for bad in ["Led", "le d", "l\u{e9}d", String(repeating: "a", count: 21), ""] {
+            XCTAssertFalse(try loads("lead", [rule("lɛd", before, spoken: bad), rule("liːd")]), "spokenAs \"\(bad)\"")
+        }
+        // A plural's spoken forms are its singular's plus s.
+        let near: [String: Any] = ["near": ["metal"]]
+        XCTAssertTrue(try loads("leads", [rule("lɛd", near, spoken: "leds"), rule("liːd")]))
+        XCTAssertFalse(try loads("leads", [rule("lɛd", near, spoken: "led"), rule("liːd")]), "the singular's form")
+        XCTAssertFalse(try loads("leads", [rule("lɛd", near), rule("liːd")]), "one has it, the other not")
+        XCTAssertFalse(try loads("leads", [rule("lɛd", near, spoken: "leds"), rule("liːd", spoken: "leeds")]), "the singular has none")
+        XCTAssertFalse(try loads("leads", [rule("lɛd", near, spoken: "leds"), rule("lɪd")]), "a sound the singular doesn't have")
+        // Length in code points: 100 letters outside the BMP are one hundred characters.
+        let wide = String(repeating: "\u{1D400}", count: 100)
+        XCTAssertNoThrow(try IrregularVerbs.load(JSONSerialization.data(withJSONObject: withVerb("lie") { $0["sEs"] = wide })))
+        try refused(withVerb("lie") { $0["sEs"] = wide + "a" }, "101 code points")
+    }
+
+    func testADictionaryEntryWithoutAWordIsSkippedAndPartsOfSpeechMatchInAnyCase() async {
+        let client = DictionaryClient(http: ClosureFetcher { _ in
+            HttpResponse(status: 200, text: """
+            [{"meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Hostile."}]}]},
+             {"word": "left", "meanings": [{"partOfSpeech": "Noun", "definitions": [{"definition": "The left side."}]}]}]
+            """)
+        })
+        let entry = await client.lookup("left", reading: Reading(kind: .noun, base: "left", step: .noun))
+        XCTAssertEqual(entry?.definition, "The left side.")
     }
 
     // MARK: The v4 fields of the table

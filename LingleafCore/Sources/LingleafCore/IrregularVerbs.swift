@@ -205,6 +205,7 @@ public struct IrregularVerbs: Sendable {
             }
         }
         try check(homographs.count == homographList.count, "duplicate homograph")
+        try checkPluralSounds()
         for h in homographList {
             var words: [String] = [h.form, h.verb] + [h.noun, h.baseVerb, h.nounPair].compactMap { $0 }
             words += Array(h.nounAfter) + Array(h.nounBefore) + Array(h.verbAfter)
@@ -242,6 +243,22 @@ public struct IrregularVerbs: Sendable {
             try check(!tableForms.contains(base), "llBase \(base) is a form of the table")
         }
         try check(context.allWords.allSatisfy(Self.isContextWord), "context: a word that is not a–z")
+    }
+
+    /// A plural's pronunciation rules ("tears") have only sounds its singular's ("tear") has, each said
+    /// as the singular's plus "s" ("tares" for "tare"), or both as written.
+    private func checkPluralSounds() throws {
+        for h in homographs.values {
+            guard let noun = h.noun, noun != h.form, let singular = homographs[noun] else { continue }
+            for rule in h.nounIpa {
+                let same = singular.nounIpa.filter { $0.ipa == rule.ipa }
+                guard !same.isEmpty else { throw IrregularVerbsError.invalid("homograph \(h.form): a sound \(noun) doesn't have") }
+                let expected = Set(same.map { $0.spokenAs.map { $0 + "s" } })
+                guard expected == [rule.spokenAs] else {
+                    throw IrregularVerbsError.invalid("homograph \(h.form): spokenAs is not \(noun)'s plus s")
+                }
+            }
+        }
     }
 
     /// A form: 1–20 letters a–z.
