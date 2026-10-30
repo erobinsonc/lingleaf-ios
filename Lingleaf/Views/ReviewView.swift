@@ -124,9 +124,8 @@ struct ReviewView: View {
             if revealed {
                 meaning(word)
             } else {
-                // Two senses of its spelling saved ("to lie"): the sentence tells which, its translation not yet (SPEC S7).
-                if model.state.words.filter({ $0.word == word.word && $0.sense != nil }).count >= 2, !word.context.isEmpty,
-                   TextTools.normalize(word.context) != word.word {
+                // The label alone doesn't tell the sense ("to lie"): the sentence tells which, its translation not yet (SPEC S7).
+                if model.state.promptShowsSentence(word) {
                     Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)

@@ -84,8 +84,8 @@ extension IrregularVerbs {
             switch reading.step {
             // "She tells lies": the twin's noun or the verb ("the lie — mentira" / "to lie — estar, encontrarse").
             case .unsureNoun: return [ReadingChoice(kind: .noun, base: entry.shared?.noun ?? form, sense: Sense.noun), verbRow]
-            // "The bell rings": the verb or the word as a noun ("to ring" / "the rings").
-            case .unsureNounFirst: return [verbRow, ReadingChoice(kind: .noun, base: form, sense: Sense.noun)]
+            // "The bell rings": the verb or the noun's regular lemma, spelled like the base ("to ring" / "the ring").
+            case .unsureNounFirst: return [verbRow, ReadingChoice(kind: .noun, base: entry.base, sense: Sense.noun)]
             default:
                 // "lying", "lies", "hanging", "hangs" the next word doesn't tell: the verb and its twin.
                 guard entry.shared != nil else { return [] }
@@ -131,6 +131,7 @@ extension IrregularVerbs {
     /// form in each saved reading (once when they sound the same), as on the card; else
     /// `spokenHeadword`.
     public func spokenSaved(_ word: VocabWord) -> String {
+        if word.sense == Sense.noun, let spoken = savedNounSpoken(word.word, phonetic: word.phonetic) { return spoken }
         guard word.isUnsure, let meanings = word.meanings else { return spokenHeadword(word.word, sense: word.sense) }
         let form = word.form ?? word.word
         let spoken = meanings.map { meaning in
@@ -161,7 +162,18 @@ extension IrregularVerbs {
         return words.index(of: range).flatMap { nounIPA(words, $0) }
     }
 
-    func nounIPA(_ words: Words, _ i: Int) -> String? {
+    func nounIPA(_ words: Words, _ i: Int) -> String? { nounIPARule(words, i)?.ipa }
+
+    /// What the voice says for the noun at `i` when its sentence proves a sound it would say wrong
+    /// ("made of lead" → "led", "a tear in my shirt" → "tare"); nil: as written. Only for the
+    /// noun's own spelling ("lead", "tear"): the rule's respelling is of the singular.
+    func nounSpoken(_ words: Words, _ i: Int) -> String? {
+        guard let h = homographs[words.token(i)], h.noun == words.token(i) else { return nil }
+        return nounIPARule(words, i)?.spokenAs
+    }
+
+    /// The first `nounIpa` rule of the homograph at `i` its sentence matches, in the table's order.
+    private func nounIPARule(_ words: Words, _ i: Int) -> Homograph.NounIPA? {
         guard let h = homographs[words.token(i)], !h.nounIpa.isEmpty else { return nil }
         let before = i >= 1 && words.gapOK(i - 1, i) ? words.token(i - 1) : nil
         let after = i + 1 < words.count && words.gapOK(i, i + 1) ? words.token(i + 1) : nil
@@ -170,9 +182,17 @@ extension IrregularVerbs {
             if let allowed = rule.after, !(before.map(allowed.contains) ?? false) { continue }
             if let allowed = rule.before, !(after.map(allowed.contains) ?? false) { continue }
             if let near = rule.near, near.isDisjoint(with: sentence) { continue }
-            return rule.ipa
+            return rule
         }
         return nil
+    }
+
+    /// What Listen says for a noun saved with the IPA its sentence proved (`phonetic`, "/lɛd/"): the
+    /// rule's respelling ("led"), else nil (as written).
+    func savedNounSpoken(_ word: String, phonetic: String) -> String? {
+        let ipa = phonetic.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        guard !ipa.isEmpty, let h = homographs[TextTools.normalize(word)], h.noun == h.form else { return nil }
+        return h.nounIpa.first { $0.ipa == ipa && $0.spokenAs != nil }?.spokenAs
     }
 
     /// The table's Spanish meaning of a reading (SPEC S3): a verb's (the -s form's own when `form`
@@ -303,7 +323,11 @@ extension IrregularVerbs {
         // An expression ("bound for") is said as the unit.
         if reading?.kind == .expression { return headword }
         let isVerb = reading?.isVerb ?? false
-        let head = isVerb ? verb(base: TextTools.normalize(headword))?.spokenAs["base"] ?? headword : headword
+        // A noun whose sentence proves a sound the voice wouldn't make ("tears" /tɛr/: "tare").
+        let words = Words(text as NSString)
+        let nounHead = reading?.kind == .noun && reading?.step != .name
+            ? words.index(of: range).flatMap { i in nounIPARule(words, i)?.spokenAs } : nil
+        let head = isVerb ? verb(base: TextTools.normalize(headword))?.spokenAs["base"] ?? headword : nounHead ?? headword
         return "\(head), \(formSpoken)"
     }
 }

@@ -62,8 +62,8 @@ final class RoundFourTests: XCTestCase {
         XCTAssertEqual(read("The bell rings.", "rings"), Reading(kind: .unsure, base: "ring", step: .unsureNounFirst))
         let rows = choices("The bell rings.", "rings")
         XCTAssertEqual(rows.map(\.kind), [.verb, .noun])
-        XCTAssertEqual(rows.map(\.base), ["ring", "rings"])
-        XCTAssertEqual(rows.map(\.label), ["to ring", "the rings"])
+        XCTAssertEqual(rows.map(\.base), ["ring", "ring"], "v5: the noun's regular lemma")
+        XCTAssertEqual(rows.map(\.label), ["to ring", "the ring"])
         XCTAssertEqual(rows.first.flatMap { table.tableMeaning($0.kind, base: $0.base, form: $0.form, first: true) }, "sonar")
         XCTAssertNil(rows.last.flatMap { table.tableMeaning($0.kind, base: $0.base, form: $0.form) }, "the noun is translated")
         XCTAssertEqual(read("The sun lights the room.", "lights")?.kind, .verb, "an object after it: the verb")
@@ -191,6 +191,65 @@ final class RoundFourTests: XCTestCase {
         XCTAssertEqual(tear.phonetic, "/tɪr/")
     }
 
+    // MARK: v5
+
+    func testANounIsSpokenAsWrittenUnlessItsSentenceProvesASoundTheVoiceWouldntMake() {
+        func spoken(_ sentence: String, _ word: String) -> String { table.spokenForm(in: sentence, at: range(word, in: sentence)) }
+        XCTAssertEqual(spoken("It was made of lead.", "lead"), "led")
+        XCTAssertEqual(spoken("He took the lead.", "lead"), "lead", "liːd: the voice says it right")
+        XCTAssertEqual(spoken("There is a tear in my shirt.", "tear"), "tare")
+        XCTAssertEqual(spoken("A tear rolled down her cheek.", "tear"), "tear")
+        XCTAssertEqual(spoken("The tear was small.", "tear"), "tear", "nothing proves it")
+        let curtain = "The tears in the curtain let the light in."
+        XCTAssertEqual(spoken(curtain, "tears"), "tears", "the respelling is of the singular")
+        XCTAssertEqual(table.listenText(headword: "tear", in: curtain, at: range("tears", in: curtain), chosen: nil), "tare, tears")
+        XCTAssertEqual(table.listenText(headword: "lead", in: "It was made of lead.", at: range("lead", in: "It was made of lead."),
+                                        chosen: nil), "led")
+        func saved(_ word: String, _ phonetic: String) -> VocabWord {
+            var entry = VocabWord(
+                word: word, translation: "", translationLanguage: nil, phonetic: phonetic, context: "", source: "",
+                learned: false, box: 0, createdAt: Date(), nextReview: Date()
+            )
+            entry.sense = Sense.noun
+            return entry
+        }
+        XCTAssertEqual(table.spokenSaved(saved("lead", "/lɛd/")), "led", "from the saved IPA")
+        XCTAssertEqual(table.spokenSaved(saved("lead", "/liːd/")), "lead")
+        XCTAssertEqual(table.spokenSaved(saved("tear", "/tɛr/")), "tare")
+        XCTAssertEqual(table.spokenSaved(saved("tear", "")), "tear", "no sound proven")
+        XCTAssertEqual(table.spokenSaved(saved("left", "/lɛft/")), "left")
+    }
+
+    func testReviewShowsTheSentenceWhenTheLabelAloneDoesntTellTheSense() throws {
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord("lie", learned: false, context: "She lay down to rest.", sense: Sense.verb)
+        library.saveWord("hang", learned: false, context: "They hanged him.", sense: Sense.homonym)
+        library.saveWord("leave", learned: false, context: "She left early.", sense: Sense.verb)
+        library.saveWord("wind", learned: false, context: "The wind blew.", sense: Sense.noun)
+        library.saveWord("light", learned: false, sense: Sense.verb)
+        let state = library.state
+        func shows(_ word: String, _ sense: String) throws -> Bool { state.promptShowsSentence(try XCTUnwrap(state.word(word, sense: sense))) }
+        XCTAssertTrue(try shows("lie", Sense.verb), "a verb with a twin, one sense saved")
+        XCTAssertTrue(try shows("hang", Sense.homonym), "the twin")
+        XCTAssertFalse(try shows("leave", Sense.verb))
+        XCTAssertFalse(try shows("wind", Sense.noun), "one sense: its label tells")
+        XCTAssertFalse(try shows("light", Sense.verb), "no sentence saved")
+        library.saveWord("wind", learned: false, context: "She wound the clock.", sense: Sense.verb)
+        XCTAssertTrue(try shows("wind", Sense.noun), "two senses of the spelling")
+    }
+
+    func testTheBellRingsChosenAsTheNounSavesTheLemma() throws {
+        let sentence = "The bell rings."
+        let noun = try XCTUnwrap(choices(sentence, "rings").last)
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord(noun.base, learned: false, context: sentence, sense: noun.sense, form: "rings", formRange: range("rings", in: sentence))
+        let ring = try XCTUnwrap(library.state.word("ring", sense: Sense.noun))
+        XCTAssertEqual(library.state.displayName(ring), "the ring")
+        XCTAssertEqual(ring.form, "rings", "the tapped form stays bold in Review")
+    }
+
     // MARK: The v4 fields of the table
 
     private static let bundled: Data = {
@@ -267,6 +326,26 @@ final class RoundFourTests: XCTestCase {
         context["boundAdjective"] = ["for"]
         old["context"] = context
         try refused(old, "the list v4 removed")
+        // v5: a rule's respelling is a–z, and a rule on the word before never comes before one on the word after.
+        try refused(withHomograph("lead") { h in
+            var rules = h["nounIpa"] as? [[String: Any]] ?? []
+            rules[0]["spokenAs"] = "Led"
+            h["nounIpa"] = rules
+        }, "spokenAs not a–z")
+        try refused(withHomograph("lead") { h in
+            var rules = h["nounIpa"] as? [[String: Any]] ?? []
+            if let after = rules.firstIndex(where: { $0["after"] != nil && $0["before"] == nil }) { rules.insert(rules.remove(at: after), at: 0) }
+            h["nounIpa"] = rules
+        }, "an after rule before a before rule")
+        for bad in [" mentir", "", "a\u{2028}b"] {
+            try refused(withHomonym { $0["es"] = [bad] }, "homonym es: \(bad.unicodeScalars.map(\.value))")
+            try refused(withVerb("lie") { $0["sEs"] = bad }, "sEs: \(bad.unicodeScalars.map(\.value))")
+            try refused(withHomonym { $0["nounEs"] = [bad] }, "nounEs: \(bad.unicodeScalars.map(\.value))")
+            try refused(withHomograph("bound") { $0["expressions"] = [changed("es", [bad])] }, "es: \(bad.unicodeScalars.map(\.value))")
+        }
+        for bad in ["a\u{202E}b", "a\u{200B}b", "a\nb", "a\u{0}b", "a\u{2068}b\u{2069}"] {
+            try refused(withHomonym { $0["es"] = [bad] }, "homonym es: \(bad.unicodeScalars.map(\.value))")
+        }
         // The Spanish fields pass the same text check as the rest of the table.
         for bad in ["a\u{202E}b", "a\u{200B}b", "a\nb", "a\u{0}b", "a\u{2068}b\u{2069}"] {
             try refused(withVerb("lie") { $0["sEs"] = bad }, "sEs: \(bad.unicodeScalars.map(\.value))")

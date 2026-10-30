@@ -107,7 +107,10 @@ extension IrregularVerbs {
     func spokenForm(_ words: Words, _ i: Int) -> String? {
         let w = words.token(i)
         if homographs[w] != nil {
-            guard let reading = resolve(words, i), reading.kind == .verb, let entry = verb(base: reading.base) else { return nil }
+            guard let reading = resolve(words, i) else { return nil }
+            // A noun as written, unless its sentence proves a sound the voice wouldn't make ("made of lead": "led").
+            if reading.kind == .noun { return reading.step == .name ? nil : nounSpoken(words, i) }
+            guard reading.kind == .verb, let entry = verb(base: reading.base) else { return nil }
             return Self.slot(of: w, in: entry, step: reading.step).flatMap { entry.spokenAs[$0] }
         }
         guard let entry = verb(base: formToBase[w] ?? w), !entry.spokenAs.isEmpty, !isName(words, i),

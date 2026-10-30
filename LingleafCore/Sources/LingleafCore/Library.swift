@@ -221,6 +221,15 @@ public struct LibraryState: Equatable, Sendable {
         return meaning.map { "to \(word.word) (\($0))" } ?? "to \(word.word)"
     }
 
+    /// Whether Review's prompt also shows the saved sentence, without its translation (SPEC S7): the
+    /// label alone doesn't tell the sense, because two senses of the spelling are saved or because it
+    /// is a verb with a regular twin (lie, hang) saved as the verb or as the twin.
+    public func promptShowsSentence(_ word: VocabWord) -> Bool {
+        guard let sense = word.sense, !word.context.isEmpty, TextTools.normalize(word.context) != word.word else { return false }
+        if words.filter({ $0.word == word.word && $0.sense != nil }).count >= 2 { return true }
+        return (sense == Sense.verb || sense == Sense.homonym) && IrregularVerbs.shared.verb(base: word.word)?.homonym != nil
+    }
+
     public var lastOpened: Book? {
         books.filter { $0.lastOpenedAt != nil }.max { $0.lastOpenedAt! < $1.lastOpenedAt! }
     }

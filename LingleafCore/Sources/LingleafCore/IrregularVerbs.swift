@@ -189,7 +189,7 @@ public struct IrregularVerbs: Sendable {
             try check(verb.sEs.map(Self.isSpanish) ?? true, "\(verb.base): sEs")
             if let homonym = verb.homonym {
                 try check(Self.isFormList(homonym.past) && Self.isFormList(homonym.participle), "\(verb.base): homonym forms")
-                try check(Self.isMeanings(homonym.es), "\(verb.base): homonym meanings")
+                try check(Self.isSpanishMeanings(homonym.es), "\(verb.base): homonym meanings")
                 let english = [homonym.query, homonym.gloss].compactMap { $0 }
                 try check(english.allSatisfy(Self.isEnglish), "\(verb.base): homonym query or gloss")
                 // The twin's noun and its meanings come together.
@@ -219,11 +219,15 @@ public struct IrregularVerbs: Sendable {
                           "homograph \(h.form): noun phrase")
             }
             try check((h.subjectNounNext ?? []).allSatisfy(Self.isForm), "homograph \(h.form): subjectNounNext")
-            // Pronunciation rules: words a–z, a rule with no condition only as the last.
+            // Pronunciation rules: words a–z, a rule with no condition only as the last, a rule on the
+            // word before only after every rule on the word after.
             for (n, rule) in h.nounIpa.enumerated() {
                 let conditions = [rule.near, rule.after, rule.before].compactMap { $0 }
                 try check(Self.isIPA(rule.ipa) && conditions.allSatisfy { $0.allSatisfy(Self.isForm) }, "homograph \(h.form): nounIpa")
+                try check(rule.spokenAs.map(Self.isForm) ?? true, "homograph \(h.form): nounIpa spokenAs")
                 try check(!conditions.isEmpty || n == h.nounIpa.count - 1, "homograph \(h.form): nounIpa default not last")
+                let afterOnly = rule.after != nil && rule.before == nil
+                try check(!afterOnly || !h.nounIpa[n...].contains { $0.before != nil }, "homograph \(h.form): nounIpa order")
             }
             for expression in h.expressions {
                 try check(Self.isForm(expression.next) && Self.isSpanishMeanings(expression.es)
@@ -284,10 +288,13 @@ public struct IrregularVerbs: Sendable {
         (1...2).contains(es.count) && es.allSatisfy(isSpanish)
     }
 
+    /// Characters no table text may hold: controls, invisible formatting (bidi, zero-width) and line breaks.
+    private static let invisible: [Unicode.GeneralCategory] = [.control, .format, .lineSeparator, .paragraphSeparator]
+
     static func isText(_ s: String) -> Bool {
         // Code points, as on Android: a combining mark counts.
         !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && s.unicodeScalars.count <= maxText
-            && !s.unicodeScalars.contains { $0.properties.generalCategory == .control || $0.properties.generalCategory == .format }
+            && !s.unicodeScalars.contains { invisible.contains($0.properties.generalCategory) }
     }
 }
 
@@ -414,6 +421,8 @@ struct Homograph: Sendable {
 
     struct NounIPA: Sendable {
         let ipa: String
+        /// What the voice says for the noun when it would say it wrong (lead /lɛd/ "led", tear /tɛr/ "tare").
+        let spokenAs: String?
         /// A word of the sentence; the word right before; the word right after (none: the default).
         let near: Set<String>?
         let after: Set<String>?
@@ -648,8 +657,9 @@ extension Homograph: Decodable {
 
 extension Homograph.NounIPA: Decodable {
     init(from decoder: Decoder) throws {
-        let c = try decoder.strict(["ipa"], optional: ["near", "after", "before"])
+        let c = try decoder.strict(["ipa"], optional: ["near", "after", "before", "spokenAs"])
         ipa = try c.value("ipa")
+        spokenAs = try c.optional("spokenAs")
         let near: [String]? = try c.optional("near")
         let after: [String]? = try c.optional("after")
         let before: [String]? = try c.optional("before")

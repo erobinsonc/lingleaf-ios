@@ -65,7 +65,7 @@ final class HomographCorpusTests: XCTestCase {
         var claimed: [Reading.Step: Int] = [:], right: [Reading.Step: Int] = [:], family: [String: Int] = [:]
         var unsure = 0, bitClaimed = 0, bitRight = 0, ipaFired = 0, ipaRight = 0
         let sources: Set<String> = [
-            "constructed", "heldout1", "heldout2", "heldout3", "v2", "v2heldout", "v3", "v3heldout", "v4", "v4heldout", "stories",
+            "constructed", "heldout1", "heldout2", "heldout3", "v2", "v2heldout", "v3", "v3heldout", "v4", "v4heldout", "v5", "stories",
         ]
         for item in corpus.cases {
             XCTAssertTrue(sources.contains(item.source), "source \(item.source)")
