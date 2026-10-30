@@ -228,8 +228,11 @@ final class RoundFourTests: XCTestCase {
         library.saveWord("leave", learned: false, context: "She left early.", sense: Sense.verb)
         library.saveWord("wind", learned: false, context: "The wind blew.", sense: Sense.noun)
         library.saveWord("light", learned: false, sense: Sense.verb)
-        let state = library.state
-        func shows(_ word: String, _ sense: String) throws -> Bool { state.promptShowsSentence(try XCTUnwrap(state.word(word, sense: sense))) }
+        // The library's state as it is at each call: a word saved later counts.
+        func shows(_ word: String, _ sense: String) throws -> Bool {
+            let state = library.state
+            return state.promptShowsSentence(try XCTUnwrap(state.word(word, sense: sense)))
+        }
         XCTAssertTrue(try shows("lie", Sense.verb), "a verb with a twin, one sense saved")
         XCTAssertTrue(try shows("hang", Sense.homonym), "the twin")
         XCTAssertFalse(try shows("leave", Sense.verb))
