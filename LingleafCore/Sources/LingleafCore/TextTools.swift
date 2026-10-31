@@ -229,15 +229,84 @@ public enum TextTools {
 
     /// Likely dictionary forms of `word`, most likely first, never the word
     /// itself. Used to look words up and to recognise inflected forms
-    /// ("animals", "walked") of a word being learned.
+    /// ("animals", "walked") of a word being learned. Without its sentence, a form that is also
+    /// another word ("left", "leaves") is unsure: it links only when both its readings share a base.
     public static func baseFormCandidates(_ word: String) -> [String] {
         let w = normalize(word)
+        let table = IrregularVerbs.shared
+        if let homograph = table.homographs[w] {
+            return filtered(homograph.noun == homograph.verb ? [homograph.verb] : [], w)
+        }
+        return candidates(w, link: table.formToBase[w] ?? nonVerb[w])
+    }
+
+    /// Likely dictionary forms of the word at `range` of `text`, read in its sentence: a form that
+    /// is also another word by the verb-or-noun rule ("she left" → "leave", "turn left" → none), a
+    /// form of the irregular-verb table except as a name ("Drew"), then the regular rules.
+    public static func baseFormCandidates(in text: String, at range: WordRange) -> [String] {
+        guard isInside(text, range) else { return [] }
+        let words = Words(text as NSString)
+        guard let i = words.index(of: range) else { return baseFormCandidates(substring(text, range)) }
+        return baseFormCandidates(words, i)
+    }
+
+    /// `baseFormCandidates(in:at:)` for word `i` of `words`: only its neighbours are looked at.
+    static func baseFormCandidates(_ words: Words, _ i: Int) -> [String] {
+        let w = words.token(i)
+        let table = IrregularVerbs.shared
+        if let homograph = table.homographs[w] {
+            return filtered(homographBase(homograph, table.resolve(words, i)).map { [$0] } ?? [], w)
+        }
+        guard let link = table.formToBase[w] else { return candidates(w, link: nonVerb[w]) }
+        let reading = table.resolve(words, i)
+        // The twin's noun ("his lies"): its noun only.
+        if let reading, reading.step == .twinNoun { return filtered([reading.base], w) }
+        switch reading?.kind {
+        // The regular twin's sense: its base alone ("lied" → "lie").
+        case .homonym?: return filtered([link], w)
+        // An ordinary word: no table link; the -s rules, none for -ing ("the lights" → "light", "a meeting").
+        case .word?: return w.hasSuffix("ing") ? [] : candidates(w, link: nil)
+        // A name ("Uncle Drew"): no irregular link.
+        case .noun?: return candidates(w, link: nonVerb[w])
+        default: return candidates(w, link: link)
+        }
+    }
+
+    /// The base a homograph's reading gives: its noun's or its verb's; when unsure, the base both
+    /// share ("tears" → "tear"), else none.
+    private static func homographBase(_ homograph: Homograph, _ reading: Reading?) -> String? {
+        guard let reading, reading.kind != .unsure else { return homograph.noun == homograph.verb ? homograph.verb : nil }
+        // An expression ("bound for") is saved as its text, with no base form.
+        return reading.kind == .expression ? nil : reading.base
+    }
+
+    private static func filtered(_ bases: [String], _ w: String) -> [String] {
+        bases.filter { $0.count >= 2 && $0 != w }
+    }
+
+    /// `link` (an irregular form's base), then the plural, past and -ing rules.
+    static func candidates(_ w: String, link: String?) -> [String] {
         var out: [String] = []
         func add(_ candidate: String) {
             if candidate.count >= 2, candidate != w, !out.contains(candidate) { out.append(candidate) }
         }
+        // A stem that doubled its last letter also gives the single one, first: stopped → stop,
+        // and -ll after two vowel groups: travelled → travel (not called → cal).
+        func addStem(_ stem: String) {
+            if IrregularVerbs.shared.llBases.contains(stem) {
+                // A US double-l base first: installed → install, then instal.
+                add(stem)
+                add(String(stem.dropLast()))
+            } else if stem.hasSuffix("ll"), vowelGroups(String(stem.dropLast())) >= 2 {
+                add(String(stem.dropLast()))
+            } else if isDoubled(stem) {
+                add(String(stem.dropLast()))
+            }
+            add(stem)
+            add(stem + "e")
+        }
 
-        if let irregular = irregular[w] { add(irregular) }
+        if let link { add(link) }
 
         if w.hasSuffix("'s") {
             add(String(w.dropLast(2)))
@@ -254,41 +323,93 @@ public enum TextTools {
             add(String(w.dropLast(3)) + "y")
         } else if w.hasSuffix("ed"), w.count > 4 {
             let stem = String(w.dropLast(2))
-            if hasVowel(stem) {
-                if isDoubled(stem) { add(String(stem.dropLast())) }
-                add(stem)
-                add(stem + "e")
-            }
+            if hasVowel(stem) { addStem(stem) }
         }
 
         if w.hasSuffix("ing"), w.count > 5 {
             let stem = String(w.dropLast(3))
-            if stem.count >= 3, hasVowel(stem) {
-                if isDoubled(stem) { add(String(stem.dropLast())) }
-                add(stem)
-                add(stem + "e")
-            }
+            if stem.count >= 3, hasVowel(stem) { addStem(stem) }
         }
         return out
     }
 
     /// Where a saved word appears in `sentence`, to mark it: its forms ("animals" for
-    /// "animal"), or, for a saved group of words ("did not go"), that group (ignoring case).
+    /// "animal"), read in the sentence ("leave" marks "she left", not "turn left"), or, for a
+    /// saved group of words ("did not go"), that group (ignoring case).
     public static func occurrences(of word: String, in sentence: String) -> [WordRange] {
         let key = normalize(word)
         if key.contains(" ") {
             let range = (normalize(sentence) as NSString).range(of: key)
             return range.location == NSNotFound ? [] : [WordRange(range.location, range.location + range.length)]
         }
-        return wordRanges(sentence).filter { matchKeys(substring(sentence, $0)).contains(key) }
+        let words = Words(sentence as NSString)
+        return words.ranges.indices.filter { matchKeys(words, $0).contains(key) }.map { words.ranges[$0] }
     }
 
-    /// The word plus its likely base forms: what to match against saved words.
+    /// The word plus its likely base forms, without its sentence: what to match against saved words.
     public static func matchKeys(_ word: String) -> Set<String> {
         Set([normalize(word)] + baseFormCandidates(word))
     }
 
+    /// The word at `range` of `text` plus its likely base forms, read in its sentence. A form that
+    /// is also another word, read as the one with another base, leaves out its own spelling: a saved
+    /// "left" (the side) doesn't mark "she left". For every word of a paragraph, use
+    /// `matchKeys(in:words:)`: it reads the paragraph once.
+    public static func matchKeys(in text: String, at range: WordRange) -> Set<String> {
+        guard isInside(text, range) else { return [] }
+        let words = Words(text as NSString)
+        guard let i = words.index(of: range) else { return matchKeys(substring(text, range)) }
+        return matchKeys(words, i)
+    }
+
+    /// The match keys of every word of `text` (`words`: its `wordRanges`), in one pass. Ranges
+    /// that are not in order inside the text are not trusted: the text is tokenized once instead
+    /// and each range found in it (a range that is not a word gets the keys of its letters alone).
+    public static func matchKeys(in text: String, words ranges: [WordRange]) -> [Set<String>] {
+        let ns = text as NSString
+        let ordered = ranges.indices.allSatisfy { k in
+            isInside(text, ranges[k]) && (k == 0 || ranges[k - 1].end <= ranges[k].start)
+        }
+        if ordered {
+            let words = Words(ns, ranges: ranges)
+            return words.ranges.indices.map { matchKeys(words, $0) }
+        }
+        let words = Words(ns)
+        return ranges.map { range in
+            guard isInside(text, range) else { return [] }
+            return words.index(of: range).map { matchKeys(words, $0) } ?? matchKeys(substring(text, range))
+        }
+    }
+
+    /// `matchKeys(in:at:)` for word `i` of `words`.
+    static func matchKeys(_ words: Words, _ i: Int) -> Set<String> {
+        let w = words.token(i)
+        let candidates = baseFormCandidates(words, i)
+        if IrregularVerbs.shared.homographs[w] != nil, let reading = IrregularVerbs.shared.resolve(words, i),
+           reading.kind != .unsure, reading.base != w {
+            return Set(candidates)
+        }
+        return Set([w] + candidates)
+    }
+
+    /// `range` is a non-empty stretch of `text`.
+    private static func isInside(_ text: String, _ range: WordRange) -> Bool {
+        range.start >= 0 && range.start < range.end && range.end <= (text as NSString).length
+    }
+
     private static func hasVowel(_ s: String) -> Bool { s.contains { "aeiouy".contains($0) } }
+
+    /// Runs of vowels ("travel" has 2, "call" 1).
+    static func vowelGroups(_ s: String) -> Int {
+        var groups = 0
+        var inGroup = false
+        for c in s {
+            let vowel = "aeiouy".contains(c)
+            if vowel, !inGroup { groups += 1 }
+            inGroup = vowel
+        }
+        return groups
+    }
 
     private static func isDoubled(_ stem: String) -> Bool {
         let chars = Array(stem)
@@ -296,31 +417,12 @@ public enum TextTools {
         return last == chars[chars.count - 2] && !"aeiouslz".contains(last)
     }
 
-    private static let irregular: [String: String] = [
-        "am": "be", "is": "be", "are": "be", "was": "be", "were": "be", "been": "be",
-        "has": "have", "had": "have", "does": "do", "did": "do", "done": "do",
-        "went": "go", "gone": "go", "goes": "go", "saw": "see", "seen": "see",
-        "said": "say", "made": "make", "took": "take", "taken": "take",
-        "came": "come", "knew": "know", "known": "know", "thought": "think",
-        "got": "get", "gotten": "get", "gave": "give", "given": "give",
-        "found": "find", "told": "tell", "felt": "feel", "left": "leave",
-        "brought": "bring", "began": "begin", "begun": "begin", "kept": "keep",
-        "stood": "stand", "heard": "hear", "ran": "run", "sat": "sit",
-        "spoke": "speak", "spoken": "speak", "wrote": "write", "written": "write",
-        "bought": "buy", "caught": "catch", "taught": "teach", "fought": "fight",
-        "held": "hold", "met": "meet", "paid": "pay", "sent": "send", "spent": "spend",
-        "built": "build", "lost": "lose", "meant": "mean", "slept": "sleep",
-        "won": "win", "ate": "eat", "eaten": "eat", "drank": "drink", "drunk": "drink",
-        "drove": "drive", "driven": "drive", "flew": "fly", "flown": "fly",
-        "grew": "grow", "grown": "grow", "threw": "throw", "thrown": "throw",
-        "fell": "fall", "fallen": "fall", "forgot": "forget", "forgotten": "forget",
-        "broke": "break", "broken": "break", "chose": "choose", "chosen": "choose",
-        "rode": "ride", "ridden": "ride", "rose": "rise", "risen": "rise",
-        "sang": "sing", "sung": "sing", "swam": "swim", "woke": "wake",
-        "wore": "wear", "worn": "wear", "understood": "understand", "led": "lead",
+    /// Irregular nouns and comparatives; irregular verbs come from `IrregularVerbs`.
+    /// ("lives", "leaves" are homographs: their sentence decides.)
+    private static let nonVerb: [String: String] = [
         "children": "child", "men": "man", "women": "woman", "feet": "foot",
-        "teeth": "tooth", "mice": "mouse", "geese": "goose", "lives": "life",
-        "wives": "wife", "knives": "knife", "leaves": "leaf", "wolves": "wolf",
+        "teeth": "tooth", "mice": "mouse", "geese": "goose",
+        "wives": "wife", "knives": "knife", "wolves": "wolf",
         "better": "good", "best": "good", "worse": "bad", "worst": "bad",
     ]
 }

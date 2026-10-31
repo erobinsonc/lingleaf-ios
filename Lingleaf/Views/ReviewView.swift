@@ -8,6 +8,7 @@ import LingleafCore
 struct ReviewView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var queue: [VocabWord] = []
     @State private var total = 0
     @State private var reviewed = 0
@@ -30,7 +31,7 @@ struct ReviewView: View {
                 }
                 ScrollView {
                     // The saved record, not the queued copy: a translation may arrive while reviewing.
-                    card(model.state.word(word.word) ?? word)
+                    card(model.state.words.first { $0.id == word.id } ?? word)
                         .padding(.vertical, 8)
                 }
                 .scrollBounceBehavior(.basedOnSize)
@@ -107,9 +108,14 @@ struct ReviewView: View {
         VStack(spacing: 14) {
             HStack(spacing: 10) {
                 // A helper or modal verb is saved as its verb group ("did not go").
-                Text(word.word).font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
+                // Before "Show meaning", named without a meaning: recall first (SPEC S7).
+                Text(verbatim: model.state.displayName(word, withMeaning: revealed))
+                    .font(.largeTitle.weight(.semibold)).multilineTextAlignment(.center)
                 Button {
-                    model.speaker.speak(word.word, rate: model.state.settings.speechRate)
+                    // A verb with the table's spoken base ("tare" for "tear"), a noun as written, a word
+                    // saved unsure in each reading (SPEC S7).
+                    let spoken = word.kind == nil ? IrregularVerbs.shared.spokenSaved(word) : word.word
+                    model.speaker.speak(spoken, rate: model.state.settings.speechRate)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill").labelStyle(.iconOnly).font(.title)
                         .frame(minWidth: 44, minHeight: 44)
@@ -119,6 +125,12 @@ struct ReviewView: View {
             if revealed {
                 meaning(word)
             } else {
+                // The label alone doesn't tell the sense ("to lie"): the sentence tells which, its translation not yet (SPEC S7).
+                if model.state.promptShowsSentence(word) {
+                    Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 Button {
                     withAnimation { revealed = true }
                     announceMeaning(of: word)
@@ -150,14 +162,36 @@ struct ReviewView: View {
     private func meaning(_ word: VocabWord) -> some View {
         VStack(spacing: 4) {
             if !word.phonetic.isEmpty, word.kind == nil { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
-            if word.translation.isEmpty {
+            if let meanings = word.meanings, word.isUnsure {
+                // Saved while its sentence didn't tell: both readings, as on the card (SPEC S7).
+                ForEach(Array(meanings.enumerated()), id: \.offset) { _, meaning in
+                    if dynamicTypeSize.isAccessibilitySize, !meaning.text.isEmpty {
+                        // At accessibility sizes the meaning on its own line, as on the card's rows.
+                        VStack(spacing: 2) {
+                            Text(verbatim: meaning.label).font(.title3.weight(.semibold))
+                            Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)).font(.title3)
+                        }
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityElement(children: .combine)
+                    } else {
+                        (Text(verbatim: meaning.text.isEmpty ? meaning.label : "\(meaning.label) — ")
+                            + Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)))
+                            .font(.title3)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            } else if word.translation.isEmpty {
                 Text("No translation yet. Connect to the internet once to get it.")
                     .font(.callout)
                     .foregroundStyle(Brand.secondaryText)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             } else {
-                Text(word.translation).font(.title2).multilineTextAlignment(.center)
+                // A sensed word's meanings each isolated ("irse, salir · dejar"), as in Words.
+                Text(ReadingChoicesView.meaningText(word.translation, language: word.translationLanguage, isolated: word.sense != nil))
+                    .font(.title2).multilineTextAlignment(.center)
             }
         }
         // A verb group saved without one is the sentence itself: not twice.
@@ -165,7 +199,7 @@ struct ReviewView: View {
             Divider()
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(Self.marked(word.context, word: word.word)).font(readingFont(size: 17)).italic()
+                    Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
                         .fixedSize(horizontal: false, vertical: true)
                     // Only in the current translation language; another one is translated meanwhile.
                     if let translation = word.contextTranslation(in: model.targetLanguage) {
@@ -187,10 +221,12 @@ struct ReviewView: View {
         }
     }
 
-    /// `sentence` with the saved word in bold (its forms, or the saved group of words).
-    static func marked(_ sentence: String, word: String) -> AttributedString {
+    /// `sentence` with the saved word in bold: only the occurrence that was tapped when the record
+    /// knows it (SPEC S7), else its forms read in the sentence, or the saved group of words.
+    static func marked(_ sentence: String, word: VocabWord) -> AttributedString {
         var text = AttributedString(sentence)
-        for range in TextTools.occurrences(of: word, in: sentence) {
+        let ranges = word.formRange.map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
+        for range in ranges {
             guard let stringRange = Range(range.nsRange, in: sentence), let marked = Range(stringRange, in: text) else { continue }
             text[marked].inlinePresentationIntent = .stronglyEmphasized
         }
@@ -199,9 +235,10 @@ struct ReviewView: View {
 
     /// The button VoiceOver was on disappears; say what appeared in its place.
     private func announceMeaning(of word: VocabWord) {
+        let readings = word.isUnsure ? word.meanings?.map { $0.text.isEmpty ? $0.label : "\($0.label), \($0.text)" } : nil
         var announcement = AttributedString(
-            word.translation.isEmpty
-                ? String(localized: "No translation yet. Connect to the internet once to get it.") : word.translation
+            readings?.joined(separator: ". ") ?? (word.translation.isEmpty
+                ? String(localized: "No translation yet. Connect to the internet once to get it.") : word.translation)
         )
         // High priority: not cut off by VoiceOver moving focus away from the vanished button.
         announcement.accessibilitySpeechAnnouncementPriority = .high
@@ -217,6 +254,6 @@ struct ReviewView: View {
             queue.append(word)
         }
         revealed = false
-        model.library.answerReview(word.word, correct: correct)
+        model.library.answerReview(word.word, sense: word.sense, correct: correct)
     }
 }

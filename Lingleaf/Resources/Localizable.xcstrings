@@ -351,6 +351,53 @@
         }
       }
     },
+    "and %lld more": {
+      "comment": "Words: after the first three corrected words, how many more there are.",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "and %lld more"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "and %lld more"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Ask me when I tap a word": {
       "localizations": {
         "es": {
@@ -538,6 +585,39 @@
           "stringUnit": {
             "state": "translated",
             "value": "Filtro"
+          }
+        }
+      }
+    },
+    "Fixed to match its sentence: “%@” is now “%@”.": {
+      "comment": "VoiceOver label of the one-word corrections card: the old word, then the new one.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregida según su frase: “%1$@” ahora es “%2$@”."
+          }
+        }
+      }
+    },
+    "Fixed to match its sentence: “%@” → “%@”.": {
+      "comment": "Words: a saved word corrected after updating; the old word, then the new one.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregida según su frase: “%1$@” → “%2$@”."
+          }
+        }
+      }
+    },
+    "Fixed to match their sentences:": {
+      "comment": "Words: several saved words corrected after updating; a list follows.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregidas según sus frases:"
           }
         }
       }
@@ -952,6 +1032,52 @@
         }
       }
     },
+    "Put back, except %lld you've reviewed since": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've reviewed since"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've reviewed since"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Read": {
       "localizations": {
         "es": {
@@ -1308,6 +1434,17 @@
         }
       }
     },
+    "The sentence's translation tells you which one:": {
+      "comment": "Word card, above the two readings of a word whose sentence doesn't tell which one it is.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de la frase te dice cuál:"
+          }
+        }
+      }
+    },
     "This book is empty.": {
       "localizations": {
         "es": {
@@ -1374,6 +1511,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Traducir a:"
+          }
+        }
+      }
+    },
+    "Translating…": {
+      "comment": "VoiceOver label of the progress indicator while a meaning is being translated.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduciendo…"
           }
         }
       }
@@ -1448,12 +1596,32 @@
         }
       }
     },
+    "Which one is it in this sentence?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cuál es en esta frase?"
+          }
+        }
+      }
+    },
     "Words": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Palabras"
+          }
+        }
+      }
+    },
+    "Words put back as before": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palabras restauradas como antes"
           }
         }
       }
@@ -1704,6 +1872,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” está en tu biblioteca."
+          }
+        }
+      }
+    },
+    "“%@” is now “%@”": {
+      "comment": "VoiceOver label of a corrected word line: the old word, then the new one.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” ahora es “%2$@”"
           }
         }
       }
