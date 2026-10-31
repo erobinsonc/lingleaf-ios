@@ -128,7 +128,9 @@ struct WordCardView: View {
         let partOfSpeech = entry.partOfSpeech ?? ""
         // "To walk." + ". Source" would read "walk.. Source": the label adds its own full stop.
         let spoken = String(definition.reversed().drop { $0 == "." || $0.isWhitespace }.reversed())
-        return Text("\(Text(partOfSpeech).italic()) · \(definition) \(source)")
+        // A definition the app cut ends with "…", before ", shortened".
+        let shown = entry.definitionTruncated ? definition + "…" : definition
+        return Text("\(Text(partOfSpeech).italic()) · \(shown) \(source)")
             .font(.footnote)
             .foregroundStyle(Brand.secondaryText)
             .multilineTextAlignment(.center)

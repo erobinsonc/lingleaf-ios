@@ -77,7 +77,7 @@ struct SettingsView: View {
                         Label("Source code (open source, MIT)", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("Books: Project Gutenberg. No accounts, no ads, no tracking.")
+                        Text("No accounts, no ads, no tracking.")
                         Text(Credits.publicDomainNotice)
                         Text(Credits.definitionsCredit)
                             .accessibilityHint(Text("Contains links"))

@@ -129,9 +129,9 @@ búsquedas), a Free Dictionary API (recibe la palabra en inglés que tocaste; la
 definiciones vienen de Wiktionary, CC BY-SA) y, para traducir en el dispositivo, a
 Apple o Google para descargar cada idioma una vez. En Android, ML Kit empieza solo
 cuando tocas la primera palabra, descarga por Wi‑Fi y envía a Google datos de
-diagnóstico seudonimizados (modelo del dispositivo, versión del sistema y de la app, métricas de
-rendimiento y un identificador por instalación). Las sugerencias que decidas enviar
-desde tu correo se publican como reportes públicos (issues) en GitHub **sin tu nombre
-ni tu correo**; el correo se borra en máximo 30 días. Puedes pedir acceso, corrección o
-borrado, y quejarte ante la SIC (Colombia), la autoridad de tu país en la UE o la ANPD
-(Brasil). Lingleaf es para personas de 13 años en adelante.
+diagnóstico seudonimizados (modelo del dispositivo, versión del sistema y de la app,
+métricas de rendimiento y un identificador por instalación). Las sugerencias que
+decidas enviar desde tu correo se publican como reportes públicos (issues) en GitHub
+**sin tu nombre ni tu correo**; el correo se borra en máximo 30 días. Puedes pedir
+acceso, corrección o borrado, y quejarte ante la SIC (Colombia), la autoridad de tu
+país en la UE o la ANPD (Brasil). Lingleaf es para personas de 13 años en adelante.

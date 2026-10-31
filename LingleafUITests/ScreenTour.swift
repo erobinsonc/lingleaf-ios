@@ -15,15 +15,19 @@ final class ScreenTour: XCTestCase {
         let remembered: String
         let knowIt: String
         let privacyPolicy: String
+        let get: String
+        let read: String
     }
 
     private static let english = Labels(
         language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning",
-        remembered: "I remembered", knowIt: "I know it", privacyPolicy: "Privacy policy"
+        remembered: "I remembered", knowIt: "I know it", privacyPolicy: "Privacy policy",
+        get: "Get", read: "Read"
     )
     private static let spanish = Labels(
         language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado",
-        remembered: "Lo recordé", knowIt: "Ya la sé", privacyPolicy: "Política de privacidad"
+        remembered: "Lo recordé", knowIt: "Ya la sé", privacyPolicy: "Política de privacidad",
+        get: "Obtener", read: "Leer"
     )
 
     private var app: XCUIApplication!
@@ -88,6 +92,13 @@ final class ScreenTour: XCTestCase {
         tab(1)
         _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
         snap("10-discover")
+        // A downloaded book: Get turns into the Read pill (the fake catalog answers at once).
+        let get = app.buttons["\(labels.get) Little Wizard Stories of Oz"]
+        if get.waitForExistence(timeout: 5) {
+            get.tap()
+            _ = app.buttons["\(labels.read) Little Wizard Stories of Oz"].waitForExistence(timeout: 10)
+            snap("10b-discover-downloaded-book")
+        }
         app.buttons["level-filter-A2"].tap()
         snap("11-discover-level-filter")
         app.buttons["level-filter-all"].tap()

@@ -361,16 +361,6 @@
         }
       }
     },
-    "Books: Project Gutenberg. No accounts, no ads, no tracking.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Libros: Project Gutenberg. Sin cuentas, sin anuncios, sin rastreo."
-          }
-        }
-      }
-    },
     "Can't read aloud": {
       "localizations": {
         "es": {
@@ -782,6 +772,16 @@
         }
       }
     },
+    "No accounts, no ads, no tracking.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin cuentas, sin anuncios, sin rastreo."
+          }
+        }
+      }
+    },
     "No books found. Try another title or author.": {
       "localizations": {
         "es": {
@@ -878,6 +878,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cuento original"
+          }
+        }
+      }
+    },
+    "Our stories and free classics from Project Gutenberg.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuestros cuentos y clásicos gratuitos de Project Gutenberg."
           }
         }
       }

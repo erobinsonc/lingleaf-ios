@@ -16,6 +16,8 @@ struct DiscoverView: View {
     @State private var downloads: [Int: Download] = [:]
     /// Level chosen in the filter chips; nil shows every recommended book (no stories).
     @State private var level: String?
+    /// Books opened from here ("Read"): buttons push their id, so the row itself stays a plain row.
+    @State private var path: [String] = []
 
     /// A download in progress (0…1) or why it failed.
     private enum Download: Equatable {
@@ -43,7 +45,7 @@ struct DiscoverView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 if searching || searchError != nil { searchStatus }
                 if let results {
@@ -75,7 +77,9 @@ struct DiscoverView: View {
                     // a section of its own, the audit reported it as not scaling with Dynamic Type.
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Recommended for learners")
-                        Text("Free classics from Project Gutenberg.")
+                        Text(stories.isEmpty
+                            ? LocalizedStringKey("Free classics from Project Gutenberg.")
+                            : LocalizedStringKey("Our stories and free classics from Project Gutenberg."))
                             .font(.footnote)
                             .textCase(nil)
                     }
@@ -262,12 +266,7 @@ struct DiscoverView: View {
             }
             Spacer(minLength: 8)
             if let saved = BundledStory.libraryCopy(of: story.title, in: model.state.books) {
-                NavigationLink(value: saved.id) {
-                    Text("Read")
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(Brand.ink)
-                .accessibilityLabel(Text("Read \(story.title)"))
+                readButton(bookID: saved.id, title: story.title)
             } else {
                 Button("Get") {
                     if model.restoreBundledStory(story) != nil {
@@ -281,16 +280,20 @@ struct DiscoverView: View {
         .padding(.vertical, 4)
     }
 
+    /// Opens a book in the reader. A Button that pushes onto `path`, not a NavigationLink: inside a
+    /// List a link turns the whole row into one and drops the pill's style.
+    private func readButton(bookID: String, title: String) -> some View {
+        Button("Read") { path.append(bookID) }
+            .buttonStyle(.borderedProminent)
+            .tint(Brand.ink)
+            .accessibilityLabel(Text("Read \(title)"))
+    }
+
     /// Get → a progress ring (tap to cancel) → Read; Retry after a failure that may pass.
     @ViewBuilder
     private func action(_ book: GutenbergBook, failure: GutenbergError?) -> some View {
         if let saved = model.state.books.first(where: { $0.gutenbergID == book.id }) {
-            NavigationLink(value: saved.id) {
-                Text("Read")
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Brand.ink)
-            .accessibilityLabel(Text("Read \(book.displayTitle)"))
+            readButton(bookID: saved.id, title: book.displayTitle)
         } else if case let .running(fraction, task) = downloads[book.id] {
             Button {
                 task.cancel()
