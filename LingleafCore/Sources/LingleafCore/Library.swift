@@ -161,6 +161,43 @@ public struct BundledStory: Sendable {
     }
 }
 
+/// A story shipped with the app: its resource file name (without ".txt"), title and level.
+public struct ShelfStory: Hashable, Sendable {
+    public let resource: String
+    public let title: String
+    public let level: String
+
+    public init(resource: String, title: String, level: String) {
+        self.resource = resource
+        self.title = title
+        self.level = level
+    }
+}
+
+extension BundledStory {
+    /// The original stories shipped with the app (resource file name, title, level), easiest first.
+    /// Discover lists them under their level too, so no level of the filter is empty.
+    public static let shelf: [ShelfStory] = [
+        ShelfStory(resource: "the-red-boat", title: "The Red Boat", level: "A1"),
+        ShelfStory(resource: "a-day-at-the-market", title: "A Day at the Market", level: "A2"),
+        ShelfStory(resource: "the-lighthouse-keeper", title: "The Lighthouse Keeper", level: "B1"),
+    ]
+
+    /// The author the bundled stories are saved with.
+    public static let author = "Lingleaf"
+
+    /// Shelf stories at `level`, in order; a nil level keeps every story.
+    public static func shelf(level: String?) -> [ShelfStory] {
+        guard let level else { return shelf }
+        return shelf.filter { $0.level == level }
+    }
+
+    /// The library's copy of the bundled story titled `title`, if the learner still has it.
+    public static func libraryCopy(of title: String, in books: [Book]) -> Book? {
+        books.first { $0.title == title && $0.author == author && $0.gutenbergID == nil }
+    }
+}
+
 public struct LibraryState: Equatable, Sendable {
     public var books: [Book] = []
     public var readingLog: [String: Int] = [:]
@@ -300,7 +337,7 @@ public final class Library {
     /// Adds the bundled stories the first time the app runs.
     public func seedIfNeeded(_ stories: () -> [BundledStory]) {
         guard storage.read("seeded") == nil else { return }
-        for story in stories() { addBook(title: story.title, author: "Lingleaf", text: story.text, level: story.level) }
+        for story in stories() { addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level) }
         storage.write("seeded", "1")
     }
 

@@ -21,6 +21,9 @@ targets:
     platform: iOS
     sources:
       - path: Lingleaf
+        # The stories' CC0 license stays in the repository (README); the app needs only the texts.
+        excludes:
+          - Resources/Books/LICENSE
     dependencies:
       - package: LingleafCore
     settings:

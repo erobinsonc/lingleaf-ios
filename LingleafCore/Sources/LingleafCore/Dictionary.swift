@@ -6,14 +6,21 @@ public struct DictionaryEntry: Equatable, Sendable {
     public let phonetic: String?
     public let partOfSpeech: String?
     public let definition: String?
+    /// Whether `definition` was cut to `maxDefinition`, so the card can say it is shortened
+    /// (Wiktionary's CC BY-SA asks to say when the text was changed).
+    public let definitionTruncated: Bool
     /// Every pronunciation the entry gives (US and UK), to tell its etymology apart ("wind" /waɪnd/).
     public let phonetics: [String]
 
-    public init(word: String, phonetic: String?, partOfSpeech: String?, definition: String?, phonetics: [String] = []) {
+    public init(
+        word: String, phonetic: String?, partOfSpeech: String?, definition: String?, definitionTruncated: Bool = false,
+        phonetics: [String] = []
+    ) {
         self.word = word
         self.phonetic = phonetic
         self.partOfSpeech = partOfSpeech
         self.definition = definition
+        self.definitionTruncated = definitionTruncated
         self.phonetics = phonetics
     }
 
@@ -49,12 +56,13 @@ public struct DictionaryEntry: Equatable, Sendable {
                 out.append(DictionaryEntry(word: word, phonetic: phonetic, partOfSpeech: nil, definition: nil, phonetics: pronunciations))
             }
             for meaning in meanings {
-                let definition = (meaning["definitions"] as? [Any])?.first as? [String: Any]
+                let definition = ((meaning["definitions"] as? [Any])?.first as? [String: Any])?["definition"] as? String
                 out.append(DictionaryEntry(
                     word: word,
                     phonetic: phonetic,
                     partOfSpeech: (meaning["partOfSpeech"] as? String).map { TextTools.truncated($0, maxShortField) },
-                    definition: (definition?["definition"] as? String).map { TextTools.truncated($0, maxDefinition) },
+                    definition: definition.map { TextTools.truncated($0, maxDefinition) },
+                    definitionTruncated: (definition?.utf16.count ?? 0) > maxDefinition,
                     phonetics: pronunciations
                 ))
             }

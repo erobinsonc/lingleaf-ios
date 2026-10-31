@@ -1,6 +1,6 @@
 # Weekly: every recommended book's text and cover still download from Project
-# Gutenberg's file cache (SPEC "Book downloads"). The ids come from SPEC.md, so the
-# check follows the list. A failure opens nothing; it shows as a red run.
+# Gutenberg's file cache (SPEC "Book downloads"). The ids come from SPEC.md's
+# "Recommended ids" line, so the check follows the list. A failure opens nothing; it shows as a red run.
 name: Gutenberg links
 
 on:
@@ -19,8 +19,16 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check recommended books
         run: |
-          ids=$(sed -n '/^- Recommended books/,/Levels:/p' SPEC.md | sed 's/Levels:.*//' | grep -oE '\b[0-9]{2,4}\b' | sort -u)
+          # The fixed-format line "- Recommended ids: 25519, 55, …." (a core test checks it
+          # matches GutenbergClient.recommended); here, the same count as the code's list.
+          line=$(grep -m1 '^- Recommended ids: ' SPEC.md)
+          ids=$(printf '%s' "${line#- Recommended ids: }" | tr -d ' .' | tr ',' '\n')
           test -n "$ids"
+          if printf '%s\n' "$ids" | grep -vqE '^[0-9]{1,6}$'; then echo "Malformed id in SPEC.md: $line"; exit 1; fi
+          spec_count=$(printf '%s\n' "$ids" | wc -l)
+          code_count=$(grep -cE '^ +\([0-9]+, "(A1|A2|B1|B2|C1|C2)"\),' LingleafCore/Sources/LingleafCore/Gutenberg.swift)
+          echo "SPEC lists $spec_count ids; GutenbergClient.recommended has $code_count"
+          [ "$spec_count" -eq "$code_count" ] || { echo "SPEC.md and GutenbergClient.recommended differ"; exit 1; }
           failed=0
           for id in $ids; do
             for url in "https://www.gutenberg.org/cache/epub/$id/pg$id.txt" "https://www.gutenberg.org/cache/epub/$id/pg$id.cover.medium.jpg"; do

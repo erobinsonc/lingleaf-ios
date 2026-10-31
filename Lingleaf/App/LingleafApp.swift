@@ -135,12 +135,14 @@ final class AppModel {
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
             if url.contains("gutendex") { return HttpResponse(status: 200, text: fakeCatalog) }
-            // Peter Pan is "not available right now", to show that message.
-            if url.contains("gutenberg.org/cache/epub/16/") { return HttpResponse(status: 404, text: "") }
+            // The Marvelous Land of Oz is "not available right now", to show that message.
+            if url.contains("gutenberg.org/cache/epub/54/") { return HttpResponse(status: 404, text: "") }
             if url.contains("gutenberg.org/cache/epub/") { return HttpResponse(status: 200, text: fakeBookText) }
             guard url.contains("dictionaryapi.dev") else { return HttpResponse(status: 404, text: "") }
             let word = url.split(separator: "/").last.map(String.init) ?? ""
-            let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Definition of \#(word)."}]}]}]"#
+            let definition = fakeDefinitions[word] ?? "Definition of \(word)."
+            let meaning = #"{"partOfSpeech": "noun", "definitions": [{"definition": "\#(definition)"}]}"#
+            let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [\#(meaning)]}]"#
             return HttpResponse(status: 200, text: json)
         }
         let translator: @Sendable (String) throws -> String
@@ -167,15 +169,23 @@ final class AppModel {
         return model
     }
 
+    /// Definitions that show how the card handles long text: "sand" takes several lines,
+    /// "waves" is over 500 characters, so the card cuts it and says it is shortened.
+    nonisolated private static let fakeDefinitions: [String: String] = [
+        "sand": "Rock that has broken down into very small grains, found on beaches, in deserts and at the bottom of "
+            + "rivers and seas; it is used to make glass and concrete, and children build castles with it.",
+        "waves": String(repeating: "A moving ridge of water on the surface of the sea or a lake, raised by the wind. ", count: 8),
+    ]
+
     /// A small Gutendex answer so Discover has books to show in UI tests.
     nonisolated private static let fakeCatalog = #"""
     {"results": [
-      {"id": 21, "title": "Aesop's Fables", "authors": [{"name": "Aesop"}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/21.txt.utf-8"}},
+      {"id": 25519, "title": "Little Wizard Stories of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/25519.txt.utf-8"}},
       {"id": 55, "title": "The Wonderful Wizard of Oz", "authors": [{"name": "Baum, L. Frank"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/55.txt.utf-8"}},
-      {"id": 16, "title": "Peter Pan", "authors": [{"name": "Barrie, J. M."}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/16.txt.utf-8"}},
+      {"id": 54, "title": "The Marvelous Land of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/54.txt.utf-8"}},
       {"id": 2701, "title": "Moby-Dick; Or, The Whale", "authors": [{"name": "Melville, Herman"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/2701.txt.utf-8"}}
     ]}
@@ -197,15 +207,19 @@ final class AppModel {
     #endif
 
     private static func bundledStories() -> [BundledStory] {
-        [
-            ("the-red-boat", "The Red Boat", "A1"),
-            ("a-day-at-the-market", "A Day at the Market", "A2"),
-            ("the-lighthouse-keeper", "The Lighthouse Keeper", "B1"),
-        ].compactMap { resource, title, level in
-            guard let url = Bundle.main.url(forResource: resource, withExtension: "txt"),
-                  let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
-            return BundledStory(title: title, level: level, text: text)
-        }
+        BundledStory.shelf.compactMap(bundledStory)
+    }
+
+    private static func bundledStory(_ entry: ShelfStory) -> BundledStory? {
+        guard let url = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        return BundledStory(title: entry.title, level: entry.level, text: text)
+    }
+
+    /// Puts a bundled story back in the library (the learner deleted it) and returns its id.
+    func restoreBundledStory(_ entry: ShelfStory) -> String? {
+        guard let story = Self.bundledStory(entry) else { return nil }
+        return library.addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level).id
     }
 
     /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,

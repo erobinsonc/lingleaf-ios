@@ -21,6 +21,26 @@
         }
       }
     },
+    "%@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
+    "%@: %@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
     "%lld books found": {
       "localizations": {
         "en": {
@@ -388,16 +408,6 @@
         }
       }
     },
-    "Books: Project Gutenberg (public domain). Definitions: dictionaryapi.dev. No accounts, no ads, no tracking.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Libros: Project Gutenberg (dominio público). Definiciones: dictionaryapi.dev. Sin cuentas, sin anuncios, sin rastreo."
-          }
-        }
-      }
-    },
     "Can't read aloud": {
       "localizations": {
         "es": {
@@ -439,6 +449,16 @@
         }
       }
     },
+    "Contains links": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contiene enlaces"
+          }
+        }
+      }
+    },
     "Continue reading": {
       "localizations": {
         "es": {
@@ -465,6 +485,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meta diaria"
+          }
+        }
+      }
+    },
+    "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definiciones de Wiktionary, CC BY-SA 3.0/4.0, vía Free Dictionary API."
           }
         }
       }
@@ -592,12 +622,12 @@
         }
       }
     },
-    "Free public-domain classics from Project Gutenberg.": {
+    "Free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clásicos gratuitos de dominio público de Project Gutenberg."
+            "value": "Clásicos gratuitos de Project Gutenberg."
           }
         }
       }
@@ -822,6 +852,16 @@
         }
       }
     },
+    "No accounts, no ads, no tracking.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin cuentas, sin anuncios, sin rastreo."
+          }
+        }
+      }
+    },
     "No books found. Try another title or author.": {
       "localizations": {
         "es": {
@@ -912,6 +952,26 @@
         }
       }
     },
+    "Original story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuento original"
+          }
+        }
+      }
+    },
+    "Our stories and free classics from Project Gutenberg.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuestros cuentos y clásicos gratuitos de Project Gutenberg."
+          }
+        }
+      }
+    },
     "Pause": {
       "localizations": {
         "es": {
@@ -938,6 +998,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Frase anterior"
+          }
+        }
+      }
+    },
+    "Privacy policy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidad"
+          }
+        }
+      }
+    },
+    "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los libros de Project Gutenberg son de dominio público en EE. UU. En otros países, revisa las leyes locales."
           }
         }
       }
@@ -1299,7 +1379,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Código fuente (open source, MIT)"
+            "value": "Código fuente (código abierto, MIT)"
           }
         }
       }
@@ -1582,6 +1662,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tu biblioteca está vacía"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA, shortened": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA, recortada"
           }
         }
       }

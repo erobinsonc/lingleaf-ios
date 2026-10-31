@@ -37,6 +37,36 @@ enum Brand {
     }
 }
 
+/// Credits and links shown in the app. Every address is a fixed constant here, never taken
+/// from a server's answer, and opens in the system browser.
+enum Credits {
+    static let privacyPolicyURL = URL(string: "https://github.com/erobinsonc/lingleaf-ios/blob/main/PRIVACY.md")!
+    /// Project Gutenberg vouches only for the US; the learner checks the rest.
+    static let publicDomainNotice: LocalizedStringResource =
+        "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."
+
+    /// At the end of a definition on the word card: its source and license, and whether the app cut it.
+    static func definitionSource(shortened: Bool) -> LocalizedStringResource {
+        shortened ? "— Wiktionary, CC BY-SA, shortened" : "— Wiktionary, CC BY-SA"
+    }
+
+    /// Names that keep their spelling in every language, so each one is found and linked.
+    private static let definitionLinks: [(name: String, url: URL)] = [
+        ("Wiktionary", URL(string: "https://en.wiktionary.org/")!),
+        ("CC BY-SA 3.0/4.0", URL(string: "https://creativecommons.org/licenses/by-sa/4.0/")!),
+        ("Free Dictionary API", URL(string: "https://dictionaryapi.dev/")!),
+    ]
+
+    /// "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.", each name a link.
+    static var definitionsCredit: AttributedString {
+        var text = AttributedString(localized: "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.")
+        for link in definitionLinks {
+            if let range = text.range(of: link.name) { text[range].link = link.url }
+        }
+        return text
+    }
+}
+
 /// List section header with readable contrast.
 struct SectionHeader: View {
     let title: LocalizedStringKey
