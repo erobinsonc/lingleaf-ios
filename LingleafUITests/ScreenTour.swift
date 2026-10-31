@@ -13,11 +13,11 @@ final class ScreenTour: XCTestCase {
         let reviewNow: String
         let showMeaning: String
         let remembered: String
-        let listen: String
         let knowIt: String
         let privacyPolicy: String
         let get: String
         let read: String
+        let listen: String
     }
 
     private static let english = Labels(
