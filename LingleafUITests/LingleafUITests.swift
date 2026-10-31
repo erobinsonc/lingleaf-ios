@@ -22,6 +22,8 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["ES: beach"].waitForExistence(timeout: 10), "the card shows the translation")
         XCTAssertTrue(app.staticTexts["/test/"].exists, "the card shows the IPA")
         XCTAssertTrue(app.buttons["Translation language: Español"].exists, "the language button sits under the translation")
+        // One static text with its source (Wiktionary's CC BY-SA), and no doubled full stop.
+        XCTAssertTrue(app.staticTexts[Self.beachDefinitionLabel].waitForExistence(timeout: 10), "the definition says where it comes from")
         app.buttons["Save word"].tap()
         XCTAssertTrue(app.staticTexts["“beach” saved to Words"].waitForExistence(timeout: 5), "the reader confirms the save")
 
@@ -513,6 +515,9 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
     }
 
+    /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
+    private static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
+
     /// Audit findings checked by hand and found not to be real problems. Each
     /// one names the screen and the reason; anything else still fails the test.
     private static func knownFalsePositive(_ issue: XCUIAccessibilityAuditIssue, on screen: String) -> Bool {
@@ -542,7 +547,7 @@ final class LingleafUITests: XCTestCase {
             // Progress bars (reader, review) are read-only indicators, not touch
             // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
             return issue.element?.elementType == .progressIndicator
-        case ("Word card", .contrast) where issue.element?.label == "noun · Definition of beach.":
+        case ("Word card", .contrast) where issue.element?.label == Self.beachDefinitionLabel:
             // Measured on the screenshot taken right before this audit (en-light-12-word-card-full-height):
             // #4D4D4D on the card's opaque #F1F1F6 panel, 7.5:1. The same line in the same colours
             // passes at half height; only this line is exempt, so a real regression in the card still fails.

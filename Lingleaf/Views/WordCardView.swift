@@ -120,19 +120,22 @@ struct WordCardView: View {
     }
 
     /// The definition with its source at the end of the paragraph (Wiktionary's CC BY-SA asks for
-    /// credit and to say when the text was shortened); one element for VoiceOver.
+    /// credit and to say when the text was shortened). One Text, so VoiceOver reads it as one
+    /// static text; `.accessibilityElement(children:)` would make it a generic element, which the
+    /// accessibility audit then measures as a (too small) control.
     private func definitionView(_ entry: DictionaryEntry, _ definition: String) -> some View {
         let source = Text(Credits.definitionSource(shortened: entry.definitionTruncated)).font(.caption)
         let partOfSpeech = entry.partOfSpeech ?? ""
+        // "To walk." + ". Source" would read "walk.. Source": the label adds its own full stop.
+        let spoken = String(definition.reversed().drop { $0 == "." || $0.isWhitespace }.reversed())
         return Text("\(Text(partOfSpeech).italic()) · \(definition) \(source)")
             .font(.footnote)
             .foregroundStyle(Brand.secondaryText)
             .multilineTextAlignment(.center)
-            .accessibilityElement(children: .ignore)
             .accessibilityLabel(
                 partOfSpeech.isEmpty
-                    ? Text("\(definition). Source: Wiktionary.")
-                    : Text("\(partOfSpeech): \(definition). Source: Wiktionary.")
+                    ? Text("\(spoken). Source: Wiktionary.")
+                    : Text("\(partOfSpeech): \(spoken). Source: Wiktionary.")
             )
     }
 
