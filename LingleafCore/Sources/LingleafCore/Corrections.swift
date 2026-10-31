@@ -290,8 +290,11 @@ extension Library {
     }
 
     /// Not reviewed or moved since: a translation that arrived meanwhile doesn't count.
+    /// Dates compare to the second: the record read back from its file has whole seconds (ISO 8601),
+    /// the word in memory may still have a fraction.
     private static func sameProgress(_ a: VocabWord, _ b: VocabWord) -> Bool {
-        a.box == b.box && a.learned == b.learned && a.nextReview == b.nextReview && a.sense == b.sense
+        a.box == b.box && a.learned == b.learned && a.sense == b.sense
+            && floor(a.nextReview.timeIntervalSince1970) == floor(b.nextReview.timeIntervalSince1970)
     }
 
     /// Close on the card: the corrections stay.

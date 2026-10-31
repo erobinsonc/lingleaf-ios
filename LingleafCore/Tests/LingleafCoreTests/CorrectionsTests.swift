@@ -100,6 +100,18 @@ final class CorrectionsTests: XCTestCase {
         XCTAssertEqual(library.state.word("cat"), cat, "progress made since stays")
     }
 
+    func testUndoInTheSameSessionPutsBackAWordCorrectedAtAFractionOfASecond() {
+        // The app corrects at Date(), with a fraction of a second; the record is read back from its file.
+        now += 0.5
+        let library = library()
+        library.saveWord("leave", learned: false, translation: "irse", context: "Turn left at the bank.")
+        library.correctWordsIfNeeded()
+        library.setTranslation("left", "izquierda", language: "es", sense: Sense.noun)
+        XCTAssertEqual(library.undoCorrections(), 0, "not reviewed since: all put back")
+        XCTAssertNotNil(library.state.word("leave"))
+        XCTAssertNil(library.state.word("left", sense: Sense.noun))
+    }
+
     func testUndoLeavesAWordReviewedOrDeletedSinceAsItIsNow() throws {
         let library = library()
         library.saveWord("leave", learned: false, translation: "irse", context: "Turn left now.")
