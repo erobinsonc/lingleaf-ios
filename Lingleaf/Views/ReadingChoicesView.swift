@@ -3,7 +3,7 @@ import LingleafCore
 
 /// The two readings of a word whose sentence doesn't tell (SPEC S3), as a single choice with none
 /// chosen: "to leave — irse, salir", "the left — izquierda". The guide line above says where the
-/// answer is: the sentence's translation.
+/// answer is: the sentence's translation, or asks when there is none.
 struct ReadingChoicesView: View {
     let choices: [ReadingChoice]
     @Binding var chosen: ReadingChoice?
@@ -12,15 +12,24 @@ struct ReadingChoicesView: View {
     let language: String?
     /// Translating meanwhile: a small progress indicator stands in for a missing meaning.
     let translating: Bool
+    /// The sentence's translation shows or is on its way, so it can tell which reading it is;
+    /// offline, failed or with no language yet the guide asks instead.
+    let sentenceTells: Bool
 
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("The sentence's translation tells you which one:")
-                .font(.subheadline)
-                .foregroundStyle(Brand.secondaryText)
-                .fixedSize(horizontal: false, vertical: true)
+            Group {
+                if sentenceTells {
+                    Text("The sentence's translation tells you which one:")
+                } else {
+                    Text("Which one is it in this sentence?")
+                }
+            }
+            .font(.subheadline)
+            .foregroundStyle(Brand.secondaryText)
+            .fixedSize(horizontal: false, vertical: true)
             ForEach(choices) { choice in
                 row(choice)
             }

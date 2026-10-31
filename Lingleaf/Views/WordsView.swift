@@ -29,7 +29,10 @@ struct WordsView: View {
                 if !model.state.corrections.isEmpty {
                     Section {
                         CorrectionsCard(corrections: model.state.corrections) {
-                            model.library.undoCorrections()
+                            let kept = model.library.undoCorrections()
+                            let text = kept == 0 ? String(localized: "Words put back as before")
+                                : String(localized: "Put back, except \(kept) you've reviewed since")
+                            undo = UndoMessage(text: text, seconds: 5, undo: nil)
                         } onClose: {
                             model.library.closeCorrections()
                         }
@@ -69,8 +72,10 @@ struct WordsView: View {
     /// Deletes at once (no confirmation) and offers Undo for 5 s, which puts the word back as it was.
     private func delete(_ word: VocabWord) {
         let library = model.library
+        // Named as Words shows it ("the wind"), before it goes.
+        let name = model.state.displayName(word)
         library.deleteWord(word.word, sense: word.sense)
-        undo = UndoMessage(text: String(localized: "“\(word.word)” deleted"), seconds: 5) {
+        undo = UndoMessage(text: String(localized: "“\(name)” deleted"), seconds: 5) {
             library.restoreWord(word.word, previous: word, sense: word.sense)
         }
     }
@@ -138,7 +143,8 @@ private struct WordRow: View {
                 let spoken = word.kind == nil ? IrregularVerbs.shared.spokenSaved(word) : word.word
                 model.speaker.speak(spoken, rate: model.state.settings.speechRate)
             } label: {
-                Label { Text("Listen to \(word.word)") } icon: { Image(systemName: "speaker.wave.2") }.labelStyle(.iconOnly)
+                Label { Text("Listen to \(model.state.displayName(word))") } icon: { Image(systemName: "speaker.wave.2") }
+                    .labelStyle(.iconOnly)
                     .frame(minWidth: 44, minHeight: 44)
                     .contentShape(Rectangle())
             }

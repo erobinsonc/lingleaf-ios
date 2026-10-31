@@ -8,6 +8,7 @@ import LingleafCore
 struct ReviewView: View {
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var queue: [VocabWord] = []
     @State private var total = 0
     @State private var reviewed = 0
@@ -164,11 +165,22 @@ struct ReviewView: View {
             if let meanings = word.meanings, word.isUnsure {
                 // Saved while its sentence didn't tell: both readings, as on the card (SPEC S7).
                 ForEach(Array(meanings.enumerated()), id: \.offset) { _, meaning in
-                    (Text(verbatim: meaning.text.isEmpty ? meaning.label : "\(meaning.label) — ")
-                        + Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)))
-                        .font(.title3)
+                    if dynamicTypeSize.isAccessibilitySize, !meaning.text.isEmpty {
+                        // At accessibility sizes the meaning on its own line, as on the card's rows.
+                        VStack(spacing: 2) {
+                            Text(verbatim: meaning.label).font(.title3.weight(.semibold))
+                            Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)).font(.title3)
+                        }
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityElement(children: .combine)
+                    } else {
+                        (Text(verbatim: meaning.text.isEmpty ? meaning.label : "\(meaning.label) — ")
+                            + Text(ReadingChoicesView.meaningText(meaning.text, language: meaning.language)))
+                            .font(.title3)
+                            .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             } else if word.translation.isEmpty {
                 Text("No translation yet. Connect to the internet once to get it.")

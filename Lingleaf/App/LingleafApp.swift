@@ -163,6 +163,7 @@ final class AppModel {
             // "Again" makes it due now.
             library.answerReview("sea", correct: false)
         }
+        library.seedForUITests(ProcessInfo.processInfo.arguments, offline: offline)
         return model
     }
 

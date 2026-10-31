@@ -952,6 +952,52 @@
         }
       }
     },
+    "Put back, except %lld you've reviewed since": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've reviewed since"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've reviewed since"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que ya repasaste"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Read": {
       "localizations": {
         "es": {
@@ -1470,12 +1516,32 @@
         }
       }
     },
+    "Which one is it in this sentence?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cuál es en esta frase?"
+          }
+        }
+      }
+    },
     "Words": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Palabras"
+          }
+        }
+      }
+    },
+    "Words put back as before": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palabras restauradas como antes"
           }
         }
       }

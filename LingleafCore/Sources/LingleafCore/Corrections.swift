@@ -263,8 +263,11 @@ extension Library {
 
     /// Undo on the card (SPEC S18): each entry the correction changed or merged back as it was,
     /// latest first; one changed since (reviewed) or deleted since stays as it is now.
-    public func undoCorrections() {
-        guard let record = loadCorrections() else { return }
+    /// Returns how many corrected entries stay as they are now (reviewed or deleted since), for the
+    /// message after Undo.
+    @discardableResult
+    public func undoCorrections() -> Int {
+        guard let record = loadCorrections() else { return 0 }
         var words = state.words
         // What can be undone: an entry still as the correction left it, or one merged into an
         // entry still there. Every such entry leaves first, so an original whose id another
@@ -283,6 +286,7 @@ extension Library {
         state.words = words.sorted { $0.createdAt > $1.createdAt }
         save(state.words, "words.json")
         closeCorrections()
+        return record.changes.count - undone.count
     }
 
     /// Not reviewed or moved since: a translation that arrived meanwhile doesn't count.

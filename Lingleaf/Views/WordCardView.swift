@@ -32,6 +32,8 @@ struct WordCardView: View {
     /// entry, and each reading's meaning by `ReadingChoice.id`.
     @State private var chosen: ReadingChoice?
     @State private var choiceEntry: DictionaryEntry?
+    /// The chosen reading's look-up has answered: only then can there be "no definition".
+    @State private var choiceLoaded = false
     @State private var choiceMeanings: [String: String] = [:]
 
     /// Where the translation of a reading ("to leave" → "irse") is kept in `translations`.
@@ -186,11 +188,6 @@ struct WordCardView: View {
         selection.function == nil ? selection.word : selection.chunk
     }
 
-    /// Languages offered when none is set: the region's language first, then the usual ones.
-    private static var suggestedLanguages: [String] {
-        TranslationLanguages.suggestions(region: Locale.current.region?.identifier, supported: AppModel.translationLanguages)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -224,7 +221,9 @@ struct WordCardView: View {
         .task(id: chosen) {
             guard let chosen else { return }
             choiceEntry = nil
+            choiceLoaded = false
             choiceEntry = await model.dictionary.lookup(selection.word, reading: chosen.reading, nounIPA: nounIPA(chosen.kind))
+            choiceLoaded = true
         }
         // A language chosen on this card (or changed with its menu) translates in place.
         .onChange(of: model.targetLanguage) { _, _ in
@@ -236,10 +235,12 @@ struct WordCardView: View {
 
     /// The sentence doesn't tell (SPEC S3): the sentence and its translation, the guide line and
     /// the two readings; once one is chosen, its definition; then the language and Read from here.
+    /// With no language yet, the choice of one comes right after the sentence.
     @ViewBuilder
     private var unsureContent: some View {
         Divider().padding(.vertical, 4)
         contextView(readFromHere: false)
+        if model.targetLanguage == nil { LanguageChooser() }
         if translationFailed {
             Text("Translation unavailable. Connect to the internet once to download the language.")
                 .font(.footnote)
@@ -249,11 +250,13 @@ struct WordCardView: View {
         }
         ReadingChoicesView(
             choices: choices, chosen: $chosen, meanings: rowMeanings, language: translatedInto,
-            translating: translatedInto != nil && !translationFailed
+            translating: translatedInto != nil && !translationFailed,
+            // The sentence's translation can tell only when it shows or is on its way.
+            sentenceTells: model.targetLanguage != nil && !translationFailed
         )
         .padding(.top, 4)
         if chosen != nil { definitionView }
-        if let target = model.targetLanguage { languageMenu(target) } else { languageChooser }
+        if let target = model.targetLanguage { LanguageMenu(current: target) }
         readFromHereButton
     }
 
@@ -271,7 +274,8 @@ struct WordCardView: View {
                 .font(.footnote)
                 .foregroundStyle(Brand.secondaryText)
                 .multilineTextAlignment(.center)
-        } else if entryLoaded {
+        } else if isUnsure ? choiceLoaded : entryLoaded {
+            // Never while the look-up runs: only once it has answered.
             Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
         }
     }
@@ -326,86 +330,11 @@ struct WordCardView: View {
                 } else {
                     ProgressView().accessibilityLabel(Text("Translating…"))
                 }
-                languageMenu(target)
+                LanguageMenu(current: target)
             }
         } else {
-            languageChooser
+            LanguageChooser()
         }
-    }
-
-    /// Small button under the translation ("Português ˅") that changes the language in place.
-    /// iOS 26: a system glass capsule, legible on the glass card; earlier: a grey capsule.
-    private func languageMenu(_ current: String) -> some View {
-        Menu {
-            languageButtons
-        } label: {
-            HStack(spacing: 4) {
-                Text(verbatim: AppModel.languageName(current))
-                Image(systemName: "chevron.down").imageScale(.small).accessibilityHidden(true)
-            }
-            .font(.footnote)
-            .padding(.horizontal, Self.hasGlass ? 0 : 12)
-            .padding(.vertical, Self.hasGlass ? 0 : 6)
-            .background(Self.hasGlass ? Color.clear : Color(uiColor: .tertiarySystemFill), in: Capsule())
-            .frame(minHeight: 44)
-            .contentShape(Rectangle())
-        }
-        .menuStyle(.button)
-        .modifier(GlassButtonStyle())
-        .controlSize(.small)
-        .tint(.primary)
-        // The language name keeps its own language so VoiceOver reads it with the right voice.
-        .accessibilityLabel(Text("Translation language: \(AppModel.languageLabel(current))"))
-    }
-
-    /// Shown where the translation goes while no language is set; the rest of the card works meanwhile.
-    private var languageChooser: some View {
-        VStack(spacing: 8) {
-            Text("Translate into:")
-                .font(.subheadline)
-                .foregroundStyle(Brand.secondaryText)
-            FlowLayout(spacing: 8) {
-                ForEach(Self.suggestedLanguages, id: \.self) { code in
-                    Button {
-                        model.setTargetLanguage(code)
-                    } label: {
-                        chip(Text(AppModel.languageLabel(code)))
-                    }
-                    .buttonStyle(.plain)
-                }
-                Menu {
-                    languageButtons
-                } label: {
-                    chip(Text("More languages"))
-                }
-                .menuStyle(.button)
-                .buttonStyle(.plain)
-            }
-        }
-        .frame(maxWidth: .infinity)
-    }
-
-    /// Every supported language, each named in its own language.
-    private var languageButtons: some View {
-        ForEach(AppModel.translationLanguages, id: \.self) { code in
-            Button {
-                model.setTargetLanguage(code)
-            } label: {
-                Text(AppModel.languageLabel(code))
-            }
-        }
-    }
-
-    private func chip(_ label: Text) -> some View {
-        label
-            .font(.subheadline)
-            .foregroundStyle(Color.primary)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 6)
-            .frame(minHeight: 44)
-            .overlay(Capsule().stroke(Brand.secondaryText, lineWidth: 1))
-            .contentShape(Capsule())
     }
 
     private func contextView(readFromHere: Bool) -> some View {
@@ -742,7 +671,7 @@ extension WordCardView {
 /// The card's buttons on iOS 26: system glass (prominent for the primary action), so they
 /// share the system's metrics and stay legible on the glass sheet. Before iOS 26, plain
 /// buttons that draw their own background.
-private struct GlassButtonStyle: ViewModifier {
+struct GlassButtonStyle: ViewModifier {
     var prominent = false
 
     func body(content: Content) -> some View {

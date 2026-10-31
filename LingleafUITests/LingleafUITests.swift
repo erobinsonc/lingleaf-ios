@@ -106,6 +106,40 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["1 word tomorrow."].exists, "the word is due again tomorrow")
     }
 
+    /// S3: unsure, the guide says where the answer is, or asks when the sentence has no
+    /// translation; a chosen reading says "No definition available." only once its look-up answered.
+    func testTheUnsureCardsGuideFollowsTheSentencesTranslation() {
+        relaunch("-ui-testing", "-ui-testing-tour")
+        button(startingWith: "Test Story").tap()
+        let left = app.links["left"].firstMatch
+        XCTAssertTrue(left.waitForExistence(timeout: 10))
+        left.tap()
+        XCTAssertTrue(app.staticTexts["The sentence's translation tells you which one:"].waitForExistence(timeout: 10))
+        button(startingWith: "the left").tap()
+        let definition = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of left")).firstMatch
+        XCTAssertTrue(definition.waitForExistence(timeout: 10), "the chosen reading's definition")
+        XCTAssertFalse(app.staticTexts["No definition available."].exists)
+        relaunch("-ui-testing-offline", "-ui-testing-tour")
+        button(startingWith: "Test Story").tap()
+        XCTAssertTrue(left.waitForExistence(timeout: 10))
+        left.tap()
+        XCTAssertTrue(app.staticTexts["Which one is it in this sentence?"].waitForExistence(timeout: 10), "offline, the guide asks")
+        XCTAssertFalse(app.staticTexts["The sentence's translation tells you which one:"].exists)
+    }
+
+    /// S4/S15/S18: Words names a sensed word as it shows it, and Undo of the corrections says what it did.
+    func testWordsNamesSensesAndConfirmsTheCorrectionsUndo() {
+        relaunch("-ui-testing", "-ui-testing-tour")
+        app.tabBars.buttons["Words"].tap()
+        XCTAssertTrue(app.buttons["Listen to the wind"].waitForExistence(timeout: 10), "Listen names the sense")
+        relaunch("-ui-testing", "-ui-testing-corrections-1")
+        app.tabBars.buttons["Words"].tap()
+        let undo = app.buttons["Undo"].firstMatch
+        XCTAssertTrue(undo.waitForExistence(timeout: 10), "the corrections card")
+        undo.tap()
+        XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
+    }
+
     private func relaunch(_ arguments: String...) {
         app.terminate()
         app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
