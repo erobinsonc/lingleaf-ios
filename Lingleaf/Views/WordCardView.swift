@@ -88,11 +88,8 @@ struct WordCardView: View {
                             .foregroundStyle(Brand.secondaryText)
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
-                    } else if let definition = entry?.definition {
-                        Text("\(Text(entry?.partOfSpeech ?? "").italic()) · \(definition)")
-                            .font(.footnote)
-                            .foregroundStyle(Brand.secondaryText)
-                            .multilineTextAlignment(.center)
+                    } else if let entry, let definition = entry.definition {
+                        definitionView(entry, definition)
                     } else if entryLoaded {
                         Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
                     }
@@ -120,6 +117,28 @@ struct WordCardView: View {
         }
         // Inside the sheet: an alert from under it would not show.
         .noVoiceAlert(model.speaker)
+    }
+
+    /// The definition with its source at the end of the paragraph (Wiktionary's CC BY-SA asks for
+    /// credit and to say when the text was shortened). One Text, so VoiceOver reads it as one
+    /// static text; `.accessibilityElement(children:)` would make it a generic element, which the
+    /// accessibility audit then measures as a (too small) control.
+    private func definitionView(_ entry: DictionaryEntry, _ definition: String) -> some View {
+        let source = Text(Credits.definitionSource(shortened: entry.definitionTruncated)).font(.caption)
+        let partOfSpeech = entry.partOfSpeech ?? ""
+        // "To walk." + ". Source" would read "walk.. Source": the label adds its own full stop.
+        let spoken = String(definition.reversed().drop { $0 == "." || $0.isWhitespace }.reversed())
+        // A definition the app cut ends with "…", before ", shortened".
+        let shown = entry.definitionTruncated ? definition + "…" : definition
+        return Text("\(Text(partOfSpeech).italic()) · \(shown) \(source)")
+            .font(.footnote)
+            .foregroundStyle(Brand.secondaryText)
+            .multilineTextAlignment(.center)
+            .accessibilityLabel(
+                partOfSpeech.isEmpty
+                    ? Text("\(spoken). Source: Wiktionary.")
+                    : Text("\(partOfSpeech): \(spoken). Source: Wiktionary.")
+            )
     }
 
     private var header: some View {

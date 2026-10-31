@@ -1,0 +1,29 @@
+name: Release checks
+
+# Only on pull requests to main (releases and hotfixes), so develop isn't blocked
+# while the maintainer decides. Make "Release checks" a required check on main.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  privacy:
+    name: Release checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: The privacy policy names its controller
+        run: |
+          if grep -nF '[MAINTAINER NAME]' PRIVACY.md; then
+            echo "::error file=PRIVACY.md::Replace [MAINTAINER NAME] with the data controller's name before releasing."
+            exit 1
+          fi
+          echo "PRIVACY.md names its controller."

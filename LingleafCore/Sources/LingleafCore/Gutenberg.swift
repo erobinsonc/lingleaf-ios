@@ -107,25 +107,23 @@ public struct GutenbergClient: Sendable {
     private let http: HttpFetcher
     private static let base = "https://gutendex.com/books"
 
-    /// Hand-picked classics with a CEFR level hint, easiest first. Shipped with the app
+    /// Hand-picked classics with a CEFR level hint, easiest first: public domain in almost
+    /// every country (authors who died in 1925 or earlier) and without old spellings such as "to-day". Shipped with the app
     /// (title, author, level), so Discover shows them at once and without the catalog.
     public static let recommendedBooks: [GutenbergBook] = [
-        (21, "Aesop's Fables", "Aesop"),
+        (25519, "Little Wizard Stories of Oz", "Baum, L. Frank"),
         (55, "The Wonderful Wizard of Oz", "Baum, L. Frank"),
-        (16, "Peter Pan", "Barrie, J. M."),
-        (236, "The Jungle Book", "Kipling, Rudyard"),
+        (54, "The Marvelous Land of Oz", "Baum, L. Frank"),
+        (486, "Ozma of Oz", "Baum, L. Frank"),
+        (517, "The Emerald City of Oz", "Baum, L. Frank"),
+        (1874, "The Railway Children", "Nesbit, E."),
+        (3536, "The Enchanted Castle", "Nesbit, E."),
+        (157, "Daddy-Long-Legs", "Webster, Jean"),
         (11, "Alice's Adventures in Wonderland", "Carroll, Lewis"),
-        (74, "The Adventures of Tom Sawyer", "Twain, Mark"),
-        (120, "Treasure Island", "Stevenson, Robert Louis"),
-        (1661, "The Adventures of Sherlock Holmes", "Doyle, Arthur Conan"),
-        (1342, "Pride and Prejudice", "Austen, Jane"),
-        (84, "Frankenstein", "Shelley, Mary Wollstonecraft"),
-        (174, "The Picture of Dorian Gray", "Wilde, Oscar"),
-        (1400, "Great Expectations", "Dickens, Charles"),
-        (345, "Dracula", "Stoker, Bram"),
-        (2701, "Moby-Dick", "Melville, Herman"),
-        (219, "Heart of Darkness", "Conrad, Joseph"),
-        (145, "Middlemarch", "Eliot, George"),
+        (14522, "The Canterville Ghost", "Wilde, Oscar"),
+        (160, "The Awakening and Selected Short Stories", "Chopin, Kate"),
+        (208, "Daisy Miller", "James, Henry"),
+        (209, "The Turn of the Screw", "James, Henry"),
     ].map { id, title, author in
         GutenbergBook(
             id: id, title: title, authors: [.init(name: author)],
@@ -159,26 +157,30 @@ public struct GutenbergClient: Sendable {
 
     /// The level of each recommended book, easiest first.
     public static let recommended: [(id: Int, level: String)] = [
-        (21, "A2"), // Aesop's Fables
+        (25519, "B1"), // Little Wizard Stories of Oz
         (55, "B1"), // The Wonderful Wizard of Oz
-        (16, "B1"), // Peter Pan
-        (236, "B1"), // The Jungle Book
+        (54, "B1"), // The Marvelous Land of Oz
+        (486, "B1"), // Ozma of Oz
+        (517, "B1"), // The Emerald City of Oz
+        (1874, "B2"), // The Railway Children
+        (3536, "B2"), // The Enchanted Castle
+        (157, "B2"), // Daddy-Long-Legs
         (11, "B2"), // Alice's Adventures in Wonderland
-        (74, "B2"), // The Adventures of Tom Sawyer
-        (120, "B2"), // Treasure Island
-        (1661, "B2"), // The Adventures of Sherlock Holmes
-        (1342, "C1"), // Pride and Prejudice
-        (84, "C1"), // Frankenstein
-        (174, "C1"), // The Picture of Dorian Gray
-        (1400, "C1"), // Great Expectations
-        (345, "C1"), // Dracula
-        (2701, "C2"), // Moby-Dick
-        (219, "C2"), // Heart of Darkness
-        (145, "C2"), // Middlemarch
+        (14522, "B2"), // The Canterville Ghost
+        (160, "C1"), // The Awakening and Selected Short Stories
+        (208, "C1"), // Daisy Miller
+        (209, "C2"), // The Turn of the Screw
     ]
 
     /// CEFR levels, easiest first.
     public static let levels = ["A1", "A2", "B1", "B2", "C1", "C2"]
+
+    /// Levels that have at least one recommended book or bundled story, easiest first: the filter's chips.
+    public static var filterLevels: [String] {
+        levels.filter { level in
+            recommended.contains { $0.level == level } || BundledStory.shelf.contains { $0.level == level }
+        }
+    }
 
     public init(http: HttpFetcher) { self.http = http }
 
