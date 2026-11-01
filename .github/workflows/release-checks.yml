@@ -22,8 +22,10 @@ jobs:
           persist-credentials: false
       - name: The privacy policy has no placeholders
         run: |
-          # A placeholder like "[MAINTAINER NAME]" (capitals in brackets, not a Markdown link).
-          if grep -nE '\[[A-Z][A-Z ]+\]([^(]|$)' PRIVACY.md; then
+          test -s PRIVACY.md || { echo "::error::PRIVACY.md is missing or empty."; exit 1; }
+          # A placeholder: "[MAINTAINER NAME]" (capitals in brackets, not a Markdown link),
+          # TODO/TBD/FIXME/XXX, "{{name}}" or "<NAME>".
+          if LC_ALL=C grep -nE '\[[A-Z][A-Z0-9 _-]+\]([^(:[]|$)|\b(TODO|TBD|FIXME|XXX)\b|\{\{[^}]*\}\}|<[A-Z][A-Z0-9 _-]+>' PRIVACY.md; then
             echo "::error file=PRIVACY.md::Fill in the placeholder before releasing."
             exit 1
           fi
