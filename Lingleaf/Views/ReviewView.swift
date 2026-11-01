@@ -51,9 +51,15 @@ struct ReviewView: View {
         }
     }
 
+    private var showMeaningShape: AnyShape {
+        dynamicTypeSize.isAccessibilitySize ? AnyShape(RoundedRectangle(cornerRadius: 16)) : AnyShape(Capsule())
+    }
+
     /// Only after the meaning is shown: recall comes first.
+    /// At accessibility sizes one above the other, full width, in the same order.
     private var answers: some View {
-        HStack(spacing: 12) {
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 8)) : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
             Button { answer(correct: false) } label: {
                 Text("Again").multilineTextAlignment(.center).fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, minHeight: 44)
@@ -144,9 +150,10 @@ struct ReviewView: View {
                         .foregroundStyle(Brand.ink)
                         .padding(.horizontal, 18)
                         .frame(minHeight: 44)
-                        .background(Color(uiColor: .systemBackground), in: Capsule())
-                        .overlay(Capsule().stroke(Brand.ink, lineWidth: 1))
-                        .contentShape(Capsule())
+                        // A capsule around wrapped lines at accessibility sizes clips them: a rounded rectangle.
+                        .background(Color(uiColor: .systemBackground), in: showMeaningShape)
+                        .overlay(showMeaningShape.stroke(Brand.ink, lineWidth: 1))
+                        .contentShape(showMeaningShape)
                 }
                 .buttonStyle(.plain)
             }

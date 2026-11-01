@@ -49,12 +49,25 @@ final class ScreenTour: XCTestCase {
     func testTourSpanishLight() { tour(Self.spanish, dark: false) }
 
     /// The largest text size (AX5) on the screens where words wrap the most.
-    func testTourEnglishLargestText() {
+    func testTourEnglishLargestText() { largestText(Self.english) }
+    func testTourSpanishLargestText() { largestText(Self.spanish) }
+
+    private func largestText(_ labels: Labels) {
         XCUIDevice.shared.appearance = .light
-        prefix = "en-light-ax5"
-        readingsTour(Self.english, extra: Self.largestText, unsureChosen: true, expression: false)
-        correctionsTour(Self.english, count: 1, extra: Self.largestText, undo: false)
+        prefix = "\(labels.language)-light-ax5"
+        readingsTour(labels, extra: Self.largestText, unsureChosen: true, expression: true)
+        reviewUnsure(labels, extra: Self.largestText)
+        correctionsTour(labels, count: 1, extra: Self.largestText, undo: false)
         app.terminate()
+    }
+
+    /// Review of a word saved unsure: both readings and, below, the answers.
+    private func reviewUnsure(_ labels: Labels, extra: [String]) {
+        launch(labels, ["-ui-testing", "-ui-testing-due-unsure"] + extra)
+        tab(2)
+        startReview(labels)
+        if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { app.buttons[labels.showMeaning].tap() }
+        snap("22-review-unsure-meaning")
     }
 
     private func launch(_ labels: Labels, _ arguments: [String]) {
@@ -139,11 +152,12 @@ final class ScreenTour: XCTestCase {
         openTestStory()
         tapWord("left", labels)
         snap("16-word-card-unsure-offline")
-        launch(labels, ["-ui-testing", "-ui-testing-due-unsure"])
-        tab(2)
-        startReview(labels)
-        if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { app.buttons[labels.showMeaning].tap() }
-        snap("22-review-unsure-meaning")
+        reviewUnsure(labels, extra: [])
+        // No translation language yet: the language choice right below the sentence, then the guide.
+        launch(labels, ["-ui-testing", "-ui-testing-tour", "-ui-testing-no-language"])
+        openTestStory()
+        tapWord("left", labels)
+        snap("23-word-card-unsure-no-language")
         correctionsTour(labels, count: 1, extra: [], undo: true)
         correctionsTour(labels, count: 5, extra: [], undo: false)
         app.terminate()

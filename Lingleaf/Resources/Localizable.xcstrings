@@ -1032,7 +1032,7 @@
         }
       }
     },
-    "Put back, except %lld you've reviewed since": {
+    "Put back, except %lld you've changed since": {
       "localizations": {
         "en": {
           "variations": {
@@ -1040,13 +1040,13 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Put back, except %lld you've reviewed since"
+                  "value": "Put back, except %lld you've changed since"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Put back, except %lld you've reviewed since"
+                  "value": "Put back, except %lld you've changed since"
                 }
               }
             }
@@ -1058,19 +1058,19 @@
               "one": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Restauradas, salvo %lld que ya repasaste"
+                  "value": "Restauradas, salvo %lld que cambiaste después"
                 }
               },
               "many": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Restauradas, salvo %lld que ya repasaste"
+                  "value": "Restauradas, salvo %lld que cambiaste después"
                 }
               },
               "other": {
                 "stringUnit": {
                   "state": "translated",
-                  "value": "Restauradas, salvo %lld que ya repasaste"
+                  "value": "Restauradas, salvo %lld que cambiaste después"
                 }
               }
             }

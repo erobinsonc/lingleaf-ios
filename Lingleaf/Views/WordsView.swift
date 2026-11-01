@@ -31,7 +31,7 @@ struct WordsView: View {
                         CorrectionsCard(corrections: model.state.corrections) {
                             let kept = model.library.undoCorrections()
                             let text = kept == 0 ? String(localized: "Words put back as before")
-                                : String(localized: "Put back, except \(kept) you've reviewed since")
+                                : String(localized: "Put back, except \(kept) you've changed since")
                             undo = UndoMessage(text: text, seconds: 5, undo: nil)
                         } onClose: {
                             model.library.closeCorrections()

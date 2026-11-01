@@ -17,6 +17,7 @@ struct WordCardView: View {
 
     @Environment(AppModel.self) private var model
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var entry: DictionaryEntry?
     @State private var entryLoaded = false
     @State private var lookup: Task<DictionaryEntry?, Never>?
@@ -271,8 +272,9 @@ struct WordCardView: View {
                 .fixedSize(horizontal: false, vertical: true)
         } else if let entry = shownEntry, let definition = entry.definition {
             definitionText(entry, definition)
-        } else if isUnsure ? choiceLoaded : entryLoaded {
-            // Never while the look-up runs: only once it has answered.
+        } else if isUnsure ? choiceLoaded : entryLoaded, meaningReading?.kind != .expression {
+            // Never while the look-up runs: only once it has answered. An expression ("bound for")
+            // has its meaning without one.
             Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
         }
     }
@@ -288,10 +290,12 @@ struct WordCardView: View {
         let spoken = String(definition.reversed().drop { $0 == "." || $0.isWhitespace }.reversed())
         // A definition the app cut ends with "…", before ", shortened".
         let shown = entry.definitionTruncated ? definition + "…" : definition
+        // Unsure, the chosen reading's definition lines up with its rows; else centred under the headword.
         return Text("\(Text(partOfSpeech).italic()) · \(shown) \(source)")
             .font(.footnote)
             .foregroundStyle(Brand.secondaryText)
-            .multilineTextAlignment(.center)
+            .multilineTextAlignment(isUnsure ? .leading : .center)
+            .frame(maxWidth: isUnsure ? .infinity : nil, alignment: .leading)
             .accessibilityLabel(
                 partOfSpeech.isEmpty
                     ? Text("\(spoken). Source: Wiktionary.")
@@ -419,12 +423,14 @@ struct WordCardView: View {
     // MARK: Actions
 
     /// [I know it] [Save word]; the button matching the saved state is checked
-    /// and tapping it removes the word.
+    /// and tapping it removes the word. At accessibility sizes one above the other, full width,
+    /// in the same order.
     private var actions: some View {
         let saved = model.state.saved(savedKey, sense: savedSense)
         let known = saved?.learned == true
         let learning = saved?.learned == false
-        return HStack(spacing: 12) {
+        let layout = dynamicTypeSize.isAccessibilitySize ? AnyLayout(VStackLayout(spacing: 8)) : AnyLayout(HStackLayout(spacing: 12))
+        return layout {
             if known {
                 actionButton("I know it", checked: true, primary: false) { remove() }
             } else {
