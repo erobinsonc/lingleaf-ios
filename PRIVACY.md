@@ -1,6 +1,6 @@
 # Lingleaf privacy policy
 
-_Last updated: 2026-11-01. For Lingleaf for iOS and Lingleaf for Android._
+_Last updated: 2026-11-02. For Lingleaf for iOS and Lingleaf for Android._
 
 Lingleaf is a free, open-source app for learning English by reading books.
 
@@ -20,8 +20,9 @@ The app connects only to these services, always over HTTPS. Like any website, th
 see your IP address and the app version. They have their own privacy policies.
 
 - **Free Dictionary API** (`api.dictionaryapi.dev`): when you tap a word, the app
-  sends that English word to get its definition and how to say it (phonetic
-  spelling). The definitions come from Wiktionary.
+  sends that word and its dictionary form (for example "stole" and "steal") to get
+  its definition and how to say it (phonetic spelling). The definitions come from
+  Wiktionary.
 - **Project Gutenberg** (`gutendex.com`, `www.gutenberg.org`): when you open
   Discover, the app loads book covers; when you search or download a book, it sends
   your search words and the book you chose.
@@ -59,8 +60,8 @@ una).
 La app solo se conecta por HTTPS a estos servicios, que ven tu dirección IP y la
 versión de la app:
 
-- **Free Dictionary API**: recibe la palabra en inglés que tocas, para mostrar su
-  definición y su pronunciación (de Wiktionary).
+- **Free Dictionary API**: recibe la palabra en inglés que tocas y su forma de
+  diccionario, para mostrar su definición y su pronunciación (de Wiktionary).
 - **Project Gutenberg**: envía las portadas de los libros que ves en Descubrir y
   recibe tus búsquedas y los libros que descargas.
 - **Traducción en iOS**: Apple Translation funciona en tu dispositivo; no se envían

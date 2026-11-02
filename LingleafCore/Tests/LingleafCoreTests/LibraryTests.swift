@@ -406,6 +406,21 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(library().state.word("sea")?.context.utf16.count, TextTools.maxSentence)
     }
 
+    /// A restored or edited words file can't put megabytes in the fields the app shows.
+    func testHugeSavedFieldsAreCutWhenLoaded() throws {
+        library().saveWord("sea", learned: false, translation: "mar", translationLanguage: "es", context: "The sea.")
+        let saved = Data(try XCTUnwrap(storage.files["words.json"]).utf8)
+        var words = try XCTUnwrap(JSONSerialization.jsonObject(with: saved) as? [[String: Any]])
+        let huge = String(repeating: "x", count: 50_000)
+        for field in ["phonetic", "translation", "contextTranslation", "source"] { words[0][field] = huge }
+        storage.files["words.json"] = String(decoding: try JSONSerialization.data(withJSONObject: words), as: UTF8.self)
+        let loaded = try XCTUnwrap(library().state.word("sea"))
+        XCTAssertEqual(loaded.phonetic.utf16.count, DictionaryEntry.maxShortField)
+        XCTAssertEqual(loaded.translation.utf16.count, VocabWord.maxTranslation)
+        XCTAssertEqual(loaded.contextTranslation?.utf16.count, VocabWord.maxTranslation)
+        XCTAssertEqual(loaded.source.utf16.count, TextTools.maxLabel)
+    }
+
     func testLearningWordsFollowTheSavedWords() {
         let library = library()
         library.saveWord("sea", learned: false)
@@ -422,5 +437,20 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(files.read("a.txt"), "hello")
         files.delete("a.txt")
         XCTAssertNil(files.read("a.txt"))
+        files.write("empty.txt", "")
+        XCTAssertEqual(files.read("empty.txt"), "", "an empty file reads as empty, not missing")
+    }
+
+    /// A file over the cap (a restored backup, a file put there by hand) is refused, not read whole.
+    func testFileStorageRefusesFilesOverTheByteCap() {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let files = FileStorage(directory: dir, maxBytes: 8)
+        files.write("fits.txt", "12345678")
+        XCTAssertEqual(files.read("fits.txt"), "12345678")
+        files.write("big.txt", "123456789")
+        XCTAssertNil(files.read("big.txt"))
+        XCTAssertNil(files.read("missing.txt"))
+        XCTAssertEqual(FileStorage(directory: dir).read("big.txt"), "123456789", "the default cap is Limits.maxBytes")
     }
 }

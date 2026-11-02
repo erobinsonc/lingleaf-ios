@@ -82,6 +82,8 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     static let maxWord = TextTools.maxSentence
     /// Dates a saved word can have (2000–2100); others are brought inside.
     static let dateRange = Date(timeIntervalSince1970: 946_684_800)...Date(timeIntervalSince1970: 4_102_444_800)
+    /// A translation can be longer than what it translates (a verb group or sentence); twice the sentence's limit.
+    static let maxTranslation = 2 * TextTools.maxSentence
 
     func bounded() -> VocabWord {
         var word = self
@@ -89,6 +91,11 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         word.createdAt = min(max(createdAt, Self.dateRange.lowerBound), Self.dateRange.upperBound)
         word.nextReview = min(max(nextReview, Self.dateRange.lowerBound), Self.dateRange.upperBound)
         word.context = TextTools.truncated(context, TextTools.maxSentence)
+        // Same limits as where each comes from: the dictionary's IPA, a translation, a book title.
+        word.phonetic = TextTools.truncated(phonetic, DictionaryEntry.maxShortField)
+        word.translation = TextTools.truncated(translation, Self.maxTranslation)
+        word.contextTranslation = contextTranslation.map { TextTools.truncated($0, Self.maxTranslation) }
+        word.source = TextTools.truncated(source, TextTools.maxLabel)
         if let sense, !Sense.all.contains(sense) { word.sense = nil }
         if let form, form.utf16.count > 40 || TextTools.wordRanges(form) != [WordRange(0, (form as NSString).length)] {
             word.form = nil
@@ -599,13 +606,9 @@ public final class Library {
         save(state.words, "words.json")
     }
 
-    /// A translation can be longer than its sentence; twice the sentence's limit.
-    private static let maxContextTranslation = 2 * TextTools.maxSentence
-
     func replace(_ entry: VocabWord) {
         // Every saved word passes here: whatever a caller hands in, nothing huge is kept.
-        var entry = entry.bounded()
-        entry.contextTranslation = entry.contextTranslation.map { TextTools.truncated($0, Self.maxContextTranslation) }
+        let entry = entry.bounded()
         var words = state.words.filter { $0.id != entry.id }
         words.append(entry)
         state.words = words.sorted { $0.createdAt > $1.createdAt }
@@ -664,15 +667,28 @@ public enum StorageNames {
 /// Files in a directory, written atomically. Only `StorageNames.isSafe` names.
 public struct FileStorage: Storage {
     private let directory: URL
+    private let maxBytes: Int
 
-    public init(directory: URL) {
+    public init(directory: URL, maxBytes: Int = Limits.maxBytes) {
         self.directory = directory
+        self.maxBytes = maxBytes
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
+    /// Reads at most `maxBytes`: a larger file (a restored backup, a file put there by hand) is
+    /// refused rather than read into memory whole.
     public func read(_ name: String) -> String? {
-        guard StorageNames.isSafe(name) else { return nil }
-        return try? String(contentsOf: directory.appendingPathComponent(name), encoding: .utf8)
+        guard StorageNames.isSafe(name),
+              let handle = try? FileHandle(forReadingFrom: directory.appendingPathComponent(name)) else { return nil }
+        defer { try? handle.close() }
+        let data: Data
+        do {
+            data = try handle.read(upToCount: maxBytes + 1) ?? Data()
+        } catch {
+            return nil
+        }
+        guard data.count <= maxBytes else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
     public func write(_ name: String, _ content: String) {
