@@ -37,7 +37,8 @@ Apple Translation doesn't run in the Simulator; try translations on a real devic
 ## Architecture
 
 - `LingleafCore/` — Swift package, Foundation only: text tools, base forms, spaced repetition,
-  streak, Gutenberg catalog, dictionary client, library storage. Same rules and tests as
+  streak, Gutenberg catalog, dictionary client, library storage. Irregular verbs come from one
+  bundled table, `Resources/irregular-verbs.json` (identical in lingleaf-android), read strictly. Same rules and tests as
   `core/` in lingleaf-android. ≥90% line coverage is enforced.
 - `Lingleaf/` — SwiftUI app. Each paragraph is one `Text` whose words are links; tapping one opens the word card.
 - `LingleafUITests/` — UI flows and Apple's accessibility audit, run against the app in an

@@ -108,6 +108,129 @@ final class TextToolsTests: XCTestCase {
         XCTAssertTrue(TextTools.matchKeys("Animals").isSuperset(of: ["animals", "animal"]))
         XCTAssertTrue(TextTools.matchKeys("was").contains("be"))
     }
+
+    func testIrregularFormsComeFromTheTable() {
+        XCTAssertEqual(TextTools.baseFormCandidates("stolen"), ["steal"])
+        XCTAssertEqual(TextTools.baseFormCandidates("learnt").first, "learn")
+        XCTAssertEqual(TextTools.baseFormCandidates("became"), ["become"])
+        XCTAssertEqual(TextTools.baseFormCandidates("being"), ["be"])
+        XCTAssertEqual(TextTools.baseFormCandidates("lying"), ["lie"])
+        XCTAssertEqual(TextTools.baseFormCandidates("lied"), ["lie"])
+        XCTAssertEqual(TextTools.baseFormCandidates("Knives"), ["knife", "knive", "kniv"])
+    }
+
+    func testDoubledLAfterTwoVowelGroupsGivesTheSingleL() {
+        XCTAssertEqual(TextTools.baseFormCandidates("travelled").first, "travel")
+        XCTAssertEqual(TextTools.baseFormCandidates("travelling").first, "travel")
+        XCTAssertEqual(TextTools.baseFormCandidates("cancelled").first, "cancel")
+        XCTAssertEqual(TextTools.baseFormCandidates("controlled").first, "control")
+        XCTAssertEqual(TextTools.baseFormCandidates("quarrelling").first, "quarrel")
+        XCTAssertEqual(TextTools.baseFormCandidates("called"), ["call", "calle"], "one vowel group: as before")
+        XCTAssertEqual(TextTools.baseFormCandidates("filled"), ["fill", "fille"])
+        // The table's US double-l bases come first, then the single-l stem.
+        XCTAssertEqual(TextTools.baseFormCandidates("installed").first, "install")
+        XCTAssertEqual(Array(TextTools.baseFormCandidates("enrolled").prefix(2)), ["enroll", "enrol"])
+        XCTAssertEqual(TextTools.baseFormCandidates("recalled").first, "recall")
+        XCTAssertEqual(TextTools.baseFormCandidates("misspelling").first, "misspell")
+        XCTAssertEqual(TextTools.baseFormCandidates("installs"), ["install"])
+    }
+
+    func testWithoutItsSentenceAHomographLinksOnlyToASharedBase() {
+        XCTAssertTrue(TextTools.baseFormCandidates("left").isEmpty)
+        XCTAssertTrue(TextTools.baseFormCandidates("leaves").isEmpty)
+        XCTAssertTrue(TextTools.baseFormCandidates("found").isEmpty)
+        XCTAssertEqual(TextTools.baseFormCandidates("tears"), ["tear"])
+        XCTAssertEqual(TextTools.matchKeys("left"), ["left"])
+    }
+
+    private func range(_ word: String, in text: String) -> WordRange {
+        let ranges = TextTools.wordRanges(text).filter { TextTools.substring(text, $0) == word }
+        XCTAssertFalse(ranges.isEmpty, "\(word) not in \(text)")
+        return ranges.last ?? WordRange(0, 0)
+    }
+
+    func testInItsSentenceAHomographLinksToItsReading() {
+        let she = "She left early."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: she, at: range("left", in: she)), ["leave"])
+        XCTAssertEqual(TextTools.matchKeys(in: she, at: range("left", in: she)), ["leave"], "a saved \"left\" (the side) is not marked")
+        let turn = "Turn left here."
+        XCTAssertTrue(TextTools.baseFormCandidates(in: turn, at: range("left", in: turn)).isEmpty)
+        XCTAssertEqual(TextTools.matchKeys(in: turn, at: range("left", in: turn)), ["left"])
+        let tears = "Tears fell."
+        XCTAssertEqual(TextTools.matchKeys(in: tears, at: range("Tears", in: tears)), ["tears", "tear"], "unsure, one base")
+        let leaves = "The dead leaves fell."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: leaves, at: range("leaves", in: leaves)), ["leaf"])
+        let stolen = "It was stolen."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: stolen, at: range("stolen", in: stolen)), ["steal"])
+        let drew = "I met Drew there."
+        XCTAssertTrue(TextTools.baseFormCandidates(in: drew, at: range("Drew", in: drew)).isEmpty, "a name")
+        let drawing = "Drew a line."
+        XCTAssertEqual(TextTools.baseFormCandidates(in: drawing, at: range("Drew", in: drawing)), ["draw"])
+        let animals = "All animals are equal."
+        XCTAssertEqual(TextTools.matchKeys(in: animals, at: range("animals", in: animals)), TextTools.matchKeys("animals"))
+        XCTAssertTrue(TextTools.matchKeys(in: animals, at: WordRange(4, 99)).isEmpty, "out of range")
+        XCTAssertTrue(TextTools.baseFormCandidates(in: animals, at: WordRange(4, 4)).isEmpty, "empty")
+    }
+
+    /// A paragraph full of homographs and capitalised names, the worst case for reading words in
+    /// their sentences: about `length` UTF-16 units.
+    private func hostileParagraph(_ length: Int) -> String {
+        let piece = "Rose left. Aunt Rose saw Drew and left, then Tom's leaves fell; they lay down. Left Felt Bound. "
+        return String(String(repeating: piece, count: length / piece.count + 1).prefix(length))
+    }
+
+    func testAWholeParagraphIsReadInOnePass() {
+        let text = hostileParagraph(TextTools.maxParagraph)
+        let words = TextTools.wordRanges(text)
+        let keys = TextTools.matchKeys(in: text, words: words)
+        XCTAssertEqual(keys, words.map { TextTools.matchKeys(in: text, at: $0) }, "one pass gives what each word alone gives")
+        XCTAssertEqual(TextTools.matchKeys(in: text, words: [WordRange(0, 4), WordRange(5, 999_999)]).last, Set<String>(),
+                       "a range outside the text links nothing")
+    }
+
+    func testRangesOutOfOrderOrOverlappingAreNotTrusted() {
+        let text = "Turn left, then she left."
+        let words = TextTools.wordRanges(text)
+        let shuffled = [words[4], words[1], WordRange(2, 7), WordRange(7, 7)]
+        let keys = TextTools.matchKeys(in: text, words: shuffled)
+        XCTAssertEqual(keys.count, shuffled.count)
+        XCTAssertEqual(keys[0], ["leave"], "found among the text's own words and read in its sentence")
+        XCTAssertEqual(keys[1], ["left"])
+        XCTAssertEqual(keys[2], TextTools.matchKeys("rn le"), "not a word: its letters alone")
+        XCTAssertEqual(keys[3], [], "empty")
+        let overlapping = Words("ab cd" as NSString, ranges: [WordRange(0, 4), WordRange(2, 5)])
+        XCTAssertEqual(overlapping.gap(0, 1), "", "no negative range")
+        XCTAssertNil(overlapping.index(of: WordRange(1, 2)))
+    }
+
+    /// Linear time: ten times the text must not take a hundred times as long (it did when every
+    /// word tokenized the whole paragraph again), and the reader's longest paragraph stays fast.
+    func testReadingAParagraphTakesLinearTime() {
+        func seconds(_ length: Int) -> Double {
+            let text = hostileParagraph(length)
+            let words = TextTools.wordRanges(text)
+            let start = Date()
+            _ = TextTools.matchKeys(in: text, words: words)
+            _ = TextTools.occurrences(of: "leave", in: text)
+            return Date().timeIntervalSince(start)
+        }
+        _ = seconds(500)  // warm up the shared table
+        let short = seconds(TextTools.maxParagraph)
+        let long = seconds(TextTools.maxParagraph * 10)
+        XCTAssertLessThan(short, 0.5, "a 2000-unit paragraph took \(short) s")
+        XCTAssertLessThan(long, max(short, 0.005) * 30, "10× the text took \(long / max(short, 0.005))× as long")
+    }
+
+    func testOccurrencesReadEachFormInTheSentence() {
+        let sentence = "Turn left, then she left."
+        let found = TextTools.occurrences(of: "leave", in: sentence)
+        XCTAssertEqual(found, [range("left", in: sentence)], "only the verb")
+        XCTAssertEqual(TextTools.occurrences(of: "left", in: sentence).count, 1, "only the side")
+        let stolen = "He stole it; it was stolen."
+        XCTAssertEqual(TextTools.occurrences(of: "steal", in: stolen).map { TextTools.substring(stolen, $0) }, ["stole", "stolen"])
+        let travel = "We travelled far."
+        XCTAssertEqual(TextTools.occurrences(of: "travel", in: travel).map { TextTools.substring(travel, $0) }, ["travelled"])
+    }
 }
 
 final class LearningTests: XCTestCase {

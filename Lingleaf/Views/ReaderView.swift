@@ -28,6 +28,27 @@ private struct MarkedParagraph {
     var learning: [LearningWord] = []
 }
 
+/// The words being learned in each paragraph, computed once per paragraph and set of learning
+/// words. A class on purpose: filling it while the body runs changes no view state.
+private final class LearningCache {
+    private struct Entry {
+        let text: String
+        let learning: LearningIndex
+        let ranges: Set<WordRange>
+    }
+
+    private var entries: [Int: Entry] = [:]
+
+    func ranges(_ index: Int, _ text: String, _ learning: LearningIndex, compute: () -> Set<WordRange>) -> Set<WordRange> {
+        if let entry = entries[index], entry.learning == learning, entry.text == text { return entry.ranges }
+        let ranges = compute()
+        entries[index] = Entry(text: text, learning: learning, ranges: ranges)
+        return ranges
+    }
+
+    func clear() { entries = [:] }
+}
+
 /// A word being learned, located in its paragraph (for the VoiceOver rotor).
 private struct LearningWord: Identifiable {
     let id: Int
@@ -46,6 +67,9 @@ struct ReaderView: View {
     @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
+    /// Each paragraph's words being learned, kept while the paragraph and the learning words stay
+    /// the same: the body runs again on every step of reading aloud.
+    @State private var learningCache = LearningCache()
     @State private var selection: WordSelection?
     @State private var position: Int?
     @State private var restored = false
@@ -112,9 +136,10 @@ struct ReaderView: View {
             ) { message in
                 undo = message
             }
-            // With accessibility text sizes a half-height card shows almost nothing; open it full height.
-            .presentationDetents(dynamicTypeSize.isAccessibilitySize ? [.large] : [.medium, .large], selection: $cardDetent)
-            .onAppear { cardDetent = dynamicTypeSize.isAccessibilitySize ? .large : .medium }
+            // With accessibility text sizes a half-height card shows almost nothing, and a word whose
+            // sentence doesn't tell needs its readings in view (SPEC S3): open it full height.
+            .presentationDetents(fullHeightCard(selection) ? [.large] : [.medium, .large], selection: $cardDetent)
+            .onAppear { cardDetent = fullHeightCard(selection) ? .large : .medium }
             .presentationDragIndicator(.visible)
         }
         .environment(\.openURL, OpenURLAction { url in
@@ -124,6 +149,7 @@ struct ReaderView: View {
         .task {
             let loaded = model.library.openBook(bookID)
             words = loaded.map(TextTools.wordRanges)
+            learningCache.clear()
             paragraphs = loaded
         }
         .onAppear {
@@ -336,6 +362,9 @@ struct ReaderView: View {
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
+        let learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
+            model.learningRanges(text, words[index])
+        }
         for range in words[index] {
             guard let stringRange = Range(range.nsRange, in: text),
                   let attributedRange = Range(stringRange, in: attributed) else { continue }
@@ -357,7 +386,7 @@ struct ReaderView: View {
                 attributed[attributedRange].backgroundColor = Brand.marker
                 attributed[attributedRange].foregroundColor = .black
                 attributed[attributedRange].accessibilityTextCustom = [String(localized: "Selected")]
-            } else if model.isLearning(word) {
+            } else if learningRanges.contains(range) {
                 attributed[attributedRange].underlineStyle = Text.LineStyle(pattern: .solid, color: Brand.markerLine)
                 attributed[attributedRange].backgroundColor = Brand.marker.opacity(0.18)
                 // Assistive technologies describe custom text attributes alongside the text.
@@ -439,6 +468,12 @@ struct ReaderView: View {
             paragraph: index,
             range: WordRange(start, end)
         )
+    }
+
+    private func fullHeightCard(_ selection: WordSelection) -> Bool {
+        if dynamicTypeSize.isAccessibilitySize { return true }
+        guard selection.function == nil, let range = selection.rangeInSentence else { return false }
+        return IrregularVerbs.shared.choices(in: selection.sentence, at: range).count == 2
     }
 
     private func startTimer() {

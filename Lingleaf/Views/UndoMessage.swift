@@ -9,7 +9,8 @@ struct UndoMessage: Identifiable, Equatable {
     let id = UUID()
     let text: String
     let seconds: Double
-    let undo: () -> Void
+    /// Nil for a message that only confirms (no Undo button).
+    let undo: (() -> Void)?
 
     static func == (lhs: UndoMessage, rhs: UndoMessage) -> Bool { lhs.id == rhs.id }
 }
@@ -44,7 +45,7 @@ private struct UndoMessageModifier: ViewModifier {
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 if let current = message {
                     UndoBanner(message: current, showsClose: staysOpen) {
-                        current.undo()
+                        current.undo?()
                         message = nil
                     } onClose: {
                         message = nil
@@ -90,14 +91,16 @@ private struct UndoBanner: View {
                 .font(.subheadline)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
-            Button(action: onUndo) {
-                Text("Undo")
-                    .font(.headline)
-                    .underline()
-                    .frame(minWidth: 44, minHeight: 44)
-                    .contentShape(Rectangle())
+            if message.undo != nil {
+                Button(action: onUndo) {
+                    Text("Undo")
+                        .font(.headline)
+                        .underline()
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             if showsClose {
                 Button(action: onClose) {
                     Image(systemName: "xmark")
