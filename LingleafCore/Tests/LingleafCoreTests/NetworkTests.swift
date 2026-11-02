@@ -452,6 +452,30 @@ final class DictionaryTests: XCTestCase {
         XCTAssertEqual(result?.phonetic?.count, DictionaryEntry.maxShortField)
     }
 
+    /// Bidi overrides, zero-width and other format characters can't reorder or hide text on the
+    /// card, and piled-up accents are capped, in every field shown (definition, part of speech, IPA).
+    func testDictionaryFieldsLoseInvisibleAndBidiCharacters() {
+        let meaning: [String: Any] = [
+            "partOfSpeech": "\u{2066}verb\u{2069}",
+            "definitions": [["definition": "\u{202E}To move\u{200B} on the\u{FEFF} feet." + String(repeating: "\u{0301}", count: 50)]],
+        ]
+        let entry: [String: Any] = [
+            "word": "walk", "phonetic": "/wɔːk\u{200D}/",
+            "phonetics": [["text": "\u{202E}/wɑk/"], ["text": "\u{200B}"]] as [Any],
+            "meanings": [meaning],
+        ]
+        let parsed = DictionaryEntry.parseAll([entry]).first
+        XCTAssertEqual(parsed?.partOfSpeech, "verb")
+        XCTAssertEqual(parsed?.definition, "To move on the feet." + String(repeating: "\u{0301}", count: TextTools.maxCombiningMarks))
+        XCTAssertEqual(parsed?.definitionTruncated, false)
+        XCTAssertEqual(parsed?.phonetic, "/wɔːk/")
+        XCTAssertEqual(parsed?.phonetics, ["/wɔːk/", "/wɑk/"], "an IPA that is only invisible characters is dropped")
+        let invisible: [String: Any] = ["word": "x", "phonetic": "\u{200B}", "meanings": [["definitions": [["definition": "\u{202E}"]]]]]
+        let hidden = DictionaryEntry.parseAll([invisible])
+        XCTAssertNil(hidden.first?.phonetic)
+        XCTAssertNil(hidden.first?.definition, "a definition that is only invisible characters is none")
+    }
+
     func testADefinitionThatFitsIsNotMarkedShortened() async {
         let exact = String(repeating: "a", count: DictionaryEntry.maxDefinition)
         let fits = await DictionaryClient(http: ClosureFetcher { _ in Self.entry("fit", exact) }).lookup("fit")

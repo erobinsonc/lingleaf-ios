@@ -33,6 +33,20 @@ public struct DictionaryEntry: Equatable, Sendable {
     static let maxEntries = 10
     static let maxMeanings = 10
 
+    /// Outside text made safe to show (`TextTools.cleanText`: no bidi, zero-width or other format
+    /// characters, a few accents per letter at most), then cut to `max`; `cut` says whether
+    /// anything was cut. At most `4 × max` units are cleaned, so a huge answer costs little.
+    static func clean(_ text: String, _ max: Int) -> (text: String, cut: Bool) {
+        let window = max * 4
+        let cleaned = TextTools.cleanText(TextTools.truncated(text, window))
+        return (TextTools.truncated(cleaned, max), cleaned.utf16.count > max || text.utf16.count > window)
+    }
+
+    /// A short field (IPA, part of speech) made safe; nil when nothing is left.
+    private static func short(_ text: String?) -> String? {
+        text.map { clean($0, maxShortField).text }.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
     /// The first entry's first meaning (what the card showed before readings).
     static func parse(_ json: [String: Any]) -> DictionaryEntry? { parseAll([json]).first }
 
@@ -43,12 +57,11 @@ public struct DictionaryEntry: Equatable, Sendable {
         var out: [DictionaryEntry] = []
         for json in answer.prefix(maxEntries).compactMap({ $0 as? [String: Any] }) {
             guard let word = (json["word"] as? String).map({ TextTools.truncated($0, maxShortField) }) else { continue }
-            var phonetic = (json["phonetic"] as? String).flatMap { $0.isEmpty ? nil : TextTools.truncated($0, maxShortField) }
+            var phonetic = short(json["phonetic"] as? String)
             if phonetic == nil {
                 phonetic = (json["phonetics"] as? [[String: Any]])?
-                    .compactMap { $0["text"] as? String }
-                    .first { !$0.isEmpty }
-                    .map { TextTools.truncated($0, maxShortField) }
+                    .compactMap { short($0["text"] as? String) }
+                    .first
             }
             let pronunciations = pronunciations(json)
             let meanings = ((json["meanings"] as? [Any]) ?? []).prefix(maxMeanings).compactMap { $0 as? [String: Any] }
@@ -56,13 +69,14 @@ public struct DictionaryEntry: Equatable, Sendable {
                 out.append(DictionaryEntry(word: word, phonetic: phonetic, partOfSpeech: nil, definition: nil, phonetics: pronunciations))
             }
             for meaning in meanings {
-                let definition = ((meaning["definitions"] as? [Any])?.first as? [String: Any])?["definition"] as? String
+                let raw = ((meaning["definitions"] as? [Any])?.first as? [String: Any])?["definition"] as? String
+                let definition = raw.map { clean($0, maxDefinition) }.flatMap { $0.text.isEmpty ? nil : $0 }
                 out.append(DictionaryEntry(
                     word: word,
                     phonetic: phonetic,
-                    partOfSpeech: (meaning["partOfSpeech"] as? String).map { TextTools.truncated($0, maxShortField) },
-                    definition: definition.map { TextTools.truncated($0, maxDefinition) },
-                    definitionTruncated: (definition?.utf16.count ?? 0) > maxDefinition,
+                    partOfSpeech: short(meaning["partOfSpeech"] as? String),
+                    definition: definition?.text,
+                    definitionTruncated: definition?.cut ?? false,
                     phonetics: pronunciations
                 ))
             }
@@ -74,9 +88,9 @@ public struct DictionaryEntry: Equatable, Sendable {
     private static func pronunciations(_ json: [String: Any]) -> [String] {
         let texts = ((json["phonetics"] as? [Any]) ?? []).prefix(maxMeanings).compactMap { ($0 as? [String: Any])?["text"] as? String }
         var out: [String] = []
-        for text in [json["phonetic"] as? String].compactMap({ $0 }) + texts where !text.isEmpty {
-            let kept = TextTools.truncated(text, maxShortField)
-            if !out.contains(kept) { out.append(kept) }
+        for text in [json["phonetic"] as? String].compactMap({ $0 }) + texts {
+            guard let kept = short(text), !out.contains(kept) else { continue }
+            out.append(kept)
         }
         return Array(out.prefix(maxMeanings))
     }

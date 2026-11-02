@@ -104,10 +104,15 @@ public enum TextTools {
     /// Characters that show as blank space but are letters or symbols, not whitespace.
     private static let blankFillers: Set<UInt32> = [0x115F, 0x1160, 0x3164, 0xFFA0, 0x2800]
 
-    /// Outside text shown as a title or author: no control, invisible formatting or blank
-    /// filler characters (bidi overrides, zero-width, Hangul fillers), at most
-    /// `maxCombiningMarks` accents on one letter, single spaces, at most `maxLabel` UTF-16 units.
+    /// Outside text shown as a title or author: `cleanText`, at most `maxLabel` UTF-16 units.
     public static func cleanLabel(_ text: String) -> String {
+        truncated(cleanText(text), maxLabel)
+    }
+
+    /// Outside text made safe to show: no control, invisible formatting or blank filler characters
+    /// (bidi overrides, zero-width, Hangul fillers), at most `maxCombiningMarks` accents on one
+    /// letter, single spaces. Not cut: callers cut it to their own limit.
+    public static func cleanText(_ text: String) -> String {
         var scalars = String.UnicodeScalarView()
         var marks = 0
         for scalar in text.unicodeScalars {
@@ -124,7 +129,7 @@ public enum TextTools {
             default: if !blankFillers.contains(scalar.value) { scalars.append(scalar) }
             }
         }
-        return truncated(String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " "), maxLabel)
+        return String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " ")
     }
 
     /// Every English word; contractions such as "don't" stay whole.
