@@ -1,0 +1,32 @@
+name: Release checks
+
+# Only on pull requests to main (releases and hotfixes), so develop isn't blocked
+# while the maintainer decides. Make "Release checks" a required check on main.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  privacy:
+    name: Release checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: The privacy policy has no placeholders
+        run: |
+          test -s PRIVACY.md || { echo "::error::PRIVACY.md is missing or empty."; exit 1; }
+          # A placeholder: "[MAINTAINER NAME]" (capitals in brackets, not a Markdown link),
+          # TODO/TBD/FIXME/XXX, "{{name}}" or "<NAME>".
+          if LC_ALL=C grep -nE '\[[A-Z][A-Z0-9 _-]+\]([^(:[]|$)|\b(TODO|TBD|FIXME|XXX)\b|\{\{[^}]*\}\}|<[A-Z][A-Z0-9 _-]+>' PRIVACY.md; then
+            echo "::error file=PRIVACY.md::Fill in the placeholder before releasing."
+            exit 1
+          fi
+          echo "PRIVACY.md has no placeholders."

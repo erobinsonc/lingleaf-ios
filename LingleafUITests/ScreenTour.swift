@@ -13,16 +13,25 @@ final class ScreenTour: XCTestCase {
         let reviewNow: String
         let showMeaning: String
         let remembered: String
+        let knowIt: String
+        let privacyPolicy: String
+        let get: String
+        let read: String
+        let listen: String
     }
 
     private static let english = Labels(
         language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning",
-        remembered: "I remembered"
+        remembered: "I remembered", knowIt: "I know it", privacyPolicy: "Privacy policy",
+        get: "Get", read: "Read", listen: "Listen"
     )
     private static let spanish = Labels(
         language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado",
-        remembered: "Lo recordé"
+        remembered: "Lo recordé", knowIt: "Ya la sé", privacyPolicy: "Política de privacidad",
+        get: "Obtener", read: "Leer", listen: "Escuchar"
     )
+    /// The largest accessibility text size (AX5).
+    private static let largestText = ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
 
     private var app: XCUIApplication!
     private var prefix = ""
@@ -39,13 +48,40 @@ final class ScreenTour: XCTestCase {
     func testTourEnglishDark() { tour(Self.english, dark: true) }
     func testTourSpanishLight() { tour(Self.spanish, dark: false) }
 
+    /// The largest text size (AX5) on the screens where words wrap the most.
+    func testTourEnglishLargestText() { largestText(Self.english) }
+    func testTourSpanishLargestText() { largestText(Self.spanish) }
+
+    private func largestText(_ labels: Labels) {
+        XCUIDevice.shared.appearance = .light
+        prefix = "\(labels.language)-light-ax5"
+        readingsTour(labels, extra: Self.largestText, unsureChosen: true, expression: true)
+        reviewUnsure(labels, extra: Self.largestText)
+        correctionsTour(labels, count: 1, extra: Self.largestText, undo: false)
+        app.terminate()
+    }
+
+    /// Review of a word saved unsure: both readings and, below, the answers.
+    private func reviewUnsure(_ labels: Labels, extra: [String]) {
+        launch(labels, ["-ui-testing", "-ui-testing-due-unsure"] + extra)
+        tab(2)
+        startReview(labels)
+        if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { app.buttons[labels.showMeaning].tap() }
+        snap("22-review-unsure-meaning")
+    }
+
+    private func launch(_ labels: Labels, _ arguments: [String]) {
+        app?.terminate()
+        app = XCUIApplication()
+        app.launchArguments = arguments + ["-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
+            + (XCUIDevice.shared.appearance == .dark ? ["-dark-mode"] : [])
+        app.launch()
+    }
+
     private func tour(_ labels: Labels, dark: Bool) {
         XCUIDevice.shared.appearance = dark ? .dark : .light
         prefix = "\(labels.language)-\(dark ? "dark" : "light")"
-        app = XCUIApplication()
-        app.launchArguments = ["-ui-testing", "-ui-testing-due", "-AppleLanguages", "(\(labels.language))", "-AppleLocale", labels.language]
-            + (dark ? ["-dark-mode"] : [])
-        app.launch()
+        launch(labels, ["-ui-testing", "-ui-testing-due"])
 
         let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch
         _ = book.waitForExistence(timeout: 10)
@@ -86,11 +122,122 @@ final class ScreenTour: XCTestCase {
         tab(1)
         _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
         snap("10-discover")
-        app.buttons["level-filter-B1"].tap()
+        // A downloaded book: Get turns into the Read pill (the fake catalog answers at once).
+        let get = app.buttons["\(labels.get) Little Wizard Stories of Oz"]
+        if get.waitForExistence(timeout: 5) {
+            get.tap()
+            _ = app.buttons["\(labels.read) Little Wizard Stories of Oz"].waitForExistence(timeout: 10)
+            snap("10b-discover-downloaded-book")
+        }
+        app.buttons["level-filter-A2"].tap()
         snap("11-discover-level-filter")
+        app.buttons["level-filter-all"].tap()
+        // A search (the fake catalog answers any query): results end with the public-domain notice.
+        let search = app.searchFields.firstMatch
+        if search.waitForExistence(timeout: 5) {
+            search.tap()
+            search.typeText("oz\n")
+            _ = app.staticTexts["The Marvelous Land of Oz"].waitForExistence(timeout: 10)
+            snap("11b-discover-search-results")
+        }
         tab(3)
         snap("12-settings")
+        let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
+        for _ in 0..<6 where !privacy.isHittable { app.swipeUp() }
+        snap("13-settings-about")
+        longDefinitions(labels)
+        readingsTour(labels, extra: [], unsureChosen: true, expression: true)
+        // Offline: the sentence has no translation, so the guide asks (SPEC S3).
+        launch(labels, ["-ui-testing-offline", "-ui-testing-tour"])
+        openTestStory()
+        tapWord("left", labels)
+        snap("16-word-card-unsure-offline")
+        reviewUnsure(labels, extra: [])
+        // No translation language yet: the language choice right below the sentence, then the guide.
+        launch(labels, ["-ui-testing", "-ui-testing-tour", "-ui-testing-no-language"])
+        openTestStory()
+        tapWord("left", labels)
+        snap("23-word-card-unsure-no-language")
+        correctionsTour(labels, count: 1, extra: [], undo: true)
+        correctionsTour(labels, count: 5, extra: [], undo: false)
         app.terminate()
+    }
+
+    /// The test story's unsure "left" and expression "bound for", the senses in Words and a verb
+    /// with a regular twin in Review.
+    private func readingsTour(_ labels: Labels, extra: [String], unsureChosen: Bool, expression: Bool) {
+        launch(labels, ["-ui-testing", "-ui-testing-tour", "-ui-testing-due-lie"] + extra)
+        openTestStory()
+        tapWord("left", labels)
+        snap("14-word-card-unsure")
+        if unsureChosen {
+            let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "the left")).firstMatch
+            if row.waitForExistence(timeout: 5) { row.tap() }
+            _ = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of left")).firstMatch
+                .waitForExistence(timeout: 10)
+            snap("15-word-card-unsure-chosen")
+        }
+        if app.buttons[labels.saveWord].exists { app.buttons[labels.saveWord].tap() }
+        if expression {
+            tapWord("bound", labels)
+            snap("17-word-card-expression")
+            if app.buttons[labels.saveWord].exists { app.buttons[labels.saveWord].tap() }
+        }
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        tab(2)
+        if expression { snap("18-words-senses") }
+        startReview(labels)
+        snap("21-review-prompt-sentence")
+    }
+
+    /// Words with the corrections card for `count` words; with `undo`, after Undo too.
+    private func correctionsTour(_ labels: Labels, count: Int, extra: [String], undo: Bool) {
+        launch(labels, ["-ui-testing", "-ui-testing-corrections-\(count)"] + extra)
+        tab(2)
+        let cardUndo = app.buttons[labels.undo].firstMatch
+        _ = cardUndo.waitForExistence(timeout: 10)
+        snap(count == 1 ? "19-words-corrections" : "19-words-corrections-\(count)")
+        if undo, cardUndo.exists {
+            cardUndo.tap()
+            snap("20-words-corrections-undone")
+        }
+    }
+
+    private func openTestStory() {
+        let story = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Test Story")).firstMatch
+        if story.waitForExistence(timeout: 10) { story.tap() }
+    }
+
+    /// Taps `word` in the reader and waits for its card.
+    private func tapWord(_ word: String, _ labels: Labels) {
+        let link = app.links[word].firstMatch
+        if link.waitForExistence(timeout: 10) { link.tap() }
+        _ = app.buttons[labels.listen].firstMatch.waitForExistence(timeout: 10)
+    }
+
+    private func startReview(_ labels: Labels) {
+        let review = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.reviewNow)).firstMatch
+        if review.waitForExistence(timeout: 10) { review.tap() }
+        _ = app.buttons[labels.showMeaning].waitForExistence(timeout: 5)
+    }
+
+
+    /// The fake dictionary gives "sand" a definition of several lines and "waves" one over
+    /// 500 characters, which the card cuts and marks as shortened.
+    private func longDefinitions(_ labels: Labels) {
+        tab(0)
+        let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch
+        guard book.waitForExistence(timeout: 10) else { return }
+        book.tap()
+        for (word, name) in [("sand", "03b-word-card-long-definition"), ("waves", "03c-word-card-shortened-definition")] {
+            let link = app.links[word].firstMatch
+            guard link.waitForExistence(timeout: 10) else { continue }
+            link.tap()
+            _ = app.buttons[labels.knowIt].waitForExistence(timeout: 10)
+            snap(name)
+            app.buttons[labels.knowIt].tap()
+            _ = app.buttons[labels.knowIt].waitForNonExistence(timeout: 10)
+        }
     }
 
     /// Taps a tab. After going back from the reader (which hides the tab bar) the bar slides

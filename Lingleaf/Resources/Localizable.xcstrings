@@ -21,6 +21,26 @@
         }
       }
     },
+    "%@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
+    "%@: %@. Source: Wiktionary.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@: %2$@. Fuente: Wiktionary."
+          }
+        }
+      }
+    },
     "%lld books found": {
       "localizations": {
         "en": {
@@ -331,22 +351,59 @@
         }
       }
     },
+    "and %lld more": {
+      "comment": "Words: after the first three corrected words, how many more there are.",
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "and %lld more"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "and %lld more"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "y %lld más"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Ask me when I tap a word": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Preguntar al tocar una palabra"
-          }
-        }
-      }
-    },
-    "Books: Project Gutenberg (public domain). Definitions: dictionaryapi.dev. No accounts, no ads, no tracking.": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Libros: Project Gutenberg (dominio público). Definiciones: dictionaryapi.dev. Sin cuentas, sin anuncios, sin rastreo."
           }
         }
       }
@@ -392,6 +449,16 @@
         }
       }
     },
+    "Contains links": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Contiene enlaces"
+          }
+        }
+      }
+    },
     "Continue reading": {
       "localizations": {
         "es": {
@@ -418,6 +485,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Meta diaria"
+          }
+        }
+      }
+    },
+    "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definiciones de Wiktionary, CC BY-SA 3.0/4.0, vía Free Dictionary API."
           }
         }
       }
@@ -512,12 +589,45 @@
         }
       }
     },
-    "Free public-domain classics from Project Gutenberg.": {
+    "Fixed to match its sentence: “%@” is now “%@”.": {
+      "comment": "VoiceOver label of the one-word corrections card: the old word, then the new one.",
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Clásicos gratuitos de dominio público de Project Gutenberg."
+            "value": "Corregida según su frase: “%1$@” ahora es “%2$@”."
+          }
+        }
+      }
+    },
+    "Fixed to match its sentence: “%@” → “%@”.": {
+      "comment": "Words: a saved word corrected after updating; the old word, then the new one.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregida según su frase: “%1$@” → “%2$@”."
+          }
+        }
+      }
+    },
+    "Fixed to match their sentences:": {
+      "comment": "Words: several saved words corrected after updating; a list follows.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregidas según sus frases:"
+          }
+        }
+      }
+    },
+    "Free classics from Project Gutenberg.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clásicos gratuitos de Project Gutenberg."
           }
         }
       }
@@ -742,6 +852,16 @@
         }
       }
     },
+    "No accounts, no ads, no tracking.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin cuentas, sin anuncios, sin rastreo."
+          }
+        }
+      }
+    },
     "No books found. Try another title or author.": {
       "localizations": {
         "es": {
@@ -832,6 +952,26 @@
         }
       }
     },
+    "Original story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuento original"
+          }
+        }
+      }
+    },
+    "Our stories and free classics from Project Gutenberg.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuestros cuentos y clásicos gratuitos de Project Gutenberg."
+          }
+        }
+      }
+    },
     "Pause": {
       "localizations": {
         "es": {
@@ -862,12 +1002,78 @@
         }
       }
     },
+    "Privacy policy": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Política de privacidad"
+          }
+        }
+      }
+    },
+    "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los libros de Project Gutenberg son de dominio público en EE. UU. En otros países, revisa las leyes locales."
+          }
+        }
+      }
+    },
     "Project Gutenberg didn't answer. Try again.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Put back, except %lld you've changed since": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've changed since"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Put back, except %lld you've changed since"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que cambiaste después"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que cambiaste después"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "Restauradas, salvo %lld que cambiaste después"
+                }
+              }
+            }
           }
         }
       }
@@ -1173,7 +1379,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Código fuente (open source, MIT)"
+            "value": "Código fuente (código abierto, MIT)"
           }
         }
       }
@@ -1224,6 +1430,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ese archivo es demasiado grande para importarlo (máximo 10 MB)."
+          }
+        }
+      }
+    },
+    "The sentence's translation tells you which one:": {
+      "comment": "Word card, above the two readings of a word whose sentence doesn't tell which one it is.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La traducción de la frase te dice cuál:"
           }
         }
       }
@@ -1298,6 +1515,17 @@
         }
       }
     },
+    "Translating…": {
+      "comment": "VoiceOver label of the progress indicator while a meaning is being translated.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traduciendo…"
+          }
+        }
+      }
+    },
     "Translation": {
       "localizations": {
         "es": {
@@ -1368,12 +1596,32 @@
         }
       }
     },
+    "Which one is it in this sentence?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cuál es en esta frase?"
+          }
+        }
+      }
+    },
     "Words": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Palabras"
+          }
+        }
+      }
+    },
+    "Words put back as before": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palabras restauradas como antes"
           }
         }
       }
@@ -1414,6 +1662,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tu biblioteca está vacía"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA"
+          }
+        }
+      }
+    },
+    "— Wiktionary, CC BY-SA, shortened": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "— Wiktionary, CC BY-SA, recortada"
           }
         }
       }
@@ -1604,6 +1872,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@” está en tu biblioteca."
+          }
+        }
+      }
+    },
+    "“%@” is now “%@”": {
+      "comment": "VoiceOver label of a corrected word line: the old word, then the new one.",
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%1$@” ahora es “%2$@”"
           }
         }
       }

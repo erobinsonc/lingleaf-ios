@@ -62,8 +62,8 @@ public struct ClosureFetcher: HttpFetcher {
     public func get(_ url: String) async throws -> HttpResponse { try await handler(url) }
 }
 
-/// Size caps for anything read into memory. The longest recommended book
-/// (Middlemarch) is under 2 MB of plain text.
+/// Size caps for anything read into memory. Even long novels (Middlemarch) are
+/// under 2 MB of plain text.
 public enum Limits {
     /// Largest download or imported file accepted.
     public static let maxBytes = 10 * 1024 * 1024
@@ -142,7 +142,7 @@ public struct URLSessionFetcher: HttpFetcher {
             throw NetworkError("Only HTTPS to the app's hosts is allowed")
         }
         var request = URLRequest(url: address, timeoutInterval: 30)
-        request.setValue("Lingleaf/0.1 (+https://github.com/erobinsonc/lingleaf-ios)", forHTTPHeaderField: "User-Agent")
+        request.setValue(Self.defaultUserAgent, forHTTPHeaderField: "User-Agent")
         let data: Data
         let response: URLResponse
         let observer = ProgressObserver(maxBytes: maxBytes, allowedHosts: allowedHosts, progress: progress)
@@ -155,6 +155,14 @@ public struct URLSessionFetcher: HttpFetcher {
         progress?(1)
         return HttpResponse(status: (response as? HTTPURLResponse)?.statusCode ?? 0, body: data)
     }
+
+    /// "Lingleaf/0.3.0 (+…)": the release asking, from the app's own bundle (digits and dots only).
+    static func userAgent(version: String?) -> String {
+        let clean = String((version ?? "").filter { $0.isASCII && ($0.isNumber || $0 == ".") }.prefix(20))
+        return "Lingleaf/\(clean.isEmpty ? "0" : clean) (+https://github.com/erobinsonc/lingleaf-ios)"
+    }
+
+    static let defaultUserAgent = userAgent(version: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String)
 
     static func networkError(_ error: URLError) -> Error {
         switch error.code {

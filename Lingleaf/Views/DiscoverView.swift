@@ -14,8 +14,10 @@ struct DiscoverView: View {
     @State private var slow = false
     @State private var searchError: GutenbergError?
     @State private var downloads: [Int: Download] = [:]
-    /// Level chosen in the filter chips; nil shows every recommended book.
+    /// Level chosen in the filter chips; nil shows every recommended book (no stories).
     @State private var level: String?
+    /// Books opened from here ("Read"): buttons push their id, so the row itself stays a plain row.
+    @State private var path: [String] = []
 
     /// A download in progress (0…1) or why it failed.
     private enum Download: Equatable {
@@ -32,14 +34,18 @@ struct DiscoverView: View {
     }
 
     /// Levels that have at least one recommended book, easiest first.
-    private static let filterLevels = GutenbergClient.levels.filter { level in
-        GutenbergClient.recommended.contains { $0.level == level }
-    }
+    private static let filterLevels = GutenbergClient.filterLevels
 
     private var recommended: [GutenbergBook] { GutenbergClient.filter(GutenbergClient.recommendedBooks, level: level) }
 
+    /// The app's own stories at the chosen level, listed before its books so no level is empty.
+    /// "All" keeps to the classics: the stories are already in the library.
+    private var stories: [ShelfStory] {
+        level == nil ? [] : BundledStory.shelf(level: level)
+    }
+
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             List {
                 if searching || searchError != nil { searchStatus }
                 if let results {
@@ -48,6 +54,11 @@ struct DiscoverView: View {
                             Text("No books found. Try another title or author.")
                         } else {
                             ForEach(results) { row($0) }
+                            // Search reaches the whole catalog, unlike the recommended books
+                            // (public domain in almost every country). A row: footers fail the Dynamic Type audit.
+                            Text(Credits.publicDomainNotice)
+                                .font(.footnote)
+                                .foregroundStyle(Brand.secondaryText)
                         }
                     } header: {
                         Text("Results").foregroundStyle(Brand.secondaryText)
@@ -55,7 +66,8 @@ struct DiscoverView: View {
                 }
                 Section {
                     levelFilter
-                    if recommended.isEmpty {
+                    ForEach(stories, id: \.resource) { storyRow($0) }
+                    if recommended.isEmpty && stories.isEmpty {
                         Text("No recommended books at this level.")
                     } else {
                         ForEach(recommended) { row($0) }
@@ -65,7 +77,9 @@ struct DiscoverView: View {
                     // a section of its own, the audit reported it as not scaling with Dynamic Type.
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Recommended for learners")
-                        Text("Free public-domain classics from Project Gutenberg.")
+                        Text(stories.isEmpty
+                            ? LocalizedStringKey("Free classics from Project Gutenberg.")
+                            : LocalizedStringKey("Our stories and free classics from Project Gutenberg."))
                             .font(.footnote)
                             .textCase(nil)
                     }
@@ -235,16 +249,51 @@ struct DiscoverView: View {
         .padding(.vertical, 4)
     }
 
+    /// One of the app's own stories: it is already in the library (Read), or back in it at once
+    /// if the learner deleted it (Get, no download).
+    private func storyRow(_ story: ShelfStory) -> some View {
+        HStack(spacing: 14) {
+            BookCover(title: story.title)
+                .frame(width: 44, height: 62)
+                .clipShape(RoundedRectangle(cornerRadius: 6))
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(story.title).font(.headline)
+                HStack(spacing: 6) {
+                    LevelBadge(level: story.level)
+                    Text("Original story").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                }
+            }
+            Spacer(minLength: 8)
+            if let saved = BundledStory.libraryCopy(of: story.title, in: model.state.books) {
+                readButton(bookID: saved.id, title: story.title)
+            } else {
+                Button("Get") {
+                    if model.restoreBundledStory(story) != nil {
+                        announce(String(localized: "“\(story.title)” is in your library."))
+                    }
+                }
+                .buttonStyle(.bordered)
+                .accessibilityLabel(Text("Get \(story.title)"))
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    /// Opens a book in the reader. A Button that pushes onto `path`, not a NavigationLink: inside a
+    /// List a link turns the whole row into one and drops the pill's style.
+    private func readButton(bookID: String, title: String) -> some View {
+        Button("Read") { path.append(bookID) }
+            .buttonStyle(.borderedProminent)
+            .tint(Brand.ink)
+            .accessibilityLabel(Text("Read \(title)"))
+    }
+
     /// Get → a progress ring (tap to cancel) → Read; Retry after a failure that may pass.
     @ViewBuilder
     private func action(_ book: GutenbergBook, failure: GutenbergError?) -> some View {
         if let saved = model.state.books.first(where: { $0.gutenbergID == book.id }) {
-            NavigationLink(value: saved.id) {
-                Text("Read")
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(Brand.ink)
-            .accessibilityLabel(Text("Read \(book.displayTitle)"))
+            readButton(bookID: saved.id, title: book.displayTitle)
         } else if case let .running(fraction, task) = downloads[book.id] {
             Button {
                 task.cancel()

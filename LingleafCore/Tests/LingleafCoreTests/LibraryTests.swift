@@ -28,6 +28,13 @@ final class LibraryTests: XCTestCase {
         return library
     }
 
+    /// Whether the first `word` of `sentence` is underlined as a word being learned.
+    private func learning(_ library: Library, _ word: String, in sentence: String) -> Bool {
+        let found = (sentence as NSString).range(of: word)
+        XCTAssertNotEqual(found.location, NSNotFound, "\(word) not in \(sentence)")
+        return library.isLearning(sentence, WordRange(found.location, found.location + found.length))
+    }
+
     func testRestoredSettingsAndBooksAreBroughtBackIntoRange() {
         storage.files["settings.json"] = #"{"dailyGoalMinutes": 0, "fontSize": 900, "speechRate": -3}"#
         let library = library()
@@ -67,6 +74,24 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(reloaded.state.books.count, 2, "books persist and are not seeded twice")
     }
 
+    func testBundledStoriesAreListedByLevelAndFoundInTheLibrary() {
+        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A2", "B1"])
+        XCTAssertEqual(BundledStory.shelf(level: "A2").map(\.title), ["A Day at the Market"])
+        XCTAssertEqual(BundledStory.shelf(level: nil).count, BundledStory.shelf.count)
+        XCTAssertTrue(BundledStory.shelf(level: "C2").isEmpty)
+
+        let library = library()
+        library.seedIfNeeded { stories }
+        let copy = BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books)
+        XCTAssertEqual(copy?.author, BundledStory.author)
+        let imported = library.addBook(title: "The Lighthouse Keeper", author: "Someone", text: "Text.")
+        let keeper = BundledStory.libraryCopy(of: "The Lighthouse Keeper", in: library.state.books)
+        XCTAssertNil(keeper, "another author's book is not the story")
+        library.deleteBook(imported.id)
+        library.deleteBook(copy!.id)
+        XCTAssertNil(BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books), "deleted: Discover offers it again")
+    }
+
     func testOpenProgressAndDeleteABook() {
         let library = library()
         let book = library.addBook(title: "Alice", author: "Lewis Carroll", text: "One.\n\nTwo.\n\nThree.", level: "B2", gutenbergID: 11)
@@ -90,14 +115,14 @@ final class LibraryTests: XCTestCase {
         library.onChange = { _ in changes += 1 }
         library.saveWord("Animal", learned: false, translation: "animal", context: "All animals are equal.", source: "The Red Boat")
         XCTAssertGreaterThan(changes, 0)
-        XCTAssertTrue(library.isLearning("animals"))
-        XCTAssertFalse(library.isLearning("equal"))
+        XCTAssertTrue(learning(library, "animals", in: "All animals are equal."))
+        XCTAssertFalse(learning(library, "equal", in: "All animals are equal."))
         XCTAssertTrue(library.dueWords().isEmpty, "a new word is first reviewed tomorrow")
         now = ISO8601DateFormatter().date(from: "2026-10-10T04:00:00Z")!
         XCTAssertEqual(library.dueWords().map(\.word), ["animal"], "due from 04:00 the next day")
 
         library.saveWord("animal", learned: true, translation: " ")
-        XCTAssertFalse(library.isLearning("animals"))
+        XCTAssertFalse(learning(library, "animals", in: "All animals are equal."))
         let saved = self.library().state.word("animal")
         XCTAssertEqual(saved?.learned, true)
         XCTAssertEqual(saved?.translation, "animal", "blank values don't overwrite saved ones")
@@ -252,6 +277,32 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(word.base)
     }
 
+    func testLearningWordsAreMarkedOnlyWhereTheirSentenceMakesThemThatWord() {
+        let library = library()
+        library.saveWord("leaf", learned: false)
+        XCTAssertTrue(learning(library, "leaves", in: "The dead leaves fell."))
+        XCTAssertFalse(learning(library, "leaves", in: "She leaves at nine."), "\"leaves\" here is \"leave\", not \"leaf\"")
+        library.saveWord("leave", learned: false)
+        XCTAssertTrue(learning(library, "leaves", in: "She leaves at nine."))
+        XCTAssertTrue(learning(library, "left", in: "She left the house early."))
+        XCTAssertFalse(learning(library, "left", in: "Turn left at the church."), "the side, not the verb")
+        library.saveWord("steal", learned: false)
+        XCTAssertTrue(learning(library, "stole", in: "He stole the bread."))
+        XCTAssertTrue(learning(library, "stolen", in: "It was stolen."))
+    }
+
+    func testLearningRangesMarkAWholeParagraphInOnePass() {
+        let library = library()
+        let paragraph = "Turn left, then she left. The dead leaves fell."
+        let words = TextTools.wordRanges(paragraph)
+        XCTAssertTrue(library.learningRanges(paragraph, words).isEmpty, "nothing being learned")
+        library.saveWord("leave", learned: false)
+        library.saveWord("leaf", learned: false)
+        let marked = library.learningRanges(paragraph, words).sorted { $0.start < $1.start }.map { TextTools.substring(paragraph, $0) }
+        XCTAssertEqual(marked, ["left", "leaves"], "the verb \"left\" and the noun \"leaves\", not the side")
+        XCTAssertEqual(library.learningRanges(paragraph, words), Set(words.filter { library.isLearning(paragraph, $0) }))
+    }
+
     func testHelperAndModalVerbsAreSavedAsTheirVerbGroup() throws {
         let library = library()
         library.saveWord("did not go", learned: false, translation: "no fue", translationLanguage: "es", kind: .helper, base: "do")
@@ -265,7 +316,7 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(reloaded.state.word("doesn't like")?.base, "do")
         XCTAssertNil(reloaded.state.word("do")?.kind, "\"do\" as a word stays separate")
         XCTAssertEqual(library.wordsNeedingTranslation("es").map(\.word), ["doesn't like"])
-        XCTAssertFalse(library.isLearning("did"), "a verb group doesn't underline the helper everywhere")
+        XCTAssertFalse(learning(library, "did", in: "He did it."), "a verb group doesn't underline the helper everywhere")
     }
 
     func testReadingTimeFeedsTodayAndTheStreak() {
@@ -355,6 +406,21 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(library().state.word("sea")?.context.utf16.count, TextTools.maxSentence)
     }
 
+    /// A restored or edited words file can't put megabytes in the fields the app shows.
+    func testHugeSavedFieldsAreCutWhenLoaded() throws {
+        library().saveWord("sea", learned: false, translation: "mar", translationLanguage: "es", context: "The sea.")
+        let saved = Data(try XCTUnwrap(storage.files["words.json"]).utf8)
+        var words = try XCTUnwrap(JSONSerialization.jsonObject(with: saved) as? [[String: Any]])
+        let huge = String(repeating: "x", count: 50_000)
+        for field in ["phonetic", "translation", "contextTranslation", "source"] { words[0][field] = huge }
+        storage.files["words.json"] = String(decoding: try JSONSerialization.data(withJSONObject: words), as: UTF8.self)
+        let loaded = try XCTUnwrap(library().state.word("sea"))
+        XCTAssertEqual(loaded.phonetic.utf16.count, DictionaryEntry.maxShortField)
+        XCTAssertEqual(loaded.translation.utf16.count, VocabWord.maxTranslation)
+        XCTAssertEqual(loaded.contextTranslation?.utf16.count, VocabWord.maxTranslation)
+        XCTAssertEqual(loaded.source.utf16.count, TextTools.maxLabel)
+    }
+
     func testLearningWordsFollowTheSavedWords() {
         let library = library()
         library.saveWord("sea", learned: false)
@@ -371,5 +437,20 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(files.read("a.txt"), "hello")
         files.delete("a.txt")
         XCTAssertNil(files.read("a.txt"))
+        files.write("empty.txt", "")
+        XCTAssertEqual(files.read("empty.txt"), "", "an empty file reads as empty, not missing")
+    }
+
+    /// A file over the cap (a restored backup, a file put there by hand) is refused, not read whole.
+    func testFileStorageRefusesFilesOverTheByteCap() {
+        let dir = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let files = FileStorage(directory: dir, maxBytes: 8)
+        files.write("fits.txt", "12345678")
+        XCTAssertEqual(files.read("fits.txt"), "12345678")
+        files.write("big.txt", "123456789")
+        XCTAssertNil(files.read("big.txt"))
+        XCTAssertNil(files.read("missing.txt"))
+        XCTAssertEqual(FileStorage(directory: dir).read("big.txt"), "123456789", "the default cap is Limits.maxBytes")
     }
 }

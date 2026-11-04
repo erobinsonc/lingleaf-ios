@@ -1,5 +1,5 @@
 """Copies the screenshots attached by ScreenTour out of an .xcresult bundle
-into ./screenshots, named <language>-<appearance>-<NN>-<screen>.png."""
+into ./screenshots, named <language>-<appearance>[-ax5]-<NN>-<screen>.png (ax5: the largest text size)."""
 
 import json
 import re
@@ -22,7 +22,7 @@ count = 0
 for test in manifest:
     for attachment in test.get("attachments", []):
         name = attachment.get("suggestedHumanReadableName", "")
-        match = re.match(r"([a-z]{2}-(?:light|dark)-\d\d-[a-z-]+?)(?:_\d+)?(?:_[0-9A-F-]{36})?\.png$", name)
+        match = re.match(r"([a-z]{2}-(?:light|dark)(?:-ax5)?-\d\d[a-z]?-[a-z0-9-]+?)(?:_\d+)?(?:_[0-9A-F-]{36})?\.png$", name)
         if match:
             shutil.copy(raw / attachment["exportedFileName"], out / f"{match.group(1)}.png")
             count += 1

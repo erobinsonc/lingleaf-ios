@@ -22,6 +22,8 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["ES: beach"].waitForExistence(timeout: 10), "the card shows the translation")
         XCTAssertTrue(app.staticTexts["/test/"].exists, "the card shows the IPA")
         XCTAssertTrue(app.buttons["Translation language: Español"].exists, "the language button sits under the translation")
+        // One static text with its source (Wiktionary's CC BY-SA), and no doubled full stop.
+        XCTAssertTrue(app.staticTexts[Self.beachDefinitionLabel].waitForExistence(timeout: 10), "the definition says where it comes from")
         app.buttons["Save word"].tap()
         XCTAssertTrue(app.staticTexts["“beach” saved to Words"].waitForExistence(timeout: 5), "the reader confirms the save")
 
@@ -106,6 +108,40 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["1 word tomorrow."].exists, "the word is due again tomorrow")
     }
 
+    /// S3: unsure, the guide says where the answer is, or asks when the sentence has no
+    /// translation; a chosen reading says "No definition available." only once its look-up answered.
+    func testTheUnsureCardsGuideFollowsTheSentencesTranslation() {
+        relaunch("-ui-testing", "-ui-testing-tour")
+        button(startingWith: "Test Story").tap()
+        let left = app.links["left"].firstMatch
+        XCTAssertTrue(left.waitForExistence(timeout: 10))
+        left.tap()
+        XCTAssertTrue(app.staticTexts["The sentence's translation tells you which one:"].waitForExistence(timeout: 10))
+        button(startingWith: "the left").tap()
+        let definition = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of left")).firstMatch
+        XCTAssertTrue(definition.waitForExistence(timeout: 10), "the chosen reading's definition")
+        XCTAssertFalse(app.staticTexts["No definition available."].exists)
+        relaunch("-ui-testing-offline", "-ui-testing-tour")
+        button(startingWith: "Test Story").tap()
+        XCTAssertTrue(left.waitForExistence(timeout: 10))
+        left.tap()
+        XCTAssertTrue(app.staticTexts["Which one is it in this sentence?"].waitForExistence(timeout: 10), "offline, the guide asks")
+        XCTAssertFalse(app.staticTexts["The sentence's translation tells you which one:"].exists)
+    }
+
+    /// S4/S15/S18: Words names a sensed word as it shows it, and Undo of the corrections says what it did.
+    func testWordsNamesSensesAndConfirmsTheCorrectionsUndo() {
+        relaunch("-ui-testing", "-ui-testing-tour")
+        app.tabBars.buttons["Words"].tap()
+        XCTAssertTrue(app.buttons["Listen to the wind"].waitForExistence(timeout: 10), "Listen names the sense")
+        relaunch("-ui-testing", "-ui-testing-corrections-1")
+        app.tabBars.buttons["Words"].tap()
+        let undo = app.buttons["Undo"].firstMatch
+        XCTAssertTrue(undo.waitForExistence(timeout: 10), "the corrections card")
+        undo.tap()
+        XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
+    }
+
     private func relaunch(_ arguments: String...) {
         app.terminate()
         app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
@@ -114,13 +150,21 @@ final class LingleafUITests: XCTestCase {
 
     func testFilterRecommendedBooksByLevel() {
         app.tabBars.buttons["Discover"].tap()
-        let b1 = app.buttons["level-filter-B1"]
-        XCTAssertTrue(b1.waitForExistence(timeout: 10), "the level chips show above the recommended books")
-        b1.tap()
-        XCTAssertTrue(app.staticTexts["Peter Pan"].waitForExistence(timeout: 5), "B1 books stay")
-        XCTAssertTrue(app.staticTexts["Aesop's Fables"].waitForNonExistence(timeout: 5), "the A2 book is filtered out")
+        let b2 = app.buttons["level-filter-B2"]
+        XCTAssertTrue(b2.waitForExistence(timeout: 10), "the level chips show above the recommended books")
+        b2.tap()
+        XCTAssertTrue(app.staticTexts["The Railway Children"].waitForExistence(timeout: 5), "B2 books stay")
+        XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForNonExistence(timeout: 5), "the B1 book is filtered out")
+        app.buttons["level-filter-A2"].tap()
+        let story = app.buttons["Read A Day at the Market"]
+        XCTAssertTrue(story.waitForExistence(timeout: 5), "a level without classics lists the app's own story")
         app.buttons["level-filter-all"].tap()
-        XCTAssertTrue(app.staticTexts["Aesop's Fables"].waitForExistence(timeout: 5), "All shows every book again")
+        XCTAssertTrue(app.staticTexts["Little Wizard Stories of Oz"].waitForExistence(timeout: 5), "All shows every book again")
+        XCTAssertTrue(story.waitForNonExistence(timeout: 5), "All keeps to the classics: the stories are in the library")
+        app.buttons["level-filter-A2"].tap()
+        XCTAssertTrue(story.waitForExistence(timeout: 5))
+        story.tap()
+        XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the story in the reader")
     }
 
     /// S6 Listen. XCUITest can't hear the speaker, so in -ui-testing mode the app records
@@ -221,13 +265,13 @@ final class LingleafUITests: XCTestCase {
     /// S9: Get shows progress, then Read opens the book; a missing book says so in its row.
     func testDownloadABookFromDiscover() {
         app.tabBars.buttons["Discover"].tap()
-        let get = app.buttons["Get Aesop's Fables"]
+        let get = app.buttons["Get Little Wizard Stories of Oz"]
         XCTAssertTrue(get.waitForExistence(timeout: 10), "recommended books are there at once")
         get.tap()
-        let read = app.buttons["Read Aesop's Fables"]
+        let read = app.buttons["Read Little Wizard Stories of Oz"]
         XCTAssertTrue(read.waitForExistence(timeout: 10), "Get turns into Read")
 
-        app.buttons["Get Peter Pan"].tap()
+        app.buttons["Get The Marvelous Land of Oz"].tap()
         XCTAssertTrue(app.staticTexts["This book isn't available right now."].waitForExistence(timeout: 10))
 
         read.tap()
@@ -236,7 +280,7 @@ final class LingleafUITests: XCTestCase {
         // The tab bar slides back in after the reader: wait for it, with evidence if it doesn't.
         if !app.tabBars.firstMatch.waitForExistence(timeout: 10) { attachEvidence("no-tab-bar-after-reader") }
         app.tabBars.buttons["Library"].tap()
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Aesop's Fables")).firstMatch
+        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Little Wizard Stories of Oz")).firstMatch
         if !row.waitForExistence(timeout: 10) { attachEvidence("library-after-download") }
         XCTAssertTrue(row.exists, "the book is in the library")
     }
@@ -265,6 +309,18 @@ final class LingleafUITests: XCTestCase {
         app.navigationBars.buttons.element(boundBy: 0).tap()
         app.tabBars.buttons["Words"].tap()
         XCTAssertTrue(element(labelled: "beach").waitForExistence(timeout: 5), "the word is saved offline")
+    }
+
+    /// S3 offline: the card's base form of an irregular form comes from the irregular-verb table,
+    /// so this also proves the table is inside the built app ("sees" would show as "sees" without it).
+    func testOfflineCardShowsTheBaseFormFromTheIrregularVerbTable() {
+        relaunch("-ui-testing-offline")
+        button(startingWith: "The Red Boat").tap()
+        let word = app.links["sees"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10), "the reader opens offline")
+        word.tap()
+        XCTAssertTrue(app.staticTexts["In the text: sees"].waitForExistence(timeout: 10), "the card shows a base form")
+        XCTAssertTrue(app.staticTexts["see"].exists, "the table's base form, without the dictionary")
     }
 
     /// S12: a word saved offline has no translation yet; Review says so when the meaning is shown.
@@ -505,6 +561,9 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
     }
 
+    /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
+    private static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
+
     /// Audit findings checked by hand and found not to be real problems. Each
     /// one names the screen and the reason; anything else still fails the test.
     private static func knownFalsePositive(_ issue: XCUIAccessibilityAuditIssue, on screen: String) -> Bool {
@@ -534,7 +593,7 @@ final class LingleafUITests: XCTestCase {
             // Progress bars (reader, review) are read-only indicators, not touch
             // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
             return issue.element?.elementType == .progressIndicator
-        case ("Word card", .contrast) where issue.element?.label == "noun · Definition of beach.":
+        case ("Word card", .contrast) where issue.element?.label == Self.beachDefinitionLabel:
             // Measured on the screenshot taken right before this audit (en-light-12-word-card-full-height):
             // #4D4D4D on the card's opaque #F1F1F6 panel, 7.5:1. The same line in the same colours
             // passes at half height; only this line is exempt, so a real regression in the card still fails.

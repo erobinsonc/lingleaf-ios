@@ -1,70 +1,76 @@
 # Lingleaf privacy policy
 
-_Last updated: 2026-10-10. Applies to Lingleaf for iOS and Lingleaf for Android._
+_Last updated: 2026-11-02. For Lingleaf for iOS and Lingleaf for Android._
 
-Lingleaf is a free, open-source app for learning English by reading books. It has
-**no accounts, no ads, no analytics and no tracking**. We (the Lingleaf maintainers)
-do not collect, store or sell personal data.
+Lingleaf is a free, open-source app for learning English by reading books.
+
+**We collect no personal data.** Lingleaf has no accounts, no ads, no tracking and no
+analytics, and it never sends your data to us. On Android, Google's translation tool
+sends Google some diagnostic data (see below).
 
 ## What stays on your device
 
-Your books, saved words, review progress, reading time and settings are stored only
-on your device. Your operating system may include them in your device or cloud backup
-(iCloud, Google) if you use one; that backup is between you and Apple or Google.
+Your words, your reading and review progress, your books and your settings stay on
+your device. If you use a device or cloud backup (iCloud, Google), they may be
+included in that backup. If you delete the app, they are deleted from the device.
 
-## What the app sends over the internet
+## What leaves your device
 
-The app connects only to these services, always over HTTPS, and sends no identifier
-of you or your device (like any website, they see your IP address):
+The app connects only to these services, always over HTTPS. Like any website, they
+see your IP address and the app version. They have their own privacy policies.
 
-- **Project Gutenberg** (`gutendex.com`, `gutenberg.org`): to list, search and
-  download free books. They receive your search terms and the books you download.
-- **Free Dictionary API** (`api.dictionaryapi.dev`): to show a word's definition and
-  pronunciation. It receives the English word you tapped.
-- **Translation**:
-  - iOS uses Apple Translation, which runs on the device. iOS downloads each language
-    from Apple once (it asks you first). Words and sentences are not sent.
-  - Android uses Google ML Kit, which runs on the device. It downloads each language
-    model (about 30 MB) from Google once, over Wi‑Fi only, and, as Google documents for
-    ML Kit, sends Google anonymous usage and diagnostics data
-    ([ML Kit terms](https://developers.google.com/ml-kit/terms)). Words and sentences
-    are not sent.
+- **Free Dictionary API** (`api.dictionaryapi.dev`): when you tap a word, the app
+  sends that word and its dictionary form (for example "stole" and "steal") to get
+  its definition and how to say it (phonetic spelling). The definitions come from
+  Wiktionary.
+- **Project Gutenberg** (`gutendex.com`, `www.gutenberg.org`): when you open
+  Discover, the app loads book covers; when you search or download a book, it sends
+  your search words and the book you chose.
+- **Translation on iOS**: Apple Translation works on your device. iOS downloads each
+  language from Apple once (it asks you first). Your words and sentences are not
+  sent to Apple.
+- **Translation on Android**: Google ML Kit works on your device. It downloads each
+  language (about 30 MB) from Google once, over Wi‑Fi only. ML Kit sends Google
+  diagnostic data: device model, system and app version, how well it runs and an
+  identifier for this installation
+  ([ML Kit data disclosure](https://developers.google.com/ml-kit/android-data-disclosure)).
+  Your words and sentences are not sent to Google.
 
-These services have their own privacy policies.
+## Ages
 
-## Suggestions you choose to send
-
-Some versions of Lingleaf let you send a suggestion from the app. Nothing is sent
-unless you tap Send in your own email app. A suggestion can include your text, a
-screenshot or image you choose (which you can mark or cover first), basic device
-information (app version, system version, phone or tablet, app and translation
-language, screen) and, if you keep it, a summary of usage counts from the last 14 days
-(numbers only, never books, words or text).
-
-Each suggestion becomes a **public GitHub issue** so the community can see and discuss
-it. Your name and email address are **never** published. Images are published only
-after a maintainer reviews them. The email is deleted once the issue is created and the
-image is reviewed.
-
-## Children
-
-Lingleaf is suitable for all ages and collects no personal data from anyone.
+Lingleaf is for ages 13 and up. The Project Gutenberg catalog has books written for
+adults.
 
 ## Changes and contact
 
-Changes to this policy are published in this file, with the date above. Questions:
-open an issue at https://github.com/erobinsonc/lingleaf-ios/issues or write to
-lingleaf.feedback@gmail.com.
+If this policy changes, we update this file and the date at the top. Questions: write
+to lingleaf.feedback@gmail.com or open an issue on GitHub (lingleaf-ios or
+lingleaf-android).
 
 ---
 
 # Política de privacidad de Lingleaf (resumen en español)
 
-Lingleaf **no tiene cuentas, anuncios, analítica ni rastreo**, y no recopilamos ni
-vendemos datos personales. Tus libros, palabras y ajustes quedan en tu dispositivo.
-La app solo se conecta por HTTPS a Project Gutenberg (libros; recibe tus búsquedas),
-a Free Dictionary API (recibe la palabra en inglés que tocaste) y, para traducir en el
-dispositivo, a Apple o Google para descargar cada idioma una vez (en Android solo por
-Wi‑Fi). Las sugerencias que decidas enviar desde tu correo se publican como issues
-públicos en GitHub **sin tu nombre ni tu correo**; las imágenes se publican solo tras
-revisarlas y el correo se borra después. Contacto: lingleaf.feedback@gmail.com.
+**No recopilamos datos personales.** Lingleaf no tiene cuentas, anuncios, rastreo ni
+analítica, y nunca nos envía tus datos. En Android, la herramienta de traducción de
+Google le envía datos de diagnóstico (ver abajo). Tus palabras, tu progreso, tus
+libros y tus ajustes se quedan en tu dispositivo (y en tu copia de seguridad, si usas
+una).
+
+La app solo se conecta por HTTPS a estos servicios, que ven tu dirección IP y la
+versión de la app:
+
+- **Free Dictionary API**: recibe la palabra en inglés que tocas y su forma de
+  diccionario, para mostrar su definición y su pronunciación (de Wiktionary).
+- **Project Gutenberg**: envía las portadas de los libros que ves en Descubrir y
+  recibe tus búsquedas y los libros que descargas.
+- **Traducción en iOS**: Apple Translation funciona en tu dispositivo; no se envían
+  palabras ni frases a Apple. iOS descarga cada idioma una vez.
+- **Traducción en Android**: Google ML Kit funciona en tu dispositivo. Descarga cada
+  idioma una vez, solo por Wi‑Fi, y envía a Google datos de diagnóstico: modelo del
+  dispositivo, versión del sistema y de la app, datos de rendimiento y un
+  identificador de esta instalación. No se envían palabras ni frases a Google.
+
+Lingleaf es para personas de 13 años en adelante. Si tienes preguntas, escribe a
+lingleaf.feedback@gmail.com o déjalas en
+https://github.com/erobinsonc/lingleaf-ios/issues.

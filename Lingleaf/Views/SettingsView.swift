@@ -70,12 +70,20 @@ struct SettingsView: View {
                 }
 
                 Section(header: SectionHeader("About")) {
+                    Link(destination: Credits.privacyPolicyURL) {
+                        Label("Privacy policy", systemImage: "hand.raised")
+                    }
                     Link(destination: Self.repositoryURL) {
                         Label("Source code (open source, MIT)", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
-                    Text("Books: Project Gutenberg (public domain). Definitions: dictionaryapi.dev. No accounts, no ads, no tracking.")
-                        .font(.footnote)
-                        .foregroundStyle(Brand.secondaryText)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("No accounts, no ads, no tracking.")
+                        Text(Credits.publicDomainNotice)
+                        Text(Credits.definitionsCredit)
+                            .accessibilityHint(Text("Contains links"))
+                    }
+                    .font(.footnote)
+                    .foregroundStyle(Brand.secondaryText)
                 }
             }
             .navigationTitle("Settings")

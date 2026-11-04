@@ -84,6 +84,20 @@ final class AppModel {
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
         }
+        Task { [library] in
+            // Read the irregular-verb table now, off the main thread, not on the first word shown
+            // (nor here: the corrections need it loaded).
+            await Task.detached(priority: .utility) { _ = IrregularVerbs.shared }.value
+            // After updating: saved words read again against their sentences (SPEC S18), a run per
+            // launch, off the main thread; the result is applied to the words as they are by then.
+            guard let run = library.beginCorrections() else { return }
+            let target = library.state.settings.targetLanguage
+            let now = Date()
+            let planned = await Task.detached(priority: .utility) {
+                Library.plannedCorrections(run, target: target, now: now)
+            }.value
+            library.applyCorrections(planned)
+        }
     }
 
     static func make() -> AppModel {
@@ -121,12 +135,14 @@ final class AppModel {
         let http = ClosureFetcher { url in
             if offline { throw NetworkError("The Internet connection appears to be offline.") }
             if url.contains("gutendex") { return HttpResponse(status: 200, text: fakeCatalog) }
-            // Peter Pan is "not available right now", to show that message.
-            if url.contains("gutenberg.org/cache/epub/16/") { return HttpResponse(status: 404, text: "") }
+            // The Marvelous Land of Oz is "not available right now", to show that message.
+            if url.contains("gutenberg.org/cache/epub/54/") { return HttpResponse(status: 404, text: "") }
             if url.contains("gutenberg.org/cache/epub/") { return HttpResponse(status: 200, text: fakeBookText) }
             guard url.contains("dictionaryapi.dev") else { return HttpResponse(status: 404, text: "") }
             let word = url.split(separator: "/").last.map(String.init) ?? ""
-            let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Definition of \#(word)."}]}]}]"#
+            let definition = fakeDefinitions[word] ?? "Definition of \(word)."
+            let meaning = #"{"partOfSpeech": "noun", "definitions": [{"definition": "\#(definition)"}]}"#
+            let json = #"[{"word": "\#(word)", "phonetic": "/test/", "meanings": [\#(meaning)]}]"#
             return HttpResponse(status: 200, text: json)
         }
         let translator: @Sendable (String) throws -> String
@@ -149,18 +165,27 @@ final class AppModel {
             // "Again" makes it due now.
             library.answerReview("sea", correct: false)
         }
+        library.seedForUITests(ProcessInfo.processInfo.arguments, offline: offline)
         return model
     }
+
+    /// Definitions that show how the card handles long text: "sand" takes several lines,
+    /// "waves" is over 500 characters, so the card cuts it and says it is shortened.
+    nonisolated private static let fakeDefinitions: [String: String] = [
+        "sand": "Rock that has broken down into very small grains, found on beaches, in deserts and at the bottom of "
+            + "rivers and seas; it is used to make glass and concrete, and children build castles with it.",
+        "waves": String(repeating: "A moving ridge of water on the surface of the sea or a lake, raised by the wind. ", count: 8),
+    ]
 
     /// A small Gutendex answer so Discover has books to show in UI tests.
     nonisolated private static let fakeCatalog = #"""
     {"results": [
-      {"id": 21, "title": "Aesop's Fables", "authors": [{"name": "Aesop"}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/21.txt.utf-8"}},
+      {"id": 25519, "title": "Little Wizard Stories of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/25519.txt.utf-8"}},
       {"id": 55, "title": "The Wonderful Wizard of Oz", "authors": [{"name": "Baum, L. Frank"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/55.txt.utf-8"}},
-      {"id": 16, "title": "Peter Pan", "authors": [{"name": "Barrie, J. M."}],
-       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/16.txt.utf-8"}},
+      {"id": 54, "title": "The Marvelous Land of Oz", "authors": [{"name": "Baum, L. Frank"}],
+       "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/54.txt.utf-8"}},
       {"id": 2701, "title": "Moby-Dick; Or, The Whale", "authors": [{"name": "Melville, Herman"}],
        "formats": {"text/plain; charset=us-ascii": "https://www.gutenberg.org/ebooks/2701.txt.utf-8"}}
     ]}
@@ -182,20 +207,25 @@ final class AppModel {
     #endif
 
     private static func bundledStories() -> [BundledStory] {
-        [
-            ("the-red-boat", "The Red Boat", "A1"),
-            ("a-day-at-the-market", "A Day at the Market", "A2"),
-            ("the-lighthouse-keeper", "The Lighthouse Keeper", "B1"),
-        ].compactMap { resource, title, level in
-            guard let url = Bundle.main.url(forResource: resource, withExtension: "txt"),
-                  let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
-            return BundledStory(title: title, level: level, text: text)
-        }
+        BundledStory.shelf.compactMap(bundledStory)
     }
 
-    func isLearning(_ token: String) -> Bool {
-        let learning = state.learningWords
-        return !learning.isEmpty && !TextTools.matchKeys(token).isDisjoint(with: learning)
+    private static func bundledStory(_ entry: ShelfStory) -> BundledStory? {
+        guard let url = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
+        return BundledStory(title: entry.title, level: entry.level, text: text)
+    }
+
+    /// Puts a bundled story back in the library (the learner deleted it) and returns its id.
+    func restoreBundledStory(_ entry: ShelfStory) -> String? {
+        guard let story = Self.bundledStory(entry) else { return nil }
+        return library.addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level).id
+    }
+
+    /// The words of `text` (`words`: its `wordRanges`) that are forms of words being learned,
+    /// read in their sentences, in one pass over the paragraph.
+    func learningRanges(_ text: String, _ words: [WordRange]) -> Set<WordRange> {
+        library.learningRanges(text, words)
     }
 
     /// The saved choice, else the one picked from the device; nil means ask on the word card.
@@ -230,16 +260,24 @@ final class AppModel {
     /// language (just saved, saved offline, or the language changed). UI tests use
     /// the fake translator; otherwise `TranslationWorker` runs `translatePending`.
     func translateMissing() {
-        guard let target = targetLanguage,
-              !library.wordsNeedingTranslation(target).isEmpty || !library.contextsNeedingTranslation(target).isEmpty else { return }
+        guard let target = targetLanguage else { return }
+        library.fillTableTranslations(target)
+        let words = library.wordsNeedingTranslation(target)
+        let contexts = library.contextsNeedingTranslation(target)
+        let meanings = library.meaningsNeedingTranslation(target)
+        guard !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         if let fakeTranslator {
-            for word in library.wordsNeedingTranslation(target) {
-                guard let text = try? fakeTranslator(word.word) else { return }
-                library.setTranslation(word.word, text, language: target)
+            for word in words {
+                guard let text = try? fakeTranslator(ReadingTranslation.source(word: word.word, sense: word.sense)) else { return }
+                library.setTranslation(word.word, Self.cleaned(text, sense: word.sense, target), language: target, sense: word.sense)
             }
-            for word in library.contextsNeedingTranslation(target) {
+            for word in contexts {
                 guard let text = try? fakeTranslator(word.context) else { return }
-                library.setContextTranslation(word.word, text, language: target)
+                library.setContextTranslation(word.word, text, language: target, sense: word.sense)
+            }
+            for meaning in meanings {
+                guard let text = try? fakeTranslator(meaning.label) else { return }
+                library.setMeaning(meaning.id, index: meaning.index, text: text, language: target)
             }
             return
         }
@@ -251,28 +289,43 @@ final class AppModel {
         }
     }
 
+    /// A word's translation without the article or "to" that came from translating its sense
+    /// as "the …" or "to …".
+    private static func cleaned(_ text: String, sense: String?, _ language: String) -> String {
+        sense == nil ? text : ReadingTranslation.cleaned(text, noun: sense == Sense.noun, language: language)
+    }
+
     /// Called by `TranslationWorker` with a session for `workerConfiguration`.
     /// Failures leave the words as they are; they are tried again the next time.
     func translatePending(using session: TranslationSession) async {
         guard let target = targetLanguage else { return }
         let language = Locale.Language(identifier: target)
-        let words = library.wordsNeedingTranslation(target)
-        let contexts = library.contextsNeedingTranslation(target)
-        guard workerConfiguration?.target == language, !words.isEmpty || !contexts.isEmpty else { return }
+        let words = Dictionary(library.wordsNeedingTranslation(target).map { ($0.id, $0) }) { first, _ in first }
+        let contexts = Dictionary(library.contextsNeedingTranslation(target).map { ($0.id, $0) }) { first, _ in first }
+        let meanings = library.meaningsNeedingTranslation(target)
+        guard workerConfiguration?.target == language, !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         // Only with the language already on the device: in the background the app
         // doesn't ask to download it (the word card does).
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
-        // A saved sentence is told apart from its word by a prefix on the identifier.
-        let requests = words.map { TranslationSession.Request(sourceText: $0.word, clientIdentifier: $0.word) }
-            + contexts.map { TranslationSession.Request(sourceText: $0.context, clientIdentifier: "context:\($0.word)") }
+        // A saved sentence and a reading are told apart from the word by a prefix on the identifier.
+        let wordRequests = words.values.map { word in
+            let source = ReadingTranslation.source(word: word.word, sense: word.sense)
+            return TranslationSession.Request(sourceText: source, clientIdentifier: "word:\(word.id)")
+        }
+        let requests = wordRequests
+            + contexts.values.map { TranslationSession.Request(sourceText: $0.context, clientIdentifier: "context:\($0.id)") }
+            + meanings.enumerated().map { TranslationSession.Request(sourceText: $1.label, clientIdentifier: "meaning:\($0)") }
         guard let responses = try? await session.translations(from: requests) else { return }
         for response in responses {
             guard let id = response.clientIdentifier else { continue }
-            if id.hasPrefix("context:") {
-                library.setContextTranslation(String(id.dropFirst("context:".count)), response.targetText, language: target)
-            } else {
-                library.setTranslation(id, response.targetText, language: target)
+            if id.hasPrefix("context:"), let word = contexts[String(id.dropFirst("context:".count))] {
+                library.setContextTranslation(word.word, response.targetText, language: target, sense: word.sense)
+            } else if id.hasPrefix("word:"), let word = words[String(id.dropFirst("word:".count))] {
+                let text = Self.cleaned(response.targetText, sense: word.sense, target)
+                library.setTranslation(word.word, text, language: target, sense: word.sense)
+            } else if id.hasPrefix("meaning:"), let index = Int(id.dropFirst("meaning:".count)), meanings.indices.contains(index) {
+                library.setMeaning(meanings[index].id, index: meanings[index].index, text: response.targetText, language: target)
             }
         }
     }

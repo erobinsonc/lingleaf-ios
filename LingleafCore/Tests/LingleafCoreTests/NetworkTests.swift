@@ -51,6 +51,30 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual(GutenbergClient.level(for: 11), "B2")
     }
 
+    /// Option A: only books in the public domain worldwide (author died in 1925 or earlier),
+    /// none with "to-day"/"to-night" spellings (Dorian Gray, The Garden Party) and not Dear Enemy.
+    func testRecommendedListIsTheWorldwidePublicDomainSelection() {
+        let expected: [(Int, String)] = [
+            (25519, "B1"), (55, "B1"), (54, "B1"), (486, "B1"), (517, "B1"),
+            (1874, "B2"), (3536, "B2"), (157, "B2"), (11, "B2"), (14522, "B2"),
+            (160, "C1"), (208, "C1"), (209, "C2"),
+        ]
+        XCTAssertEqual(GutenbergClient.recommended.map(\.id), expected.map(\.0))
+        XCTAssertEqual(GutenbergClient.recommended.map(\.level), expected.map(\.1))
+        for removed in [21, 16, 236, 74, 120, 1661, 1342, 84, 174, 1400, 345, 2701, 219, 145, 238, 1429] {
+            XCTAssertNil(GutenbergClient.level(for: removed), "\(removed) is no longer recommended")
+        }
+        XCTAssertEqual(
+            GutenbergClient.filterLevels, ["A1", "A2", "B1", "B2", "C1", "C2"],
+            "every level with a recommended book or a bundled story (A1, A2: the app's own stories)"
+        )
+        let titles = Dictionary(uniqueKeysWithValues: GutenbergClient.recommendedBooks.map { ($0.id, $0) })
+        XCTAssertEqual(titles[25519]?.displayTitle, "Little Wizard Stories of Oz")
+        XCTAssertEqual(titles[1874]?.authorName, "E. Nesbit")
+        XCTAssertEqual(titles[209]?.authorName, "Henry James")
+        XCTAssertEqual(titles[25519]?.textURL, "https://www.gutenberg.org/cache/epub/25519/pg25519.txt")
+    }
+
     func testCatalogBooksDownloadFromTheFileCache() throws {
         let data = Data(#"{"results": [\#(alice)]}"#.utf8)
         struct Page: Decodable { let results: [GutenbergBook] }
@@ -84,7 +108,8 @@ final class GutenbergTests: XCTestCase {
     func testFilterKeepsBooksAtTheChosenLevelInOrder() {
         let books = GutenbergClient.recommended.map { GutenbergBook(id: $0.id, title: "Book \($0.id)") }
         XCTAssertEqual(GutenbergClient.filter(books, level: nil), books)
-        XCTAssertEqual(GutenbergClient.filter(books, level: "B1").map(\.id), [55, 16, 236])
+        XCTAssertEqual(GutenbergClient.filter(books, level: "B1").map(\.id), [25519, 55, 54, 486, 517])
+        XCTAssertEqual(GutenbergClient.filter(books, level: "C2").map(\.id), [209])
         XCTAssertEqual(GutenbergClient.filter(books, level: "A1"), [])
         XCTAssertEqual(GutenbergClient.filter([GutenbergBook(id: 999_999, title: "Unlisted")], level: "B1"), [])
     }
@@ -172,14 +197,33 @@ final class GutenbergTests: XCTestCase {
     }
 
     func testSearchShowsEachBookOnceAndRecommendedBooksAsShipped() async throws {
-        let fake = #"{"id": 21, "title": "\u202eFake", "formats": {"text/plain": "x"}}"#
+        let fake = #"{"id": 25519, "title": "\u202eFake", "formats": {"text/plain": "x"}}"#
         let other = #"{"id": 99, "title": "Other", "formats": {"text/plain": "x"}}"#
         let many = (1000..<1100).map { #"{"id": \#($0), "title": "B"}"# }.joined(separator: ",")
         let client = GutenbergClient(http: ClosureFetcher { _ in ok(#"{"results": [\#(fake), \#(other), \#(fake), \#(many)]}"#) })
         let found = try await client.search("x")
-        XCTAssertEqual(Array(found.prefix(2).map(\.id)), [21, 99], "the duplicate is dropped")
-        XCTAssertEqual(found.first?.title, GutenbergClient.recommendedBooks.first { $0.id == 21 }?.title)
+        XCTAssertEqual(Array(found.prefix(2).map(\.id)), [25519, 99], "the duplicate is dropped")
+        XCTAssertEqual(found.first?.title, GutenbergClient.recommendedBooks.first { $0.id == 25519 }?.title)
         XCTAssertEqual(found.count, GutenbergClient.maxResults)
+    }
+
+    func testUserAgentNamesTheAppVersion() {
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: "0.3.0"), "Lingleaf/0.3.0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: nil), "Lingleaf/0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertEqual(URLSessionFetcher.userAgent(version: "1.0\r\nX: y"), "Lingleaf/1.0 (+https://github.com/erobinsonc/lingleaf-ios)")
+        XCTAssertTrue(URLSessionFetcher.defaultUserAgent.hasPrefix("Lingleaf/"))
+    }
+
+    /// SPEC.md's "Recommended ids" line (read by the weekly link check) lists the same books.
+    func testSpecListsTheRecommendedIds() throws {
+        let spec = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("SPEC.md")
+        let text = try String(contentsOf: spec, encoding: .utf8)
+        let line = try XCTUnwrap(text.components(separatedBy: "\n").first { $0.hasPrefix("- Recommended ids: ") })
+        let ids = line.dropFirst("- Recommended ids: ".count).trimmingCharacters(in: CharacterSet(charactersIn: ". "))
+            .components(separatedBy: ", ").compactMap(Int.init)
+        XCTAssertEqual(ids, GutenbergClient.recommended.map(\.id))
     }
 
     func testOnlyHTTPSToTheAppsHostsIsAllowed() async {
@@ -203,12 +247,14 @@ final class GutenbergTests: XCTestCase {
 }
 
 final class DictionaryTests: XCTestCase {
-    private static func entry(_ word: String, _ definition: String, phonetic: String? = nil) -> HttpResponse {
+    private static func entry(
+        _ word: String, _ definition: String, phonetic: String? = nil, partOfSpeech: String = "noun"
+    ) -> HttpResponse {
         let phoneticField = phonetic.map { #""phonetic": "\#($0)","# } ?? ""
         return ok(#"""
         [{"word": "\#(word)", \#(phoneticField)
           "phonetics": [{"audio": ""}, {"text": "/\#(word)/"}],
-          "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "\#(definition)"}]}]}]
+          "meanings": [{"partOfSpeech": "\#(partOfSpeech)", "definitions": [{"definition": "\#(definition)"}]}]}]
         """#)
     }
 
@@ -243,12 +289,200 @@ final class DictionaryTests: XCTestCase {
         XCTAssertEqual(result?.phonetic, "/walk/")
     }
 
+    /// A client answering from `entries` (word → definition), recording what it asked for.
+    private static func client(_ entries: [String: String], _ recorder: Recorder, verbs: Set<String> = []) -> DictionaryClient {
+        DictionaryClient(http: ClosureFetcher { url in
+            let word = String(url.split(separator: "/").last ?? "")
+            await recorder.add(word)
+            return entries[word].map { Self.entry(word, $0, partOfSpeech: verbs.contains(word) ? "verb" : "noun") } ?? notFound
+        })
+    }
+
+    func testAVerbReadingLooksItsBaseUpFirst() async {
+        let recorder = Recorder()
+        let client = Self.client(["steal": "To take without permission.", "stole": "A long scarf."], recorder, verbs: ["steal"])
+        let result = await client.lookup("stole", reading: Reading(kind: .verb, base: "steal", step: .subject))
+        XCTAssertEqual(result?.word, "steal")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["steal"])
+    }
+
+    func testANounReadingDoesNotFollowPastTenseOf() async {
+        let recorder = Recorder()
+        let client = Self.client(["left": "simple past tense and past participle of leave", "leave": "To go away."], recorder)
+        let result = await client.lookup("left", reading: Reading(kind: .noun, base: "left", step: .fixed))
+        XCTAssertEqual(result?.word, "left")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["left"])
+    }
+
+    func testAReadingFallsBackToTheTappedWord() async {
+        let recorder = Recorder()
+        let client = Self.client(["leaves": "plural of leaf"], recorder)
+        let result = await client.lookup("Leaves", reading: Reading(kind: .noun, base: "leaf", step: .noun))
+        XCTAssertEqual(result?.word, "leaves", "no entry for the base: the word as tapped")
+        let requested = await recorder.urls
+        XCTAssertEqual(requested, ["leaf", "leaves"])
+    }
+
+    func testAnUnsureReadingLooksUpAsBefore() async {
+        let recorder = Recorder()
+        let client = Self.client(["left": "simple past tense and past participle of leave", "leave": "To go away."], recorder)
+        let result = await client.lookup("left", reading: Reading(kind: .unsure, base: "left", step: .unsure))
+        XCTAssertEqual(result?.word, "leave", "as without a reading: follows \"past tense of\"")
+    }
+
+    func testAReadingTakesTheMeaningOfItsPartOfSpeechWithItsEntrysIPA() async {
+        let answer = ok(#"""
+        [{"word": "wind", "phonetic": "/wɪnd/", "meanings": [{"partOfSpeech": "noun", "definitions": [{"definition": "Moving air."}]}]},
+         {"word": "wind", "phonetic": "/waɪnd/", "meanings": [{"partOfSpeech": "verb", "definitions": [{"definition": "To turn."}]}]}]
+        """#)
+        let client = DictionaryClient(http: ClosureFetcher { _ in answer })
+        let verb = await client.lookup("wound", reading: Reading(kind: .verb, base: "wind", step: .subject))
+        XCTAssertEqual(verb?.definition, "To turn.")
+        XCTAssertEqual(verb?.phonetic, "/waɪnd/", "the IPA of the entry the meaning is in")
+        let noun = await client.lookup("wind", reading: Reading(kind: .noun, base: "wind", step: .noun), nounIPA: "wɪnd")
+        XCTAssertEqual(noun?.definition, "Moving air.")
+        let plain = await client.lookup("wind")
+        XCTAssertEqual(plain?.definition, "Moving air.", "without a reading: the first meaning")
+        XCTAssertEqual(DictionaryEntry.parseAll([["word": "x"]]).first?.definition, nil, "an entry without meanings")
+        XCTAssertTrue(DictionaryEntry.parseAll([["meanings": [[String: Any]]()]]).isEmpty, "no word: nothing")
+        let many = [[String: Any]](repeating: ["word": "x", "meanings": [["partOfSpeech": "noun"], ["partOfSpeech": "verb"]]], count: 40)
+        XCTAssertEqual(DictionaryEntry.parseAll(many).count, DictionaryEntry.maxEntries * 2, "10 entries of at most 10 meanings")
+        let meanings = [[String: Any]](repeating: ["partOfSpeech": "noun"], count: 20)
+        let wide: [[String: Any]] = [["word": "x", "meanings": meanings]]
+        XCTAssertEqual(DictionaryEntry.parseAll(wide).count, DictionaryEntry.maxMeanings)
+    }
+
+    /// Real dictionaryapi.dev (Wiktionary) answers, identical to lingleaf-android's
+    /// (core/src/test/resources/dictionary), and "tear" with its entries the other way round.
+    private static func fixture(_ name: String) -> HttpResponse? {
+        guard let url = Bundle.module.url(forResource: name, withExtension: "json", subdirectory: "dictionary"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return HttpResponse(status: 200, body: data)
+    }
+
+    private static func fixtureClient(tear: String = "tear") -> DictionaryClient {
+        DictionaryClient(http: ClosureFetcher { url in
+            let word = String(url.split(separator: "/").last ?? "")
+            guard ["wind", "tear", "lead", "lie", "bear"].contains(word) else { return notFound }
+            return Self.fixture(word == "tear" ? tear : word) ?? notFound
+        })
+    }
+
+    func testAReadingTakesTheEntryPronouncedAsTheTableSaysAndNeverAnotherPartOfSpeech() async {
+        XCTAssertNotNil(Self.fixture("tear-reversed"), "the fixtures ship with the tests")
+        let client = Self.fixtureClient()
+        func lookup(
+            _ word: String, _ kind: Reading.Kind, _ base: String, _ step: Reading.Step = .subject, nounIPA: String? = nil
+        ) async -> DictionaryEntry? {
+            await client.lookup(word, reading: Reading(kind: kind, base: base, step: step), nounIPA: nounIPA)
+        }
+        let wind = await lookup("wound", .verb, "wind")
+        XCTAssertTrue(wind?.definition?.hasPrefix("To turn coils") == true, "/waɪnd/, not /wɪnd/")
+        XCTAssertEqual(wind?.phonetic, "/waɪnd/")
+        let windNoun = await lookup("wind", .noun, "wind", .noun, nounIPA: "wɪnd")
+        XCTAssertTrue(windNoun?.definition?.hasPrefix("Real or perceived") == true)
+        let tear = await lookup("tore", .verb, "tear", .table)
+        XCTAssertTrue(tear?.definition?.hasPrefix("To rend") == true, "/tɛɹ/ is the table's tɛr")
+        let led = await lookup("led", .verb, "lead", .table)
+        XCTAssertTrue(led?.definition?.hasPrefix("To guide") == true)
+        let lay = await lookup("lay", .verb, "lie")
+        XCTAssertTrue(lay?.definition?.hasPrefix("To rest") == true)
+        let lied = await lookup("lied", .homonym, "lie", .table)
+        XCTAssertNil(lied, "the twin: none")
+        let bore = await lookup("bore", .verb, "bear")
+        XCTAssertTrue(bore?.definition?.hasPrefix("To carry") == true)
+        let bear = await lookup("bear", .noun, "bear", .noun)
+        XCTAssertTrue(bear?.definition?.hasPrefix("A large mammal") == true)
+        let ordinary = await lookup("bear", .word, "bear", .ordinary)
+        XCTAssertEqual(ordinary?.word, "bear", "an ordinary word is looked up as tapped")
+        let reversed = await Self.fixtureClient(tear: "tear-reversed")
+            .lookup("tore", reading: Reading(kind: .verb, base: "tear", step: .table))
+        XCTAssertEqual(reversed, tear, "the entry by its sound, not its place in the answer")
+        let nothing = DictionaryClient(http: ClosureFetcher { _ in Self.entry("light", "Brightness.") })
+        let noVerb = await nothing.lookup("lit", reading: Reading(kind: .verb, base: "light", step: .table))
+        XCTAssertNil(noVerb, "no verb meaning: none, not the noun's")
+    }
+
+    func testTheTableIPAWithNoEntryPronouncedSoGivesNoDefinition() async {
+        // Only the /wɪnd/ entry, and the past form's own entry ("wound": to injure).
+        let client = DictionaryClient(http: ClosureFetcher { url in
+            switch String(url.split(separator: "/").last ?? "") {
+            case "wind": return Self.entry("wind", "To blow air through a wind instrument.", phonetic: "/wɪnd/", partOfSpeech: "verb")
+            case "wound": return Self.entry("wound", "To hurt or injure.", phonetic: "/wuːnd/", partOfSpeech: "verb")
+            default: return notFound
+            }
+        })
+        let wound = await client.lookup("wound", reading: Reading(kind: .verb, base: "wind", step: .subject))
+        XCTAssertNil(wound, "nothing pronounced /waɪnd/: no definition, never the first meaning")
+        let none = DictionaryClient(http: ClosureFetcher { url in
+            url.hasSuffix("/wound") ? Self.entry("wound", "To hurt or injure.", partOfSpeech: "verb") : notFound
+        })
+        let tapped = await none.lookup("wound", reading: Reading(kind: .verb, base: "wind", step: .subject))
+        XCTAssertEqual(tapped?.word, "wound", "no verb entry of the base at all: the word as tapped (as lingleaf-android)")
+    }
+
+    func testPronunciationsMatchAcrossNotationsAndAMalformedEntryIsSkipped() {
+        XCTAssertTrue(DictionaryEntry.sameIPA("/ˈwaɪnd/", "waɪnd"))
+        XCTAssertTrue(DictionaryEntry.sameIPA("[tɛɹ]", "tɛr"))
+        XCTAssertTrue(DictionaryEntry.sameIPA("/ɡɪv/", "gɪv"), "Wiktionary's ɡ is g")
+        XCTAssertTrue(DictionaryEntry.sameIPA("/te\u{0301}/", "/t\u{00E9}/"), "compared in NFC")
+        XCTAssertFalse(DictionaryEntry.sameIPA("/WAɪnd/", "waɪnd"), "no lowercasing: IPA letters are sounds")
+        XCTAssertFalse(DictionaryEntry.sameIPA("", ""))
+        XCTAssertFalse(DictionaryEntry.sameIPA("/ˈ/", "ˈ"), "only marks: nothing")
+        let meaning: [String: Any] = ["partOfSpeech": "noun", "definitions": ["y", ["definition": "A drop."]] as [Any]]
+        let entry: [String: Any] = [
+            "word": "tear", "phonetic": "/tɪə/",
+            "phonetics": [["text": "/tɪɹ/"], "x", ["audio": ""], ["text": "/tɪə/"]] as [Any],
+            "meanings": [42, meaning] as [Any],
+        ]
+        let entries = DictionaryEntry.parseAll(["not an entry", entry])
+        XCTAssertEqual(entries.count, 1, "a non-object element is skipped, not the whole answer")
+        XCTAssertEqual(entries.first?.phonetics, ["/tɪə/", "/tɪɹ/"], "every pronunciation, once")
+        XCTAssertEqual(entries.first?.definition, nil, "a first definition that is not an object is none")
+    }
+
     func testHugeAnswersAreCutToSaneLengths() async {
         let huge = String(repeating: "plural ", count: 200_000)
         let client = DictionaryClient(http: ClosureFetcher { _ in Self.entry("big", huge, phonetic: String(repeating: "x", count: 5_000)) })
         let result = await client.lookup("big")
         XCTAssertEqual(result?.definition?.count, DictionaryEntry.maxDefinition)
+        XCTAssertEqual(result?.definitionTruncated, true, "the card says the definition is shortened")
         XCTAssertEqual(result?.phonetic?.count, DictionaryEntry.maxShortField)
+    }
+
+    /// Bidi overrides, zero-width and other format characters can't reorder or hide text on the
+    /// card, and piled-up accents are capped, in every field shown (definition, part of speech, IPA).
+    func testDictionaryFieldsLoseInvisibleAndBidiCharacters() {
+        let meaning: [String: Any] = [
+            "partOfSpeech": "\u{2066}verb\u{2069}",
+            "definitions": [["definition": "\u{202E}To move\u{200B} on the\u{FEFF} feet." + String(repeating: "\u{0301}", count: 50)]],
+        ]
+        let entry: [String: Any] = [
+            "word": "walk", "phonetic": "/wɔːk\u{200D}/",
+            "phonetics": [["text": "\u{202E}/wɑk/"], ["text": "\u{200B}"]] as [Any],
+            "meanings": [meaning],
+        ]
+        let parsed = DictionaryEntry.parseAll([entry]).first
+        XCTAssertEqual(parsed?.partOfSpeech, "verb")
+        XCTAssertEqual(parsed?.definition, "To move on the feet." + String(repeating: "\u{0301}", count: TextTools.maxCombiningMarks))
+        XCTAssertEqual(parsed?.definitionTruncated, false)
+        XCTAssertEqual(parsed?.phonetic, "/wɔːk/")
+        XCTAssertEqual(parsed?.phonetics, ["/wɔːk/", "/wɑk/"], "an IPA that is only invisible characters is dropped")
+        let invisible: [String: Any] = ["word": "x", "phonetic": "\u{200B}", "meanings": [["definitions": [["definition": "\u{202E}"]]]]]
+        let hidden = DictionaryEntry.parseAll([invisible])
+        XCTAssertNil(hidden.first?.phonetic)
+        XCTAssertNil(hidden.first?.definition, "a definition that is only invisible characters is none")
+    }
+
+    func testADefinitionThatFitsIsNotMarkedShortened() async {
+        let exact = String(repeating: "a", count: DictionaryEntry.maxDefinition)
+        let fits = await DictionaryClient(http: ClosureFetcher { _ in Self.entry("fit", exact) }).lookup("fit")
+        XCTAssertEqual(fits?.definition, exact)
+        XCTAssertEqual(fits?.definitionTruncated, false)
+        let short = await DictionaryClient(http: ClosureFetcher { _ in Self.entry("walk", "To move on the feet.") }).lookup("walk")
+        XCTAssertEqual(short?.definitionTruncated, false)
     }
 
     func testReturnsNilWhenOfflineOnServerErrorsOrBadJSON() async {
