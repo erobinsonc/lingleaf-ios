@@ -45,4 +45,7 @@ is verified by a person before it is merged. Dependabot PRs are never auto-merge
 `ios.yml` publishes screenshots in two jobs so bumped actions never run next to a write token:
 `screenshots-prepare` (read-only token) downloads and checks the files
 (`.github/scripts/verify-screenshots.sh`) and re-uploads them; `screenshots` (write token)
-runs a pinned checkout, the `gh` CLI and `publish-screenshots.sh`, and nothing else.
+runs a pinned checkout, the `gh` CLI, a second run of the check and `publish-screenshots.sh`, and
+nothing else. The verified artifact has an unguessable per-run name, and `screenshots` needs the
+prepare job to have succeeded. On `pull_request` the checkout is the merge commit; accepted
+because forks are excluded.
