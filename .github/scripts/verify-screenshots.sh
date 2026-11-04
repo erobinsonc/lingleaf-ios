@@ -8,7 +8,7 @@ dir="${1:?directory}"
 out="${GITHUB_OUTPUT:-/dev/null}"
 max_files=200
 max_bytes=$((5 * 1024 * 1024))
-max_total=$((100 * 1024 * 1024))
+max_total=$((50 * 1024 * 1024))
 total=0
 
 if [ ! -d "$dir" ] || [ -z "$(ls -A "$dir")" ]; then

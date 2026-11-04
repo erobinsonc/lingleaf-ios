@@ -31,6 +31,10 @@ is verified by a person before it is merged. Dependabot PRs are never auto-merge
    `workflow_dispatch` dry run before the next release.
 6. **Merge on green CI**, by hand, after the maintainer or lead has done 1-5.
 
+7. **Artifact actions.** A bump of `actions/upload-artifact` or `actions/download-artifact`
+   (or any change to the `screenshots` jobs) must keep `verify-screenshots.sh` running again in
+   the write job right after the download. Check that before merging.
+
 ## How the config helps
 
 - `target-branch: develop` keeps Git Flow.
