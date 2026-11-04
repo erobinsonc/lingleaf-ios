@@ -1,0 +1,334 @@
+{
+ "schemaVersion": 1,
+ "story": "a-shoe-in-the-fridge",
+ "senses": {
+  "come_on": {
+   "lemma": "come on",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɑn",
+   "es": "¡vamos!, ¡venga!",
+   "kind": "chunk"
+  },
+  "for_sale": {
+   "lemma": "for sale",
+   "pos": "phrase",
+   "ipa": "fɔr seɪl",
+   "es": "a la venta",
+   "kind": "chunk"
+  },
+  "get_become": {
+   "lemma": "get",
+   "pos": "verb",
+   "ipa": "ɡɛt",
+   "es": "ponerse (+ adjetivo)",
+   "kind": "word"
+  },
+  "get_fetch": {
+   "lemma": "get",
+   "pos": "verb",
+   "ipa": "ɡɛt",
+   "es": "coger, agarrar, ir a por",
+   "kind": "word"
+  },
+  "get_on": {
+   "lemma": "get on",
+   "pos": "phrasal verb",
+   "ipa": "ɡɛt ɑn",
+   "es": "subir (a un autobús, tren)",
+   "kind": "chunk"
+  },
+  "go_back": {
+   "lemma": "go back",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "hard_much": {
+   "lemma": "hard",
+   "pos": "adverb",
+   "ipa": "hɑrd",
+   "es": "mucho, con fuerza",
+   "kind": "word"
+  },
+  "just_in_time": {
+   "lemma": "just in time",
+   "pos": "phrase",
+   "ipa": "dʒʌst ɪn taɪm",
+   "es": "justo a tiempo",
+   "kind": "chunk"
+  },
+  "look_for": {
+   "lemma": "look for",
+   "pos": "phrasal verb",
+   "ipa": "lʊk fɔr",
+   "es": "buscar",
+   "kind": "chunk"
+  },
+  "look_search": {
+   "lemma": "look",
+   "pos": "verb",
+   "ipa": "lʊk",
+   "es": "buscar (mirando en un sitio)",
+   "kind": "word"
+  },
+  "mom": {
+   "lemma": "mom",
+   "pos": "noun",
+   "ipa": "mɑm",
+   "es": "mamá",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "note_message": {
+   "lemma": "note",
+   "pos": "noun",
+   "ipa": "noʊt",
+   "es": "nota, mensaje escrito",
+   "kind": "word"
+  },
+  "run_out_of": {
+   "lemma": "run out of",
+   "pos": "phrasal verb",
+   "ipa": "rʌn aʊt əv",
+   "es": "salir corriendo de (no \"quedarse sin\")",
+   "kind": "chunk"
+  },
+  "sit_down": {
+   "lemma": "sit down",
+   "pos": "phrasal verb",
+   "ipa": "sɪt daʊn",
+   "es": "sentarse",
+   "kind": "chunk"
+  },
+  "take_bring": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "llevar (a alguien a un sitio)",
+   "kind": "word"
+  },
+  "wave_hand": {
+   "lemma": "wave",
+   "pos": "verb",
+   "ipa": "weɪv",
+   "es": "saludar con la mano",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 98,
+   "end": 101,
+   "text": "mom",
+   "sense": "mom"
+  },
+  {
+   "p": 1,
+   "start": 21,
+   "end": 26,
+   "text": "takes",
+   "sense": "take_bring"
+  },
+  {
+   "p": 8,
+   "start": 6,
+   "end": 11,
+   "text": "looks",
+   "sense": "look_search"
+  },
+  {
+   "p": 8,
+   "start": 31,
+   "end": 36,
+   "text": "looks",
+   "sense": "look_search"
+  },
+  {
+   "p": 8,
+   "start": 55,
+   "end": 60,
+   "text": "looks",
+   "sense": "look_search"
+  },
+  {
+   "p": 9,
+   "start": 28,
+   "end": 32,
+   "text": "Look",
+   "sense": "look_for",
+   "chunk": {
+    "start": 28,
+    "end": 36,
+    "text": "Look for",
+    "es": "buscar"
+   }
+  },
+  {
+   "p": 10,
+   "start": 6,
+   "end": 11,
+   "text": "looks",
+   "sense": "look_search"
+  },
+  {
+   "p": 10,
+   "start": 36,
+   "end": 41,
+   "text": "looks",
+   "sense": "look_search"
+  },
+  {
+   "p": 11,
+   "start": 9,
+   "end": 16,
+   "text": "getting",
+   "sense": "get_become",
+   "chunk": {
+    "start": 9,
+    "end": 24,
+    "text": "getting nervous",
+    "es": "poniéndose nervioso"
+   }
+  },
+  {
+   "p": 14,
+   "start": 15,
+   "end": 19,
+   "text": "Look",
+   "sense": "look_search"
+  },
+  {
+   "p": 19,
+   "start": 30,
+   "end": 34,
+   "text": "sale",
+   "sense": "for_sale",
+   "chunk": {
+    "start": 26,
+    "end": 34,
+    "text": "for sale",
+    "es": "a la venta"
+   }
+  },
+  {
+   "p": 20,
+   "start": 18,
+   "end": 22,
+   "text": "hard",
+   "sense": "hard_much",
+   "chunk": {
+    "start": 6,
+    "end": 22,
+    "text": "laughs very hard",
+    "es": "se ríe mucho, a carcajadas"
+   }
+  },
+  {
+   "p": 21,
+   "start": 38,
+   "end": 42,
+   "text": "Come",
+   "sense": "come_on",
+   "chunk": {
+    "start": 38,
+    "end": 45,
+    "text": "Come on",
+    "es": "¡vamos!"
+   }
+  },
+  {
+   "p": 21,
+   "start": 58,
+   "end": 61,
+   "text": "Get",
+   "sense": "get_fetch",
+   "chunk": {
+    "start": 58,
+    "end": 71,
+    "text": "Get your bags",
+    "es": "coged las mochilas"
+   }
+  },
+  {
+   "p": 22,
+   "start": 5,
+   "end": 8,
+   "text": "run",
+   "sense": "run_out_of",
+   "chunk": {
+    "start": 5,
+    "end": 25,
+    "text": "run out of the house",
+    "es": "salen corriendo de la casa"
+   }
+  },
+  {
+   "p": 23,
+   "start": 43,
+   "end": 47,
+   "text": "time",
+   "sense": "just_in_time",
+   "chunk": {
+    "start": 35,
+    "end": 47,
+    "text": "just in time",
+    "es": "justo a tiempo"
+   }
+  },
+  {
+   "p": 24,
+   "start": 13,
+   "end": 16,
+   "text": "get",
+   "sense": "get_on",
+   "chunk": {
+    "start": 13,
+    "end": 27,
+    "text": "get on the bus",
+    "es": "suben al autobús"
+   }
+  },
+  {
+   "p": 24,
+   "start": 35,
+   "end": 40,
+   "text": "waves",
+   "sense": "wave_hand"
+  },
+  {
+   "p": 25,
+   "start": 6,
+   "end": 10,
+   "text": "goes",
+   "sense": "go_back",
+   "chunk": {
+    "start": 6,
+    "end": 15,
+    "text": "goes back",
+    "es": "vuelve"
+   }
+  },
+  {
+   "p": 25,
+   "start": 35,
+   "end": 39,
+   "text": "sits",
+   "sense": "sit_down",
+   "chunk": {
+    "start": 35,
+    "end": 44,
+    "text": "sits down",
+    "es": "se sienta"
+   }
+  },
+  {
+   "p": 26,
+   "start": 65,
+   "end": 69,
+   "text": "note",
+   "sense": "note_message"
+  }
+ ]
+}

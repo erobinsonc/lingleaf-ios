@@ -1,0 +1,1432 @@
+{
+ "schemaVersion": 1,
+ "story": "the-beat-on-the-hill",
+ "senses": {
+  "account_social": {
+   "lemma": "account",
+   "pos": "noun",
+   "ipa": "əˈkaʊnt",
+   "es": "cuenta (en una red social)",
+   "kind": "word"
+  },
+  "at_lunch": {
+   "lemma": "at lunch",
+   "pos": "phrase",
+   "ipa": "æt lʌntʃ",
+   "es": "a la hora de comer",
+   "kind": "chunk"
+  },
+  "at_same_time": {
+   "lemma": "at the same time",
+   "pos": "phrase",
+   "ipa": "æt ðə seɪm taɪm",
+   "es": "a la vez",
+   "kind": "chunk"
+  },
+  "back_rear_room": {
+   "lemma": "back",
+   "pos": "noun",
+   "ipa": "bæk",
+   "es": "fondo (de una sala)",
+   "kind": "word"
+  },
+  "bang_on": {
+   "lemma": "bang on",
+   "pos": "phrasal verb",
+   "ipa": "bæŋ ɑn",
+   "es": "golpear, aporrear",
+   "kind": "chunk"
+  },
+  "be_on": {
+   "lemma": "be on",
+   "pos": "phrase",
+   "ipa": "bi ɑn",
+   "es": "tocarle a uno (actuar)",
+   "kind": "chunk"
+  },
+  "beat_music": {
+   "lemma": "beat",
+   "pos": "noun",
+   "ipa": "bit",
+   "es": "ritmo, base (musical)",
+   "kind": "word"
+  },
+  "bite_idiom": {
+   "lemma": "bite",
+   "pos": "verb",
+   "ipa": "baɪt",
+   "es": "morder (aquí nadie muerde = no hay que tener miedo)",
+   "kind": "word"
+  },
+  "bow_head": {
+   "lemma": "bow",
+   "pos": "verb",
+   "ipa": "baʊ",
+   "es": "hacer una reverencia (/baʊ/, no /boʊ/ de \"arco\")",
+   "kind": "word"
+  },
+  "carry_up": {
+   "lemma": "carry up",
+   "pos": "phrasal verb",
+   "ipa": "ˈkɛri ʌp",
+   "es": "subir (algo pesado)",
+   "kind": "chunk"
+  },
+  "ceiling": {
+   "lemma": "ceiling",
+   "pos": "noun",
+   "ipa": "ˈsilɪŋ",
+   "es": "techo (de una habitación)",
+   "kind": "word"
+  },
+  "climb_up": {
+   "lemma": "climb up",
+   "pos": "phrasal verb",
+   "ipa": "klaɪm ʌp",
+   "es": "subir (por una cuesta)",
+   "kind": "chunk"
+  },
+  "come_back": {
+   "lemma": "come back",
+   "pos": "phrasal verb",
+   "ipa": "kʌm bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "come_in_sound": {
+   "lemma": "come in",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɪn",
+   "es": "entrar (un sonido en la música)",
+   "kind": "chunk"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "die_battery": {
+   "lemma": "die",
+   "pos": "verb",
+   "ipa": "daɪ",
+   "es": "quedarse sin batería, apagarse",
+   "kind": "word"
+  },
+  "drum_kit": {
+   "lemma": "drum kit",
+   "pos": "noun",
+   "ipa": "drʌm kɪt",
+   "es": "batería (instrumento)",
+   "kind": "chunk"
+  },
+  "drum_single": {
+   "lemma": "drum",
+   "pos": "noun",
+   "ipa": "drʌm",
+   "es": "tambor",
+   "kind": "word"
+  },
+  "drums": {
+   "lemma": "drums",
+   "pos": "noun",
+   "ipa": "drʌmz",
+   "es": "batería (instrumento)",
+   "kind": "word"
+  },
+  "face_hot": {
+   "lemma": "go hot",
+   "pos": "phrase",
+   "ipa": "ɡoʊ hɑt",
+   "es": "encenderse, ponerse rojo (la cara)",
+   "kind": "chunk"
+  },
+  "familiar_known": {
+   "lemma": "familiar",
+   "pos": "adjective",
+   "ipa": "fəˈmɪljər",
+   "es": "conocido (no \"familiar\")",
+   "kind": "word"
+  },
+  "feel_sick": {
+   "lemma": "feel sick",
+   "pos": "phrase",
+   "ipa": "fil sɪk",
+   "es": "tener náuseas, sentirse mal",
+   "kind": "chunk"
+  },
+  "find_out": {
+   "lemma": "find out",
+   "pos": "phrasal verb",
+   "ipa": "faɪnd aʊt",
+   "es": "enterarse, averiguar",
+   "kind": "chunk"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word"
+  },
+  "free_cost": {
+   "lemma": "free",
+   "pos": "adjective",
+   "ipa": "fri",
+   "es": "gratuito, gratis",
+   "kind": "word"
+  },
+  "front_row": {
+   "lemma": "front row",
+   "pos": "noun",
+   "ipa": "frʌnt roʊ",
+   "es": "primera fila",
+   "kind": "chunk"
+  },
+  "glasses_eyes": {
+   "lemma": "glasses",
+   "pos": "noun",
+   "ipa": "ˈɡlæsɪz",
+   "es": "gafas, lentes",
+   "kind": "word"
+  },
+  "ground_floor": {
+   "lemma": "ground",
+   "pos": "noun",
+   "ipa": "ɡraʊnd",
+   "es": "suelo",
+   "kind": "word"
+  },
+  "halfway_up": {
+   "lemma": "halfway up",
+   "pos": "phrase",
+   "ipa": "ˈhæfweɪ ʌp",
+   "es": "a mitad de subida",
+   "kind": "chunk"
+  },
+  "headphones_on": {
+   "lemma": "have headphones on",
+   "pos": "phrase",
+   "ipa": "hæv ˈhɛdfoʊnz ɑn",
+   "es": "llevar los auriculares puestos",
+   "kind": "chunk"
+  },
+  "high_five": {
+   "lemma": "high five",
+   "pos": "noun",
+   "ipa": "haɪ faɪv",
+   "es": "choque de manos (\"chocar los cinco\")",
+   "kind": "chunk"
+  },
+  "in_the_end": {
+   "lemma": "in the end",
+   "pos": "phrase",
+   "ipa": "ɪn ði ɛnd",
+   "es": "al final",
+   "kind": "chunk"
+  },
+  "lean_forward": {
+   "lemma": "lean forward",
+   "pos": "phrasal verb",
+   "ipa": "lin ˈfɔrwərd",
+   "es": "inclinarse hacia delante",
+   "kind": "chunk"
+  },
+  "line_drawing": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "línea, trazo (de un dibujo)",
+   "kind": "word"
+  },
+  "live_adv": {
+   "lemma": "live",
+   "pos": "adverb",
+   "ipa": "laɪv",
+   "es": "en directo (se pronuncia /laɪv/, no como \"to live\")",
+   "kind": "word"
+  },
+  "look_over": {
+   "lemma": "look over",
+   "pos": "phrasal verb",
+   "ipa": "lʊk ˈoʊvər",
+   "es": "dar a, tener vistas a",
+   "kind": "chunk"
+  },
+  "make_sound": {
+   "lemma": "make a sound",
+   "pos": "phrase",
+   "ipa": "meɪk ə saʊnd",
+   "es": "sonar",
+   "kind": "chunk"
+  },
+  "math_class": {
+   "lemma": "math class",
+   "pos": "noun",
+   "ipa": "mæθ klæs",
+   "es": "clase de matemáticas",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "miss_long": {
+   "lemma": "miss",
+   "pos": "verb",
+   "ipa": "mɪs",
+   "es": "echar de menos",
+   "kind": "word"
+  },
+  "neighbor": {
+   "lemma": "neighbor",
+   "pos": "noun",
+   "ipa": "ˈneɪbər",
+   "es": "vecino, vecina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "open_wide": {
+   "lemma": "open wide",
+   "pos": "phrase",
+   "ipa": "ˈoʊpən waɪd",
+   "es": "abrirse como platos",
+   "kind": "chunk"
+  },
+  "play_behind": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "sonar (de fondo)",
+   "kind": "word"
+  },
+  "play_instrument": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "tocar (un instrumento, música)",
+   "kind": "word"
+  },
+  "play_music_tocar": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "tocar (música)",
+   "kind": "word"
+  },
+  "post_online": {
+   "lemma": "post",
+   "pos": "verb",
+   "ipa": "poʊst",
+   "es": "publicar (en internet)",
+   "kind": "word"
+  },
+  "practice_music": {
+   "lemma": "practice",
+   "pos": "verb",
+   "ipa": "ˈpræktɪs",
+   "es": "practicar, ensayar",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "press_play": {
+   "lemma": "press play",
+   "pos": "phrase",
+   "ipa": "prɛs pleɪ",
+   "es": "darle al play",
+   "kind": "chunk"
+  },
+  "record_sound": {
+   "lemma": "record",
+   "pos": "verb",
+   "ipa": "rɪˈkɔrd",
+   "es": "grabar",
+   "kind": "word"
+  },
+  "right_correct": {
+   "lemma": "be right",
+   "pos": "phrase",
+   "ipa": "bi raɪt",
+   "es": "tener razón (no \"derecha\")",
+   "kind": "chunk"
+  },
+  "right_now": {
+   "lemma": "right now",
+   "pos": "phrase",
+   "ipa": "raɪt naʊ",
+   "es": "ahora mismo",
+   "kind": "chunk"
+  },
+  "run_manage": {
+   "lemma": "run",
+   "pos": "verb",
+   "ipa": "rʌn",
+   "es": "dirigir, llevar (un negocio, una emisora)",
+   "kind": "word"
+  },
+  "screen_display": {
+   "lemma": "screen",
+   "pos": "noun",
+   "ipa": "skrin",
+   "es": "pantalla",
+   "kind": "word"
+  },
+  "sea_lion": {
+   "lemma": "sea lion",
+   "pos": "noun",
+   "ipa": "si ˈlaɪən",
+   "es": "león marino",
+   "kind": "chunk"
+  },
+  "set_up": {
+   "lemma": "set up",
+   "pos": "phrasal verb",
+   "ipa": "sɛt ʌp",
+   "es": "preparar, montar",
+   "kind": "chunk"
+  },
+  "show_concert": {
+   "lemma": "show",
+   "pos": "noun",
+   "ipa": "ʃoʊ",
+   "es": "actuación, programa (en directo)",
+   "kind": "word"
+  },
+  "show_program": {
+   "lemma": "show",
+   "pos": "noun",
+   "ipa": "ʃoʊ",
+   "es": "programa (de radio o tele)",
+   "kind": "word"
+  },
+  "sit_up": {
+   "lemma": "sit up",
+   "pos": "phrasal verb",
+   "ipa": "sɪt ʌp",
+   "es": "incorporarse",
+   "kind": "chunk"
+  },
+  "slow_down": {
+   "lemma": "slow down",
+   "pos": "phrasal verb",
+   "ipa": "sloʊ daʊn",
+   "es": "ir más despacio, calmarse",
+   "kind": "chunk"
+  },
+  "sound_like": {
+   "lemma": "sound like",
+   "pos": "phrase",
+   "ipa": "saʊnd laɪk",
+   "es": "sonar como",
+   "kind": "chunk"
+  },
+  "speaker_audio": {
+   "lemma": "speaker",
+   "pos": "noun",
+   "ipa": "ˈspikər",
+   "es": "altavoz",
+   "kind": "word"
+  },
+  "step_stair": {
+   "lemma": "step",
+   "pos": "noun",
+   "ipa": "stɛp",
+   "es": "escalón, peldaño",
+   "kind": "word"
+  },
+  "stranger": {
+   "lemma": "stranger",
+   "pos": "noun",
+   "ipa": "ˈstreɪndʒər",
+   "es": "desconocido",
+   "kind": "word"
+  },
+  "take_out": {
+   "lemma": "take out",
+   "pos": "phrasal verb",
+   "ipa": "teɪk aʊt",
+   "es": "sacar",
+   "kind": "chunk"
+  },
+  "take_transport": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "tomar, coger (un transporte)",
+   "kind": "word"
+  },
+  "turn_into": {
+   "lemma": "turn into",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ˈɪntu",
+   "es": "convertir en",
+   "kind": "chunk"
+  },
+  "turn_off": {
+   "lemma": "turn off",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ɔf",
+   "es": "apagar",
+   "kind": "chunk"
+  },
+  "view_count": {
+   "lemma": "view",
+   "pos": "noun",
+   "ipa": "vju",
+   "es": "visualización, reproducción",
+   "kind": "word"
+  },
+  "walk_down": {
+   "lemma": "walk down",
+   "pos": "phrasal verb",
+   "ipa": "wɔk daʊn",
+   "es": "bajar (a pie)",
+   "kind": "chunk"
+  },
+  "walk_up": {
+   "lemma": "walk up",
+   "pos": "phrasal verb",
+   "ipa": "wɔk ʌp",
+   "es": "subir (a pie)",
+   "kind": "chunk"
+  },
+  "wave_hand": {
+   "lemma": "wave",
+   "pos": "verb",
+   "ipa": "weɪv",
+   "es": "saludar con la mano",
+   "kind": "word"
+  },
+  "wave_noun": {
+   "lemma": "wave",
+   "pos": "noun",
+   "ipa": "weɪv",
+   "es": "saludo con la mano",
+   "kind": "word"
+  },
+  "write_back": {
+   "lemma": "write back",
+   "pos": "phrasal verb",
+   "ipa": "raɪt bæk",
+   "es": "contestar (por escrito)",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 1,
+   "start": 73,
+   "end": 79,
+   "text": "climbs",
+   "sense": "climb_up",
+   "chunk": {
+    "start": 73,
+    "end": 82,
+    "text": "climbs up",
+    "es": "sube por"
+   }
+  },
+  {
+   "p": 1,
+   "start": 223,
+   "end": 228,
+   "text": "walks",
+   "sense": "walk_down",
+   "chunk": {
+    "start": 223,
+    "end": 233,
+    "text": "walks down",
+    "es": "baja"
+   }
+  },
+  {
+   "p": 2,
+   "start": 16,
+   "end": 20,
+   "text": "play",
+   "sense": "play_instrument",
+   "chunk": {
+    "start": 16,
+    "end": 30,
+    "text": "play the drums",
+    "es": "tocar la batería"
+   }
+  },
+  {
+   "p": 2,
+   "start": 25,
+   "end": 30,
+   "text": "drums",
+   "sense": "drums"
+  },
+  {
+   "p": 2,
+   "start": 78,
+   "end": 82,
+   "text": "drum",
+   "sense": "drum_kit",
+   "chunk": {
+    "start": 78,
+    "end": 86,
+    "text": "drum kit",
+    "es": "batería"
+   }
+  },
+  {
+   "p": 2,
+   "start": 133,
+   "end": 141,
+   "text": "practice",
+   "sense": "practice_music"
+  },
+  {
+   "p": 2,
+   "start": 176,
+   "end": 185,
+   "text": "neighbors",
+   "sense": "neighbor"
+  },
+  {
+   "p": 2,
+   "start": 194,
+   "end": 198,
+   "text": "bang",
+   "sense": "bang_on",
+   "chunk": {
+    "start": 194,
+    "end": 210,
+    "text": "bang on the wall",
+    "es": "golpear la pared"
+   }
+  },
+  {
+   "p": 2,
+   "start": 219,
+   "end": 222,
+   "text": "end",
+   "sense": "in_the_end",
+   "chunk": {
+    "start": 212,
+    "end": 222,
+    "text": "In the end",
+    "es": "Al final"
+   }
+  },
+  {
+   "p": 2,
+   "start": 244,
+   "end": 249,
+   "text": "drums",
+   "sense": "drums"
+  },
+  {
+   "p": 3,
+   "start": 18,
+   "end": 23,
+   "text": "beats",
+   "sense": "beat_music"
+  },
+  {
+   "p": 3,
+   "start": 48,
+   "end": 52,
+   "text": "free",
+   "sense": "free_cost",
+   "chunk": {
+    "start": 46,
+    "end": 56,
+    "text": "a free app",
+    "es": "una aplicación gratuita"
+   }
+  },
+  {
+   "p": 3,
+   "start": 71,
+   "end": 77,
+   "text": "record",
+   "sense": "record_sound"
+  },
+  {
+   "p": 3,
+   "start": 89,
+   "end": 93,
+   "text": "turn",
+   "sense": "turn_into",
+   "chunk": {
+    "start": 89,
+    "end": 109,
+    "text": "turn them into music",
+    "es": "convertirlos en música"
+   }
+  },
+  {
+   "p": 3,
+   "start": 118,
+   "end": 126,
+   "text": "recorded",
+   "sense": "record_sound"
+  },
+  {
+   "p": 3,
+   "start": 174,
+   "end": 181,
+   "text": "carries",
+   "sense": "carry_up",
+   "chunk": {
+    "start": 174,
+    "end": 200,
+    "text": "carries people up the hill",
+    "es": "sube a la gente por la colina"
+   }
+  },
+  {
+   "p": 3,
+   "start": 209,
+   "end": 217,
+   "text": "recorded",
+   "sense": "record_sound"
+  },
+  {
+   "p": 3,
+   "start": 283,
+   "end": 291,
+   "text": "recorded",
+   "sense": "record_sound"
+  },
+  {
+   "p": 3,
+   "start": 300,
+   "end": 305,
+   "text": "lions",
+   "sense": "sea_lion",
+   "chunk": {
+    "start": 296,
+    "end": 305,
+    "text": "sea lions",
+    "es": "leones marinos"
+   }
+  },
+  {
+   "p": 6,
+   "start": 68,
+   "end": 73,
+   "text": "lunch",
+   "sense": "at_lunch",
+   "chunk": {
+    "start": 65,
+    "end": 73,
+    "text": "at lunch",
+    "es": "a la hora de comer"
+   }
+  },
+  {
+   "p": 6,
+   "start": 147,
+   "end": 157,
+   "text": "headphones",
+   "sense": "headphones_on",
+   "chunk": {
+    "start": 139,
+    "end": 160,
+    "text": "had his headphones on",
+    "es": "llevaba los auriculares puestos"
+   }
+  },
+  {
+   "p": 6,
+   "start": 191,
+   "end": 195,
+   "text": "beat",
+   "sense": "beat_music"
+  },
+  {
+   "p": 9,
+   "start": 75,
+   "end": 79,
+   "text": "wide",
+   "sense": "open_wide",
+   "chunk": {
+    "start": 59,
+    "end": 79,
+    "text": "Her eyes opened wide",
+    "es": "Abrió los ojos como platos"
+   }
+  },
+  {
+   "p": 9,
+   "start": 113,
+   "end": 119,
+   "text": "sounds",
+   "sense": "sound_like",
+   "chunk": {
+    "start": 113,
+    "end": 133,
+    "text": "sounds like the city",
+    "es": "suena como la ciudad"
+   }
+  },
+  {
+   "p": 10,
+   "start": 20,
+   "end": 23,
+   "text": "hot",
+   "sense": "face_hot",
+   "chunk": {
+    "start": 10,
+    "end": 23,
+    "text": "face went hot",
+    "es": "se le encendió la cara"
+   }
+  },
+  {
+   "p": 12,
+   "start": 90,
+   "end": 97,
+   "text": "account",
+   "sense": "account_social"
+  },
+  {
+   "p": 12,
+   "start": 173,
+   "end": 177,
+   "text": "beat",
+   "sense": "beat_music"
+  },
+  {
+   "p": 12,
+   "start": 178,
+   "end": 184,
+   "text": "played",
+   "sense": "play_behind"
+  },
+  {
+   "p": 12,
+   "start": 202,
+   "end": 208,
+   "text": "posted",
+   "sense": "post_online"
+  },
+  {
+   "p": 13,
+   "start": 60,
+   "end": 65,
+   "text": "views",
+   "sense": "view_count"
+  },
+  {
+   "p": 14,
+   "start": 26,
+   "end": 35,
+   "text": "Strangers",
+   "sense": "stranger"
+  },
+  {
+   "p": 15,
+   "start": 3,
+   "end": 8,
+   "text": "found",
+   "sense": "find_out",
+   "chunk": {
+    "start": 3,
+    "end": 12,
+    "text": "found out",
+    "es": "se enteró"
+   }
+  },
+  {
+   "p": 15,
+   "start": 59,
+   "end": 63,
+   "text": "math",
+   "sense": "math_class",
+   "chunk": {
+    "start": 59,
+    "end": 69,
+    "text": "math class",
+    "es": "clase de matemáticas"
+   }
+  },
+  {
+   "p": 15,
+   "start": 70,
+   "end": 76,
+   "text": "leaned",
+   "sense": "lean_forward",
+   "chunk": {
+    "start": 70,
+    "end": 84,
+    "text": "leaned forward",
+    "es": "se inclinó hacia delante"
+   }
+  },
+  {
+   "p": 16,
+   "start": 33,
+   "end": 37,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 17,
+   "start": 8,
+   "end": 12,
+   "text": "sick",
+   "sense": "feel_sick",
+   "chunk": {
+    "start": 3,
+    "end": 12,
+    "text": "felt sick",
+    "es": "sintió náuseas"
+   }
+  },
+  {
+   "p": 17,
+   "start": 35,
+   "end": 39,
+   "text": "time",
+   "sense": "at_same_time",
+   "chunk": {
+    "start": 23,
+    "end": 39,
+    "text": "at the same time",
+    "es": "a la vez"
+   }
+  },
+  {
+   "p": 17,
+   "start": 41,
+   "end": 50,
+   "text": "Strangers",
+   "sense": "stranger"
+  },
+  {
+   "p": 21,
+   "start": 76,
+   "end": 81,
+   "text": "right",
+   "sense": "right_correct",
+   "chunk": {
+    "start": 69,
+    "end": 81,
+    "text": "You're right",
+    "es": "Tienes razón"
+   }
+  },
+  {
+   "p": 21,
+   "start": 120,
+   "end": 124,
+   "text": "took",
+   "sense": "take_out",
+   "chunk": {
+    "start": 120,
+    "end": 138,
+    "text": "took out her phone",
+    "es": "sacó el móvil"
+   }
+  },
+  {
+   "p": 21,
+   "start": 163,
+   "end": 166,
+   "text": "now",
+   "sense": "right_now",
+   "chunk": {
+    "start": 157,
+    "end": 166,
+    "text": "right now",
+    "es": "ahora mismo"
+   }
+  },
+  {
+   "p": 22,
+   "start": 82,
+   "end": 86,
+   "text": "miss",
+   "sense": "miss_long"
+  },
+  {
+   "p": 25,
+   "start": 110,
+   "end": 115,
+   "text": "sound",
+   "sense": "make_sound",
+   "chunk": {
+    "start": 103,
+    "end": 115,
+    "text": "made a sound",
+    "es": "sonó"
+   }
+  },
+  {
+   "p": 26,
+   "start": 42,
+   "end": 46,
+   "text": "runs",
+   "sense": "run_manage"
+  },
+  {
+   "p": 26,
+   "start": 164,
+   "end": 168,
+   "text": "show",
+   "sense": "show_program"
+  },
+  {
+   "p": 26,
+   "start": 241,
+   "end": 245,
+   "text": "live",
+   "sense": "live_adv",
+   "chunk": {
+    "start": 225,
+    "end": 245,
+    "text": "play your music live",
+    "es": "tocar tu música en directo"
+   }
+  },
+  {
+   "p": 27,
+   "start": 8,
+   "end": 11,
+   "text": "sat",
+   "sense": "sit_up",
+   "chunk": {
+    "start": 8,
+    "end": 14,
+    "text": "sat up",
+    "es": "se incorporó"
+   }
+  },
+  {
+   "p": 27,
+   "start": 24,
+   "end": 28,
+   "text": "live",
+   "sense": "live_adv"
+  },
+  {
+   "p": 28,
+   "start": 3,
+   "end": 8,
+   "text": "wrote",
+   "sense": "write_back",
+   "chunk": {
+    "start": 3,
+    "end": 13,
+    "text": "wrote back",
+    "es": "contestó"
+   }
+  },
+  {
+   "p": 28,
+   "start": 47,
+   "end": 52,
+   "text": "beats",
+   "sense": "beat_music"
+  },
+  {
+   "p": 29,
+   "start": 43,
+   "end": 49,
+   "text": "played",
+   "sense": "play_music_tocar"
+  },
+  {
+   "p": 29,
+   "start": 57,
+   "end": 61,
+   "text": "show",
+   "sense": "show_program"
+  },
+  {
+   "p": 30,
+   "start": 3,
+   "end": 9,
+   "text": "turned",
+   "sense": "turn_off",
+   "chunk": {
+    "start": 3,
+    "end": 23,
+    "text": "turned off his phone",
+    "es": "apagó el móvil"
+   }
+  },
+  {
+   "p": 30,
+   "start": 42,
+   "end": 49,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 30,
+   "start": 72,
+   "end": 77,
+   "text": "drums",
+   "sense": "drums"
+  },
+  {
+   "p": 30,
+   "start": 188,
+   "end": 194,
+   "text": "missed",
+   "sense": "miss_long"
+  },
+  {
+   "p": 36,
+   "start": 83,
+   "end": 87,
+   "text": "dies",
+   "sense": "die_battery"
+  },
+  {
+   "p": 37,
+   "start": 98,
+   "end": 102,
+   "text": "play",
+   "sense": "play_music_tocar"
+  },
+  {
+   "p": 37,
+   "start": 112,
+   "end": 116,
+   "text": "live",
+   "sense": "live_adv"
+  },
+  {
+   "p": 37,
+   "start": 127,
+   "end": 133,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 38,
+   "start": 112,
+   "end": 118,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 38,
+   "start": 142,
+   "end": 148,
+   "text": "slowed",
+   "sense": "slow_down",
+   "chunk": {
+    "start": 142,
+    "end": 153,
+    "text": "slowed down",
+    "es": "se calmó"
+   }
+  },
+  {
+   "p": 41,
+   "start": 77,
+   "end": 83,
+   "text": "looked",
+   "sense": "look_over",
+   "chunk": {
+    "start": 77,
+    "end": 102,
+    "text": "looked over the whole bay",
+    "es": "daban a toda la bahía"
+   }
+  },
+  {
+   "p": 41,
+   "start": 192,
+   "end": 197,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 41,
+   "start": 259,
+   "end": 265,
+   "text": "record",
+   "sense": "record_sound"
+  },
+  {
+   "p": 42,
+   "start": 33,
+   "end": 41,
+   "text": "familiar",
+   "sense": "familiar_known"
+  },
+  {
+   "p": 42,
+   "start": 96,
+   "end": 100,
+   "text": "show",
+   "sense": "show_concert"
+  },
+  {
+   "p": 42,
+   "start": 166,
+   "end": 170,
+   "text": "wave",
+   "sense": "wave_noun"
+  },
+  {
+   "p": 43,
+   "start": 34,
+   "end": 41,
+   "text": "glasses",
+   "sense": "glasses_eyes"
+  },
+  {
+   "p": 43,
+   "start": 72,
+   "end": 74,
+   "text": "on",
+   "sense": "be_on",
+   "chunk": {
+    "start": 65,
+    "end": 89,
+    "text": "You're on after the poet",
+    "es": "Te toca después del poeta"
+   }
+  },
+  {
+   "p": 43,
+   "start": 145,
+   "end": 150,
+   "text": "bites",
+   "sense": "bite_idiom",
+   "chunk": {
+    "start": 133,
+    "end": 150,
+    "text": "Nobody here bites",
+    "es": "Aquí nadie muerde"
+   }
+  },
+  {
+   "p": 44,
+   "start": 35,
+   "end": 43,
+   "text": "speakers",
+   "sense": "speaker_audio"
+  },
+  {
+   "p": 44,
+   "start": 76,
+   "end": 79,
+   "text": "set",
+   "sense": "set_up",
+   "chunk": {
+    "start": 76,
+    "end": 93,
+    "text": "set up her tablet",
+    "es": "preparó la tableta"
+   }
+  },
+  {
+   "p": 44,
+   "start": 109,
+   "end": 113,
+   "text": "line",
+   "sense": "line_drawing"
+  },
+  {
+   "p": 44,
+   "start": 134,
+   "end": 140,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 47,
+   "start": 11,
+   "end": 15,
+   "text": "play",
+   "sense": "press_play",
+   "chunk": {
+    "start": 3,
+    "end": 15,
+    "text": "pressed play",
+    "es": "le dio al play"
+   }
+  },
+  {
+   "p": 47,
+   "start": 94,
+   "end": 98,
+   "text": "came",
+   "sense": "come_in_sound",
+   "chunk": {
+    "start": 94,
+    "end": 101,
+    "text": "came in",
+    "es": "entró"
+   }
+  },
+  {
+   "p": 47,
+   "start": 136,
+   "end": 140,
+   "text": "beat",
+   "sense": "beat_music"
+  },
+  {
+   "p": 47,
+   "start": 208,
+   "end": 214,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 48,
+   "start": 104,
+   "end": 107,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 98,
+    "end": 107,
+    "text": "front row",
+    "es": "primera fila"
+   }
+  },
+  {
+   "p": 48,
+   "start": 212,
+   "end": 216,
+   "text": "back",
+   "sense": "back_rear_room",
+   "chunk": {
+    "start": 205,
+    "end": 216,
+    "text": "at the back",
+    "es": "al fondo"
+   }
+  },
+  {
+   "p": 51,
+   "start": 151,
+   "end": 156,
+   "text": "waved",
+   "sense": "wave_hand"
+  },
+  {
+   "p": 51,
+   "start": 166,
+   "end": 171,
+   "text": "bowed",
+   "sense": "bow_head"
+  },
+  {
+   "p": 52,
+   "start": 79,
+   "end": 84,
+   "text": "taken",
+   "sense": "take_transport"
+  },
+  {
+   "p": 53,
+   "start": 23,
+   "end": 27,
+   "text": "five",
+   "sense": "high_five",
+   "chunk": {
+    "start": 16,
+    "end": 27,
+    "text": "a high five",
+    "es": "un choque de manos"
+   }
+  },
+  {
+   "p": 53,
+   "start": 30,
+   "end": 34,
+   "text": "Come",
+   "sense": "come_back",
+   "chunk": {
+    "start": 30,
+    "end": 39,
+    "text": "Come back",
+    "es": "Vuelve"
+   }
+  },
+  {
+   "p": 55,
+   "start": 21,
+   "end": 26,
+   "text": "drums",
+   "sense": "drums"
+  },
+  {
+   "p": 56,
+   "start": 47,
+   "end": 52,
+   "text": "drums",
+   "sense": "drums"
+  },
+  {
+   "p": 56,
+   "start": 74,
+   "end": 78,
+   "text": "drum",
+   "sense": "drum_single"
+  },
+  {
+   "p": 57,
+   "start": 83,
+   "end": 90,
+   "text": "Halfway",
+   "sense": "halfway_up",
+   "chunk": {
+    "start": 83,
+    "end": 93,
+    "text": "Halfway up",
+    "es": "A mitad de subida"
+   }
+  },
+  {
+   "p": 57,
+   "start": 110,
+   "end": 114,
+   "text": "took",
+   "sense": "take_out",
+   "chunk": {
+    "start": 110,
+    "end": 128,
+    "text": "took out his phone",
+    "es": "sacó el móvil"
+   }
+  },
+  {
+   "p": 59,
+   "start": 1,
+   "end": 10,
+   "text": "Recording",
+   "sense": "record_sound"
+  },
+  {
+   "p": 59,
+   "start": 49,
+   "end": 55,
+   "text": "ground",
+   "sense": "ground_floor"
+  },
+  {
+   "p": 59,
+   "start": 58,
+   "end": 62,
+   "text": "Walk",
+   "sense": "walk_up",
+   "chunk": {
+    "start": 58,
+    "end": 76,
+    "text": "Walk up the stairs",
+    "es": "Sube las escaleras"
+   }
+  },
+  {
+   "p": 60,
+   "start": 52,
+   "end": 56,
+   "text": "step",
+   "sense": "step_stair"
+  }
+ ]
+}

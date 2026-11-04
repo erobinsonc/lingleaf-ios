@@ -1,0 +1,310 @@
+{
+ "schemaVersion": 1,
+ "story": "nours-long-race",
+ "senses": {
+  "coach_trainer": {
+   "lemma": "coach",
+   "pos": "noun",
+   "ipa": "koʊtʃ",
+   "es": "entrenador, entrenadora",
+   "kind": "word"
+  },
+  "finish_line": {
+   "lemma": "finish line",
+   "pos": "noun",
+   "ipa": "ˈfɪnɪʃ laɪn",
+   "es": "línea de meta",
+   "kind": "chunk"
+  },
+  "grandpa": {
+   "lemma": "grandpa",
+   "pos": "noun",
+   "ipa": "ˈɡrænpɑ",
+   "es": "abuelo",
+   "kind": "word"
+  },
+  "lap_around": {
+   "lemma": "time around",
+   "pos": "phrase",
+   "ipa": "taɪm əˈraʊnd",
+   "es": "vuelta (a la pista)",
+   "kind": "chunk"
+  },
+  "move_up": {
+   "lemma": "move up",
+   "pos": "phrasal verb",
+   "ipa": "muv ʌp",
+   "es": "subir puestos, avanzar",
+   "kind": "chunk"
+  },
+  "pass_overtake": {
+   "lemma": "pass",
+   "pos": "verb",
+   "ipa": "pæs",
+   "es": "adelantar (en una carrera)",
+   "kind": "word"
+  },
+  "place_position": {
+   "lemma": "place",
+   "pos": "noun",
+   "ipa": "pleɪs",
+   "es": "puesto (en una clasificación)",
+   "kind": "word"
+  },
+  "practice_training": {
+   "lemma": "practice",
+   "pos": "noun",
+   "ipa": "ˈpræktɪs",
+   "es": "entrenamiento",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "race_run": {
+   "lemma": "race",
+   "pos": "noun",
+   "ipa": "reɪs",
+   "es": "carrera",
+   "kind": "word"
+  },
+  "run_hard": {
+   "lemma": "hard",
+   "pos": "adverb",
+   "ipa": "hɑrd",
+   "es": "con todas sus fuerzas",
+   "kind": "word"
+  },
+  "sign_poster": {
+   "lemma": "sign",
+   "pos": "noun",
+   "ipa": "saɪn",
+   "es": "cartel, letrero",
+   "kind": "word"
+  },
+  "track_sport": {
+   "lemma": "track",
+   "pos": "noun",
+   "ipa": "træk",
+   "es": "pista (de atletismo)",
+   "kind": "word"
+  },
+  "try_attempt": {
+   "lemma": "try",
+   "pos": "verb",
+   "ipa": "traɪ",
+   "es": "intentar, probar (no \"probarse\")",
+   "kind": "word"
+  },
+  "try_noun": {
+   "lemma": "try",
+   "pos": "noun",
+   "ipa": "traɪ",
+   "es": "intento",
+   "kind": "word"
+  },
+  "walk_noun": {
+   "lemma": "walk",
+   "pos": "noun",
+   "ipa": "wɔk",
+   "es": "paseo, caminata",
+   "kind": "word"
+  },
+  "watch_clock": {
+   "lemma": "watch",
+   "pos": "noun",
+   "ipa": "wɑtʃ",
+   "es": "reloj (de pulsera)",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 1,
+   "start": 43,
+   "end": 48,
+   "text": "track",
+   "sense": "track_sport"
+  },
+  {
+   "p": 1,
+   "start": 54,
+   "end": 59,
+   "text": "coach",
+   "sense": "coach_trainer"
+  },
+  {
+   "p": 1,
+   "start": 82,
+   "end": 87,
+   "text": "watch",
+   "sense": "watch_clock"
+  },
+  {
+   "p": 1,
+   "start": 125,
+   "end": 129,
+   "text": "race",
+   "sense": "race_run"
+  },
+  {
+   "p": 2,
+   "start": 15,
+   "end": 19,
+   "text": "hard",
+   "sense": "run_hard",
+   "chunk": {
+    "start": 5,
+    "end": 19,
+    "text": "runs very hard",
+    "es": "corre con todas sus fuerzas"
+   }
+  },
+  {
+   "p": 3,
+   "start": 6,
+   "end": 9,
+   "text": "try",
+   "sense": "try_noun",
+   "chunk": {
+    "start": 1,
+    "end": 9,
+    "text": "Good try",
+    "es": "buen intento"
+   }
+  },
+  {
+   "p": 5,
+   "start": 6,
+   "end": 14,
+   "text": "practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 8,
+   "start": 50,
+   "end": 55,
+   "text": "walks",
+   "sense": "walk_noun"
+  },
+  {
+   "p": 8,
+   "start": 61,
+   "end": 68,
+   "text": "Grandpa",
+   "sense": "grandpa"
+  },
+  {
+   "p": 10,
+   "start": 44,
+   "end": 47,
+   "text": "try",
+   "sense": "try_attempt"
+  },
+  {
+   "p": 11,
+   "start": 36,
+   "end": 39,
+   "text": "Try",
+   "sense": "try_attempt",
+   "chunk": {
+    "start": 36,
+    "end": 54,
+    "text": "Try it on Saturday",
+    "es": "pruébala el sábado (la carrera)"
+   }
+  },
+  {
+   "p": 12,
+   "start": 68,
+   "end": 73,
+   "text": "track",
+   "sense": "track_sport"
+  },
+  {
+   "p": 12,
+   "start": 93,
+   "end": 97,
+   "text": "sign",
+   "sense": "sign_poster"
+  },
+  {
+   "p": 14,
+   "start": 4,
+   "end": 9,
+   "text": "track",
+   "sense": "track_sport"
+  },
+  {
+   "p": 14,
+   "start": 140,
+   "end": 147,
+   "text": "passing",
+   "sense": "pass_overtake"
+  },
+  {
+   "p": 14,
+   "start": 170,
+   "end": 177,
+   "text": "passing",
+   "sense": "pass_overtake"
+  },
+  {
+   "p": 15,
+   "start": 30,
+   "end": 36,
+   "text": "moving",
+   "sense": "move_up",
+   "chunk": {
+    "start": 30,
+    "end": 39,
+    "text": "moving up",
+    "es": "subiendo puestos"
+   }
+  },
+  {
+   "p": 16,
+   "start": 19,
+   "end": 23,
+   "text": "time",
+   "sense": "lap_around",
+   "chunk": {
+    "start": 10,
+    "end": 30,
+    "text": "the last time around",
+    "es": "la última vuelta"
+   }
+  },
+  {
+   "p": 16,
+   "start": 120,
+   "end": 124,
+   "text": "line",
+   "sense": "finish_line",
+   "chunk": {
+    "start": 113,
+    "end": 124,
+    "text": "finish line",
+    "es": "línea de meta"
+   }
+  },
+  {
+   "p": 18,
+   "start": 31,
+   "end": 36,
+   "text": "place",
+   "sense": "place_position",
+   "chunk": {
+    "start": 24,
+    "end": 36,
+    "text": "Second place",
+    "es": "segundo puesto"
+   }
+  },
+  {
+   "p": 21,
+   "start": 64,
+   "end": 68,
+   "text": "sign",
+   "sense": "sign_poster"
+  }
+ ]
+}
