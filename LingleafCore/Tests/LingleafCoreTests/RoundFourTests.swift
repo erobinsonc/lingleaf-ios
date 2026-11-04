@@ -83,6 +83,28 @@ final class RoundFourTests: XCTestCase {
         XCTAssertFalse(table.hasNounIPA("left"))
     }
 
+    func testAHomographsNounHasItsSpanishMeaningInTheTable() {
+        XCTAssertEqual(table.tableMeaning(.noun, base: "left"), "izquierda")
+        XCTAssertEqual(table.tableMeaning(.noun, base: "ground"), "suelo, tierra")
+        XCTAssertEqual(table.tableMeaning(.noun, base: "life", first: true), "vida", "the noun of \"lives\"")
+        XCTAssertEqual(table.tableMeaning(.noun, base: "lie"), "mentira", "the twin's noun first")
+        XCTAssertEqual(table.homographNounEs("wind"), ["viento"])
+        XCTAssertNil(table.tableMeaning(.noun, base: "tear"), "its sense depends on its sound: none rather than half")
+        XCTAssertNil(table.tableMeaning(.noun, base: "lead"))
+        XCTAssertNil(table.tableMeaning(.noun, base: "cat"))
+        XCTAssertNil(table.homographNounEs("found"), "not a noun")
+    }
+
+    func testWordsAroundItThatPointToTwoSoundsProveNeitherAndTheNextWordBeatsTheOneBefore() {
+        XCTAssertNil(nounIPA("The detective found lead in the metal pipes.", "lead"), "metal says lɛd, detective liːd")
+        XCTAssertNil(nounIPA("Tears ran down her face as she mended the shirt.", "Tears"))
+        XCTAssertEqual(nounIPA("The metal in the lead was old.", "lead"), "lɛd", "one sound's words only")
+        XCTAssertEqual(nounIPA("She worked with lead detective Marsh.", "lead"), "liːd", "the next word beats \"with\"")
+        XCTAssertEqual(nounIPA("There was a tear in her voice.", "tear"), "tɪr")
+        XCTAssertEqual(nounIPA("There was a tear in her shirt.", "tear"), "tɛr")
+        XCTAssertNil(nounIPA("A tear in his eye and a tear in his shirt.", "tear"), "eye and shirt")
+    }
+
     func testEachSenseHasItsOwnEnglishQueryAndAGlossWhenTwoRowsMatch() {
         XCTAssertEqual(table.query(.verb, base: "lie"), "to lie down")
         XCTAssertEqual(table.query(.homonym, base: "lie"), "to tell a lie")
@@ -363,6 +385,10 @@ final class RoundFourTests: XCTestCase {
         try refused(withVerb("lie") { $0["sEs"] = " estar" }, "sEs with a space around")
         try refused(withHomonym { $0["nounEs"] = nil }, "a noun without its meanings")
         try refused(withHomonym { $0["noun"] = "Lie" }, "noun not a–z")
+        try refused(withHomograph("left") { $0["nounEs"] = [String]() }, "no noun meanings")
+        try refused(withHomograph("left") { $0["nounEs"] = [" izquierda"] }, "a space around the meaning")
+        try refused(withHomograph("found") { $0["nounEs"] = ["x"] }, "meanings without a noun")
+        try refused(withHomograph("winds") { $0["nounEs"] = ["aire"] }, "wind and winds disagree")
         try refused(withHomonym { $0["nounEs"] = [String]() }, "no noun meanings")
         try refused(withHomonym { $0["query"] = "tell a lie!" }, "homonym query")
         try refused(withVerb("lie") { $0["ipa"] = ["base": "lcy"] }, "c and y are not IPA here")

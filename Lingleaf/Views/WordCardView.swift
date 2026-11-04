@@ -11,6 +11,9 @@ struct WordCardView: View {
     var fullHeight = false
     /// Reads the book aloud from this sentence on; nil hides the button.
     var onReadFromHere: (() -> Void)?
+    /// Told the height that fits the whole card (its content, the buttons and the sheet's edge), for a
+    /// sheet that opens at the card's own height; nil when nothing needs it.
+    var onFittedHeight: ((CGFloat) -> Void)?
     /// Called when a button changed the word, just before the card closes, with
     /// the message (and its Undo) the reader shows.
     let onAction: (UndoMessage) -> Void
@@ -36,6 +39,12 @@ struct WordCardView: View {
     /// The chosen reading's look-up has answered: only then can there be "no definition".
     @State private var choiceLoaded = false
     @State private var choiceMeanings: [String: String] = [:]
+    /// What the content and the buttons measure, to tell `onFittedHeight`.
+    @State private var contentHeight: CGFloat = 0
+    @State private var actionsHeight: CGFloat = 0
+
+    /// The sheet's drag indicator and, on iOS 26, the panel's margin: added to the content's height.
+    private static let sheetChrome: CGFloat = 40
 
     /// Where the translation of a reading ("to leave" → "irse") is kept in `translations`.
     private static let readingKey = "\u{1}reading"
@@ -189,25 +198,34 @@ struct WordCardView: View {
         selection.function == nil ? selection.word : selection.chunk
     }
 
+    /// One order for both variants: the word and its IPA, its translation and the language, the
+    /// sentence with its translation and Read from here, the two readings (a word whose sentence
+    /// doesn't tell), then the definition (SPEC S3).
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 10) {
                     header
-                    if isUnsure {
-                        unsureContent
-                    } else {
-                        translationView
-                        definitionView
-                        Divider().padding(.vertical, 4)
-                        contextView(readFromHere: true)
-                    }
+                    translationView
+                    Divider().padding(.vertical, 4)
+                    contextView(readFromHere: true)
+                    if isUnsure { readingsView }
+                    // A word whose sentence doesn't tell shows a definition only for the reading chosen.
+                    if !isUnsure || chosen != nil { definitionView }
                 }
                 .padding(.horizontal, 24)
                 .padding(.top, 24)
                 .padding(.bottom, 12)
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                    contentHeight = height
+                    reportFittedHeight()
+                }
             }
             actions
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { height in
+                    actionsHeight = height
+                    reportFittedHeight()
+                }
         }
         // iOS 26: the sheet stays system glass at its edge, but the content sits on one opaque
         // panel so the book never shows through the text (glass is for controls, not content).
@@ -234,31 +252,28 @@ struct WordCardView: View {
         .noVoiceAlert(model.speaker)
     }
 
-    /// The sentence doesn't tell (SPEC S3): the sentence and its translation, the guide line and
-    /// the two readings; once one is chosen, its definition; then the language and Read from here.
-    /// With no language yet, the choice of one comes right after the sentence.
-    @ViewBuilder
-    private var unsureContent: some View {
-        Divider().padding(.vertical, 4)
-        contextView(readFromHere: false)
-        if model.targetLanguage == nil { LanguageChooser() }
-        if translationFailed {
-            Text("Translation unavailable. Connect to the internet once to download the language.")
-                .font(.footnote)
-                .foregroundStyle(Brand.secondaryText)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fixedSize(horizontal: false, vertical: true)
-        }
+    /// The sentence doesn't tell (SPEC S3): the guide line and the two readings, none chosen.
+    private var readingsView: some View {
         ReadingChoicesView(
-            choices: choices, chosen: $chosen, meanings: rowMeanings, language: translatedInto,
+            choices: choices, chosen: $chosen, meanings: shownRowMeanings, language: translatedInto,
             translating: translatedInto != nil && !translationFailed,
             // The sentence's translation can tell only when it shows or is on its way.
             sentenceTells: model.targetLanguage != nil && !translationFailed
         )
         .padding(.top, 4)
-        if chosen != nil { definitionView }
-        if let target = model.targetLanguage { LanguageMenu(current: target) }
-        readFromHereButton
+    }
+
+    /// The rows' meanings; offline, a row with its meaning beside one without would point at the first,
+    /// so none shows (SPEC S3).
+    private var shownRowMeanings: [String: String] {
+        let meanings = rowMeanings
+        if translationFailed, choices.contains(where: { meanings[$0.id]?.isEmpty ?? true }) { return [:] }
+        return meanings
+    }
+
+    private func reportFittedHeight() {
+        guard contentHeight > 0, actionsHeight > 0 else { return }
+        onFittedHeight?(contentHeight + actionsHeight + Self.sheetChrome)
     }
 
     /// The note of a helper or modal verb, else the dictionary's definition.
@@ -291,16 +306,14 @@ struct WordCardView: View {
         // A definition the app cut ends with "…", before ", shortened".
         let shown = entry.definitionTruncated ? definition + "…" : definition
         // Unsure, the chosen reading's definition lines up with its rows; else centred under the headword.
-        return Text("\(Text(partOfSpeech).italic()) · \(shown) \(source)")
-            .font(.footnote)
-            .foregroundStyle(Brand.secondaryText)
-            .multilineTextAlignment(isUnsure ? .leading : .center)
-            .frame(maxWidth: isUnsure ? .infinity : nil, alignment: .leading)
-            .accessibilityLabel(
-                partOfSpeech.isEmpty
-                    ? Text("\(spoken). Source: Wiktionary.")
-                    : Text("\(partOfSpeech): \(spoken). Source: Wiktionary.")
-            )
+        return ExpandableText(
+            text: Text("\(Text(partOfSpeech).italic()) · \(shown) \(source)"),
+            spoken: partOfSpeech.isEmpty
+                ? Text("\(spoken). Source: Wiktionary.")
+                : Text("\(partOfSpeech): \(spoken). Source: Wiktionary."),
+            alignment: isUnsure ? .leading : .center,
+            fillsWidth: isUnsure
+        )
     }
 
     private var header: some View {
@@ -343,6 +356,9 @@ struct WordCardView: View {
                 }
                 if let translation {
                     Text(translation).font(.title2).multilineTextAlignment(.center)
+                } else if isUnsure && chosen == nil && !translationFailed {
+                    // Nothing to translate until a reading is chosen: the rows below carry the meanings.
+                    EmptyView()
                 } else if wordSource == nil {
                     EmptyView()
                 } else if translationFailed {

@@ -408,6 +408,16 @@
         }
       }
     },
+    "Back to Words": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a Palabras"
+          }
+        }
+      }
+    },
     "Can't read aloud": {
       "localizations": {
         "es": {
@@ -539,16 +549,6 @@
         }
       }
     },
-    "Done": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Listo"
-          }
-        }
-      }
-    },
     "Done for now.": {
       "localizations": {
         "es": {
@@ -585,6 +585,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Filtro"
+          }
+        }
+      }
+    },
+    "Fixed": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Corregida"
           }
         }
       }
@@ -838,6 +848,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Verbo modal"
+          }
+        }
+      }
+    },
+    "More": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Más"
           }
         }
       }
@@ -1360,6 +1380,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar significado"
+          }
+        }
+      }
+    },
+    "Show the full definition": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar la definición completa"
           }
         }
       }

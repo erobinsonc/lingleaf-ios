@@ -41,6 +41,15 @@ enum Brand {
 /// from a server's answer, and opens in the system browser.
 enum Credits {
     static let privacyPolicyURL = URL(string: "https://github.com/erobinsonc/lingleaf-ios/blob/main/PRIVACY.md")!
+    /// The same file at its Spanish summary ("Política de privacidad de Lingleaf (resumen en español)").
+    static let privacyPolicySpanishURL = URL(
+        string: privacyPolicyURL.absoluteString + "#pol%C3%ADtica-de-privacidad-de-lingleaf-resumen-en-espa%C3%B1ol"
+    )!
+
+    /// The policy in the language of the app: Spanish opens the Spanish summary.
+    static var privacyPolicyForApp: URL {
+        Bundle.main.preferredLocalizations.first == "es" ? privacyPolicySpanishURL : privacyPolicyURL
+    }
     /// Project Gutenberg vouches only for the US; the learner checks the rest.
     static let publicDomainNotice: LocalizedStringResource =
         "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."

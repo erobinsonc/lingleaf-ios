@@ -45,7 +45,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["ES: Can we fix"].exists, "the verb group is translated, not the word alone")
         XCTAssertTrue(app.staticTexts["“can” + verb: be able to, or be allowed to."].exists)
         let card = XCTAttachment(screenshot: app.screenshot())
-        card.name = "en-light-13-modal-verb-card"
+        card.name = "en-light-82-modal-verb-card"
         card.lifetime = .keepAlways
         add(card)
 
@@ -66,7 +66,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["have"].exists, "the base form")
         XCTAssertTrue(app.staticTexts["had kept"].exists, "the verb group up to the participle")
         XCTAssertTrue(app.staticTexts["“had” + past participle: it happened before another past moment: “had left”."].exists)
-        attachScreenshot("en-light-14-perfect-card")
+        attachScreenshot("en-light-83-perfect-card")
     }
 
     func testAContractionSaysWhatItStandsFor() {
@@ -78,7 +78,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["that is"].waitForExistence(timeout: 10), "the contraction's expansion is its base form")
         XCTAssertTrue(app.staticTexts["“that's” = “that is”."].exists)
         XCTAssertFalse(app.staticTexts["Helper verb"].exists, "a plain contraction has no label")
-        attachScreenshot("en-light-15-contraction-card")
+        attachScreenshot("en-light-84-contraction-card")
     }
 
     private func attachScreenshot(_ name: String) {
@@ -106,6 +106,7 @@ final class LingleafUITests: XCTestCase {
         app.buttons["I remembered"].tap()
         XCTAssertTrue(app.staticTexts["Done for today."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["1 word tomorrow."].exists, "the word is due again tomorrow")
+        XCTAssertTrue(app.buttons["Back to Words"].exists, "the way out says where it goes")
     }
 
     /// S3: unsure, the guide says where the answer is, or asks when the sentence has no
@@ -138,6 +139,9 @@ final class LingleafUITests: XCTestCase {
         app.tabBars.buttons["Words"].tap()
         let undo = app.buttons["Undo"].firstMatch
         XCTAssertTrue(undo.waitForExistence(timeout: 10), "the corrections card")
+        let fixedRow = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label BEGINSWITH %@ AND label CONTAINS %@", "the left", "Fixed")).firstMatch
+        XCTAssertTrue(fixedRow.exists, "the corrected word's row is tagged while the card is open")
         undo.tap()
         XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
     }
@@ -194,7 +198,7 @@ final class LingleafUITests: XCTestCase {
         assertSpoken(["Tom lives in a small house by the sea.", "He is ten years old."], "Read aloud starts at the top of the screen and goes on")
         XCTAssertTrue(app.buttons["Pause"].exists, "while reading, the bar pauses")
         let reading = XCTAttachment(screenshot: app.screenshot())
-        reading.name = "en-light-16-reading-aloud"
+        reading.name = "en-light-85-reading-aloud"
         reading.lifetime = .keepAlways
         add(reading)
         // Tapping a word pauses: nothing more is read while its card is open or after.
@@ -225,7 +229,7 @@ final class LingleafUITests: XCTestCase {
             return log[last - 1] != looped && log[last + 1] == log[last - 1]
         }
         let repeating = XCTAttachment(screenshot: app.screenshot())
-        repeating.name = "en-light-17-repeating"
+        repeating.name = "en-light-86-repeating"
         repeating.lifetime = .keepAlways
         add(repeating)
         element(labelled: "Repeat sentence").tap()
@@ -454,9 +458,12 @@ final class LingleafUITests: XCTestCase {
     func testAccessibilityAudit() throws {
         var issues: [String] = []
         func audit(_ screen: String) throws {
-            // Tab switches cross-fade; auditing mid-animation measures half-faded
-            // text and reports contrast failures that are not there.
-            RunLoop.current.run(until: Date().addingTimeInterval(1.5))
+            // The audit measures the pixels of one screenshot against the accessibility tree. A tab
+            // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
+            // than any fixed wait: audited mid-transition, black text on white failed contrast and
+            // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
+            // tree). So wait until the screen itself has stopped changing, not for a fixed time.
+            if !waitUntilSettled() { attachEvidence("audit-\(screen)-never-settled") }
             // The reader hides the tab bar; then nothing can sit under it.
             let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
             let before = issues.count
@@ -516,6 +523,8 @@ final class LingleafUITests: XCTestCase {
         }
         for tab in ["Library", "Discover", "Words", "Settings"] {
             app.tabBars.buttons[tab].tap()
+            // The tab's own screen is there (its title), then still.
+            _ = app.navigationBars[tab].waitForExistence(timeout: 10)
             try audit(tab)
         }
         app.tabBars.buttons["Library"].tap()
@@ -535,7 +544,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertLessThan(phonetic.frame.minY, 300, "The word card should be at full height before the audit")
         // Evidence for the audit result: the full-height card exactly as audited (exported with the tour).
         let fullHeight = XCTAttachment(screenshot: app.screenshot())
-        fullHeight.name = "en-light-12-word-card-full-height"
+        fullHeight.name = "en-light-81-word-card-full-height"
         fullHeight.lifetime = .keepAlways
         add(fullHeight)
         try audit("Word card")
@@ -559,6 +568,30 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
         try audit("Review with the meaning")
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
+    }
+
+    /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
+    /// bar (the clock changes by itself), are the same. False when it never does within `timeout`.
+    @discardableResult
+    private func waitUntilSettled(timeout: TimeInterval = 30) -> Bool {
+        func frame() -> Data? {
+            guard let image = app.screenshot().image.cgImage else { return nil }
+            let top = image.height / 12
+            let area = CGRect(x: 0, y: top, width: image.width, height: image.height - top)
+            guard let body = image.cropping(to: area), let pixels = body.dataProvider?.data else { return nil }
+            return pixels as Data
+        }
+        var previous: Data?
+        var same = 0
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            let current = frame()
+            if let current, current == previous { same += 1 } else { same = 0 }
+            if same >= 2 { return true }
+            previous = current
+            RunLoop.current.run(until: Date().addingTimeInterval(0.3))
+        }
+        return false
     }
 
     /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
@@ -594,7 +627,7 @@ final class LingleafUITests: XCTestCase {
             // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
             return issue.element?.elementType == .progressIndicator
         case ("Word card", .contrast) where issue.element?.label == Self.beachDefinitionLabel:
-            // Measured on the screenshot taken right before this audit (en-light-12-word-card-full-height):
+            // Measured on the screenshot taken right before this audit (en-light-81-word-card-full-height):
             // #4D4D4D on the card's opaque #F1F1F6 panel, 7.5:1. The same line in the same colours
             // passes at half height; only this line is exempt, so a real regression in the card still fails.
             return true

@@ -116,6 +116,8 @@ private struct UndoBanner: View {
         .padding(.leading, 16)
         .padding(.trailing, 8)
         .padding(.vertical, 4)
+        // The same height with or without Undo, so a message that only confirms doesn't look thinner.
+        .frame(minHeight: 52)
         .background(Color(uiColor: .label), in: RoundedRectangle(cornerRadius: 12))
         .padding(.horizontal, 16)
         .padding(.bottom, 8)
