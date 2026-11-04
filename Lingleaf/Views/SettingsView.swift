@@ -79,6 +79,7 @@ struct SettingsView: View {
                     VStack(alignment: .leading, spacing: 6) {
                         Text("No accounts, no ads, no tracking.")
                         Text(Credits.publicDomainNotice)
+                        Text(Credits.storiesNotice)
                         Text(Credits.definitionsCredit)
                             .accessibilityHint(Text("Contains links"))
                     }

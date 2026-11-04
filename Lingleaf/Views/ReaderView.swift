@@ -15,6 +15,10 @@ struct WordSelection: Identifiable {
     /// The paragraph and range the word came from, to mark it in the reader.
     var paragraph = 0
     var range = WordRange(0, 0)
+    /// The story's own sense for the word, when the book is a bundled story that has one (SPEC S19).
+    var story: StorySenseHit?
+    /// The story sense's group of words, where it is in `sentence`.
+    var groupInSentence: WordRange?
 
     /// The verb group of a helper or modal verb ("did not go"), if there is one.
     var chunk: String? {
@@ -67,6 +71,8 @@ struct ReaderView: View {
     @State private var cardDetent: PresentationDetent = .medium
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
+    /// The senses of the story, when the book is a bundled story that has them (SPEC S19).
+    @State private var storySenses: StorySenses?
     /// Each paragraph's words being learned, kept while the paragraph and the learning words stay
     /// the same: the body runs again on every step of reading aloud.
     @State private var learningCache = LearningCache()
@@ -151,6 +157,7 @@ struct ReaderView: View {
             words = loaded.map(TextTools.wordRanges)
             learningCache.clear()
             paragraphs = loaded
+            storySenses = book.flatMap { model.storySenses(for: $0, paragraphs: loaded) }
         }
         .onAppear {
             startTimer()
@@ -460,19 +467,27 @@ struct ReaderView: View {
         let sentence = TextTools.substring(paragraph, sentenceRange)
         let inSentence = WordRange(start - sentenceRange.start, end - sentenceRange.start)
         let valid = sentenceRange.start <= start && end <= sentenceRange.end
+        // The story's own sense, if it has one for this word, comes before every general rule.
+        let story = storySenses?.hit(paragraph: index, range: WordRange(start, end))
+        let group = story?.group?.range
         selection = WordSelection(
             word: TextTools.substring(paragraph, WordRange(start, end)),
             sentence: sentence,
             rangeInSentence: valid ? inSentence : nil,
-            function: valid ? FunctionWords.analyze(sentence, inSentence) : nil,
+            function: valid && story == nil ? FunctionWords.analyze(sentence, inSentence) : nil,
             paragraph: index,
-            range: WordRange(start, end)
+            range: WordRange(start, end),
+            story: story,
+            groupInSentence: group.flatMap { span -> WordRange? in
+                sentenceRange.start <= span.start && span.end <= sentenceRange.end
+                    ? WordRange(span.start - sentenceRange.start, span.end - sentenceRange.start) : nil
+            }
         )
     }
 
     private func fullHeightCard(_ selection: WordSelection) -> Bool {
         if dynamicTypeSize.isAccessibilitySize { return true }
-        guard selection.function == nil, let range = selection.rangeInSentence else { return false }
+        guard selection.function == nil, selection.story == nil, let range = selection.rangeInSentence else { return false }
         return IrregularVerbs.shared.choices(in: selection.sentence, at: range).count == 2
     }
 

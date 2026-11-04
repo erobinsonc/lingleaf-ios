@@ -36,6 +36,8 @@ struct WordCardView: View {
     /// The chosen reading's look-up has answered: only then can there be "no definition".
     @State private var choiceLoaded = false
     @State private var choiceMeanings: [String: String] = [:]
+    /// The dictionary's entry for a story sense's base form, when it has one of the sense's part of speech.
+    @State private var storyEntry: DictionaryEntry?
 
     /// Where the translation of a reading ("to leave" → "irse") is kept in `translations`.
     private static let readingKey = "\u{1}reading"
@@ -45,6 +47,7 @@ struct WordCardView: View {
     /// "steal", "she left" → "leave"), never over an entry for the form itself ("a human being");
     /// for a helper or modal verb, its own base form ("do" for "did").
     private var headword: String {
+        if let storySense { return storySense.lemma }
         if let function = selection.function { return function.base }
         // Unsure: the tapped word stays the headword, chosen reading or not.
         if isUnsure { return TextTools.normalize(selection.word) }
@@ -55,22 +58,29 @@ struct WordCardView: View {
         return base
     }
 
+    /// The story's sense for the tapped word (SPEC S19), which comes before the verb-or-noun rule.
+    private var story: StorySenseHit? { selection.story }
+    private var storySense: StorySense? { selection.story?.sense }
+
+    /// The card's language is Spanish: the story's meanings are in it.
+    private var isSpanish: Bool { ReadingTranslation.isSpanish(model.targetLanguage) }
+
     /// How a form that is also another word reads in its sentence ("she left": the verb "leave").
     private var reading: Reading? {
-        guard selection.function == nil, let range = selection.rangeInSentence else { return nil }
+        guard story == nil, selection.function == nil, let range = selection.rangeInSentence else { return nil }
         return IrregularVerbs.shared.resolve(selection.sentence, range)
     }
 
     /// The irregular-verb table's base form of the tapped word in its sentence, if it has one.
     private var tableBase: String? {
-        guard selection.function == nil else { return nil }
+        guard selection.function == nil, story == nil else { return nil }
         guard let range = selection.rangeInSentence else { return IrregularVerbs.shared.formToBase[TextTools.normalize(selection.word)] }
         return IrregularVerbs.shared.base(in: selection.sentence, at: range)
     }
 
     /// The two readings when the sentence doesn't tell; empty otherwise.
     private var choices: [ReadingChoice] {
-        guard selection.function == nil, let range = selection.rangeInSentence else { return [] }
+        guard story == nil, selection.function == nil, let range = selection.rangeInSentence else { return [] }
         return IrregularVerbs.shared.choices(in: selection.sentence, at: range)
     }
 
@@ -110,14 +120,21 @@ struct WordCardView: View {
     /// respelled for its proven slot; unsure, the tapped form in each reading (or the chosen one).
     /// A helper or modal verb: how its verb group sounds ("didn't go", not "do").
     private var spokenHeadwordAloud: String {
+        if let storySense { return storySense.lemma }
         if selection.function != nil { return selection.chunk ?? selection.word }
         guard let range = selection.rangeInSentence else { return headword }
         return IrregularVerbs.shared.listenText(headword: headword, in: selection.sentence, at: range, chosen: chosen)
     }
 
+    /// How the voice is told to say a story sense's word: its IPA (one word only).
+    private var spokenIPA: String? {
+        storySense.flatMap { $0.speaksIPA ? $0.ipa : nil }
+    }
+
     /// The IPA under the headword: unsure, only once a reading is chosen, the tapped form's in it;
     /// a verb's from the table when the table has its slot ("read": /riːd/), else the dictionary's.
     private var phonetic: String? {
+        if let storySense { return storySense.displayIPA }
         guard selection.function == nil else { return nil }
         let table = IrregularVerbs.shared
         let kind = isUnsure ? chosen?.kind : meaningReading?.kind
@@ -150,16 +167,45 @@ struct WordCardView: View {
     /// The base form's translation, else the tapped form's while the base form's is on its way.
     /// A helper or modal verb means little alone ("did" → "hizo"): its verb group's translation.
     private var translation: String? {
+        if let story { return storyTranslation(story) }
         if selection.function != nil { return selection.chunk.flatMap { translations[TextTools.normalize($0)] } }
         if isUnsure { return chosen.flatMap { rowMeanings[$0.id] } }
         if meaningReading != nil { return translations[Self.readingKey] }
         return translations[TextTools.normalize(headword)] ?? translations[TextTools.normalize(selection.word)]
     }
 
+    /// A story sense's meaning (SPEC S19): the file's, in Spanish; in another language the translation of
+    /// the group or base form once it is there; none for a name.
+    private func storyTranslation(_ story: StorySenseHit) -> String? {
+        if story.sense.kind == .name { return nil }
+        if isSpanish { return story.sense.spanish }
+        return story.translationSource.flatMap { translations[TextTools.normalize($0)] }
+    }
+
+    /// The small label under the headword: "Name", "Word from another language", "US English"…
+    private var storyLabel: Text? {
+        guard let label = story?.label else { return nil }
+        switch label {
+        case .name: return Text("Name")
+        case .foreign: return Text("Word from another language")
+        case .american: return Text("US English")
+        case .british: return Text("UK English")
+        case .local: return Text("Local use")
+        }
+    }
+
+    /// The group of words the tapped word belongs to, with its meaning on one line (Spanish), as it is in the story.
+    private var storyGroupLine: String? {
+        guard let story, let group = story.group else { return nil }
+        return isSpanish && story.sense.kind != .name ? "\(group.text) — \(group.spanish)" : group.text
+    }
+
     /// What Save stores: the word's base form, or a helper or modal verb's verb group (the
     /// whole sentence when it has none, so there's always something to recall and translate).
     private var savedKey: String {
         if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
+        // A story sense saves its base form or group ("go red"), with the sense's meaning.
+        if let storySense { return TextTools.normalize(storySense.lemma) }
         // A certain reading saves its base, whatever headword the dictionary gave.
         if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }
@@ -169,13 +215,14 @@ struct WordCardView: View {
     /// The sense Save stores (SPEC S4): the chosen or certain reading's; unsure with nothing
     /// chosen, none (the tapped form with both readings).
     private var savedSense: String? {
-        if selection.function != nil { return nil }
+        if selection.function != nil || story != nil { return nil }
         if isUnsure { return chosen?.sense }
         return certainSense
     }
 
     /// How messages name what was saved: "did not go"; without a verb group, the start of the sentence.
     private var savedName: String {
+        if let storySense { return storySense.lemma }
         if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
         if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }
@@ -186,7 +233,8 @@ struct WordCardView: View {
     /// What the card translates as "the word": the tapped word, or a helper or modal verb's
     /// verb group (nil when it has none: the sentence's translation explains it).
     private var wordSource: String? {
-        selection.function == nil ? selection.word : selection.chunk
+        if let story { return isSpanish ? nil : story.translationSource }
+        return selection.function == nil ? selection.word : selection.chunk
     }
 
     var body: some View {
@@ -264,7 +312,9 @@ struct WordCardView: View {
     /// The note of a helper or modal verb, else the dictionary's definition.
     @ViewBuilder
     private var definitionView: some View {
-        if let function = selection.function {
+        if story != nil {
+            storyDefinition
+        } else if let function = selection.function {
             Text(function.note(form: selection.word))
                 .font(.footnote)
                 .foregroundStyle(Brand.secondaryText)
@@ -277,6 +327,25 @@ struct WordCardView: View {
             // has its meaning without one.
             Text("No definition available.").font(.footnote).foregroundStyle(Brand.secondaryText)
         }
+    }
+
+    /// A story sense's remarks and definition (SPEC S19): what a name is and the note, in Spanish, then the
+    /// dictionary's definition when it has one of the sense's part of speech, else none.
+    @ViewBuilder
+    private var storyDefinition: some View {
+        if isSpanish, let sense = storySense {
+            if sense.kind == .name { storyRemark(sense.spanish) }
+            if let note = sense.note { storyRemark(note) }
+        }
+        if let entry = storyEntry, let definition = entry.definition { definitionText(entry, definition) }
+    }
+
+    private func storyRemark(_ text: String) -> some View {
+        Text(text)
+            .font(.footnote)
+            .foregroundStyle(Brand.secondaryText)
+            .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     /// The definition with its source at the end of the paragraph (Wiktionary's CC BY-SA asks for
@@ -307,7 +376,7 @@ struct WordCardView: View {
         VStack(spacing: 4) {
             HStack(spacing: 10) {
                 Button {
-                    model.speaker.speak(spokenHeadwordAloud, rate: model.state.settings.speechRate)
+                    model.speaker.speak(spokenHeadwordAloud, rate: model.state.settings.speechRate, ipa: spokenIPA)
                 } label: {
                     Label("Listen", systemImage: "speaker.wave.2.circle.fill")
                         .labelStyle(.iconOnly)
@@ -326,6 +395,9 @@ struct WordCardView: View {
             }
             if let label = selection.function?.kind.label {
                 Text(label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
+            }
+            if let storyLabel {
+                storyLabel.font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
             }
         }
     }
@@ -352,6 +424,9 @@ struct WordCardView: View {
                         .multilineTextAlignment(.center)
                 } else {
                     ProgressView().accessibilityLabel(Text("Translating…"))
+                }
+                if let line = storyGroupLine {
+                    Text(verbatim: line).font(.callout).foregroundStyle(Brand.secondaryText).multilineTextAlignment(.center)
                 }
                 LanguageMenu(current: target)
             }
@@ -410,7 +485,8 @@ struct WordCardView: View {
             return Range(stringRange, in: text)
         }
         // A helper or modal verb: the whole verb group underlined, the tapped word in bold.
-        if let underlined = attributed(selection.function?.chunk ?? selection.rangeInSentence) {
+        // A story sense's group of words, the same.
+        if let underlined = attributed(selection.function?.chunk ?? selection.groupInSentence ?? selection.rangeInSentence) {
             text[underlined].underlineStyle = Text.LineStyle.single
         }
         if let marked = attributed(selection.rangeInSentence) {
@@ -563,17 +639,20 @@ struct WordCardView: View {
         let ipa = nounIPA(reading?.kind)
         // A helper or modal verb needs no dictionary: its definition and IPA would be the
         // base form's ("do"), not what the learner sees ("didn't go").
-        let skip = selection.function != nil || isUnsure
+        let skip = selection.function != nil || isUnsure || story != nil
         let task = Task { () -> DictionaryEntry? in
             if skip { return nil }
             return await dictionary.lookup(word, reading: reading, nounIPA: ipa)
         }
         lookup = task
         startTranslation()
+        if let story, let partOfSpeech = story.sense.definitionPartOfSpeech {
+            storyEntry = await dictionary.lookup(base: story.sense.lemma, partOfSpeech: partOfSpeech)
+        }
         entry = await task.value
         entryLoaded = true
         // The base form needs its own translation ("animals" → "animal"); a reading has its own.
-        if selection.function == nil, meaningReading == nil, !isUnsure, headword != selection.word,
+        if selection.function == nil, story == nil, meaningReading == nil, !isUnsure, headword != selection.word,
            let fake = model.fakeTranslator, translatedInto != nil, !translationFailed {
             translations[TextTools.normalize(headword)] = try? fake(headword)
         }
@@ -639,7 +718,7 @@ struct WordCardView: View {
         if let fake = model.fakeTranslator {
             do {
                 for (id, text) in pendingTexts(target) { record(id, try fake(text), target) }
-                if selection.function == nil, meaningReading == nil, !isUnsure, entryLoaded, headword != selection.word {
+                if selection.function == nil, story == nil, meaningReading == nil, !isUnsure, entryLoaded, headword != selection.word {
                     translations[TextTools.normalize(headword)] = try fake(headword)
                 }
                 sentenceTranslation = try fake(selection.sentence)
@@ -672,7 +751,7 @@ struct WordCardView: View {
                     record(id, response.targetText, target)
                 }
             }
-            guard selection.function == nil, meaningReading == nil, !isUnsure,
+            guard selection.function == nil, story == nil, meaningReading == nil, !isUnsure,
                   let tapped = wordSource.map(TextTools.normalize) else { return }
             let looked: DictionaryEntry? = await lookup?.value
             // The dictionary's base form, else (offline) the irregular-verb table's.
