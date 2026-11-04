@@ -9,9 +9,20 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(ci)"
+    # Let a new release age a week before Dependabot proposes it, so a hijacked tag
+    # or a bad release is more likely to be caught and pulled first.
+    cooldown:
+      default-days: 7
     # Workflows pin actions by commit SHA with a "# vX.Y.Z" comment. Dependabot
-    # rewrites both the SHA and the comment, so the pin is kept.
+    # rewrites both the SHA and the comment, so the pin is kept. Every bump still
+    # needs the SHA check in docs/dependabot.md before it is merged.
     groups:
       github-actions:
         patterns: ["*"]
+        # The actions that run before or with secrets, or that guard the repo,
+        # always get their own PR, whatever the version jump.
+        exclude-patterns:
+          - "actions/checkout"
+          - "gitleaks/*"
+          - "github/codeql-action/*"
         update-types: ["minor", "patch"]

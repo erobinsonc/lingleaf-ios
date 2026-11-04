@@ -83,14 +83,19 @@ jobs:
           path: screenshots
           if-no-files-found: ignore
 
-  screenshots:
-    name: Publish screenshots
+  # Two jobs on purpose. The first runs the bumped actions with a read-only token and
+  # hands over only files that passed a strict check. The second holds the write token
+  # and runs nothing but a pinned checkout and the publish script (docs/dependabot.md).
+  screenshots-prepare:
+    name: Prepare screenshots
     needs: app
     # Not for forks or Dependabot, whose tokens can't write to the repository.
     if: always() && github.event.pull_request.head.repo.fork != true && github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+    outputs:
+      ready: ${{ steps.verify.outputs.ready }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -100,6 +105,32 @@ jobs:
         with:
           name: ios-screenshots
           path: screenshots
+      - id: verify
+        run: ./.github/scripts/verify-screenshots.sh screenshots
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: steps.verify.outputs.ready == 'true'
+        with:
+          name: ios-screenshots-verified
+          path: screenshots
+          if-no-files-found: error
+
+  screenshots:
+    name: Publish screenshots
+    needs: screenshots-prepare
+    if: always() && needs.screenshots-prepare.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read # lets the gh CLI fetch the verified artifact of this run
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      # gh CLI (preinstalled), not an action: nothing third-party runs with the write token.
+      - name: Fetch the verified screenshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name ios-screenshots-verified --dir screenshots
       # Values go through env, never interpolated into the script (branch names are untrusted).
       - run: ./.github/scripts/publish-screenshots.sh ios "$BRANCH" "$COMMIT"
         env:
