@@ -75,10 +75,17 @@ final class LibraryTests: XCTestCase {
     }
 
     func testBundledStoriesAreListedByLevelAndFoundInTheLibrary() {
-        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A2", "B1"])
-        XCTAssertEqual(BundledStory.shelf(level: "A2").map(\.title), ["A Day at the Market"])
+        // Three original stories a level (A1–C2), then the first three, which have no senses.
+        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2",
+                                                          "C1", "C1", "C1", "C2", "C2", "C2", "A1", "A2", "B1"])
+        XCTAssertEqual(BundledStory.shelf(level: "A2").map(\.title),
+                       ["A Part for Lila", "The Oven Next Door", "The Tree in the Second Row", "A Day at the Market"])
+        XCTAssertEqual(BundledStory.shelf(level: "C2").count, 3)
         XCTAssertEqual(BundledStory.shelf(level: nil).count, BundledStory.shelf.count)
-        XCTAssertTrue(BundledStory.shelf(level: "C2").isEmpty)
+        XCTAssertTrue(BundledStory.shelf(level: "C3").isEmpty)
+        XCTAssertEqual(BundledStory.shelf.filter(\.hasSenses).count, 18)
+        XCTAssertEqual(Set(BundledStory.shelf.map(\.resource)).count, BundledStory.shelf.count)
+        XCTAssertEqual(Set(BundledStory.shelf.map(\.title)).count, BundledStory.shelf.count)
 
         let library = library()
         library.seedIfNeeded { stories }
@@ -87,6 +94,10 @@ final class LibraryTests: XCTestCase {
         let imported = library.addBook(title: "The Lighthouse Keeper", author: "Someone", text: "Text.")
         let keeper = BundledStory.libraryCopy(of: "The Lighthouse Keeper", in: library.state.books)
         XCTAssertNil(keeper, "another author's book is not the story")
+        XCTAssertNil(BundledStory.shelfStory(for: imported), "an import with a story's title is not the story")
+        XCTAssertEqual(BundledStory.shelfStory(for: copy!)?.resource, "a-day-at-the-market")
+        let downloaded = library.addBook(title: "The Red Boat", author: BundledStory.author, text: "Text.", gutenbergID: 1)
+        XCTAssertNil(BundledStory.shelfStory(for: downloaded), "a Gutenberg book is not a story")
         library.deleteBook(imported.id)
         library.deleteBook(copy!.id)
         XCTAssertNil(BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books), "deleted: Discover offers it again")
