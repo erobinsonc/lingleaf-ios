@@ -2,5 +2,16 @@ version: 2
 updates:
   - package-ecosystem: github-actions
     directory: "/"
+    # Git Flow: every change lands on develop first, never on main.
+    target-branch: develop
     schedule:
       interval: weekly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(ci)"
+    # Workflows pin actions by commit SHA with a "# vX.Y.Z" comment. Dependabot
+    # rewrites both the SHA and the comment, so the pin is kept.
+    groups:
+      github-actions:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
