@@ -3,6 +3,7 @@ import LingleafCore
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
+    @State private var showsPrivacyPolicy = false
 
     private static let repositoryURL = URL(string: "https://github.com/erobinsonc/lingleaf-ios")!
 
@@ -70,9 +71,13 @@ struct SettingsView: View {
                 }
 
                 Section(header: SectionHeader("About")) {
-                    Link(destination: Credits.privacyPolicyURL) {
+                    // In the app's own browser view, at the Spanish summary when the app is in Spanish.
+                    Button {
+                        showsPrivacyPolicy = true
+                    } label: {
                         Label("Privacy policy", systemImage: "hand.raised")
                     }
+                    .accessibilityAddTraits(.isLink)
                     Link(destination: Self.repositoryURL) {
                         Label("Source code (open source, MIT)", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
@@ -87,6 +92,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showsPrivacyPolicy) {
+                SafariView(url: Credits.privacyPolicyForApp).ignoresSafeArea()
+            }
         }
     }
 
