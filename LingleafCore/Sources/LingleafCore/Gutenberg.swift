@@ -194,7 +194,7 @@ public struct GutenbergClient: Sendable {
 
     /// Searches the catalog by title or author. Throws `GutenbergError`; cancelling the task cancels the request.
     public func search(_ query: String) async throws -> [GutenbergBook] {
-        let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+        let encoded = query.addingPercentEncoding(withAllowedCharacters: .asciiAlphanumerics) ?? ""
         let response = try await call { try await http.get("\(Self.base)?languages=en&search=\(encoded)") }
         guard response.status == 200 else { throw GutenbergError(status: response.status) }
         guard JSONGuard.isShallow(response.body) else { throw GutenbergError.failed }
