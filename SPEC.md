@@ -213,3 +213,44 @@ the same intent on both platforms. A change to behaviour updates this file in
 - Recommended ids: 25519, 55, 54, 486, 517, 1874, 3536, 157, 11, 14522, 160, 208, 209.
 - Bundled stories (title, level): The Red Boat A1, A Day at the Market A2, The Lighthouse Keeper B1; author "Lingleaf".
 - Imported .txt: title is the file name without its extension (empty → "Book"); Gutenberg header/footer removed; files over 10 MB or with no text are refused.
+
+## Grammar tab (S20–S25)
+
+The fifth tab, between Words and Settings: "Grammar" / "Gramática", a lightbulb icon. Rules, examples and practice
+are bundled in the app (`grammar-rules.json`, below): no download, no new host, no account.
+
+| ID | Scenario | Expected |
+|---|---|---|
+| S20 | Grammar list | The first row is "Irregular verbs" (subtitle "take · took · taken"; S24). Then the categories, easiest first, each with its rule count; a category opens to its rules, easiest first, each row with its title and level ("A2 · Elementary"). "Recent" (the last 3 rules opened) shows above the categories once there is one. Search ignores case and accents and looks in titles, rule lines, examples and aliases (also in the other language: "pasado", "hay"); a verb is found by its Spanish meaning too. With more than 25 rules in total the list shows categories first, each with its count; with 25 or fewer the rules show directly under their category headings. A search with no match says "No rules match. Try: in, on, at" ("Ninguna regla coincide. Prueba: in, on, at"). |
+| S21 | Rule page | Title; level ("A1 · Beginner", "A2 · Elementary", "B1 · Intermediate"); the rule in at most 4 lines, in the interface language (English or Spanish; the English forms in it stay English); 2–4 examples, each with a Listen button and its Spanish translation (bundled; for another interface language the translation is made on the device as the word card does, S12, and the example shows none until then); one "Don't mix up" line with two correct forms, never a wrong one; an optional note; "Try it" (S22); "In your books" (S23); "Add to Review" (S25). A rule and its contrast show only correct English: a wrong form appears only as a practice option and in the feedback to it. Opening a rule records it in "Recent". |
+| S22 | Try it | The learner chooses before anything is shown: the options show with no answer, no colour and no blur. The first time a rule opens: one pretest item and a "Skip to the rule" button (the rule is then shown above, the item stays); later visits: "Practice", 3 items in the rule's order, from that rule only. Choosing an option shows at once, for every option, why: the chosen one "Right: …" (green, check icon) or "Not quite: …" (red, cross icon) and the right option's "Right: …" below it; colour is never the only signal. The feedback is the item's `feedback` line for that option, in the interface language. Each item has a "Not sure" button that counts as wrong and shows the right option's feedback. After the last item: "N of M right" and "Practice again". An item is never graded by typing: its 2–4 options show in the file's order (in, on, at stay in that order). The option "(nothing)" shows as "(nothing)" / "(nada)". |
+| S23 | In your books | Below the practice, up to 3 sentences from the learner's own books and saved words that show the rule, each at most 25 words with the matching part in bold and its book title; the sentence must contain one valid option of the rule's items (matcher precision 95% or more on the bundled stories and the recommended books, tested). With no match the section says "No sentence from your books yet." ("Aún no hay frases de tus libros.") and the rule's own examples stay above. A tap opens the sentence in the reader at its paragraph. Planned for the second Grammar release (PR2): this row is the contract. |
+| S24 | Irregular verbs | The first row of S20 opens the list of the 114 verbs of `irregular-verbs.json`: two-line rows "take · took · taken" / "tomar, llevar" (the table's Spanish meanings; for another interface language the translation of "to take"), with an A–Z index or its 10 pattern groups; Listen on a row says the three forms. A verb page shows Forms (base, past, participle, -ing, he/she/it) each with Listen, "In sentences" (10 curated: every day, past, before now, right now, in the middle in the past, plans, imagined, can, should, need to), "In your books" (S23) and "Save word". The word card, for an irregular form used as a verb, shows "take · **took** · taken ›" opening its verb page (planned for PR3). |
+| S25 | Add to Review | "Add to Review" (secondary) saves the rule's practice items, not the rule: the message "“<rule>” added to Review" with Undo (timing as in S4) shows, then the button reads "In Review". Items go into the boxes of S7 (1, 3, 7, 14, 30 days). A rule item in Review is two auto-graded gap items of the rule; both right moves it to the next box, either wrong sends it to the first box and repeats it in the session. In a session: at most 3 rules, at most 1 new rule a day, inside the 20-item cap, never first; an item asks before it shows, with the same choose-then-feedback of S22. Verbs are added in groups, at most 5 new verb items a day, recognition first (given "took", pick the base among real bases; the distractors are only real bases). Planned for PR4. |
+
+Grammar rules data (shared logic, same file and tests on both platforms):
+
+- `grammar-rules.json` (identical in both repos, bundled in the core module) is the only source of Grammar
+  content. It is read once and strictly: a schema version other than 1, a missing or unknown field, an unknown
+  category, a duplicate id, an unknown level (A1, A2, B1), a `kind` other than `gap` or `choose`, an item with fewer
+  than 2 or more than 4 options, an answer index outside the options, a `feedback` count different from the options',
+  a `gap` text without exactly one "___", a `choose` item without `ask`, a rule with more than 4 rule lines, fewer
+  than 2 or more than 4 examples, or fewer than 3 practice items, any text over 400 characters, a file over 256 KB
+  or JSON nested deeper than 8 levels is refused; the tests load the bundled file and compare its SHA-256 with the one below.
+- Shape: `schema`, `categories[] {id, title{en,es}}`, `rules[] {id, category, level, title{en,es},
+  rule{en[],es[]}, examples[] {en, es}, contrast {forms[2], gloss{en,es}?}, note{en,es}?, aliases[], practice[]
+  {id, level, kind, text?, ask{en,es}?, options[], answer, feedback[] {en, es}}}`. The first practice item of a rule
+  is its pretest. Ids are stable (`time-prepositions`, `time-prepositions-1`): saved progress refers to them.
+- Rule ids in this release (wave 1, 12 rules): his-her-its, irregular-past, do-does-did, subject-it-there,
+  the-a-nothing, there-then-than, single-negative, question-order, present-s, adjective-noun, time-prepositions,
+  place-prepositions. Later waves add rules and change the SHA-256 (this file is updated with them); an id is
+  never reused.
+- Progress (`tips.json`, in the app's own folder, plain name): per rule id the last opened day, practice attempts
+  and rights (capped at 1,000), whether it is in Review, and the pretest done; at most 400 entries and 64 KB.
+  Read back bounded: an unknown rule id is dropped, counts are brought into 0–1,000, a date that can't be read
+  becomes none. Deleting the app's data removes it. No telemetry: nothing about Grammar leaves the device.
+- Search (`GrammarSearch`): lower-case, strip accents (NFD, no combining marks), split on non-letters; every
+  query word must prefix a word of the rule's title, rule lines, examples or aliases (both languages).
+- Examples are original text written for Lingleaf (CC0); the facts come from standard grammar references, not
+  from any third-party course.
+- `grammar-rules.json` SHA-256 (wave 1): `c63dc31c650ce62776f54f78cccc90497e20c816da42faa036c25bfb1ff6a2d5`.
