@@ -20,13 +20,15 @@ fi
 count=0
 while IFS= read -r -d '' entry; do
   name="${entry##*/}"
-  [ -f "$entry" ] && [ ! -L "$entry" ] || { echo "::error::Not a regular file: $name"; exit 1; }
-  [[ "$name" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*\.png$ ]] || { echo "::error::Unexpected file name: $name"; exit 1; }
+  # A file name is attacker data: show only a safe, short form in workflow commands.
+  shown="$(printf '%s' "$name" | LC_ALL=C tr -c 'A-Za-z0-9._-' '?' | head -c 60)"
+  [ -f "$entry" ] && [ ! -L "$entry" ] || { echo "::error::Not a regular file: $shown"; exit 1; }
+  [[ "$name" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*\.png$ ]] || { echo "::error::Unexpected file name: $shown"; exit 1; }
   size="$(wc -c < "$entry")"
-  [ "$size" -le "$max_bytes" ] || { echo "::error::Too large: $name"; exit 1; }
+  [ "$size" -le "$max_bytes" ] || { echo "::error::Too large: $shown"; exit 1; }
   total=$((total + size))
   [ "$total" -le "$max_total" ] || { echo "::error::Total size over the limit"; exit 1; }
-  [ "$(head -c 8 "$entry" | od -An -tx1 | tr -d ' \n')" = "89504e470d0a1a0a" ] || { echo "::error::Not a PNG: $name"; exit 1; }
+  [ "$(head -c 8 "$entry" | od -An -tx1 | tr -d ' \n')" = "89504e470d0a1a0a" ] || { echo "::error::Not a PNG: $shown"; exit 1; }
   count=$((count + 1))
 done < <(find "$dir" -mindepth 1 -print0)
 [ "$count" -le "$max_files" ] || { echo "::error::Too many files: $count"; exit 1; }

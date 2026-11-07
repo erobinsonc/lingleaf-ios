@@ -22,6 +22,10 @@ expect 1 "verify: symlink to /proc/self/environ" "$here/verify-screenshots.sh" "
 mkdir "$t/big"; for i in $(seq 1 12); do { printf '\x89PNG\r\n\x1a\n'; head -c 4500000 /dev/zero; } > "$t/big/f$i.png"; done
 expect 1 "verify: total size over 50 MiB" "$here/verify-screenshots.sh" "$t/big"
 
+mkdir "$t/inj"; png "$t/inj/$(printf 'a\n::error::pwned.png')"
+out="$("$here/verify-screenshots.sh" "$t/inj" 2>&1)"
+if printf '%s' "$out" | grep -q '^::error::pwned'; then echo "FAIL verify: file name injects a workflow command"; fail=1; else echo "ok   verify: file name cannot inject a workflow command"; fi
+
 # publish: runs in a scratch dir with a fake git so nothing is pushed.
 mkdir "$t/pub" "$t/bin"; ln -s /proc/self/environ "$t/pub/x.png"
 printf '#!/bin/sh\nexit 0\n' > "$t/bin/git"; chmod +x "$t/bin/git"

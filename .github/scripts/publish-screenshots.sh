@@ -12,7 +12,7 @@ src="$PWD/screenshots"
 # Defence in depth (the workflow verifies first): only plain files, never a link that
 # could point at the runner (/proc/self/environ would leak the write token).
 for f in "$src"/*; do
-  { [ -f "$f" ] && [ ! -L "$f" ]; } || { echo "::error::Refusing non-regular file: ${f##*/}"; exit 1; }
+  { [ -f "$f" ] && [ ! -L "$f" ]; } || { echo "::error::Refusing a non-regular file in screenshots"; exit 1; }
 done
 
 work="$(mktemp -d)"

@@ -13,6 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scripts:
+    name: CI script tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - run: .github/scripts/test-screenshot-scripts.sh
+
   core:
     name: Core logic (tests, coverage ≥90%)
     runs-on: macos-15
@@ -90,7 +100,7 @@ jobs:
     name: Prepare screenshots
     needs: app
     # Not for forks or Dependabot, whose tokens can't write to the repository.
-    if: always() && github.event.pull_request.head.repo.fork != true && github.actor != 'dependabot[bot]'
+    if: always() && github.event.pull_request.head.repo.fork != true && github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: read
