@@ -1,0 +1,3070 @@
+{
+ "schema": 1,
+ "categories": [
+  {
+   "id": "sentence",
+   "title": {
+    "en": "Sentence building",
+    "es": "Armar oraciones"
+   }
+  },
+  {
+   "id": "verbs",
+   "title": {
+    "en": "Verbs and tenses",
+    "es": "Verbos y tiempos"
+   }
+  },
+  {
+   "id": "prepositions",
+   "title": {
+    "en": "Prepositions",
+    "es": "Preposiciones"
+   }
+  }
+ ],
+ "rules": [
+  {
+   "id": "his-her-its",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "His, her, its",
+    "es": "His, her, its"
+   },
+   "rule": {
+    "en": [
+     "his = of a man or boy. her = of a woman or girl.",
+     "The owner decides, not the thing: his mother, her father.",
+     "its = of a thing or animal, no apostrophe. it's = it is.",
+     "their = of several people or things."
+    ],
+    "es": [
+     "his = de él (hombre o niño). her = de ella (mujer o niña).",
+     "Importa quién es el dueño, no lo que se posee: his mother (la mamá de él), her father (el papá de ella).",
+     "its = de una cosa o animal, sin apóstrofo. it's = it is.",
+     "their = de varias personas o cosas."
+    ]
+   },
+   "examples": [
+    {
+     "en": "The prince lost his shoe.",
+     "es": "El príncipe perdió su zapato."
+    },
+    {
+     "en": "The queen opened her window.",
+     "es": "La reina abrió su ventana."
+    },
+    {
+     "en": "The dog wagged its tail.",
+     "es": "El perro movió la cola."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "Tom loves his sister.",
+     "Anna loves her brother."
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: «su» fits every owner. English chooses by the owner: his, her, its, their.",
+    "es": "En español «su» sirve para todos los dueños. En inglés se elige según el dueño: his, her, its, their."
+   },
+   "aliases": [
+    "his",
+    "her",
+    "its",
+    "their",
+    "su",
+    "sus",
+    "dueño",
+    "posesivo",
+    "possessive"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "his-her-its-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Maria is reading ___ book.",
+     "options": [
+      "her",
+      "his",
+      "its"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Maria is a woman: her book.",
+       "es": "María es una mujer: her."
+      },
+      {
+       "en": "his is for a man or boy.",
+       "es": "his es para un hombre o niño."
+      },
+      {
+       "en": "its is for things and animals.",
+       "es": "its es para cosas y animales."
+      }
+     ]
+    },
+    {
+     "id": "his-her-its-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Peter called ___ mother.",
+     "options": [
+      "her",
+      "his",
+      "their"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "The owner is Peter, a man: his, even though a mother is a woman.",
+       "es": "El dueño es Peter: his, aunque la mamá sea mujer."
+      },
+      {
+       "en": "Peter is the owner, a man: his mother.",
+       "es": "El dueño es Peter, un hombre: his mother."
+      },
+      {
+       "en": "their is for several people.",
+       "es": "their es para varias personas."
+      }
+     ]
+    },
+    {
+     "id": "his-her-its-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The bird hurt ___ wing.",
+     "options": [
+      "it's",
+      "it",
+      "its"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "it's = it is, with an apostrophe.",
+       "es": "it's = it is, con apóstrofo."
+      },
+      {
+       "en": "Before a noun, use its: its wing.",
+       "es": "Antes de un sustantivo va its: its wing."
+      },
+      {
+       "en": "A bird is an animal: its wing, with no apostrophe.",
+       "es": "Un pájaro es un animal: its wing, sin apóstrofo."
+      }
+     ]
+    },
+    {
+     "id": "his-her-its-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The children love ___ teacher.",
+     "options": [
+      "their",
+      "his",
+      "its"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "The owners are several children: their.",
+       "es": "Los dueños son varios niños: their."
+      },
+      {
+       "en": "his is for one man or boy.",
+       "es": "his es para un solo hombre o niño."
+      },
+      {
+       "en": "its is for a thing or animal.",
+       "es": "its es para una cosa o un animal."
+      }
+     ]
+    },
+    {
+     "id": "his-her-its-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The dog wagged ___ tail.",
+     "options": [
+      "it's",
+      "its",
+      "his"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "it's = it is.",
+       "es": "it's = it is."
+      },
+      {
+       "en": "A dog we don't know takes its: its tail.",
+       "es": "Un perro que no conocemos lleva its: its tail."
+      },
+      {
+       "en": "Animals usually take its; his or her is for a pet we know.",
+       "es": "Los animales suelen llevar its; his o her se usa con una mascota que conocemos."
+      }
+     ]
+    },
+    {
+     "id": "his-her-its-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Anna lost ___ keys.",
+     "options": [
+      "his",
+      "its",
+      "her"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "his is for a man or boy.",
+       "es": "his es para un hombre o niño."
+      },
+      {
+       "en": "its is for things and animals.",
+       "es": "its es para cosas y animales."
+      },
+      {
+       "en": "Anna is a woman: her keys.",
+       "es": "Anna es una mujer: her keys."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "irregular-past",
+   "category": "verbs",
+   "level": "A1",
+   "title": {
+    "en": "Irregular past: went, saw, took",
+    "es": "Pasado irregular: went, saw, took"
+   },
+   "rule": {
+    "en": [
+     "Most verbs add -ed for the past: walked, opened.",
+     "Many common verbs change: go → went, see → saw, take → took.",
+     "The past form is the same for all persons: I went, she went.",
+     "Stories are told in the past, so learn the most frequent ones first."
+    ],
+    "es": [
+     "La mayoría de los verbos agrega -ed en pasado: walked, opened.",
+     "Muchos verbos comunes cambian: go → went, see → saw, take → took.",
+     "El pasado es igual para todas las personas: I went, she went.",
+     "Los cuentos se narran en pasado: aprende primero los más frecuentes."
+    ]
+   },
+   "examples": [
+    {
+     "en": "The wolf ran into the forest.",
+     "es": "El lobo corrió hacia el bosque."
+    },
+    {
+     "en": "She told him the truth.",
+     "es": "Ella le dijo la verdad."
+    },
+    {
+     "en": "They came back at night.",
+     "es": "Volvieron de noche."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "Today I go to the market.",
+     "Yesterday I went to the market."
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: «fui», «vi», «tomé» are different words; English also changes the word: went, saw, took.",
+    "es": "En español «fui», «vi», «tomé» son palabras distintas. En inglés también cambia la palabra: went, saw, took."
+   },
+   "aliases": [
+    "went",
+    "saw",
+    "took",
+    "pasado",
+    "past",
+    "irregular",
+    "ayer",
+    "yesterday",
+    "verbos irregulares"
+   ],
+   "books": {
+    "mode": "patterns",
+    "patterns": [
+     "went",
+     "came",
+     "took",
+     "gave",
+     "ran",
+     "told",
+     "ate"
+    ]
+   },
+   "practice": [
+    {
+     "id": "irregular-past-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Yesterday we ___ to the river.",
+     "options": [
+      "went",
+      "goed",
+      "go"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "yesterday needs the past, and go is irregular: went.",
+       "es": "yesterday pide pasado, y go es irregular: went."
+      },
+      {
+       "en": "go is irregular: went.",
+       "es": "go es irregular: went."
+      },
+      {
+       "en": "yesterday needs the past.",
+       "es": "yesterday pide pasado."
+      }
+     ]
+    },
+    {
+     "id": "irregular-past-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The girl ___ a strange light in the window.",
+     "options": [
+      "seed",
+      "saw",
+      "seen"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "see is irregular: saw.",
+       "es": "see es irregular: saw."
+      },
+      {
+       "en": "saw is the past of see.",
+       "es": "saw es el pasado de see."
+      },
+      {
+       "en": "seen needs have, has or had: has seen.",
+       "es": "seen necesita have, has o had: has seen."
+      }
+     ]
+    },
+    {
+     "id": "irregular-past-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "He ___ his coat and left.",
+     "options": [
+      "taked",
+      "takes",
+      "took"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "take is irregular: took.",
+       "es": "take es irregular: took."
+      },
+      {
+       "en": "left is past, so this verb is past too.",
+       "es": "left está en pasado; este verbo también."
+      },
+      {
+       "en": "took is the past of take.",
+       "es": "took es el pasado de take."
+      }
+     ]
+    },
+    {
+     "id": "irregular-past-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Last night I ___ a good film.",
+     "options": [
+      "saw",
+      "see",
+      "seed"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Last night is finished time: saw.",
+       "es": "Last night es tiempo terminado: saw."
+      },
+      {
+       "en": "Last night needs the past.",
+       "es": "Last night pide pasado."
+      },
+      {
+       "en": "see is irregular: saw.",
+       "es": "see es irregular: saw."
+      }
+     ]
+    },
+    {
+     "id": "irregular-past-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She ___ me the truth.",
+     "options": [
+      "telled",
+      "told",
+      "tells"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "tell is irregular: told.",
+       "es": "tell es irregular: told."
+      },
+      {
+       "en": "told is the past of tell.",
+       "es": "told es el pasado de tell."
+      },
+      {
+       "en": "The sentence is in the past: told.",
+       "es": "La frase está en pasado: told."
+      }
+     ]
+    },
+    {
+     "id": "irregular-past-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "They ___ home at six.",
+     "options": [
+      "comed",
+      "come",
+      "came"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "come is irregular: came.",
+       "es": "come es irregular: came."
+      },
+      {
+       "en": "at six, in a story, needs the past: came.",
+       "es": "En un cuento, el pasado: came."
+      },
+      {
+       "en": "came is the past of come.",
+       "es": "came es el pasado de come."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "do-does-did",
+   "category": "verbs",
+   "level": "A1",
+   "title": {
+    "en": "Questions and negatives: do, does, did",
+    "es": "Preguntas y negativas: do, does, did"
+   },
+   "rule": {
+    "en": [
+     "Questions and negatives with normal verbs need do, does or did.",
+     "After do, does or did, the verb has no -s or -ed: Did you see?",
+     "Not with be or can, must, should: Are you ready? She can't swim."
+    ],
+    "es": [
+     "Las preguntas y negativas con verbos normales necesitan do, does o did.",
+     "Después de do, does o did, el verbo va sin -s ni -ed: Did you see?",
+     "No con be ni con can, must, should: Are you ready? She can't swim."
+    ]
+   },
+   "examples": [
+    {
+     "en": "Where did you find this key?",
+     "es": "¿Dónde encontraste esta llave?"
+    },
+    {
+     "en": "She doesn't like the city.",
+     "es": "No le gusta la ciudad."
+    },
+    {
+     "en": "Do you remember his name?",
+     "es": "¿Recuerdas su nombre?"
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "He went home.",
+     "He didn't go home."
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: «¿Dónde vives?» has no helper. English needs do: Where do you live?",
+    "es": "En español «¿Dónde vives?» no lleva auxiliar. En inglés hace falta do: Where do you live?"
+   },
+   "aliases": [
+    "did",
+    "do",
+    "does",
+    "auxiliar",
+    "helper verb",
+    "pregunta",
+    "negativa",
+    "didn't",
+    "doesn't"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "do-does-did-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Where ___ you live?",
+     "options": [
+      "do",
+      "are",
+      "(nothing)"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "A normal verb needs do in the question: Where do you live?",
+       "es": "Un verbo normal necesita do en la pregunta: Where do you live?"
+      },
+      {
+       "en": "live is a verb, so the question uses do.",
+       "es": "live es verbo: la pregunta usa do."
+      },
+      {
+       "en": "English questions need a helper verb here: do.",
+       "es": "Las preguntas en inglés necesitan auxiliar: do."
+      }
+     ]
+    },
+    {
+     "id": "do-does-did-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She didn't ___ the letter.",
+     "options": [
+      "wrote",
+      "write",
+      "writes"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "didn't already shows the past; keep the plain verb.",
+       "es": "didn't ya marca el pasado: el verbo va sin cambios."
+      },
+      {
+       "en": "After didn't, the verb stays plain: write.",
+       "es": "Después de didn't, el verbo queda sin cambios: write."
+      },
+      {
+       "en": "After didn't, no -s.",
+       "es": "Después de didn't, sin -s."
+      }
+     ]
+    },
+    {
+     "id": "do-does-did-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Why ___ he angry?",
+     "options": [
+      "does",
+      "do",
+      "is"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "angry is an adjective; use be, not does.",
+       "es": "angry es adjetivo: se usa be, no does."
+      },
+      {
+       "en": "Adjectives go with be: he is.",
+       "es": "Los adjetivos van con be: he is."
+      },
+      {
+       "en": "angry goes with be, so the question uses is.",
+       "es": "angry va con be, así que la pregunta usa is."
+      }
+     ]
+    },
+    {
+     "id": "do-does-did-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "___ your sister like music?",
+     "options": [
+      "Does",
+      "Do",
+      "Is"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "your sister = she, so use does.",
+       "es": "your sister = she, así que se usa does."
+      },
+      {
+       "en": "your sister = she: do is for I, you, we, they.",
+       "es": "your sister = she: do es para I, you, we, they."
+      },
+      {
+       "en": "like is a verb, so the question uses does.",
+       "es": "like es verbo: la pregunta usa does."
+      }
+     ]
+    },
+    {
+     "id": "do-does-did-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "He doesn't ___ English.",
+     "options": [
+      "speaks",
+      "speak",
+      "spoke"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "After doesn't, no -s.",
+       "es": "Después de doesn't, sin -s."
+      },
+      {
+       "en": "After doesn't, the verb stays plain: speak.",
+       "es": "Después de doesn't, el verbo queda sin cambios: speak."
+      },
+      {
+       "en": "After doesn't, no past form.",
+       "es": "Después de doesn't, sin forma de pasado."
+      }
+     ]
+    },
+    {
+     "id": "do-does-did-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "What time ___ the train leave?",
+     "options": [
+      "do",
+      "is",
+      "does"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "the train = it: does, not do.",
+       "es": "the train = it: does, no do."
+      },
+      {
+       "en": "leave is a verb, so the question uses does.",
+       "es": "leave es verbo: la pregunta usa does."
+      },
+      {
+       "en": "the train = it, so use does.",
+       "es": "the train = it, así que se usa does."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "subject-it-there",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "Every sentence needs a subject: it, there",
+    "es": "Toda oración necesita sujeto: it, there"
+   },
+   "rule": {
+    "en": [
+     "English sentences need a subject, even when Spanish drops it: She is tired.",
+     "For weather, time and distance, use it: It's raining. It's late.",
+     "To say something exists, use there is (one) or there are (more).",
+     "In the past: there was, there were: There was a door."
+    ],
+    "es": [
+     "Las oraciones en inglés necesitan sujeto, aunque en español se omita: She is tired.",
+     "Para clima, hora y distancia usa it: It's raining. It's late.",
+     "Para decir que algo existe (hay): there is (uno) o there are (varios).",
+     "En pasado (había): there was, there were. Ej.: There was a door."
+    ]
+   },
+   "examples": [
+    {
+     "en": "It was a cold night.",
+     "es": "Era una noche fría."
+    },
+    {
+     "en": "There are three bears in this house.",
+     "es": "Hay tres osos en esta casa."
+    },
+    {
+     "en": "Once upon a time, there was a poor fisherman.",
+     "es": "Había una vez un pobre pescador."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "There is a cat in the garden.",
+     "It is a black cat."
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish drops the subject («Llueve», «Hay un gato»). English always has one: It's raining. There is a cat.",
+    "es": "En español se omite el sujeto («Llueve», «Hay un gato»). En inglés siempre hay uno: It's raining. There is a cat."
+   },
+   "aliases": [
+    "it",
+    "there is",
+    "there are",
+    "hay",
+    "había",
+    "sujeto",
+    "clima",
+    "weather"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "subject-it-there-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "___ is very cold today.",
+     "options": [
+      "It",
+      "(nothing)",
+      "There"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "For weather, use it: It is very cold.",
+       "es": "Para el clima se usa it: It is very cold."
+      },
+      {
+       "en": "English needs a subject; for weather, use it.",
+       "es": "El inglés necesita sujeto: para el clima, it."
+      },
+      {
+       "en": "there is = hay; for weather, use it.",
+       "es": "there is = hay; para el clima, it."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "___ two books on the table.",
+     "options": [
+      "It has",
+      "There are",
+      "There is"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "For hay, use there is/are, not has.",
+       "es": "Para «hay» se usa there is/are, no has."
+      },
+      {
+       "en": "two books is plural, so: There are.",
+       "es": "two books es plural, así que: There are."
+      },
+      {
+       "en": "two books is plural: there are.",
+       "es": "two books es plural: there are."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Where is Tom? ___ in the kitchen.",
+     "options": [
+      "Is",
+      "It's",
+      "He's"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "The subject is needed: he.",
+       "es": "Falta el sujeto: he."
+      },
+      {
+       "en": "Tom is a person: he, not it.",
+       "es": "Tom es una persona: he, no it."
+      },
+      {
+       "en": "Tom is a person: he. He's = he is.",
+       "es": "Tom es una persona: he. He's = he is."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "___ was a big tree in the garden.",
+     "options": [
+      "There",
+      "It",
+      "(nothing)"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "To say something exists in the past, use there was.",
+       "es": "Para decir que algo existía, there was."
+      },
+      {
+       "en": "it was needs a thing we already know; for existence use there was.",
+       "es": "it was habla de algo ya conocido; para existencia, there was."
+      },
+      {
+       "en": "English needs a subject: there was.",
+       "es": "El inglés necesita sujeto: there was."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "What time is it? ___ half past two.",
+     "options": [
+      "There's",
+      "It's",
+      "(nothing)"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "For time, use it, not there.",
+       "es": "Para la hora se usa it, no there."
+      },
+      {
+       "en": "For time, use it: It's half past two.",
+       "es": "Para la hora se usa it: It's half past two."
+      },
+      {
+       "en": "English needs a subject: it.",
+       "es": "El inglés necesita sujeto: it."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Mia is tired. ___ sleeps early.",
+     "options": [
+      "It",
+      "(nothing)",
+      "She"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "Mia is a person, not a thing: she.",
+       "es": "Mia es una persona, no una cosa: she."
+      },
+      {
+       "en": "English needs a subject: she.",
+       "es": "El inglés necesita sujeto: she."
+      },
+      {
+       "en": "Mia is a person: she.",
+       "es": "Mia es una persona: she."
+      }
+     ]
+    },
+    {
+     "id": "subject-it-there-7",
+     "level": "A1",
+     "kind": "choose",
+     "text": "Hay un gato en el jardín.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "There is a cat in the garden.",
+      "Has a cat in the garden.",
+      "It is a cat in the garden."
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "hay = there is: There is a cat.",
+       "es": "hay = there is: There is a cat."
+      },
+      {
+       "en": "For hay, use there is, not has.",
+       "es": "Para «hay» se usa there is, no has."
+      },
+      {
+       "en": "it is points to a cat we know; for hay use there is.",
+       "es": "it is señala un gato ya conocido; para «hay», there is."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "the-a-nothing",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "The, a, or nothing",
+    "es": "The, a o nada"
+   },
+   "rule": {
+    "en": [
+     "Things in general take no the: Dogs are loyal. I like music.",
+     "the = a specific thing we both know: the dog in the garden.",
+     "Jobs take a or an: She is a doctor. He was an engineer.",
+     "a before a consonant sound, an before a vowel sound: a house, an hour."
+    ],
+    "es": [
+     "Las cosas en general no llevan the: Dogs are loyal. I like music.",
+     "the = algo concreto que los dos conocemos: the dog in the garden.",
+     "Las profesiones llevan a o an: She is a doctor. He was an engineer.",
+     "a antes de un sonido de consonante, an antes de un sonido de vocal: a house, an hour."
+    ]
+   },
+   "examples": [
+    {
+     "en": "Dogs are loyal.",
+     "es": "Los perros son leales."
+    },
+    {
+     "en": "Life is short.",
+     "es": "La vida es corta."
+    },
+    {
+     "en": "His father was a fisherman.",
+     "es": "Su padre era pescador."
+    },
+    {
+     "en": "The man at the door wants to see you.",
+     "es": "El hombre de la puerta quiere verte."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "Dogs are loyal.",
+     "The dogs in this house are loyal."
+    ]
+   },
+   "note": {
+    "en": "Unique things take the: the sun, the sea.",
+    "es": "Las cosas únicas llevan the: the sun, the sea."
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish says «Los perros son leales» and «Es profesora». English: Dogs are loyal (no the). She is a teacher (with a).",
+    "es": "En español se dice «Los perros son leales» y «Es profesora». En inglés: Dogs are loyal (sin the). She is a teacher (con a)."
+   },
+   "aliases": [
+    "the",
+    "a",
+    "an",
+    "artículo",
+    "artículos",
+    "article",
+    "los",
+    "las",
+    "profesión"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "the-a-nothing-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Anna likes ___ in general.",
+     "options": [
+      "music",
+      "the music",
+      "a music"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Music in general takes no the and no a.",
+       "es": "La música en general no lleva the ni a."
+      },
+      {
+       "en": "the means one specific music; here it is music in general.",
+       "es": "the se refiere a una música concreta; aquí es la música en general."
+      },
+      {
+       "en": "music is uncountable: no a.",
+       "es": "music no se cuenta: no lleva a."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "What is her job? She is ___ teacher.",
+     "options": [
+      "the",
+      "a",
+      "(nothing)"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "the would mean one specific teacher we already know.",
+       "es": "the sería una profesora concreta y conocida."
+      },
+      {
+       "en": "A job takes a or an: a teacher.",
+       "es": "Una profesión lleva a o an: a teacher."
+      },
+      {
+       "en": "Jobs need a or an.",
+       "es": "Las profesiones necesitan a o an."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She waited for ___ hour.",
+     "options": [
+      "a",
+      "(nothing)",
+      "an"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "The h in hour is silent: an, not a.",
+       "es": "La h de hour no suena: an, no a."
+      },
+      {
+       "en": "hour can be counted: it needs a or an.",
+       "es": "hour se puede contar: necesita a o an."
+      },
+      {
+       "en": "hour starts with a vowel sound: an hour.",
+       "es": "hour empieza con sonido de vocal: an hour."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "In general, ___ children need love.",
+     "options": [
+      "(nothing)",
+      "the",
+      "a"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Children in general take no the.",
+       "es": "Los niños en general no llevan the."
+      },
+      {
+       "en": "In general means all children: no the.",
+       "es": "In general es todos los niños: sin the."
+      },
+      {
+       "en": "children is plural: no a.",
+       "es": "children es plural: no lleva a."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Look at ___ sun!",
+     "options": [
+      "a",
+      "the",
+      "(nothing)"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "Only one sun exists: the, not a.",
+       "es": "Solo existe un sol: the, no a."
+      },
+      {
+       "en": "There is only one sun: the sun.",
+       "es": "Solo hay un sol: the sun."
+      },
+      {
+       "en": "A unique thing takes the.",
+       "es": "Una cosa única lleva the."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "He was ___ engineer.",
+     "options": [
+      "a",
+      "the",
+      "an"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "Before a vowel sound, use an.",
+       "es": "Antes de un sonido de vocal se usa an."
+      },
+      {
+       "en": "the would mean one specific engineer.",
+       "es": "the sería un ingeniero concreto."
+      },
+      {
+       "en": "engineer starts with a vowel sound: an.",
+       "es": "engineer empieza con sonido de vocal: an."
+      }
+     ]
+    },
+    {
+     "id": "the-a-nothing-7",
+     "level": "A1",
+     "kind": "choose",
+     "text": "Es profesora.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "She is a teacher.",
+      "She is teacher.",
+      "She is the teacher."
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Jobs take a: a teacher.",
+       "es": "Las profesiones llevan a: a teacher."
+      },
+      {
+       "en": "Jobs need a or an.",
+       "es": "Las profesiones necesitan a o an."
+      },
+      {
+       "en": "the means one specific teacher, not her job.",
+       "es": "the es una profesora concreta, no su profesión."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "there-then-than",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "There, then, than",
+    "es": "There, then, than"
+   },
+   "rule": {
+    "en": [
+     "there = in that place: The key is there, on the table.",
+     "there is / there are = something exists: There is a key on the table.",
+     "then = at that time or next. than = for comparing: taller than.",
+     "where → there (a place). when → then (a time)."
+    ],
+    "es": [
+     "there = en ese lugar (allí, ahí): The key is there, on the table.",
+     "there is / there are = algo existe (hay): There is a key on the table.",
+     "then = en ese momento o después (entonces, luego). than = para comparar (que): taller than.",
+     "where → there (un lugar). when → then (un tiempo)."
+    ]
+   },
+   "examples": [
+    {
+     "en": "Look! The fox is there, in the snow.",
+     "es": "¡Mira! El zorro está allí, en la nieve."
+    },
+    {
+     "en": "They ate, and then they slept.",
+     "es": "Comieron y luego durmieron."
+    },
+    {
+     "en": "He was older than his brother.",
+     "es": "Era mayor que su hermano."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "The cat is there.",
+     "There is a cat."
+    ],
+    "gloss": {
+     "en": "there = in that place · there is = something exists",
+     "es": "there = allí · there is = hay"
+    }
+   },
+   "note": {
+    "en": "Old books: whither = to where, whence = from where.",
+    "es": "Libros antiguos: whither = adónde, whence = de dónde."
+   },
+   "spanish": {
+    "en": "Spanish speakers: «Hay un gato» = There is a cat. «Está allí» = It is there.",
+    "es": "En español: «Hay un gato» = There is a cat. «Está allí» = It is there."
+   },
+   "aliases": [
+    "there",
+    "then",
+    "than",
+    "allí",
+    "entonces",
+    "luego",
+    "que",
+    "comparar",
+    "compare"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "there-then-than-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Where is my book? It's ___, on the chair.",
+     "options": [
+      "there",
+      "then",
+      "that"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "there = in that place.",
+       "es": "there = en ese lugar."
+      },
+      {
+       "en": "then is about time, not place.",
+       "es": "then habla de tiempo, no de lugar."
+      },
+      {
+       "en": "that points to a thing; for a place, use there.",
+       "es": "that señala una cosa; para un lugar, there."
+      }
+     ]
+    },
+    {
+     "id": "there-then-than-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "First we ate, and ___ we went for a walk.",
+     "options": [
+      "than",
+      "then",
+      "there"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "than is for comparing.",
+       "es": "than es para comparar."
+      },
+      {
+       "en": "then = next, at that time.",
+       "es": "then = luego, en ese momento."
+      },
+      {
+       "en": "there means a place.",
+       "es": "there significa un lugar."
+      }
+     ]
+    },
+    {
+     "id": "there-then-than-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She is taller ___ her sister.",
+     "options": [
+      "then",
+      "that",
+      "than"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "then = luego, en ese momento. To compare, use than.",
+       "es": "then = luego, en ese momento. Para comparar, usa than."
+      },
+      {
+       "en": "To compare, English uses than, not that.",
+       "es": "Para comparar, el inglés usa than, no that."
+      },
+      {
+       "en": "than is for comparing: taller than.",
+       "es": "than sirve para comparar: taller than."
+      }
+     ]
+    },
+    {
+     "id": "there-then-than-4",
+     "level": "A1",
+     "kind": "choose",
+     "text": "When do we start?",
+     "ask": {
+      "en": "Choose the answer.",
+      "es": "Elige la respuesta."
+     },
+     "options": [
+      "At nine.",
+      "There, in the hall.",
+      "More than nine."
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "A When question needs a time: At nine.",
+       "es": "Una pregunta con When pide una hora: At nine."
+      },
+      {
+       "en": "there is a place, not a time.",
+       "es": "there es un lugar, no un tiempo."
+      },
+      {
+       "en": "than compares amounts; a When question needs a time.",
+       "es": "than compara cantidades; When pide una hora."
+      }
+     ]
+    },
+    {
+     "id": "there-then-than-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The shop is open. Go ___ now.",
+     "options": [
+      "then",
+      "there",
+      "than"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "then is about time, not place.",
+       "es": "then habla de tiempo, no de lugar."
+      },
+      {
+       "en": "there = to that place.",
+       "es": "there = a ese lugar."
+      },
+      {
+       "en": "than is for comparing.",
+       "es": "than es para comparar."
+      }
+     ]
+    },
+    {
+     "id": "there-then-than-6",
+     "level": "A1",
+     "kind": "choose",
+     "text": "Hay un libro en la mesa.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "It is a book on the table.",
+      "There has a book on the table.",
+      "There is a book on the table."
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "it is points to a book we know; for hay use there is.",
+       "es": "it is señala un libro ya conocido; para «hay», there is."
+      },
+      {
+       "en": "For hay, use there is, not there has.",
+       "es": "Para «hay» se usa there is, no there has."
+      },
+      {
+       "en": "hay = there is.",
+       "es": "hay = there is."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "question-order",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "Word order in questions: Where do you live?",
+    "es": "El orden en las preguntas: Where do you live?"
+   },
+   "rule": {
+    "en": [
+     "Question word + helper + subject + verb: Where do you live?",
+     "With be, swap the subject and be: Where is the key? Is she ready?",
+     "If the question word is the subject, there is no do: Who opened the door?"
+    ],
+    "es": [
+     "Palabra interrogativa + auxiliar + sujeto + verbo: Where do you live?",
+     "Con be, se invierten el sujeto y be: Where is the key? Is she ready?",
+     "Si la palabra interrogativa es el sujeto, no va do: Who opened the door?"
+    ]
+   },
+   "examples": [
+    {
+     "en": "Why are you crying?",
+     "es": "¿Por qué lloras?"
+    },
+    {
+     "en": "What did the old man say?",
+     "es": "¿Qué dijo el anciano?"
+    },
+    {
+     "en": "Where is the key?",
+     "es": "¿Dónde está la llave?"
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "Where does she live?",
+     "Where is she?"
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: «¿Dónde vives?» has no helper. English needs do: Where do you live?",
+    "es": "En español «¿Dónde vives?» no lleva auxiliar. En inglés hace falta do: Where do you live?"
+   },
+   "aliases": [
+    "question",
+    "pregunta",
+    "where",
+    "what",
+    "why",
+    "who",
+    "orden"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "question-order-1",
+     "level": "A1",
+     "kind": "choose",
+     "text": "You want to know where she lives.",
+     "ask": {
+      "en": "Choose the question.",
+      "es": "Elige la pregunta."
+     },
+     "options": [
+      "Where does she live?",
+      "Where she lives?",
+      "Where lives she?"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Question word + does + subject + verb.",
+       "es": "Palabra interrogativa + does + sujeto + verbo."
+      },
+      {
+       "en": "The question needs does before the subject.",
+       "es": "La pregunta necesita does antes del sujeto."
+      },
+      {
+       "en": "The helper goes before the subject and the verb after it.",
+       "es": "El auxiliar va antes del sujeto y el verbo después."
+      }
+     ]
+    },
+    {
+     "id": "question-order-2",
+     "level": "A1",
+     "kind": "choose",
+     "text": "You want to know who opened the door.",
+     "ask": {
+      "en": "Choose the question.",
+      "es": "Elige la pregunta."
+     },
+     "options": [
+      "Who did opened the door?",
+      "Who opened the door?",
+      "Who the door opened?"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "who is the subject: no did, and the verb stays in the past: opened.",
+       "es": "who es el sujeto: sin did, y el verbo queda en pasado: opened."
+      },
+      {
+       "en": "who is the subject, so the verb follows it: Who opened?",
+       "es": "who es el sujeto, así que el verbo va después: Who opened?"
+      },
+      {
+       "en": "The order is subject + verb + object: who opened the door.",
+       "es": "Sujeto + verbo + objeto: who opened the door."
+      }
+     ]
+    },
+    {
+     "id": "question-order-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Where ___ the keys?",
+     "options": [
+      "do",
+      "does",
+      "are"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "With be there is no do.",
+       "es": "Con be no se usa do."
+      },
+      {
+       "en": "keys is plural, and with be there is no does.",
+       "es": "keys es plural, y con be no se usa does."
+      },
+      {
+       "en": "With be, the verb comes before the subject: Where are the keys?",
+       "es": "Con be, el verbo va antes del sujeto: Where are the keys?"
+      }
+     ]
+    },
+    {
+     "id": "question-order-4",
+     "level": "A1",
+     "kind": "choose",
+     "text": "You ask why he is late.",
+     "ask": {
+      "en": "Choose the question.",
+      "es": "Elige la pregunta."
+     },
+     "options": [
+      "Why is he late?",
+      "Why he is late?",
+      "Why does he late?"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "With be, swap the subject and be: Why is he late?",
+       "es": "Con be se invierten sujeto y be: Why is he late?"
+      },
+      {
+       "en": "With be, the verb goes before the subject.",
+       "es": "Con be, el verbo va antes del sujeto."
+      },
+      {
+       "en": "late is not a verb: use be, not does.",
+       "es": "late no es verbo: se usa be, no does."
+      }
+     ]
+    },
+    {
+     "id": "question-order-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "What ___ you do on Sundays?",
+     "options": [
+      "are",
+      "do",
+      "does"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "do is the verb here, so the question uses do.",
+       "es": "do es el verbo aquí, así que la pregunta usa do."
+      },
+      {
+       "en": "Question word + do + subject + verb.",
+       "es": "Palabra interrogativa + do + sujeto + verbo."
+      },
+      {
+       "en": "you takes do, not does.",
+       "es": "you lleva do, no does."
+      }
+     ]
+    },
+    {
+     "id": "question-order-6",
+     "level": "A1",
+     "kind": "choose",
+     "text": "¿Cuándo llega el tren?",
+     "ask": {
+      "en": "Choose the English question.",
+      "es": "Elige la pregunta en inglés."
+     },
+     "options": [
+      "When the train arrives?",
+      "When arrives the train?",
+      "When does the train arrive?"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "The question needs does before the subject.",
+       "es": "La pregunta necesita does antes del sujeto."
+      },
+      {
+       "en": "The helper goes before the subject.",
+       "es": "El auxiliar va antes del sujeto."
+      },
+      {
+       "en": "Question word + does + subject + verb.",
+       "es": "Palabra interrogativa + does + sujeto + verbo."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "present-s",
+   "category": "verbs",
+   "level": "A1",
+   "title": {
+    "en": "The -s in the present: he works",
+    "es": "La -s del presente: he works"
+   },
+   "rule": {
+    "en": [
+     "With he, she, it (one person or thing), add -s: she works.",
+     "Add -es after s, sh, ch, x, o: watches, goes. Consonant + y becomes -ies: studies.",
+     "have becomes has. Questions and negatives use does + the plain verb: Does she work?"
+    ],
+    "es": [
+     "Con he, she, it (una sola persona o cosa), el verbo lleva -s: she works.",
+     "-es después de s, sh, ch, x, o: watches, goes. Consonante + y se vuelve -ies: studies.",
+     "have se vuelve has. Preguntas y negativas: does + el verbo sin cambios: Does she work?"
+    ]
+   },
+   "examples": [
+    {
+     "en": "My sister works in a bakery.",
+     "es": "Mi hermana trabaja en una panadería."
+    },
+    {
+     "en": "The old man lives alone by the sea.",
+     "es": "El anciano vive solo junto al mar."
+    },
+    {
+     "en": "It rains a lot here in April.",
+     "es": "Aquí llueve mucho en abril."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "I work at night.",
+     "She works at night."
+    ]
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish changes the verb for every person (trabajo, trabajas, trabaja). English only adds -s for he, she, it.",
+    "es": "En español el verbo cambia con cada persona (trabajo, trabajas, trabaja). En inglés solo lleva -s con he, she, it."
+   },
+   "aliases": [
+    "he works",
+    "she works",
+    "third person",
+    "tercera persona",
+    "presente",
+    "verbo con s"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "present-s-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "Every morning, the boy ___ water from the well.",
+     "options": [
+      "carries",
+      "carry",
+      "carrys"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "the boy = he, so the verb takes -s: carries.",
+       "es": "the boy = he: el verbo lleva -s: carries."
+      },
+      {
+       "en": "the boy = he, so the verb takes -s.",
+       "es": "the boy = he: el verbo lleva -s."
+      },
+      {
+       "en": "Consonant + y becomes -ies.",
+       "es": "Consonante + y se vuelve -ies."
+      }
+     ]
+    },
+    {
+     "id": "present-s-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "My father ___ a small boat.",
+     "options": [
+      "have",
+      "has",
+      "haves"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "With he, she, it, have becomes has.",
+       "es": "Con he, she, it, have se vuelve has."
+      },
+      {
+       "en": "My father = he, so have becomes has.",
+       "es": "My father = he: have se vuelve has."
+      },
+      {
+       "en": "have is irregular: has.",
+       "es": "have es irregular: has."
+      }
+     ]
+    },
+    {
+     "id": "present-s-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "___ she speak English?",
+     "options": [
+      "Do",
+      "Is",
+      "Does"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "With she, use does.",
+       "es": "Con she se usa does."
+      },
+      {
+       "en": "speak is a verb, so the question uses does.",
+       "es": "speak es verbo: la pregunta usa does."
+      },
+      {
+       "en": "With she, the question uses does: Does she speak?",
+       "es": "Con she, la pregunta usa does: Does she speak?"
+      }
+     ]
+    },
+    {
+     "id": "present-s-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The baby ___ all night.",
+     "options": [
+      "cries",
+      "cry",
+      "crys"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "the baby = it: consonant + y becomes -ies.",
+       "es": "the baby = it: consonante + y se vuelve -ies."
+      },
+      {
+       "en": "the baby = it, so the verb takes -s.",
+       "es": "the baby = it: el verbo lleva -s."
+      },
+      {
+       "en": "Consonant + y becomes -ies.",
+       "es": "Consonante + y se vuelve -ies."
+      }
+     ]
+    },
+    {
+     "id": "present-s-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "My brothers ___ football.",
+     "options": [
+      "plays",
+      "play",
+      "playing"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "my brothers = they, so no -s.",
+       "es": "my brothers = they, así que sin -s."
+      },
+      {
+       "en": "my brothers = they: no -s.",
+       "es": "my brothers = they: sin -s."
+      },
+      {
+       "en": "The present simple has no -ing here.",
+       "es": "El presente simple no lleva -ing aquí."
+      }
+     ]
+    },
+    {
+     "id": "present-s-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She ___ to school by bus.",
+     "options": [
+      "go",
+      "gos",
+      "goes"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "With she, the verb needs -es: goes.",
+       "es": "Con she, el verbo lleva -es: goes."
+      },
+      {
+       "en": "After o, add -es: goes.",
+       "es": "Después de o, se añade -es: goes."
+      },
+      {
+       "en": "After o, add -es: goes.",
+       "es": "Después de o, se añade -es: goes."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "adjective-noun",
+   "category": "sentence",
+   "level": "A1",
+   "title": {
+    "en": "Adjective and noun order: a red door, a kitchen door",
+    "es": "El orden de adjetivo y sustantivo: a red door, a kitchen door"
+   },
+   "rule": {
+    "en": [
+     "The adjective goes before the noun: a red door, an old man.",
+     "Adjectives never take -s: red doors, old men.",
+     "Noun + noun: the main thing goes last: a kitchen door is a door.",
+     "The first noun is usually singular: a shoe shop, a ten-year-old boy."
+    ],
+    "es": [
+     "El adjetivo va antes del sustantivo: a red door, an old man.",
+     "Los adjetivos nunca llevan -s: red doors, old men.",
+     "Sustantivo + sustantivo: lo principal va al final: a kitchen door es una puerta.",
+     "El primer sustantivo suele ir en singular: a shoe shop, a ten-year-old boy."
+    ]
+   },
+   "examples": [
+    {
+     "en": "A tall, thin man opened the door.",
+     "es": "Un hombre alto y delgado abrió la puerta."
+    },
+    {
+     "en": "She put the flowers in a glass vase.",
+     "es": "Puso las flores en un florero de vidrio."
+    },
+    {
+     "en": "They lived in a small stone house.",
+     "es": "Vivían en una casita de piedra."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "a coffee cup",
+     "a cup of coffee"
+    ],
+    "gloss": {
+     "en": "a cup for coffee · a cup with coffee in it",
+     "es": "una taza para café · una taza con café"
+    }
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish puts the adjective after the noun («una puerta roja»). English puts it before: a red door.",
+    "es": "En español el adjetivo suele ir después («una puerta roja»). En inglés va antes: a red door."
+   },
+   "aliases": [
+    "adjetivo",
+    "adjective",
+    "orden",
+    "noun",
+    "sustantivo",
+    "word order"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "adjective-noun-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She lives in a ___.",
+     "options": [
+      "big house",
+      "house big",
+      "bigs house"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "The adjective goes before the noun: a big house.",
+       "es": "El adjetivo va antes del sustantivo: a big house."
+      },
+      {
+       "en": "The adjective goes before the noun.",
+       "es": "El adjetivo va antes del sustantivo."
+      },
+      {
+       "en": "Adjectives have no -s.",
+       "es": "Los adjetivos no llevan -s."
+      }
+     ]
+    },
+    {
+     "id": "adjective-noun-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "A ___ is a box for shoes.",
+     "options": [
+      "box shoe",
+      "shoe box",
+      "box of shoe"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "The main thing (box) goes last.",
+       "es": "Lo principal (box) va al final."
+      },
+      {
+       "en": "The main thing goes last: a shoe box.",
+       "es": "Lo principal va al final: a shoe box."
+      },
+      {
+       "en": "English joins the two nouns: shoe box.",
+       "es": "El inglés une los sustantivos: shoe box."
+      }
+     ]
+    },
+    {
+     "id": "adjective-noun-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "They have three ___.",
+     "options": [
+      "cars red",
+      "reds cars",
+      "red cars"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "In English the adjective goes before the noun.",
+       "es": "En inglés el adjetivo va antes del sustantivo."
+      },
+      {
+       "en": "Adjectives don't take -s.",
+       "es": "Los adjetivos no llevan -s."
+      },
+      {
+       "en": "The adjective stays red, even before a plural.",
+       "es": "El adjetivo queda red, incluso ante un plural."
+      }
+     ]
+    },
+    {
+     "id": "adjective-noun-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "He is a ___ boy.",
+     "options": [
+      "ten-year-old",
+      "ten-years-old",
+      "ten years old"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "The first noun stays singular: a ten-year-old boy.",
+       "es": "El primer sustantivo queda en singular: a ten-year-old boy."
+      },
+      {
+       "en": "Before a noun, year stays singular.",
+       "es": "Antes de un sustantivo, year queda en singular."
+      },
+      {
+       "en": "Before a noun, join the parts: ten-year-old.",
+       "es": "Antes de un sustantivo, se une todo: ten-year-old."
+      }
+     ]
+    },
+    {
+     "id": "adjective-noun-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "I saw two ___ dogs.",
+     "options": [
+      "smalls",
+      "small",
+      "of small"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "Adjectives don't take -s.",
+       "es": "Los adjetivos no llevan -s."
+      },
+      {
+       "en": "The adjective stays small, even before a plural.",
+       "es": "El adjetivo queda small, incluso ante un plural."
+      },
+      {
+       "en": "The adjective goes directly before the noun.",
+       "es": "El adjetivo va directamente antes del sustantivo."
+      }
+     ]
+    },
+    {
+     "id": "adjective-noun-6",
+     "level": "A1",
+     "kind": "choose",
+     "text": "Una casa grande.",
+     "ask": {
+      "en": "Choose the English phrase.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "a house big",
+      "a bigs house",
+      "a big house"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "In English the adjective goes before the noun.",
+       "es": "En inglés el adjetivo va antes del sustantivo."
+      },
+      {
+       "en": "Adjectives don't take -s.",
+       "es": "Los adjetivos no llevan -s."
+      },
+      {
+       "en": "Adjective first: a big house.",
+       "es": "Primero el adjetivo: a big house."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "time-prepositions",
+   "category": "prepositions",
+   "level": "A1",
+   "title": {
+    "en": "In, on, at: time",
+    "es": "In, on, at: fechas y horas"
+   },
+   "rule": {
+    "en": [
+     "in: months, years, seasons, centuries and parts of the day: in May, in the morning.",
+     "on: days and dates: on Monday, on 5 May, on Monday morning.",
+     "at: clock times and fixed phrases: at 7:00, at night, at noon, at Christmas.",
+     "No preposition before this, next, last, every, today, tomorrow: next week."
+    ],
+    "es": [
+     "in: meses, años, estaciones, siglos y partes del día: in May, in the morning.",
+     "on: días y fechas: on Monday, on 5 May, on Monday morning.",
+     "at: horas y frases fijas: at 7:00, at night, at noon, at Christmas.",
+     "Sin preposición antes de this, next, last, every, today, tomorrow: next week."
+    ]
+   },
+   "examples": [
+    {
+     "en": "They met in the summer of 1900.",
+     "es": "Se conocieron en el verano de 1900."
+    },
+    {
+     "en": "The train leaves at six o'clock.",
+     "es": "El tren sale a las seis en punto."
+    },
+    {
+     "en": "We'll see you next Friday.",
+     "es": "Nos vemos el próximo viernes."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "in the morning",
+     "on Monday morning"
+    ]
+   },
+   "note": {
+    "en": "“On Friday night” means that night; “at night” means nights in general. UK: at the weekend. US: on the weekend or on weekends.",
+    "es": "«On Friday night» es esa noche; «at night» es las noches en general. Reino Unido: at the weekend. EE. UU.: on the weekend u on weekends."
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish uses «en», «el» and «a las»: «en julio», «el lunes», «a las siete». English: in July, on Monday, at seven.",
+    "es": "En español se dice «en julio», «el lunes», «a las siete». En inglés: in July, on Monday, at seven."
+   },
+   "aliases": [
+    "in",
+    "on",
+    "at",
+    "tiempo",
+    "hora",
+    "fecha",
+    "día",
+    "mes",
+    "month",
+    "monday",
+    "morning",
+    "night",
+    "weekend",
+    "preposición"
+   ],
+   "books": {
+    "mode": "patterns",
+    "patterns": [
+     "in the morning|evening|afternoon|summer|winter|spring|autumn",
+     "on monday|tuesday|wednesday|thursday|friday|saturday|sunday",
+     "at night|noon|midnight|dawn"
+    ]
+   },
+   "practice": [
+    {
+     "id": "time-prepositions-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "I'll see you ___ Monday.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "in is for months and years, not days.",
+       "es": "in es para meses y años, no para días."
+      },
+      {
+       "en": "Days take on: on Monday.",
+       "es": "Los días llevan on: on Monday."
+      },
+      {
+       "en": "at is for clock times.",
+       "es": "at es para horas."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The class starts ___ 9:00.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "in is for longer periods.",
+       "es": "in es para periodos largos."
+      },
+      {
+       "en": "on is for days.",
+       "es": "on es para días."
+      },
+      {
+       "en": "Clock times take at: at 9:00.",
+       "es": "Las horas llevan at: at 9:00."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "My birthday is ___ July.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Months take in: in July.",
+       "es": "Los meses llevan in: in July."
+      },
+      {
+       "en": "on is for days and dates.",
+       "es": "on es para días y fechas."
+      },
+      {
+       "en": "at is for clock times.",
+       "es": "at es para horas."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "I'll call you ___ next Monday.",
+     "options": [
+      "on",
+      "at",
+      "(nothing)"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "on goes with days and dates, not before next.",
+       "es": "on va con días y fechas, no antes de next."
+      },
+      {
+       "en": "at goes with clock times, not before next.",
+       "es": "at va con horas, no antes de next."
+      },
+      {
+       "en": "Before next, no preposition: next Monday.",
+       "es": "Antes de next, sin preposición: next Monday."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "We eat breakfast ___ the morning.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Parts of the day take in: in the morning.",
+       "es": "Las partes del día llevan in: in the morning."
+      },
+      {
+       "en": "on is for days and dates.",
+       "es": "on es para días y fechas."
+      },
+      {
+       "en": "at is for clock times.",
+       "es": "at es para horas."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The party is ___ Friday night.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "in the night means a moment of a night; Friday night takes on.",
+       "es": "in the night es un momento de la noche; Friday night lleva on."
+      },
+      {
+       "en": "A day plus a part of the day takes on: on Friday night.",
+       "es": "Un día más una parte del día lleva on: on Friday night."
+      },
+      {
+       "en": "at night is nights in general; Friday night takes on.",
+       "es": "at night es las noches en general; Friday night lleva on."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-7",
+     "level": "A1",
+     "kind": "gap",
+     "text": "We go to bed late ___ night.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "The fixed phrase is at night; in the night = at one moment of a night.",
+       "es": "La frase fija es at night; in the night = en un momento de la noche."
+      },
+      {
+       "en": "on goes with a specific night: on Friday night.",
+       "es": "on va con una noche concreta: on Friday night."
+      },
+      {
+       "en": "The fixed phrase is at night.",
+       "es": "La frase fija es at night."
+      }
+     ]
+    },
+    {
+     "id": "time-prepositions-8",
+     "level": "B1",
+     "kind": "gap",
+     "text": "In British English: I never work ___ the weekend.",
+     "options": [
+      "at",
+      "on",
+      "in"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "British English says at the weekend.",
+       "es": "El inglés británico dice at the weekend."
+      },
+      {
+       "en": "on the weekend is American English.",
+       "es": "on the weekend es inglés americano."
+      },
+      {
+       "en": "in the weekend isn't used.",
+       "es": "in the weekend no se usa."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "place-prepositions",
+   "category": "prepositions",
+   "level": "A1",
+   "title": {
+    "en": "In, on, at: places",
+    "es": "In, on, at: lugares"
+   },
+   "rule": {
+    "en": [
+     "in: inside a space or area: in the box, in the room, in Paris.",
+     "on: on a surface or line: on the table, on the wall, on the second floor.",
+     "at: a point, address or event: at the door, at 10 Park Road, at a party.",
+     "Fixed: at home, at school, at work, in bed; in hospital (UK), in the hospital (US)."
+    ],
+    "es": [
+     "in: dentro de un espacio o área: in the box, in the room, in Paris.",
+     "on: sobre una superficie o línea: on the table, on the wall, on the second floor.",
+     "at: un punto, dirección o evento: at the door, at 10 Park Road, at a party.",
+     "Frases fijas: at home, at school, at work, in bed; in hospital (Reino Unido), in the hospital (EE. UU.)."
+    ]
+   },
+   "examples": [
+    {
+     "en": "A letter was on the table.",
+     "es": "Había una carta sobre la mesa."
+    },
+    {
+     "en": "She waited at the station.",
+     "es": "Esperó en la estación."
+    },
+    {
+     "en": "They lived in a small village.",
+     "es": "Vivían en un pueblo pequeño."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "at the airport",
+     "in the airport"
+    ],
+    "gloss": {
+     "en": "at = the place · in = inside the building",
+     "es": "at = el lugar · in = dentro del edificio"
+    }
+   },
+   "note": {
+    "en": "On a street: US on Main Street; UK also in the High Street.",
+    "es": "En una calle: EE. UU. on Main Street; Reino Unido también in the High Street."
+   },
+   "spanish": {
+    "en": "Spanish speakers: Spanish says «en» for all: «en casa», «en la mesa», «en Madrid». English: at home, on the table, in Madrid.",
+    "es": "En español todo es «en»: «en casa», «en la mesa», «en Madrid». En inglés: at home, on the table, in Madrid."
+   },
+   "aliases": [
+    "in",
+    "on",
+    "at",
+    "lugar",
+    "place",
+    "donde",
+    "where",
+    "preposición",
+    "home",
+    "school"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "place-prepositions-1",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The keys are ___ the table.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "in = inside; a table is a surface.",
+       "es": "in = dentro; una mesa es una superficie."
+      },
+      {
+       "en": "A table is a surface: on the table.",
+       "es": "Una mesa es una superficie: on the table."
+      },
+      {
+       "en": "at = a point; for surfaces use on.",
+       "es": "at = un punto; para superficies, on."
+      }
+     ]
+    },
+    {
+     "id": "place-prepositions-2",
+     "level": "A1",
+     "kind": "gap",
+     "text": "She lives ___ Madrid.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "A city is an area: in Madrid.",
+       "es": "Una ciudad es un área: in Madrid."
+      },
+      {
+       "en": "on is for surfaces.",
+       "es": "on es para superficies."
+      },
+      {
+       "en": "at is for points or addresses.",
+       "es": "at es para puntos o direcciones."
+      }
+     ]
+    },
+    {
+     "id": "place-prepositions-3",
+     "level": "A1",
+     "kind": "gap",
+     "text": "I'll meet you ___ the bus stop.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "A bus stop is a point, not a closed space.",
+       "es": "Una parada es un punto, no un espacio cerrado."
+      },
+      {
+       "en": "on is for surfaces.",
+       "es": "on es para superficies."
+      },
+      {
+       "en": "A bus stop is a point: at the bus stop.",
+       "es": "Una parada es un punto: at the bus stop."
+      }
+     ]
+    },
+    {
+     "id": "place-prepositions-4",
+     "level": "A1",
+     "kind": "gap",
+     "text": "He is still ___ bed.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Fixed phrase: in bed.",
+       "es": "Frase fija: in bed."
+      },
+      {
+       "en": "on is for surfaces; the fixed phrase is in bed.",
+       "es": "on es para superficies; la frase fija es in bed."
+      },
+      {
+       "en": "at is for points; the fixed phrase is in bed.",
+       "es": "at es para puntos; la frase fija es in bed."
+      }
+     ]
+    },
+    {
+     "id": "place-prepositions-5",
+     "level": "A1",
+     "kind": "gap",
+     "text": "The picture is ___ the wall.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "in = inside; a picture hangs on the surface.",
+       "es": "in = dentro; un cuadro cuelga de la superficie."
+      },
+      {
+       "en": "A wall is a surface: on the wall.",
+       "es": "Una pared es una superficie: on the wall."
+      },
+      {
+       "en": "at is for points; for surfaces use on.",
+       "es": "at es para puntos; para superficies, on."
+      }
+     ]
+    },
+    {
+     "id": "place-prepositions-6",
+     "level": "A1",
+     "kind": "gap",
+     "text": "We are ___ home.",
+     "options": [
+      "in",
+      "on",
+      "at"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "The fixed phrase is at home.",
+       "es": "La frase fija es at home."
+      },
+      {
+       "en": "on is for surfaces; the fixed phrase is at home.",
+       "es": "on es para superficies; la frase fija es at home."
+      },
+      {
+       "en": "Fixed phrase: at home.",
+       "es": "Frase fija: at home."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "single-negative",
+   "category": "sentence",
+   "level": "A2",
+   "title": {
+    "en": "One negative is enough: nobody, anything",
+    "es": "Basta una negación: nobody, anything"
+   },
+   "rule": {
+    "en": [
+     "Standard English uses one negative word per idea: I don't see anybody.",
+     "With not, use any-: I didn't say anything. She doesn't have any money.",
+     "Or use a no- word alone: I said nothing. Nobody came.",
+     "In Spanish two negatives are right (No vi a nadie); in English they aren't."
+    ],
+    "es": [
+     "El inglés estándar usa una sola negación por idea: I don't see anybody.",
+     "Con not, usa any-: I didn't say anything. She doesn't have any money.",
+     "O usa solo la palabra con no-: I said nothing. Nobody came.",
+     "En español sí se dice «No vi a nadie»; en inglés no."
+    ]
+   },
+   "examples": [
+    {
+     "en": "There was nobody in the room.",
+     "es": "No había nadie en la habitación."
+    },
+    {
+     "en": "He didn't eat anything all day.",
+     "es": "No comió nada en todo el día."
+    },
+    {
+     "en": "I have never seen such a thing.",
+     "es": "Nunca he visto algo así."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "I didn't see anyone.",
+     "I saw no one."
+    ]
+   },
+   "note": {
+    "en": "Some book characters use two negatives. That is how they speak, not standard English.",
+    "es": "Algunos personajes de libros usan dos negaciones. Así hablan; no es inglés estándar."
+   },
+   "spanish": {
+    "en": "Spanish speakers: «No vino nadie» = Nobody came. «No veo nada» = I don't see anything.",
+    "es": "En español: «No vino nadie» = Nobody came. «No veo nada» = I don't see anything."
+   },
+   "aliases": [
+    "nobody",
+    "nothing",
+    "never",
+    "nadie",
+    "nada",
+    "nunca",
+    "doble negación",
+    "double negative",
+    "any",
+    "anything"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "single-negative-1",
+     "level": "A2",
+     "kind": "gap",
+     "text": "I didn't buy ___.",
+     "options": [
+      "anything",
+      "nothing",
+      "something"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "With not, use any-: didn't buy anything.",
+       "es": "Con not se usa any-: didn't buy anything."
+      },
+      {
+       "en": "didn't is already negative, so use anything.",
+       "es": "didn't ya es negación, así que va anything."
+      },
+      {
+       "en": "In a negative sentence, use any-: anything.",
+       "es": "En una negativa se usa any-: anything."
+      }
+     ]
+    },
+    {
+     "id": "single-negative-2",
+     "level": "A2",
+     "kind": "gap",
+     "text": "___ came to the party.",
+     "options": [
+      "Anybody",
+      "Nobody",
+      "Not nobody"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "anybody needs not or never before it; alone it doesn't make a negative.",
+       "es": "anybody necesita not o never antes; solo no niega."
+      },
+      {
+       "en": "Nobody is already the negative: Nobody came.",
+       "es": "Nobody ya es la negación: Nobody came."
+      },
+      {
+       "en": "One negative is enough: nobody.",
+       "es": "Basta una negación: nobody."
+      }
+     ]
+    },
+    {
+     "id": "single-negative-3",
+     "level": "A2",
+     "kind": "gap",
+     "text": "She has ___ been to Paris.",
+     "options": [
+      "not never",
+      "ever",
+      "never"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "One negative is enough: never.",
+       "es": "Basta una negación: never."
+      },
+      {
+       "en": "ever goes in questions and after not: Has she ever…?",
+       "es": "ever va en preguntas o tras not: Has she ever…?"
+      },
+      {
+       "en": "never is the one negative: has never been.",
+       "es": "never es la única negación: has never been."
+      }
+     ]
+    },
+    {
+     "id": "single-negative-4",
+     "level": "A2",
+     "kind": "gap",
+     "text": "There was ___ in the room.",
+     "options": [
+      "nobody",
+      "anybody",
+      "not nobody"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Without not, use nobody: There was nobody.",
+       "es": "Sin not se usa nobody: There was nobody."
+      },
+      {
+       "en": "Without not, anybody doesn't make it negative: nobody.",
+       "es": "Sin not, anybody no niega la frase: nobody."
+      },
+      {
+       "en": "One negative is enough: nobody.",
+       "es": "Basta una negación: nobody."
+      }
+     ]
+    },
+    {
+     "id": "single-negative-5",
+     "level": "A2",
+     "kind": "gap",
+     "text": "We haven't got ___ milk.",
+     "options": [
+      "no",
+      "any",
+      "some"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "haven't is already negative, so use any.",
+       "es": "haven't ya es negación, así que va any."
+      },
+      {
+       "en": "haven't is already negative: any milk.",
+       "es": "haven't ya es negación: any milk."
+      },
+      {
+       "en": "In a negative sentence, use any.",
+       "es": "En una negativa se usa any."
+      }
+     ]
+    },
+    {
+     "id": "single-negative-6",
+     "level": "A2",
+     "kind": "choose",
+     "text": "No vino nadie.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "Nobody didn't come.",
+      "Anybody came.",
+      "Nobody came."
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "One negative is enough: nobody.",
+       "es": "Basta una negación: nobody."
+      },
+      {
+       "en": "anybody doesn't make the sentence negative.",
+       "es": "anybody no niega la frase."
+      },
+      {
+       "en": "One negative is enough: Nobody came.",
+       "es": "Basta una negación: Nobody came."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "indirect-questions",
+   "category": "sentence",
+   "level": "B1",
+   "title": {
+    "en": "Questions inside a sentence: I don't know where he is",
+    "es": "Preguntas dentro de otra oración: I don't know where he is"
+   },
+   "rule": {
+    "en": [
+     "Inside another sentence, use normal order: I don't know where he lives.",
+     "No do, does or did inside: She asked where he lived.",
+     "With be, the subject comes first: Do you know where the station is?"
+    ],
+    "es": [
+     "Dentro de otra oración, el orden es normal: I don't know where he lives.",
+     "Sin do, does ni did dentro: She asked where he lived.",
+     "Con be, primero va el sujeto: Do you know where the station is?"
+    ]
+   },
+   "examples": [
+    {
+     "en": "She asked him where the river was.",
+     "es": "Le preguntó dónde estaba el río."
+    },
+    {
+     "en": "Do you know where the station is?",
+     "es": "¿Sabes dónde está la estación?"
+    },
+    {
+     "en": "I wonder why she left.",
+     "es": "Me pregunto por qué se fue."
+    }
+   ],
+   "contrast": {
+    "forms": [
+     "Where is he?",
+     "I don't know where he is."
+    ]
+   },
+   "note": {
+    "en": "“Do you know where he is?” has normal order after where: only the first part is a question.",
+    "es": "«Do you know where he is?» lleva orden normal después de where: solo la primera parte es una pregunta."
+   },
+   "spanish": {
+    "en": "Spanish speakers: «No sé dónde está» keeps the same order in English: I don't know where she is.",
+    "es": "En español «No sé dónde está». En inglés el orden también es normal: I don't know where she is."
+   },
+   "aliases": [
+    "indirect",
+    "indirecta",
+    "embedded",
+    "know",
+    "wonder",
+    "asked",
+    "preguntó",
+    "sé"
+   ],
+   "books": {
+    "mode": "none"
+   },
+   "practice": [
+    {
+     "id": "indirect-questions-1",
+     "level": "B1",
+     "kind": "gap",
+     "text": "I don't know ___.",
+     "options": [
+      "where the station is",
+      "where is the station",
+      "where does the station is"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "Inside a sentence, use normal order: the station is.",
+       "es": "Dentro de una oración, orden normal: the station is."
+      },
+      {
+       "en": "Inside a sentence the subject comes first.",
+       "es": "Dentro de una oración el sujeto va primero."
+      },
+      {
+       "en": "No does inside a sentence.",
+       "es": "Sin does dentro de una oración."
+      }
+     ]
+    },
+    {
+     "id": "indirect-questions-2",
+     "level": "B1",
+     "kind": "gap",
+     "text": "Do you know where ___?",
+     "options": [
+      "does he live",
+      "he lives",
+      "lives he"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "No does inside a sentence.",
+       "es": "Sin does dentro de una oración."
+      },
+      {
+       "en": "Normal order, no does inside: where he lives.",
+       "es": "Orden normal, sin does dentro: where he lives."
+      },
+      {
+       "en": "The subject comes before the verb.",
+       "es": "El sujeto va antes del verbo."
+      }
+     ]
+    },
+    {
+     "id": "indirect-questions-3",
+     "level": "B1",
+     "kind": "gap",
+     "text": "She asked me where I ___.",
+     "options": [
+      "did live",
+      "live",
+      "lived"
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "No did inside: where I lived.",
+       "es": "Sin did dentro: where I lived."
+      },
+      {
+       "en": "After asked, the verb moves to the past: lived.",
+       "es": "Después de asked, el verbo pasa a pasado: lived."
+      },
+      {
+       "en": "asked is past, so the verb is past too: lived.",
+       "es": "asked está en pasado, así que el verbo también: lived."
+      }
+     ]
+    },
+    {
+     "id": "indirect-questions-4",
+     "level": "B1",
+     "kind": "choose",
+     "text": "Tom is asking the time.",
+     "ask": {
+      "en": "Choose the correct sentence.",
+      "es": "Elige la frase correcta."
+     },
+     "options": [
+      "Can you tell me what time it is?",
+      "Can you tell me what time is it?",
+      "Can you tell me what time does it is?"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "After what time, normal order: it is.",
+       "es": "Después de what time, orden normal: it is."
+      },
+      {
+       "en": "Inside a sentence the subject comes before be.",
+       "es": "Dentro de una oración el sujeto va antes de be."
+      },
+      {
+       "en": "No does inside a sentence.",
+       "es": "Sin does dentro de una oración."
+      }
+     ]
+    },
+    {
+     "id": "indirect-questions-5",
+     "level": "B1",
+     "kind": "gap",
+     "text": "I wonder why ___ left.",
+     "options": [
+      "did she",
+      "she",
+      "does she"
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "No did inside: why she left.",
+       "es": "Sin did dentro: why she left."
+      },
+      {
+       "en": "Normal order: why she left.",
+       "es": "Orden normal: why she left."
+      },
+      {
+       "en": "No does inside: why she left.",
+       "es": "Sin does dentro: why she left."
+      }
+     ]
+    },
+    {
+     "id": "indirect-questions-6",
+     "level": "B1",
+     "kind": "choose",
+     "text": "No sé dónde está Ana.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "I don't know where is Ana.",
+      "I don't know where does Ana is.",
+      "I don't know where Ana is."
+     ],
+     "answer": 2,
+     "feedback": [
+      {
+       "en": "Inside a sentence the subject comes before be.",
+       "es": "Dentro de una oración el sujeto va antes de be."
+      },
+      {
+       "en": "No does inside a sentence.",
+       "es": "Sin does dentro de una oración."
+      },
+      {
+       "en": "Normal order after where: Ana is.",
+       "es": "Orden normal después de where: Ana is."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
