@@ -258,9 +258,9 @@ Grammar rules data (shared logic, same file and tests on both platforms):
 - Progress (`tips.json`, schema 2, in the app's own folder, plain name): per rule id when it was last opened, attempts
   and rights (display only), whether it is in Review, whether its first item has been answered (`pretestDone`), and
   per item `{box 0–5, due (a date or none), seen, missed}`. At most 200 entries (the ones opened longest ago go first),
-  12 items each, counts 0–1,000, 256 KB. Read back bounded: an unknown rule or item id is dropped, counts are brought
-  into range (rights never above attempts, missed never above seen), a date that can't be read, before 2020 or in
-  the future becomes none, another schema gives empty progress. If the bundled rules did not load, progress is not
+  12 items each, counts 0–1,000, 384 KB (the most the other limits allow is about 290 KB, tested). Read back bounded: an unknown rule or item id is dropped, counts are brought
+  into range (rights never above attempts, missed never above seen), a date that can't be read, a last-opened date before 2020 or more than a day ahead, or a due date before 2020 or
+  more than a year ahead becomes none, another schema gives empty progress. If the bundled rules did not load, progress is not
   written (the saved file stays as it is). Deleting the app's data removes it. No telemetry: nothing about Grammar
   leaves the device. Measured on the device only (never sent): per item the box, due day and results, so a later
   version can compare the first try of a pretest with the first practice and recall after 7 days.

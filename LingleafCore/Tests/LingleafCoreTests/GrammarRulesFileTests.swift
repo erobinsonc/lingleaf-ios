@@ -27,6 +27,8 @@ final class GrammarRulesFileTests: XCTestCase {
         }
     }
 
+    /// A tripwire, not a lock: whoever changes the file changes the hash in SPEC.md too, so human review
+    /// of a changed SHA in the pull request is the real barrier.
     func testTheFileIsTheOneTheSpecNames() throws {
         let spec = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .appending(path: "../../../SPEC.md").standardizedFileURL
