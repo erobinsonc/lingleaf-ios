@@ -38,6 +38,10 @@ public struct GrammarRules: Sendable {
     public let categories: [GrammarCategory]
     public let rules: [GrammarRule]
 
+    /// False when the bundled file was refused and there are no rules: progress must then not be saved
+    /// (see `GrammarProgress.encoded(for:)`).
+    public var isAvailable: Bool { !rules.isEmpty }
+
     public func rule(id: String) -> GrammarRule? { rules.first { $0.id == id } }
 
     public func rules(in category: String) -> [GrammarRule] { rules.filter { $0.category == category } }
@@ -92,7 +96,7 @@ public struct GrammarRules: Sendable {
         try check(isPair(rule.contrast.gloss), "\(id): contrast gloss")
         try check(isPair(rule.note), "\(id): note")
         try check((1...20).contains(rule.aliases.count), "\(id): 1–20 aliases")
-        try check(rule.aliases.allSatisfy { isText($0) && $0.count <= maxAlias }, "\(id): alias")
+        try check(rule.aliases.allSatisfy { isText($0) && $0.unicodeScalars.count <= maxAlias }, "\(id): alias")
         try check((3...12).contains(rule.practice.count), "\(id): 3–12 practice items")
     }
 
@@ -105,11 +109,13 @@ public struct GrammarRules: Sendable {
         try check(item.options.indices.contains(item.answer), "\(item.id): answer out of range")
         try check(item.feedback.count == item.options.count, "\(item.id): one feedback line per option")
         try check(item.feedback.allSatisfy { isText($0.en) && isText($0.es) }, "\(item.id): feedback")
+        try check(isPair(item.ask), "\(item.id): ask")
         switch item.kind {
         case .gap:
+            try check(item.ask == nil, "\(item.id): a gap item has no ask")
             try check(item.text.map { isText($0) && $0.components(separatedBy: gap).count == 2 } ?? false, "\(item.id): one gap")
         case .choose:
-            try check(item.ask != nil && isPair(item.ask), "\(item.id): choose needs ask")
+            try check(item.ask != nil, "\(item.id): choose needs ask")
             try check(item.text.map(isText) ?? true, "\(item.id): text")
         }
     }
@@ -125,16 +131,14 @@ public struct GrammarRules: Sendable {
             && text.utf8.allSatisfy { (0x61...0x7A).contains($0) || (0x30...0x39).contains($0) || $0 == 0x2D }
     }
 
-    /// Non-empty, at most `maxText` characters, with no control, format (invisible, bidirectional)
-    /// or private-use character.
+    /// Characters no text may hold: controls, invisible formatting (bidi, zero-width), line and paragraph
+    /// separators and private use. Same set as the irregular-verb table's texts.
+    private static let forbidden: Set<Unicode.GeneralCategory> = [.control, .format, .lineSeparator, .paragraphSeparator, .privateUse]
+
+    /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), none forbidden.
     static func isText(_ text: String) -> Bool {
-        guard !text.isEmpty, text.count <= maxText else { return false }
-        return text.unicodeScalars.allSatisfy {
-            switch $0.properties.generalCategory {
-            case .control, .format, .privateUse, .surrogate, .unassigned: return false
-            default: return true
-            }
-        }
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= maxText
+            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) }
     }
 }
 

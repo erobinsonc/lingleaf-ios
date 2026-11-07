@@ -70,7 +70,13 @@ public struct GrammarProgress: Equatable, Sendable {
 
     // MARK: Saved form
 
-    public func encoded() -> Data {
+    /// What to save, or nil when the bundled rules did not load: with no rules every saved entry would
+    /// read as unknown, so saving would overwrite the learner's progress with nothing. Keep the file.
+    public func encoded(for grammar: GrammarRules) -> Data? {
+        grammar.isAvailable ? encoded() : nil
+    }
+
+    func encoded() -> Data {
         var object: [String: Any] = [:]
         for (id, progress) in rules {
             var entry: [String: Any] = [

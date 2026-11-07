@@ -120,4 +120,31 @@ final class GrammarProgressTests: XCTestCase {
         let read = decode("{\"schema\": 1, \"rules\": {\(entries)}}", known: known)
         XCTAssertEqual(read.rules.count, GrammarProgress.maxEntries)
     }
+
+    func testNothingIsSavedWhenTheRulesDidNotLoad() {
+        var progress = GrammarProgress()
+        progress.opened("a", at: day)
+        XCTAssertNil(progress.encoded(for: GrammarRules(categories: [], rules: [])), "keep the saved file")
+        XCTAssertFalse(GrammarRules(categories: [], rules: []).isAvailable)
+        XCTAssertTrue(GrammarRules.shared.isAvailable)
+        XCTAssertEqual(progress.encoded(for: GrammarRules.shared), progress.encoded())
+    }
+
+    func testTheLargestProgressStaysUnderTheCap() {
+        var entries: [String: RuleProgress] = [:]
+        for index in 0..<GrammarProgress.maxEntries {
+            var entry = RuleProgress()
+            entry.attempts = GrammarProgress.maxCount
+            entry.rights = GrammarProgress.maxCount
+            entry.pretestDone = true
+            entry.inReview = true
+            entry.lastOpened = 1_800_000_000.123_456_7 + Double(index)
+            entries[String(repeating: "r", count: 37) + String(format: "%03d", index)] = entry
+        }
+        let progress = GrammarProgress(rules: entries)
+        XCTAssertEqual(progress.rules.count, GrammarProgress.maxEntries)
+        XCTAssertLessThanOrEqual(progress.encoded().count, GrammarProgress.maxBytes)
+        let read = GrammarProgress.decode(progress.encoded(), known: Set(entries.keys), now: later(1000))
+        XCTAssertEqual(read.rules.count, GrammarProgress.maxEntries, "what is saved can be read back whole")
+    }
 }

@@ -235,7 +235,7 @@ Grammar rules data (shared logic, same file and tests on both platforms):
   category, a duplicate id, an unknown level (A1, A2, B1), a `kind` other than `gap` or `choose`, an item with fewer
   than 2 or more than 4 options, an answer index outside the options, a `feedback` count different from the options',
   a `gap` text without exactly one "___", a `choose` item without `ask`, a rule with more than 4 rule lines, fewer
-  than 2 or more than 4 examples, a rule id or item id that is not lower-case a–z, digits and hyphens (1–40), or fewer than 3 or more than 12 practice items, more than 200 rules or 20 categories, any text over 400 characters or with a control, invisible or private-use character, a file over 256 KB
+  than 2 or more than 4 examples, a rule id or item id that is not lower-case a–z, digits and hyphens (1–40), or fewer than 3 or more than 12 practice items, more than 200 rules or 20 categories, any text that is blank, over 400 code points (a combining mark counts) or holds a control, format (bidirectional, zero-width), line or paragraph separator or private-use character (the same set as the irregular-verb table's texts), an `ask` on a `gap` item, a file over 256 KB
   or JSON nested deeper than 8 levels is refused; the tests load the bundled file and compare its SHA-256 with the one below.
 - Shape: `schema`, `categories[] {id, title{en,es}}`, `rules[] {id, category, level, title{en,es},
   rule{en[],es[]}, examples[] {en, es}, contrast {forms[2], gloss{en,es}?}, note{en,es}?, aliases[], practice[]
@@ -249,7 +249,7 @@ Grammar rules data (shared logic, same file and tests on both platforms):
   and rights (capped at 1,000, rights never above attempts), whether it is in Review, and the pretest done; at most 400
   entries (the ones opened longest ago go first) and 64 KB.
   Read back bounded: an unknown rule id is dropped, counts are brought into 0–1,000, a date that can't be read, before 2020
-  or in the future becomes none. Deleting the app's data removes it. No telemetry: nothing about Grammar leaves the device.
+  or in the future becomes none. Deleting the app's data removes it. If the bundled rules did not load, progress is not written (the saved file stays as it is). No telemetry: nothing about Grammar leaves the device.
 - Search (`GrammarSearch`): lower-case, strip accents (NFD, no combining marks), split on non-letters; every
   query word must prefix a word of the rule's title, rule lines, examples or aliases (both languages).
 - Examples are original text written for Lingleaf (CC0); the facts come from standard grammar references, not
