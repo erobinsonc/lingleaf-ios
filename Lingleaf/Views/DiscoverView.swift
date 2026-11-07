@@ -67,6 +67,12 @@ struct DiscoverView: View {
                 Section {
                     levelFilter
                     ForEach(stories, id: \.resource) { storyRow($0) }
+                    // A row, not a footer (footers fail the Dynamic Type audit).
+                    if !stories.isEmpty {
+                        Text(Credits.storiesNotice)
+                            .font(.footnote)
+                            .foregroundStyle(Brand.secondaryText)
+                    }
                     if recommended.isEmpty && stories.isEmpty {
                         Text("No recommended books at this level.")
                     } else {

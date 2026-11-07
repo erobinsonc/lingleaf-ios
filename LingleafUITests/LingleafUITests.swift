@@ -167,6 +167,68 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the story in the reader")
     }
 
+    /// S19: the app's own stories say so in the Library, and Discover lists all three of a level.
+    func testTheOriginalStoriesAreMarkedAndListedByLevel() {
+        XCTAssertTrue(button(startingWith: "The Red Boat").label.contains("Original story"), "the Library row says it is an original story")
+        app.tabBars.buttons["Discover"].tap()
+        let a1 = app.buttons["level-filter-A1"]
+        XCTAssertTrue(a1.waitForExistence(timeout: 10))
+        a1.tap()
+        for title in ["A Shoe in the Fridge", "An Empty Apartment", "Nour's Long Race"] {
+            XCTAssertTrue(app.buttons["Read \(title)"].waitForExistence(timeout: 5), "\(title) is in the A1 stories")
+        }
+        XCTAssertTrue(app.staticTexts[Self.storiesNoticeText].waitForExistence(timeout: 5), "the AI-help note shows with the stories")
+        app.buttons["level-filter-C2"].tap()
+        XCTAssertTrue(app.buttons["Read The Second Violin"].waitForExistence(timeout: 5), "the C2 stories are there too")
+    }
+
+    /// S19: a word the story has an entry for shows the story's sense, not the general translation.
+    func testAStoryWordShowsItsSenseAndSavesIt() {
+        app.tabBars.buttons["Discover"].tap()
+        let a1 = app.buttons["level-filter-A1"]
+        XCTAssertTrue(a1.waitForExistence(timeout: 10))
+        a1.tap()
+        let read = app.buttons["Read A Shoe in the Fridge"]
+        XCTAssertTrue(read.waitForExistence(timeout: 5))
+        read.tap()
+        let word = app.links["mom"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10), "the story opens offline")
+        word.tap()
+
+        XCTAssertTrue(app.staticTexts["mamá"].waitForExistence(timeout: 10), "the story's own meaning")
+        XCTAssertFalse(app.staticTexts["ES: mom"].exists, "not the general translation")
+        XCTAssertTrue(app.staticTexts["/mɑm/"].exists, "the sense's IPA, not the dictionary's")
+        XCTAssertTrue(app.staticTexts["US English"].exists, "a US word says so")
+        let definition = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of mom")).firstMatch
+        XCTAssertTrue(definition.waitForExistence(timeout: 10), "the dictionary has a noun for it")
+        attachScreenshot("en-light-16-story-word-card")
+        app.buttons["Save word"].tap()
+        XCTAssertTrue(app.staticTexts["“mom” saved to Words"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.tabBars.buttons["Words"].tap()
+        XCTAssertTrue(element(labelled: "mom").waitForExistence(timeout: 5), "the word was saved")
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "mamá")).firstMatch.exists,
+                      "with the story's meaning")
+    }
+
+    /// S19: a name that is also a word is a name, with no translation.
+    func testAStoryNameIsLabelledAsAName() {
+        app.tabBars.buttons["Discover"].tap()
+        let a2 = app.buttons["level-filter-A2"]
+        XCTAssertTrue(a2.waitForExistence(timeout: 10))
+        a2.tap()
+        let read = app.buttons["Read The Oven Next Door"]
+        XCTAssertTrue(read.waitForExistence(timeout: 5))
+        read.tap()
+        let word = app.links["Blue"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10))
+        word.tap()
+        XCTAssertTrue(app.staticTexts["Name"].waitForExistence(timeout: 10), "the card says it is a name")
+        XCTAssertTrue(app.staticTexts["The Blue Table"].firstMatch.exists, "the whole name is the headword")
+        XCTAssertFalse(app.staticTexts["ES: Blue"].exists, "a name is not translated")
+        attachScreenshot("en-light-17-story-name-card")
+    }
+
     /// S6 Listen. XCUITest can't hear the speaker, so in -ui-testing mode the app records
     /// the last spoken text and shows it in a test-only element (`LastSpokenProbe`).
     /// Each card is closed before the check, so the element is read from the main
@@ -563,6 +625,7 @@ final class LingleafUITests: XCTestCase {
 
     /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
     private static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
+    private static let storiesNoticeText = "Our original stories were written with AI help. They are free for anyone to use (CC0)."
 
     /// Audit findings checked by hand and found not to be real problems. Each
     /// one names the screen and the reason; anything else still fails the test.

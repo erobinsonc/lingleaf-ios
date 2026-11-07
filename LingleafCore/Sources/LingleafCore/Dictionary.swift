@@ -175,6 +175,12 @@ public actor DictionaryClient {
         return nil
     }
 
+    /// The first meaning of `word`, a base form as a story's sense gives it (SPEC S19), whose part of
+    /// speech is `partOfSpeech`; nothing when it has none: never another part of speech's.
+    public func lookup(base word: String, partOfSpeech: String) async -> DictionaryEntry? {
+        await get(TextTools.normalize(word))?.first { $0.partOfSpeech?.lowercased() == partOfSpeech }
+    }
+
     /// Every meaning of `word`'s answer; nil when there is none (missing, offline, refused).
     private func get(_ word: String) async -> [DictionaryEntry]? {
         if let cached = cache[word] { return cached }

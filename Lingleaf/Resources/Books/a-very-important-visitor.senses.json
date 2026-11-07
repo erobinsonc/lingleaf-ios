@@ -1,0 +1,1199 @@
+{
+ "schemaVersion": 1,
+ "story": "a-very-important-visitor",
+ "senses": {
+  "at_last": {
+   "lemma": "at last",
+   "pos": "phrase",
+   "ipa": "æt læst",
+   "es": "por fin",
+   "kind": "chunk"
+  },
+  "boss": {
+   "lemma": "boss",
+   "pos": "noun",
+   "ipa": "bɔs",
+   "es": "jefe, jefa",
+   "kind": "word"
+  },
+  "break_rule": {
+   "lemma": "break",
+   "pos": "verb",
+   "ipa": "breɪk",
+   "es": "incumplir, saltarse (una regla)",
+   "kind": "word"
+  },
+  "bring_in": {
+   "lemma": "bring in",
+   "pos": "phrasal verb",
+   "ipa": "brɪŋ ɪn",
+   "es": "hacer pasar",
+   "kind": "chunk"
+  },
+  "call_into": {
+   "lemma": "call into",
+   "pos": "phrasal verb",
+   "ipa": "kɔl ˈɪntu",
+   "es": "llamar a (su despacho)",
+   "kind": "chunk"
+  },
+  "candy": {
+   "lemma": "candy",
+   "pos": "noun",
+   "ipa": "ˈkændi",
+   "es": "caramelo, golosina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "check_email": {
+   "lemma": "check",
+   "pos": "verb",
+   "ipa": "tʃɛk",
+   "es": "revisar, mirar (el correo)",
+   "kind": "word"
+  },
+  "childrens_doctor": {
+   "lemma": "children's doctor",
+   "pos": "noun",
+   "ipa": "ˈtʃɪldrənz ˈdɑktər",
+   "es": "pediatra",
+   "kind": "chunk"
+  },
+  "choice": {
+   "lemma": "choice",
+   "pos": "noun",
+   "ipa": "tʃɔɪs",
+   "es": "elección, decisión",
+   "kind": "word"
+  },
+  "client": {
+   "lemma": "client",
+   "pos": "noun",
+   "ipa": "ˈklaɪənt",
+   "es": "cliente",
+   "kind": "word"
+  },
+  "close_app": {
+   "lemma": "close",
+   "pos": "verb",
+   "ipa": "kloʊz",
+   "es": "cerrar",
+   "kind": "word"
+  },
+  "colleague": {
+   "lemma": "colleague",
+   "pos": "noun",
+   "ipa": "ˈkɑliɡ",
+   "es": "compañero, compañera de trabajo",
+   "kind": "word"
+  },
+  "come_in": {
+   "lemma": "come in",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɪn",
+   "es": "pasar, entrar",
+   "kind": "chunk"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "do_math_head": {
+   "lemma": "do math in your head",
+   "pos": "phrase",
+   "ipa": "du mæθ ɪn jʊr hɛd",
+   "es": "hacer cuentas mentalmente",
+   "kind": "chunk"
+  },
+  "drawing_book": {
+   "lemma": "drawing book",
+   "pos": "noun",
+   "ipa": "ˈdrɔɪŋ bʊk",
+   "es": "cuaderno de dibujo",
+   "kind": "chunk"
+  },
+  "face_get_hot": {
+   "lemma": "get hot",
+   "pos": "phrase",
+   "ipa": "ɡɛt hɑt",
+   "es": "ponerse rojo, acalorarse (la cara)",
+   "kind": "chunk"
+  },
+  "feel_bad": {
+   "lemma": "feel bad",
+   "pos": "phrase",
+   "ipa": "fil bæd",
+   "es": "sentirse mal",
+   "kind": "chunk"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word"
+  },
+  "floor_storey": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "piso, planta (de un edificio)",
+   "kind": "word"
+  },
+  "for_once": {
+   "lemma": "for once",
+   "pos": "phrase",
+   "ipa": "fɔr wʌns",
+   "es": "por una vez",
+   "kind": "chunk"
+  },
+  "get_arrive": {
+   "lemma": "get",
+   "pos": "verb",
+   "ipa": "ɡɛt",
+   "es": "llegar (a un sitio)",
+   "kind": "word"
+  },
+  "get_sad": {
+   "lemma": "get",
+   "pos": "verb",
+   "ipa": "ɡɛt",
+   "es": "ponerse (triste)",
+   "kind": "word"
+  },
+  "glass_material": {
+   "lemma": "glass",
+   "pos": "noun",
+   "ipa": "ɡlæs",
+   "es": "cristal, vidrio (no \"vaso\")",
+   "kind": "word"
+  },
+  "go_back": {
+   "lemma": "go back",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "good_job": {
+   "lemma": "good job",
+   "pos": "phrase",
+   "ipa": "ɡʊd dʒɑb",
+   "es": "¡bien hecho!",
+   "kind": "chunk"
+  },
+  "ground_swallow": {
+   "lemma": "wish the floor would open",
+   "pos": "phrase",
+   "ipa": "wɪʃ ðə flɔr wʊd ˈoʊpən",
+   "es": "querer que se lo trague la tierra",
+   "kind": "chunk"
+  },
+  "heart_attack": {
+   "lemma": "heart attack",
+   "pos": "noun",
+   "ipa": "hɑrt əˈtæk",
+   "es": "infarto",
+   "kind": "chunk"
+  },
+  "just_simply": {
+   "lemma": "just",
+   "pos": "adverb",
+   "ipa": "dʒʌst",
+   "es": "simplemente, solo",
+   "kind": "word"
+  },
+  "kid": {
+   "lemma": "kid",
+   "pos": "noun",
+   "ipa": "kɪd",
+   "es": "niño, niña",
+   "kind": "word"
+  },
+  "kind_nice": {
+   "lemma": "kind",
+   "pos": "adjective",
+   "ipa": "kaɪnd",
+   "es": "amable (no \"tipo\")",
+   "kind": "word"
+  },
+  "land_plane": {
+   "lemma": "land",
+   "pos": "verb",
+   "ipa": "lænd",
+   "es": "aterrizar",
+   "kind": "word"
+  },
+  "letter_char": {
+   "lemma": "letter",
+   "pos": "noun",
+   "ipa": "ˈlɛtər",
+   "es": "letra (del alfabeto)",
+   "kind": "word"
+  },
+  "long_face": {
+   "lemma": "long face",
+   "pos": "noun",
+   "ipa": "lɔŋ feɪs",
+   "es": "cara triste, cara larga",
+   "kind": "chunk"
+  },
+  "long_story": {
+   "lemma": "long story",
+   "pos": "noun",
+   "ipa": "lɔŋ ˈstɔri",
+   "es": "historia larga",
+   "kind": "chunk"
+  },
+  "neighbor": {
+   "lemma": "neighbor",
+   "pos": "noun",
+   "ipa": "ˈneɪbər",
+   "es": "vecino, vecina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "nod": {
+   "lemma": "nod",
+   "pos": "verb",
+   "ipa": "nɑd",
+   "es": "asentir con la cabeza",
+   "kind": "word"
+  },
+  "patient_med": {
+   "lemma": "patient",
+   "pos": "noun",
+   "ipa": "ˈpeɪʃənt",
+   "es": "paciente (de un médico)",
+   "kind": "word"
+  },
+  "practice_presentation": {
+   "lemma": "practice",
+   "pos": "verb",
+   "ipa": "ˈpræktɪs",
+   "es": "ensayar",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "put_down": {
+   "lemma": "put down",
+   "pos": "phrasal verb",
+   "ipa": "pʊt daʊn",
+   "es": "dejar, colgar (el teléfono)",
+   "kind": "chunk"
+  },
+  "run_around": {
+   "lemma": "run around",
+   "pos": "phrasal verb",
+   "ipa": "rʌn əˈraʊnd",
+   "es": "ir de un lado a otro corriendo",
+   "kind": "chunk"
+  },
+  "save_money": {
+   "lemma": "save",
+   "pos": "verb",
+   "ipa": "seɪv",
+   "es": "ahorrar (no \"salvar\")",
+   "kind": "word"
+  },
+  "saved_shout": {
+   "lemma": "save",
+   "pos": "verb",
+   "ipa": "seɪv",
+   "es": "ahorrar",
+   "kind": "word"
+  },
+  "screen_display": {
+   "lemma": "screen",
+   "pos": "noun",
+   "ipa": "skrin",
+   "es": "pantalla",
+   "kind": "word"
+  },
+  "shake_hands": {
+   "lemma": "shake hands",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz",
+   "es": "dar la mano",
+   "kind": "chunk"
+  },
+  "shake_on_it": {
+   "lemma": "shake hands on it",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz ɑn ɪt",
+   "es": "cerrar el trato con un apretón de manos",
+   "kind": "chunk"
+  },
+  "sit_down": {
+   "lemma": "sit down",
+   "pos": "phrasal verb",
+   "ipa": "sɪt daʊn",
+   "es": "sentarse",
+   "kind": "chunk"
+  },
+  "sound_seem": {
+   "lemma": "sound",
+   "pos": "verb",
+   "ipa": "saʊnd",
+   "es": "parecer (por la voz)",
+   "kind": "word"
+  },
+  "spend_money": {
+   "lemma": "spend",
+   "pos": "verb",
+   "ipa": "spɛnd",
+   "es": "gastar",
+   "kind": "word"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word"
+  },
+  "supposed_to": {
+   "lemma": "be supposed to",
+   "pos": "phrase",
+   "ipa": "bi səˈpoʊzd tu",
+   "es": "se supone que (debe)",
+   "kind": "chunk"
+  },
+  "take_bring": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "llevar (a alguien a un sitio)",
+   "kind": "word"
+  },
+  "take_into": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "llevar (a alguien a un sitio)",
+   "kind": "word"
+  },
+  "take_notes": {
+   "lemma": "take notes",
+   "pos": "phrase",
+   "ipa": "teɪk noʊts",
+   "es": "tomar apuntes, apuntar",
+   "kind": "chunk"
+  },
+  "talk_noun": {
+   "lemma": "talk",
+   "pos": "noun",
+   "ipa": "tɔk",
+   "es": "conversación, charla",
+   "kind": "word"
+  },
+  "test_trial": {
+   "lemma": "test",
+   "pos": "noun",
+   "ipa": "tɛst",
+   "es": "prueba",
+   "kind": "word"
+  },
+  "tie_clothes": {
+   "lemma": "tie",
+   "pos": "noun",
+   "ipa": "taɪ",
+   "es": "corbata",
+   "kind": "word"
+  },
+  "turn_around": {
+   "lemma": "turn around",
+   "pos": "phrasal verb",
+   "ipa": "tɝn əˈraʊnd",
+   "es": "darse la vuelta",
+   "kind": "chunk"
+  },
+  "turn_to": {
+   "lemma": "turn to",
+   "pos": "phrasal verb",
+   "ipa": "tɝn tu",
+   "es": "volverse hacia",
+   "kind": "chunk"
+  },
+  "under_water": {
+   "lemma": "under water",
+   "pos": "phrase",
+   "ipa": "ˈʌndər ˈwɔtər",
+   "es": "inundado, bajo el agua",
+   "kind": "chunk"
+  },
+  "user": {
+   "lemma": "user",
+   "pos": "noun",
+   "ipa": "ˈjuzər",
+   "es": "usuario",
+   "kind": "word"
+  },
+  "wet_eyes": {
+   "lemma": "wet",
+   "pos": "adjective",
+   "ipa": "wɛt",
+   "es": "lloroso (de los ojos)",
+   "kind": "word"
+  },
+  "young_lady": {
+   "lemma": "young lady",
+   "pos": "noun",
+   "ipa": "jʌŋ ˈleɪdi",
+   "es": "señorita",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 3,
+   "start": 34,
+   "end": 38,
+   "text": "kind",
+   "sense": "kind_nice"
+  },
+  {
+   "p": 3,
+   "start": 101,
+   "end": 106,
+   "text": "water",
+   "sense": "under_water",
+   "chunk": {
+    "start": 95,
+    "end": 106,
+    "text": "under water",
+    "es": "inundada"
+   }
+  },
+  {
+   "p": 4,
+   "start": 5,
+   "end": 8,
+   "text": "put",
+   "sense": "put_down",
+   "chunk": {
+    "start": 5,
+    "end": 23,
+    "text": "put down the phone",
+    "es": "dejó el teléfono"
+   }
+  },
+  {
+   "p": 7,
+   "start": 49,
+   "end": 57,
+   "text": "patients",
+   "sense": "patient_med"
+  },
+  {
+   "p": 7,
+   "start": 125,
+   "end": 131,
+   "text": "doctor",
+   "sense": "childrens_doctor",
+   "chunk": {
+    "start": 114,
+    "end": 131,
+    "text": "children's doctor",
+    "es": "pediatra"
+   }
+  },
+  {
+   "p": 8,
+   "start": 93,
+   "end": 101,
+   "text": "neighbor",
+   "sense": "neighbor"
+  },
+  {
+   "p": 8,
+   "start": 238,
+   "end": 242,
+   "text": "kids",
+   "sense": "kid"
+  },
+  {
+   "p": 8,
+   "start": 251,
+   "end": 258,
+   "text": "sounded",
+   "sense": "sound_seem"
+  },
+  {
+   "p": 9,
+   "start": 56,
+   "end": 62,
+   "text": "client",
+   "sense": "client"
+  },
+  {
+   "p": 10,
+   "start": 6,
+   "end": 10,
+   "text": "take",
+   "sense": "take_bring"
+  },
+  {
+   "p": 14,
+   "start": 119,
+   "end": 123,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 14,
+   "start": 222,
+   "end": 226,
+   "text": "come",
+   "sense": "come_in",
+   "chunk": {
+    "start": 222,
+    "end": 229,
+    "text": "come in",
+    "es": "entras"
+   }
+  },
+  {
+   "p": 16,
+   "start": 63,
+   "end": 67,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 19,
+   "start": 5,
+   "end": 10,
+   "text": "shook",
+   "sense": "shake_on_it",
+   "chunk": {
+    "start": 5,
+    "end": 22,
+    "text": "shook hands on it",
+    "es": "cerraron el trato con un apretón de manos"
+   }
+  },
+  {
+   "p": 21,
+   "start": 28,
+   "end": 33,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 18,
+    "end": 33,
+    "text": "the ninth floor",
+    "es": "el noveno piso"
+   }
+  },
+  {
+   "p": 21,
+   "start": 39,
+   "end": 44,
+   "text": "glass",
+   "sense": "glass_material"
+  },
+  {
+   "p": 21,
+   "start": 86,
+   "end": 93,
+   "text": "running",
+   "sense": "run_around",
+   "chunk": {
+    "start": 86,
+    "end": 100,
+    "text": "running around",
+    "es": "corriendo de un lado a otro"
+   }
+  },
+  {
+   "p": 21,
+   "start": 191,
+   "end": 197,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 22,
+   "start": 41,
+   "end": 47,
+   "text": "landed",
+   "sense": "land_plane"
+  },
+  {
+   "p": 24,
+   "start": 89,
+   "end": 97,
+   "text": "checking",
+   "sense": "check_email",
+   "chunk": {
+    "start": 89,
+    "end": 104,
+    "text": "checking emails",
+    "es": "revisando el correo"
+   }
+  },
+  {
+   "p": 25,
+   "start": 27,
+   "end": 31,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 25,
+   "start": 41,
+   "end": 48,
+   "text": "drawing",
+   "sense": "drawing_book",
+   "chunk": {
+    "start": 41,
+    "end": 53,
+    "text": "drawing book",
+    "es": "cuaderno de dibujo"
+   }
+  },
+  {
+   "p": 25,
+   "start": 144,
+   "end": 148,
+   "text": "just",
+   "sense": "just_simply"
+  },
+  {
+   "p": 26,
+   "start": 17,
+   "end": 21,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 26,
+   "start": 52,
+   "end": 62,
+   "text": "practicing",
+   "sense": "practice_presentation"
+  },
+  {
+   "p": 27,
+   "start": 3,
+   "end": 9,
+   "text": "turned",
+   "sense": "turn_around",
+   "chunk": {
+    "start": 3,
+    "end": 16,
+    "text": "turned around",
+    "es": "se dio la vuelta"
+   }
+  },
+  {
+   "p": 29,
+   "start": 49,
+   "end": 55,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 30,
+   "start": 7,
+   "end": 13,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 30,
+   "start": 95,
+   "end": 99,
+   "text": "save",
+   "sense": "save_money",
+   "chunk": {
+    "start": 95,
+    "end": 105,
+    "text": "save money",
+    "es": "ahorrar dinero"
+   }
+  },
+  {
+   "p": 30,
+   "start": 147,
+   "end": 152,
+   "text": "spent",
+   "sense": "spend_money"
+  },
+  {
+   "p": 30,
+   "start": 182,
+   "end": 186,
+   "text": "face",
+   "sense": "long_face",
+   "chunk": {
+    "start": 177,
+    "end": 186,
+    "text": "long face",
+    "es": "cara triste"
+   }
+  },
+  {
+   "p": 30,
+   "start": 196,
+   "end": 199,
+   "text": "wet",
+   "sense": "wet_eyes",
+   "chunk": {
+    "start": 191,
+    "end": 204,
+    "text": "big, wet eyes",
+    "es": "ojos grandes y llorosos"
+   }
+  },
+  {
+   "p": 31,
+   "start": 6,
+   "end": 14,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 6,
+    "end": 24,
+    "text": "supposed to be sad",
+    "es": "se supone que tiene que estar triste"
+   }
+  },
+  {
+   "p": 31,
+   "start": 46,
+   "end": 51,
+   "text": "spend",
+   "sense": "spend_money"
+  },
+  {
+   "p": 31,
+   "start": 76,
+   "end": 80,
+   "text": "gets",
+   "sense": "get_sad",
+   "chunk": {
+    "start": 76,
+    "end": 84,
+    "text": "gets sad",
+    "es": "se pone triste"
+   }
+  },
+  {
+   "p": 31,
+   "start": 104,
+   "end": 112,
+   "text": "spending",
+   "sense": "spend_money"
+  },
+  {
+   "p": 32,
+   "start": 82,
+   "end": 87,
+   "text": "close",
+   "sense": "close_app"
+  },
+  {
+   "p": 33,
+   "start": 81,
+   "end": 83,
+   "text": "Go",
+   "sense": "go_back",
+   "chunk": {
+    "start": 81,
+    "end": 88,
+    "text": "Go back",
+    "es": "Vuelve"
+   }
+  },
+  {
+   "p": 35,
+   "start": 145,
+   "end": 148,
+   "text": "tie",
+   "sense": "tie_clothes"
+  },
+  {
+   "p": 35,
+   "start": 206,
+   "end": 210,
+   "text": "boss",
+   "sense": "boss"
+  },
+  {
+   "p": 35,
+   "start": 224,
+   "end": 228,
+   "text": "took",
+   "sense": "take_into",
+   "chunk": {
+    "start": 224,
+    "end": 255,
+    "text": "took them into the meeting room",
+    "es": "los llevó a la sala de reuniones"
+   }
+  },
+  {
+   "p": 36,
+   "start": 105,
+   "end": 112,
+   "text": "nodding",
+   "sense": "nod"
+  },
+  {
+   "p": 36,
+   "start": 139,
+   "end": 144,
+   "text": "notes",
+   "sense": "take_notes",
+   "chunk": {
+    "start": 132,
+    "end": 144,
+    "text": "taking notes",
+    "es": "tomando apuntes"
+   }
+  },
+  {
+   "p": 38,
+   "start": 47,
+   "end": 51,
+   "text": "user",
+   "sense": "user"
+  },
+  {
+   "p": 38,
+   "start": 52,
+   "end": 57,
+   "text": "spent",
+   "sense": "spend_money"
+  },
+  {
+   "p": 40,
+   "start": 3,
+   "end": 7,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 0,
+    "end": 7,
+    "text": "At last",
+    "es": "Por fin"
+   }
+  },
+  {
+   "p": 40,
+   "start": 46,
+   "end": 51,
+   "text": "tests",
+   "sense": "test_trial"
+  },
+  {
+   "p": 40,
+   "start": 79,
+   "end": 82,
+   "text": "bad",
+   "sense": "feel_bad",
+   "chunk": {
+    "start": 74,
+    "end": 82,
+    "text": "feel bad",
+    "es": "sentirse mal"
+   }
+  },
+  {
+   "p": 41,
+   "start": 23,
+   "end": 26,
+   "text": "hot",
+   "sense": "face_get_hot",
+   "chunk": {
+    "start": 10,
+    "end": 26,
+    "text": "his face get hot",
+    "es": "que se le encendía la cara"
+   }
+  },
+  {
+   "p": 41,
+   "start": 156,
+   "end": 161,
+   "text": "glass",
+   "sense": "glass_material"
+  },
+  {
+   "p": 42,
+   "start": 57,
+   "end": 62,
+   "text": "glass",
+   "sense": "glass_material"
+  },
+  {
+   "p": 43,
+   "start": 155,
+   "end": 162,
+   "text": "letters",
+   "sense": "letter_char"
+  },
+  {
+   "p": 43,
+   "start": 185,
+   "end": 188,
+   "text": "JOB",
+   "sense": "good_job",
+   "chunk": {
+    "start": 180,
+    "end": 188,
+    "text": "GOOD JOB",
+    "es": "¡BIEN HECHO!"
+   }
+  },
+  {
+   "p": 43,
+   "start": 194,
+   "end": 199,
+   "text": "SAVED",
+   "sense": "saved_shout",
+   "chunk": {
+    "start": 190,
+    "end": 199,
+    "text": "YOU SAVED",
+    "es": "¡HAS AHORRADO!"
+   }
+  },
+  {
+   "p": 44,
+   "start": 99,
+   "end": 104,
+   "text": "floor",
+   "sense": "ground_swallow",
+   "chunk": {
+    "start": 88,
+    "end": 127,
+    "text": "wanted the floor to open under his feet",
+    "es": "quería que se lo tragara la tierra"
+   }
+  },
+  {
+   "p": 47,
+   "start": 123,
+   "end": 132,
+   "text": "colleague",
+   "sense": "colleague"
+  },
+  {
+   "p": 48,
+   "start": 31,
+   "end": 36,
+   "text": "Bring",
+   "sense": "bring_in",
+   "chunk": {
+    "start": 31,
+    "end": 43,
+    "text": "Bring her in",
+    "es": "Hágala pasar"
+   }
+  },
+  {
+   "p": 50,
+   "start": 102,
+   "end": 107,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 50,
+   "start": 113,
+   "end": 117,
+   "text": "once",
+   "sense": "for_once",
+   "chunk": {
+    "start": 109,
+    "end": 117,
+    "text": "For once",
+    "es": "Por una vez"
+   }
+  },
+  {
+   "p": 53,
+   "start": 117,
+   "end": 121,
+   "text": "save",
+   "sense": "save_money"
+  },
+  {
+   "p": 53,
+   "start": 307,
+   "end": 312,
+   "text": "candy",
+   "sense": "candy",
+   "chunk": {
+    "start": 296,
+    "end": 312,
+    "text": "a piece of candy",
+    "es": "un caramelo"
+   }
+  },
+  {
+   "p": 55,
+   "start": 12,
+   "end": 18,
+   "text": "turned",
+   "sense": "turn_to",
+   "chunk": {
+    "start": 12,
+    "end": 26,
+    "text": "turned to Ravi",
+    "es": "se volvió hacia Ravi"
+   }
+  },
+  {
+   "p": 55,
+   "start": 96,
+   "end": 103,
+   "text": "choices",
+   "sense": "choice"
+  },
+  {
+   "p": 56,
+   "start": 70,
+   "end": 74,
+   "text": "math",
+   "sense": "do_math_head",
+   "chunk": {
+    "start": 64,
+    "end": 86,
+    "text": "doing math in his head",
+    "es": "haciendo cuentas mentalmente"
+   }
+  },
+  {
+   "p": 58,
+   "start": 43,
+   "end": 48,
+   "text": "shook",
+   "sense": "shake_hands",
+   "chunk": {
+    "start": 43,
+    "end": 59,
+    "text": "shook Anu's hand",
+    "es": "le dio la mano a Anu"
+   }
+  },
+  {
+   "p": 58,
+   "start": 93,
+   "end": 97,
+   "text": "lady",
+   "sense": "young_lady",
+   "chunk": {
+    "start": 87,
+    "end": 97,
+    "text": "young lady",
+    "es": "señorita"
+   }
+  },
+  {
+   "p": 62,
+   "start": 50,
+   "end": 56,
+   "text": "called",
+   "sense": "call_into",
+   "chunk": {
+    "start": 50,
+    "end": 77,
+    "text": "called Ravi into his office",
+    "es": "llamó a Ravi a su despacho"
+   }
+  },
+  {
+   "p": 62,
+   "start": 108,
+   "end": 112,
+   "text": "talk",
+   "sense": "talk_noun"
+  },
+  {
+   "p": 63,
+   "start": 100,
+   "end": 106,
+   "text": "attack",
+   "sense": "heart_attack",
+   "chunk": {
+    "start": 88,
+    "end": 106,
+    "text": "had a heart attack",
+    "es": "le dio un infarto"
+   }
+  },
+  {
+   "p": 64,
+   "start": 30,
+   "end": 35,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 66,
+   "start": 79,
+   "end": 84,
+   "text": "broke",
+   "sense": "break_rule"
+  },
+  {
+   "p": 68,
+   "start": 94,
+   "end": 99,
+   "text": "candy",
+   "sense": "candy",
+   "chunk": {
+    "start": 83,
+    "end": 99,
+    "text": "a piece of candy",
+    "es": "un caramelo"
+   }
+  },
+  {
+   "p": 69,
+   "start": 10,
+   "end": 13,
+   "text": "got",
+   "sense": "get_arrive",
+   "chunk": {
+    "start": 10,
+    "end": 18,
+    "text": "got home",
+    "es": "llegaron a casa"
+   }
+  },
+  {
+   "p": 72,
+   "start": 19,
+   "end": 22,
+   "text": "sit",
+   "sense": "sit_down",
+   "chunk": {
+    "start": 19,
+    "end": 27,
+    "text": "sit down",
+    "es": "sentarte"
+   }
+  },
+  {
+   "p": 72,
+   "start": 54,
+   "end": 59,
+   "text": "story",
+   "sense": "long_story",
+   "chunk": {
+    "start": 47,
+    "end": 59,
+    "text": "a long story",
+    "es": "una historia larga"
+   }
+  }
+ ]
+}

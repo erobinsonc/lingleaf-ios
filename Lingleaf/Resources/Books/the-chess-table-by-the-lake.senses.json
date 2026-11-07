@@ -1,0 +1,1336 @@
+{
+ "schemaVersion": 1,
+ "story": "the-chess-table-by-the-lake",
+ "senses": {
+  "above_all": {
+   "lemma": "above all",
+   "pos": "phrase",
+   "ipa": "əˈbʌv ɔl",
+   "es": "sobre todo",
+   "kind": "chunk"
+  },
+  "account_social": {
+   "lemma": "account",
+   "pos": "noun",
+   "ipa": "əˈkaʊnt",
+   "es": "cuenta (en una red social)",
+   "kind": "word"
+  },
+  "argue": {
+   "lemma": "argue",
+   "pos": "verb",
+   "ipa": "ˈɑrɡju",
+   "es": "discutir",
+   "kind": "word"
+  },
+  "as_usual": {
+   "lemma": "as usual",
+   "pos": "phrase",
+   "ipa": "æz ˈjuʒuəl",
+   "es": "como de costumbre",
+   "kind": "chunk"
+  },
+  "be_back": {
+   "lemma": "be back",
+   "pos": "phrase",
+   "ipa": "bi bæk",
+   "es": "haber vuelto",
+   "kind": "chunk"
+  },
+  "beat_win": {
+   "lemma": "beat",
+   "pos": "verb",
+   "ipa": "bit",
+   "es": "ganar (a alguien)",
+   "kind": "word"
+  },
+  "board_chess": {
+   "lemma": "board",
+   "pos": "noun",
+   "ipa": "bɔrd",
+   "es": "tablero (de ajedrez)",
+   "kind": "word"
+  },
+  "come_back": {
+   "lemma": "come back",
+   "pos": "phrasal verb",
+   "ipa": "kʌm bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "customer": {
+   "lemma": "customer",
+   "pos": "noun",
+   "ipa": "ˈkʌstəmər",
+   "es": "cliente",
+   "kind": "word"
+  },
+  "deliver": {
+   "lemma": "deliver",
+   "pos": "verb",
+   "ipa": "dɪˈlɪvər",
+   "es": "repartir, entregar",
+   "kind": "word"
+  },
+  "drive_taxi": {
+   "lemma": "drive",
+   "pos": "verb",
+   "ipa": "draɪv",
+   "es": "conducir, manejar",
+   "kind": "word"
+  },
+  "game_match": {
+   "lemma": "game",
+   "pos": "noun",
+   "ipa": "ɡeɪm",
+   "es": "partida",
+   "kind": "word"
+  },
+  "hold_out": {
+   "lemma": "hold out",
+   "pos": "phrasal verb",
+   "ipa": "hoʊld aʊt",
+   "es": "tender, ofrecer",
+   "kind": "chunk"
+  },
+  "holder": {
+   "lemma": "holder",
+   "pos": "noun",
+   "ipa": "ˈhoʊldər",
+   "es": "soporte",
+   "kind": "word"
+  },
+  "king_chess": {
+   "lemma": "king",
+   "pos": "noun",
+   "ipa": "kɪŋ",
+   "es": "rey (en ajedrez)",
+   "kind": "word"
+  },
+  "knight": {
+   "lemma": "knight",
+   "pos": "noun",
+   "ipa": "naɪt",
+   "es": "caballo (en ajedrez; no \"caballero\")",
+   "kind": "word"
+  },
+  "let_win": {
+   "lemma": "let win",
+   "pos": "phrase",
+   "ipa": "lɛt wɪn",
+   "es": "dejar ganar",
+   "kind": "chunk"
+  },
+  "long_name": {
+   "lemma": "Long",
+   "pos": "proper noun",
+   "ipa": "lɔŋ",
+   "es": "nombre (apellido vietnamita; no \"largo\")",
+   "kind": "name"
+  },
+  "look_up": {
+   "lemma": "look up",
+   "pos": "phrasal verb",
+   "ipa": "lʊk ʌp",
+   "es": "levantar la vista",
+   "kind": "chunk"
+  },
+  "lots_of": {
+   "lemma": "lots of",
+   "pos": "phrase",
+   "ipa": "lɑts əv",
+   "es": "mucho, muchos",
+   "kind": "chunk"
+  },
+  "math": {
+   "lemma": "math",
+   "pos": "noun",
+   "ipa": "mæθ",
+   "es": "matemáticas, cuentas",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "mean_to": {
+   "lemma": "mean",
+   "pos": "verb",
+   "ipa": "min",
+   "es": "significar (para alguien)",
+   "kind": "word"
+  },
+  "mind_care": {
+   "lemma": "mind",
+   "pos": "verb",
+   "ipa": "maɪnd",
+   "es": "importar, molestar",
+   "kind": "word"
+  },
+  "move_chess": {
+   "lemma": "move",
+   "pos": "noun",
+   "ipa": "muv",
+   "es": "jugada, movimiento",
+   "kind": "word"
+  },
+  "move_house": {
+   "lemma": "move",
+   "pos": "verb",
+   "ipa": "muv",
+   "es": "mudarse",
+   "kind": "word"
+  },
+  "moves_ahead": {
+   "lemma": "ahead",
+   "pos": "adverb",
+   "ipa": "əˈhɛd",
+   "es": "por delante, por adelantado",
+   "kind": "word"
+  },
+  "not_anymore": {
+   "lemma": "anymore",
+   "pos": "adverb",
+   "ipa": "ˌɛniˈmɔr",
+   "es": "ya no",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "open_wide": {
+   "lemma": "open wide",
+   "pos": "phrase",
+   "ipa": "ˈoʊpən waɪd",
+   "es": "abrirse como platos",
+   "kind": "chunk"
+  },
+  "order_delivery": {
+   "lemma": "order",
+   "pos": "noun",
+   "ipa": "ˈɔrdər",
+   "es": "pedido (no \"orden\")",
+   "kind": "word"
+  },
+  "other_side": {
+   "lemma": "side",
+   "pos": "noun",
+   "ipa": "saɪd",
+   "es": "bando (en el juego)",
+   "kind": "word"
+  },
+  "partner_game": {
+   "lemma": "partner",
+   "pos": "noun",
+   "ipa": "ˈpɑrtnər",
+   "es": "compañero de juego (no \"socio\")",
+   "kind": "word"
+  },
+  "piece_chess": {
+   "lemma": "piece",
+   "pos": "noun",
+   "ipa": "pis",
+   "es": "pieza (de ajedrez)",
+   "kind": "word"
+  },
+  "play_game": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "jugar",
+   "kind": "word"
+  },
+  "put_back": {
+   "lemma": "put back",
+   "pos": "phrasal verb",
+   "ipa": "pʊt bæk",
+   "es": "volver a guardar",
+   "kind": "chunk"
+  },
+  "queen_chess": {
+   "lemma": "queen",
+   "pos": "noun",
+   "ipa": "kwin",
+   "es": "dama, reina (en ajedrez)",
+   "kind": "word"
+  },
+  "retire": {
+   "lemma": "retire",
+   "pos": "verb",
+   "ipa": "rɪˈtaɪər",
+   "es": "jubilarse",
+   "kind": "word"
+  },
+  "ride_away": {
+   "lemma": "ride away",
+   "pos": "phrasal verb",
+   "ipa": "raɪd əˈweɪ",
+   "es": "irse (en bici)",
+   "kind": "chunk"
+  },
+  "saving_money": {
+   "lemma": "save",
+   "pos": "verb",
+   "ipa": "seɪv",
+   "es": "ahorrar",
+   "kind": "word"
+  },
+  "screen_display": {
+   "lemma": "screen",
+   "pos": "noun",
+   "ipa": "skrin",
+   "es": "pantalla",
+   "kind": "word"
+  },
+  "set_up_board": {
+   "lemma": "set up",
+   "pos": "phrasal verb",
+   "ipa": "sɛt ʌp",
+   "es": "colocar (las piezas), preparar",
+   "kind": "chunk"
+  },
+  "shake_hands": {
+   "lemma": "shake hands",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz",
+   "es": "dar la mano",
+   "kind": "chunk"
+  },
+  "speaker_small": {
+   "lemma": "speaker",
+   "pos": "noun",
+   "ipa": "ˈspikər",
+   "es": "altavoz",
+   "kind": "word"
+  },
+  "square_chess": {
+   "lemma": "square",
+   "pos": "noun",
+   "ipa": "skwɛr",
+   "es": "casilla (del tablero)",
+   "kind": "word"
+  },
+  "sticky_rice": {
+   "lemma": "sticky rice",
+   "pos": "noun",
+   "ipa": "ˈstɪki raɪs",
+   "es": "arroz glutinoso",
+   "kind": "chunk"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word"
+  },
+  "take_time": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "tardar (+ tiempo)",
+   "kind": "word"
+  },
+  "the_kind": {
+   "lemma": "the kind that",
+   "pos": "phrase",
+   "ipa": "ðə kaɪnd ðæt",
+   "es": "de esos que",
+   "kind": "chunk"
+  },
+  "think_hard": {
+   "lemma": "think hard",
+   "pos": "phrase",
+   "ipa": "θɪŋk hɑrd",
+   "es": "pensar mucho",
+   "kind": "chunk"
+  },
+  "turn_around": {
+   "lemma": "turn around",
+   "pos": "phrasal verb",
+   "ipa": "tɝn əˈraʊnd",
+   "es": "darse la vuelta",
+   "kind": "chunk"
+  },
+  "walk_away": {
+   "lemma": "walk away",
+   "pos": "phrasal verb",
+   "ipa": "wɔk əˈweɪ",
+   "es": "irse, alejarse",
+   "kind": "chunk"
+  },
+  "waste_time": {
+   "lemma": "waste time",
+   "pos": "phrase",
+   "ipa": "weɪst taɪm",
+   "es": "perder el tiempo",
+   "kind": "chunk"
+  },
+  "window_app": {
+   "lemma": "window",
+   "pos": "noun",
+   "ipa": "ˈwɪndoʊ",
+   "es": "ventana (en una pantalla)",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 2,
+   "start": 88,
+   "end": 95,
+   "text": "squares",
+   "sense": "square_chess"
+  },
+  {
+   "p": 2,
+   "start": 119,
+   "end": 125,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 2,
+   "start": 155,
+   "end": 162,
+   "text": "retired",
+   "sense": "retire"
+  },
+  {
+   "p": 2,
+   "start": 181,
+   "end": 185,
+   "text": "math",
+   "sense": "math"
+  },
+  {
+   "p": 3,
+   "start": 31,
+   "end": 37,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 3,
+   "start": 73,
+   "end": 77,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 3,
+   "start": 83,
+   "end": 87,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 3,
+   "start": 96,
+   "end": 101,
+   "text": "drive",
+   "sense": "drive_taxi"
+  },
+  {
+   "p": 3,
+   "start": 112,
+   "end": 117,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 4,
+   "start": 4,
+   "end": 8,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 4,
+   "start": 9,
+   "end": 14,
+   "text": "plays",
+   "sense": "play_game"
+  },
+  {
+   "p": 4,
+   "start": 50,
+   "end": 55,
+   "text": "plays",
+   "sense": "play_game"
+  },
+  {
+   "p": 5,
+   "start": 93,
+   "end": 100,
+   "text": "speaker",
+   "sense": "speaker_small"
+  },
+  {
+   "p": 5,
+   "start": 127,
+   "end": 131,
+   "text": "rice",
+   "sense": "sticky_rice",
+   "chunk": {
+    "start": 120,
+    "end": 131,
+    "text": "sticky rice",
+    "es": "arroz glutinoso"
+   }
+  },
+  {
+   "p": 7,
+   "start": 25,
+   "end": 29,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 7,
+   "start": 136,
+   "end": 142,
+   "text": "pieces",
+   "sense": "piece_chess"
+  },
+  {
+   "p": 8,
+   "start": 76,
+   "end": 80,
+   "text": "move",
+   "sense": "move_house"
+  },
+  {
+   "p": 9,
+   "start": 22,
+   "end": 27,
+   "text": "board",
+   "sense": "board_chess"
+  },
+  {
+   "p": 12,
+   "start": 19,
+   "end": 23,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 13,
+   "start": 5,
+   "end": 11,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 13,
+   "start": 48,
+   "end": 52,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 13,
+   "start": 53,
+   "end": 58,
+   "text": "moved",
+   "sense": "move_house",
+   "chunk": {
+    "start": 53,
+    "end": 63,
+    "text": "moved away",
+    "es": "se mudó"
+   }
+  },
+  {
+   "p": 13,
+   "start": 122,
+   "end": 126,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 13,
+   "start": 142,
+   "end": 145,
+   "text": "win",
+   "sense": "let_win",
+   "chunk": {
+    "start": 134,
+    "end": 145,
+    "text": "let him win",
+    "es": "le había dejado ganar"
+   }
+  },
+  {
+   "p": 13,
+   "start": 164,
+   "end": 169,
+   "text": "shook",
+   "sense": "shake_hands",
+   "chunk": {
+    "start": 164,
+    "end": 175,
+    "text": "shook hands",
+    "es": "se dieron la mano"
+   }
+  },
+  {
+   "p": 13,
+   "start": 207,
+   "end": 211,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 13,
+   "start": 212,
+   "end": 218,
+   "text": "walked",
+   "sense": "walk_away",
+   "chunk": {
+    "start": 212,
+    "end": 223,
+    "text": "walked away",
+    "es": "se marchó"
+   }
+  },
+  {
+   "p": 15,
+   "start": 61,
+   "end": 66,
+   "text": "usual",
+   "sense": "as_usual",
+   "chunk": {
+    "start": 58,
+    "end": 66,
+    "text": "as usual",
+    "es": "como de costumbre"
+   }
+  },
+  {
+   "p": 15,
+   "start": 161,
+   "end": 167,
+   "text": "pieces",
+   "sense": "piece_chess"
+  },
+  {
+   "p": 17,
+   "start": 3,
+   "end": 9,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 17,
+   "start": 97,
+   "end": 101,
+   "text": "side",
+   "sense": "other_side"
+  },
+  {
+   "p": 17,
+   "start": 127,
+   "end": 131,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 17,
+   "start": 140,
+   "end": 144,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 17,
+   "start": 199,
+   "end": 202,
+   "text": "put",
+   "sense": "put_back",
+   "chunk": {
+    "start": 199,
+    "end": 218,
+    "text": "put the pieces back",
+    "es": "volvió a guardar las piezas"
+   }
+  },
+  {
+   "p": 17,
+   "start": 207,
+   "end": 213,
+   "text": "pieces",
+   "sense": "piece_chess"
+  },
+  {
+   "p": 19,
+   "start": 17,
+   "end": 21,
+   "text": "back",
+   "sense": "be_back",
+   "chunk": {
+    "start": 10,
+    "end": 27,
+    "text": "you're back early",
+    "es": "has vuelto pronto"
+   }
+  },
+  {
+   "p": 21,
+   "start": 53,
+   "end": 58,
+   "text": "games",
+   "sense": "game_match"
+  },
+  {
+   "p": 21,
+   "start": 59,
+   "end": 64,
+   "text": "meant",
+   "sense": "mean_to"
+  },
+  {
+   "p": 21,
+   "start": 99,
+   "end": 106,
+   "text": "partner",
+   "sense": "partner_game"
+  },
+  {
+   "p": 21,
+   "start": 121,
+   "end": 125,
+   "text": "Lots",
+   "sense": "lots_of",
+   "chunk": {
+    "start": 121,
+    "end": 128,
+    "text": "Lots of",
+    "es": "Mucha"
+   }
+  },
+  {
+   "p": 21,
+   "start": 136,
+   "end": 140,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 22,
+   "start": 1,
+   "end": 5,
+   "text": "Lots",
+   "sense": "lots_of",
+   "chunk": {
+    "start": 1,
+    "end": 8,
+    "text": "Lots of",
+    "es": "Mucha"
+   }
+  },
+  {
+   "p": 22,
+   "start": 16,
+   "end": 20,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 25,
+   "start": 41,
+   "end": 47,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 26,
+   "start": 18,
+   "end": 27,
+   "text": "delivered",
+   "sense": "deliver"
+  },
+  {
+   "p": 26,
+   "start": 147,
+   "end": 153,
+   "text": "holder",
+   "sense": "holder"
+  },
+  {
+   "p": 26,
+   "start": 201,
+   "end": 206,
+   "text": "order",
+   "sense": "order_delivery"
+  },
+  {
+   "p": 28,
+   "start": 16,
+   "end": 22,
+   "text": "knight",
+   "sense": "knight"
+  },
+  {
+   "p": 28,
+   "start": 74,
+   "end": 79,
+   "text": "queen",
+   "sense": "queen_chess"
+  },
+  {
+   "p": 28,
+   "start": 89,
+   "end": 94,
+   "text": "moves",
+   "sense": "move_chess"
+  },
+  {
+   "p": 29,
+   "start": 22,
+   "end": 27,
+   "text": "board",
+   "sense": "board_chess"
+  },
+  {
+   "p": 29,
+   "start": 71,
+   "end": 75,
+   "text": "wide",
+   "sense": "open_wide",
+   "chunk": {
+    "start": 55,
+    "end": 75,
+    "text": "his eyes opened wide",
+    "es": "abrió los ojos como platos"
+   }
+  },
+  {
+   "p": 30,
+   "start": 78,
+   "end": 83,
+   "text": "ahead",
+   "sense": "moves_ahead",
+   "chunk": {
+    "start": 66,
+    "end": 83,
+    "text": "three moves ahead",
+    "es": "tres jugadas por delante"
+   }
+  },
+  {
+   "p": 30,
+   "start": 93,
+   "end": 97,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 31,
+   "start": 48,
+   "end": 54,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 31,
+   "start": 65,
+   "end": 70,
+   "text": "board",
+   "sense": "board_chess"
+  },
+  {
+   "p": 31,
+   "start": 115,
+   "end": 120,
+   "text": "order",
+   "sense": "order_delivery"
+  },
+  {
+   "p": 31,
+   "start": 130,
+   "end": 134,
+   "text": "rode",
+   "sense": "ride_away",
+   "chunk": {
+    "start": 130,
+    "end": 139,
+    "text": "rode away",
+    "es": "se fue en bici"
+   }
+  },
+  {
+   "p": 32,
+   "start": 22,
+   "end": 26,
+   "text": "came",
+   "sense": "come_back",
+   "chunk": {
+    "start": 22,
+    "end": 31,
+    "text": "came back",
+    "es": "volvió"
+   }
+  },
+  {
+   "p": 32,
+   "start": 105,
+   "end": 111,
+   "text": "saving",
+   "sense": "saving_money"
+  },
+  {
+   "p": 33,
+   "start": 40,
+   "end": 46,
+   "text": "orders",
+   "sense": "order_delivery"
+  },
+  {
+   "p": 33,
+   "start": 155,
+   "end": 161,
+   "text": "knight",
+   "sense": "knight"
+  },
+  {
+   "p": 33,
+   "start": 191,
+   "end": 195,
+   "text": "king",
+   "sense": "king_chess"
+  },
+  {
+   "p": 33,
+   "start": 197,
+   "end": 202,
+   "text": "Above",
+   "sense": "above_all",
+   "chunk": {
+    "start": 197,
+    "end": 206,
+    "text": "Above all",
+    "es": "Sobre todo"
+   }
+  },
+  {
+   "p": 33,
+   "start": 251,
+   "end": 256,
+   "text": "piece",
+   "sense": "piece_chess"
+  },
+  {
+   "p": 39,
+   "start": 34,
+   "end": 38,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 41,
+   "start": 23,
+   "end": 27,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 42,
+   "start": 53,
+   "end": 57,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 42,
+   "start": 67,
+   "end": 71,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 43,
+   "start": 31,
+   "end": 35,
+   "text": "held",
+   "sense": "hold_out",
+   "chunk": {
+    "start": 31,
+    "end": 57,
+    "text": "held the tablet out to her",
+    "es": "le tendió la tableta"
+   }
+  },
+  {
+   "p": 44,
+   "start": 45,
+   "end": 52,
+   "text": "account",
+   "sense": "account_social"
+  },
+  {
+   "p": 44,
+   "start": 141,
+   "end": 145,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 44,
+   "start": 150,
+   "end": 154,
+   "text": "took",
+   "sense": "take_time",
+   "chunk": {
+    "start": 147,
+    "end": 164,
+    "text": "It took two hours",
+    "es": "Tardaron dos horas"
+   }
+  },
+  {
+   "p": 45,
+   "start": 29,
+   "end": 33,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 46,
+   "start": 20,
+   "end": 24,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 46,
+   "start": 30,
+   "end": 35,
+   "text": "games",
+   "sense": "game_match"
+  },
+  {
+   "p": 47,
+   "start": 22,
+   "end": 26,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 47,
+   "start": 30,
+   "end": 35,
+   "text": "games",
+   "sense": "game_match"
+  },
+  {
+   "p": 49,
+   "start": 127,
+   "end": 130,
+   "text": "set",
+   "sense": "set_up_board",
+   "chunk": {
+    "start": 127,
+    "end": 153,
+    "text": "set up the real chessboard",
+    "es": "colocó las piezas en el tablero de verdad"
+   }
+  },
+  {
+   "p": 50,
+   "start": 7,
+   "end": 13,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 50,
+   "start": 34,
+   "end": 38,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 50,
+   "start": 48,
+   "end": 52,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 51,
+   "start": 68,
+   "end": 74,
+   "text": "window",
+   "sense": "window_app"
+  },
+  {
+   "p": 51,
+   "start": 100,
+   "end": 106,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 51,
+   "start": 122,
+   "end": 126,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 52,
+   "start": 52,
+   "end": 58,
+   "text": "turned",
+   "sense": "turn_around",
+   "chunk": {
+    "start": 52,
+    "end": 65,
+    "text": "turned around",
+    "es": "se dieron la vuelta"
+   }
+  },
+  {
+   "p": 53,
+   "start": 42,
+   "end": 46,
+   "text": "kind",
+   "sense": "the_kind",
+   "chunk": {
+    "start": 38,
+    "end": 51,
+    "text": "the kind that",
+    "es": "de esas que"
+   }
+  },
+  {
+   "p": 53,
+   "start": 104,
+   "end": 111,
+   "text": "wasting",
+   "sense": "waste_time",
+   "chunk": {
+    "start": 104,
+    "end": 119,
+    "text": "wasting my time",
+    "es": "haciéndome perder el tiempo"
+   }
+  },
+  {
+   "p": 54,
+   "start": 5,
+   "end": 11,
+   "text": "played",
+   "sense": "play_game"
+  },
+  {
+   "p": 54,
+   "start": 22,
+   "end": 26,
+   "text": "game",
+   "sense": "game_match"
+  },
+  {
+   "p": 54,
+   "start": 32,
+   "end": 36,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 54,
+   "start": 47,
+   "end": 53,
+   "text": "pieces",
+   "sense": "piece_chess"
+  },
+  {
+   "p": 54,
+   "start": 61,
+   "end": 67,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 54,
+   "start": 108,
+   "end": 113,
+   "text": "board",
+   "sense": "board_chess"
+  },
+  {
+   "p": 54,
+   "start": 202,
+   "end": 206,
+   "text": "game",
+   "sense": "game_match"
+  },
+  {
+   "p": 55,
+   "start": 25,
+   "end": 29,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 56,
+   "start": 61,
+   "end": 65,
+   "text": "beat",
+   "sense": "beat_win"
+  },
+  {
+   "p": 57,
+   "start": 8,
+   "end": 13,
+   "text": "beats",
+   "sense": "beat_win"
+  },
+  {
+   "p": 57,
+   "start": 28,
+   "end": 32,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 58,
+   "start": 8,
+   "end": 14,
+   "text": "beaten",
+   "sense": "beat_win"
+  },
+  {
+   "p": 60,
+   "start": 78,
+   "end": 83,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 60,
+   "start": 122,
+   "end": 127,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 61,
+   "start": 39,
+   "end": 44,
+   "text": "plays",
+   "sense": "play_game"
+  },
+  {
+   "p": 61,
+   "start": 54,
+   "end": 58,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 61,
+   "start": 78,
+   "end": 82,
+   "text": "Long",
+   "sense": "long_name"
+  },
+  {
+   "p": 61,
+   "start": 189,
+   "end": 194,
+   "text": "argue",
+   "sense": "argue"
+  },
+  {
+   "p": 62,
+   "start": 30,
+   "end": 35,
+   "text": "plays",
+   "sense": "play_game"
+  },
+  {
+   "p": 62,
+   "start": 58,
+   "end": 63,
+   "text": "board",
+   "sense": "board_chess"
+  },
+  {
+   "p": 62,
+   "start": 142,
+   "end": 146,
+   "text": "hard",
+   "sense": "think_hard",
+   "chunk": {
+    "start": 131,
+    "end": 146,
+    "text": "think very hard",
+    "es": "pensar muchísimo"
+   }
+  },
+  {
+   "p": 62,
+   "start": 174,
+   "end": 183,
+   "text": "customers",
+   "sense": "customer"
+  },
+  {
+   "p": 63,
+   "start": 46,
+   "end": 50,
+   "text": "play",
+   "sense": "play_game"
+  },
+  {
+   "p": 63,
+   "start": 124,
+   "end": 129,
+   "text": "looks",
+   "sense": "look_up",
+   "chunk": {
+    "start": 124,
+    "end": 132,
+    "text": "looks up",
+    "es": "levanta la vista"
+   }
+  },
+  {
+   "p": 63,
+   "start": 212,
+   "end": 219,
+   "text": "anymore",
+   "sense": "not_anymore",
+   "chunk": {
+    "start": 201,
+    "end": 219,
+    "text": "He doesn't anymore",
+    "es": "Ya no"
+   }
+  },
+  {
+   "p": 64,
+   "start": 24,
+   "end": 29,
+   "text": "plays",
+   "sense": "play_game"
+  },
+  {
+   "p": 64,
+   "start": 53,
+   "end": 58,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 64,
+   "start": 100,
+   "end": 104,
+   "text": "mind",
+   "sense": "mind_care",
+   "chunk": {
+    "start": 89,
+    "end": 104,
+    "text": "he doesn't mind",
+    "es": "no le importa"
+   }
+  }
+ ]
+}

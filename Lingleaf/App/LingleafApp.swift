@@ -216,6 +216,18 @@ final class AppModel {
         return BundledStory(title: entry.title, level: entry.level, text: text)
     }
 
+    /// The senses of a bundled story's copy in the library (SPEC S19), read strictly against the book's own
+    /// paragraphs; nil for any other book, and when the file is missing, too large or refused.
+    func storySenses(for book: Book, paragraphs: [String]) -> StorySenses? {
+        guard let entry = BundledStory.shelfStory(for: book), entry.hasSenses,
+              let url = Bundle.main.url(forResource: "\(entry.resource).senses", withExtension: "json"),
+              let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+        // One byte past the cap is enough to know the file is too large.
+        guard let data = try? handle.read(upToCount: StorySenses.maxBytes + 1) else { return nil }
+        return try? StorySenses.load(data, story: entry.resource, paragraphs: paragraphs)
+    }
+
     /// Puts a bundled story back in the library (the learner deleted it) and returns its id.
     func restoreBundledStory(_ entry: ShelfStory) -> String? {
         guard let story = Self.bundledStory(entry) else { return nil }

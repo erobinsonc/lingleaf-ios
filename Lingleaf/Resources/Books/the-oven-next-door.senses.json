@@ -1,0 +1,545 @@
+{
+ "schemaVersion": 1,
+ "story": "the-oven-next-door",
+ "senses": {
+  "at_last": {
+   "lemma": "at last",
+   "pos": "phrase",
+   "ipa": "æt læst",
+   "es": "por fin",
+   "kind": "chunk"
+  },
+  "blue_table_name": {
+   "lemma": "The Blue Table",
+   "pos": "proper noun",
+   "ipa": "ðə blu ˈteɪbəl",
+   "es": "nombre del restaurante (\"La Mesa Azul\")",
+   "kind": "name"
+  },
+  "break_down": {
+   "lemma": "break",
+   "pos": "verb",
+   "ipa": "breɪk",
+   "es": "estropearse, averiarse",
+   "kind": "word"
+  },
+  "come_back": {
+   "lemma": "come back",
+   "pos": "phrasal verb",
+   "ipa": "kʌm bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "cook_person": {
+   "lemma": "cook",
+   "pos": "noun",
+   "ipa": "kʊk",
+   "es": "cocinero, cocinera",
+   "kind": "word"
+  },
+  "dead_broken": {
+   "lemma": "dead",
+   "pos": "adjective",
+   "ipa": "dɛd",
+   "es": "que no funciona, estropeado",
+   "kind": "word"
+  },
+  "do_best": {
+   "lemma": "do your best",
+   "pos": "phrase",
+   "ipa": "du jʊr bɛst",
+   "es": "hacerlo lo mejor posible",
+   "kind": "chunk"
+  },
+  "free_available": {
+   "lemma": "free",
+   "pos": "adjective",
+   "ipa": "fri",
+   "es": "libre, disponible (no \"gratis\")",
+   "kind": "word"
+  },
+  "go_red": {
+   "lemma": "go red",
+   "pos": "phrase",
+   "ipa": "ɡoʊ rɛd",
+   "es": "ponerse colorado",
+   "kind": "chunk"
+  },
+  "head_cook": {
+   "lemma": "head cook",
+   "pos": "noun",
+   "ipa": "hɛd kʊk",
+   "es": "jefa de cocina",
+   "kind": "chunk"
+  },
+  "job_well": {
+   "lemma": "do a great job",
+   "pos": "phrase",
+   "ipa": "du ə ɡreɪt dʒɑb",
+   "es": "hacer un gran trabajo",
+   "kind": "chunk"
+  },
+  "just_simply": {
+   "lemma": "just",
+   "pos": "adverb",
+   "ipa": "dʒʌst",
+   "es": "simplemente, solo",
+   "kind": "word"
+  },
+  "neighbor": {
+   "lemma": "neighbor",
+   "pos": "noun",
+   "ipa": "ˈneɪbər",
+   "es": "vecino, vecina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "next_door": {
+   "lemma": "next door",
+   "pos": "adverb",
+   "ipa": "nɛkst dɔr",
+   "es": "al lado, en la casa de al lado",
+   "kind": "chunk"
+  },
+  "noon": {
+   "lemma": "noon",
+   "pos": "noun",
+   "ipa": "nun",
+   "es": "mediodía",
+   "kind": "word"
+  },
+  "part_section": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "parte (de la historia)",
+   "kind": "word"
+  },
+  "pepper_veg": {
+   "lemma": "pepper",
+   "pos": "noun",
+   "ipa": "ˈpɛpər",
+   "es": "pimiento (no \"pimienta\")",
+   "kind": "word"
+  },
+  "piece_paper": {
+   "lemma": "piece of paper",
+   "pos": "noun",
+   "ipa": "pis əv ˈpeɪpər",
+   "es": "hoja, trozo de papel",
+   "kind": "chunk"
+  },
+  "plate_serving": {
+   "lemma": "plate",
+   "pos": "noun",
+   "ipa": "pleɪt",
+   "es": "plato (servido)",
+   "kind": "word"
+  },
+  "pot_cooking": {
+   "lemma": "pot",
+   "pos": "noun",
+   "ipa": "pɑt",
+   "es": "olla, cazuela",
+   "kind": "word"
+  },
+  "run_out_into": {
+   "lemma": "run out into",
+   "pos": "phrasal verb",
+   "ipa": "rʌn aʊt ˈɪntu",
+   "es": "salir corriendo a",
+   "kind": "chunk"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word"
+  },
+  "take_bring": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "llevar (a alguien a un sitio)",
+   "kind": "word"
+  },
+  "taste_try": {
+   "lemma": "taste",
+   "pos": "verb",
+   "ipa": "teɪst",
+   "es": "probar (comida)",
+   "kind": "word"
+  },
+  "think_of": {
+   "lemma": "think of",
+   "pos": "phrasal verb",
+   "ipa": "θɪŋk əv",
+   "es": "ocurrírsele a uno",
+   "kind": "chunk"
+  },
+  "turn_off": {
+   "lemma": "turn off",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ɔf",
+   "es": "apagar",
+   "kind": "chunk"
+  },
+  "turn_on": {
+   "lemma": "turn on",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ɑn",
+   "es": "encender",
+   "kind": "chunk"
+  },
+  "waiter": {
+   "lemma": "waiter",
+   "pos": "noun",
+   "ipa": "ˈweɪtər",
+   "es": "camarero, camarera",
+   "kind": "word"
+  },
+  "watch_monitor": {
+   "lemma": "watch",
+   "pos": "verb",
+   "ipa": "wɑtʃ",
+   "es": "vigilar",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 1,
+   "start": 47,
+   "end": 51,
+   "text": "cook",
+   "sense": "cook_person"
+  },
+  {
+   "p": 1,
+   "start": 117,
+   "end": 121,
+   "text": "Blue",
+   "sense": "blue_table_name",
+   "chunk": {
+    "start": 113,
+    "end": 127,
+    "text": "The Blue Table",
+    "es": "La Mesa Azul (nombre)"
+   }
+  },
+  {
+   "p": 1,
+   "start": 122,
+   "end": 127,
+   "text": "Table",
+   "sense": "blue_table_name",
+   "chunk": {
+    "start": 113,
+    "end": 127,
+    "text": "The Blue Table",
+    "es": "La Mesa Azul (nombre)"
+   }
+  },
+  {
+   "p": 2,
+   "start": 47,
+   "end": 51,
+   "text": "head",
+   "sense": "head_cook",
+   "chunk": {
+    "start": 47,
+    "end": 56,
+    "text": "head cook",
+    "es": "jefa de cocina"
+   }
+  },
+  {
+   "p": 3,
+   "start": 110,
+   "end": 115,
+   "text": "taste",
+   "sense": "taste_try"
+  },
+  {
+   "p": 4,
+   "start": 60,
+   "end": 67,
+   "text": "peppers",
+   "sense": "pepper_veg"
+  },
+  {
+   "p": 4,
+   "start": 93,
+   "end": 97,
+   "text": "pots",
+   "sense": "pot_cooking"
+  },
+  {
+   "p": 5,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 6,
+   "start": 102,
+   "end": 106,
+   "text": "take",
+   "sense": "take_bring"
+  },
+  {
+   "p": 9,
+   "start": 103,
+   "end": 107,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 100,
+    "end": 107,
+    "text": "at last",
+    "es": "por fin"
+   }
+  },
+  {
+   "p": 9,
+   "start": 131,
+   "end": 135,
+   "text": "best",
+   "sense": "do_best",
+   "chunk": {
+    "start": 125,
+    "end": 135,
+    "text": "do my best",
+    "es": "hacerlo lo mejor posible"
+   }
+  },
+  {
+   "p": 11,
+   "start": 12,
+   "end": 18,
+   "text": "waiter",
+   "sense": "waiter"
+  },
+  {
+   "p": 12,
+   "start": 34,
+   "end": 38,
+   "text": "noon",
+   "sense": "noon"
+  },
+  {
+   "p": 12,
+   "start": 77,
+   "end": 82,
+   "text": "piece",
+   "sense": "piece_paper",
+   "chunk": {
+    "start": 77,
+    "end": 91,
+    "text": "piece of paper",
+    "es": "hoja de papel"
+   }
+  },
+  {
+   "p": 12,
+   "start": 110,
+   "end": 116,
+   "text": "plates",
+   "sense": "plate_serving"
+  },
+  {
+   "p": 13,
+   "start": 20,
+   "end": 26,
+   "text": "turned",
+   "sense": "turn_on",
+   "chunk": {
+    "start": 20,
+    "end": 29,
+    "text": "turned on",
+    "es": "encendió"
+   }
+  },
+  {
+   "p": 13,
+   "start": 65,
+   "end": 71,
+   "text": "turned",
+   "sense": "turn_off",
+   "chunk": {
+    "start": 65,
+    "end": 91,
+    "text": "turned it off and on again",
+    "es": "lo apagó y lo volvió a encender"
+   }
+  },
+  {
+   "p": 13,
+   "start": 93,
+   "end": 98,
+   "text": "Still",
+   "sense": "still_yet",
+   "chunk": {
+    "start": 93,
+    "end": 106,
+    "text": "Still nothing",
+    "es": "Todavía nada"
+   }
+  },
+  {
+   "p": 13,
+   "start": 121,
+   "end": 125,
+   "text": "dead",
+   "sense": "dead_broken",
+   "chunk": {
+    "start": 108,
+    "end": 125,
+    "text": "The oven was dead",
+    "es": "El horno no funcionaba"
+   }
+  },
+  {
+   "p": 16,
+   "start": 5,
+   "end": 8,
+   "text": "ran",
+   "sense": "run_out_into",
+   "chunk": {
+    "start": 5,
+    "end": 28,
+    "text": "ran out into the street",
+    "es": "salió corriendo a la calle"
+   }
+  },
+  {
+   "p": 16,
+   "start": 30,
+   "end": 34,
+   "text": "Next",
+   "sense": "next_door",
+   "chunk": {
+    "start": 30,
+    "end": 39,
+    "text": "Next door",
+    "es": "Al lado"
+   }
+  },
+  {
+   "p": 16,
+   "start": 190,
+   "end": 195,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 18,
+   "start": 44,
+   "end": 48,
+   "text": "free",
+   "sense": "free_available",
+   "chunk": {
+    "start": 33,
+    "end": 71,
+    "text": "My oven is free until tomorrow morning",
+    "es": "Mi horno está libre hasta mañana por la mañana"
+   }
+  },
+  {
+   "p": 19,
+   "start": 136,
+   "end": 143,
+   "text": "watched",
+   "sense": "watch_monitor"
+  },
+  {
+   "p": 22,
+   "start": 33,
+   "end": 37,
+   "text": "went",
+   "sense": "go_red",
+   "chunk": {
+    "start": 24,
+    "end": 41,
+    "text": "his face went red",
+    "es": "se puso colorado"
+   }
+  },
+  {
+   "p": 22,
+   "start": 87,
+   "end": 95,
+   "text": "neighbor",
+   "sense": "neighbor"
+  },
+  {
+   "p": 25,
+   "start": 53,
+   "end": 56,
+   "text": "job",
+   "sense": "job_well",
+   "chunk": {
+    "start": 41,
+    "end": 56,
+    "text": "did a great job",
+    "es": "hiciste un gran trabajo"
+   }
+  },
+  {
+   "p": 25,
+   "start": 70,
+   "end": 75,
+   "text": "think",
+   "sense": "think_of",
+   "chunk": {
+    "start": 70,
+    "end": 89,
+    "text": "think of the bakery",
+    "es": "se te ocurrió lo de la panadería"
+   }
+  },
+  {
+   "p": 26,
+   "start": 32,
+   "end": 36,
+   "text": "just",
+   "sense": "just_simply"
+  },
+  {
+   "p": 28,
+   "start": 23,
+   "end": 27,
+   "text": "took",
+   "sense": "take_bring"
+  },
+  {
+   "p": 28,
+   "start": 96,
+   "end": 100,
+   "text": "Come",
+   "sense": "come_back",
+   "chunk": {
+    "start": 96,
+    "end": 105,
+    "text": "Come back",
+    "es": "Vuelve"
+   }
+  },
+  {
+   "p": 28,
+   "start": 121,
+   "end": 127,
+   "text": "breaks",
+   "sense": "break_down"
+  }
+ ]
+}

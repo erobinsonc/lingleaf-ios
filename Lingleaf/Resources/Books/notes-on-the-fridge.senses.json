@@ -1,0 +1,2336 @@
+{
+ "schemaVersion": 1,
+ "story": "notes-on-the-fridge",
+ "senses": {
+  "actually_truth": {
+   "lemma": "actually",
+   "pos": "adverb",
+   "ipa": "ˈæktʃuəli",
+   "es": "en realidad, de hecho (no \"actualmente\")",
+   "kind": "word"
+  },
+  "admit_to": {
+   "lemma": "admit to",
+   "pos": "phrasal verb",
+   "ipa": "ədˈmɪt tu",
+   "es": "reconocer (haber hecho algo)",
+   "kind": "chunk"
+  },
+  "annoyed": {
+   "lemma": "annoyed",
+   "pos": "adjective",
+   "ipa": "əˈnɔɪd",
+   "es": "molesto, enfadado",
+   "kind": "word"
+  },
+  "apparently": {
+   "lemma": "apparently",
+   "pos": "adverb",
+   "ipa": "əˈpɛrəntli",
+   "es": "al parecer (no \"aparentemente\")",
+   "kind": "word"
+  },
+  "appreciate": {
+   "lemma": "appreciate",
+   "pos": "verb",
+   "ipa": "əˈpriʃiˌeɪt",
+   "es": "agradecer, valorar",
+   "kind": "word"
+  },
+  "argue": {
+   "lemma": "argue",
+   "pos": "verb",
+   "ipa": "ˈɑrɡju",
+   "es": "discutir",
+   "kind": "word"
+  },
+  "argument_quarrel": {
+   "lemma": "argument",
+   "pos": "noun",
+   "ipa": "ˈɑrɡjəmənt",
+   "es": "discusión (no \"argumento\")",
+   "kind": "word"
+  },
+  "assume_suppose": {
+   "lemma": "assume",
+   "pos": "verb",
+   "ipa": "əˈsum",
+   "es": "suponer (no \"asumir\")",
+   "kind": "word"
+  },
+  "at_once_same": {
+   "lemma": "at once",
+   "pos": "phrase",
+   "ipa": "æt wʌns",
+   "es": "a la vez",
+   "kind": "chunk"
+  },
+  "at_same_time": {
+   "lemma": "at the same time",
+   "pos": "phrase",
+   "ipa": "æt ðə seɪm taɪm",
+   "es": "a la vez",
+   "kind": "chunk"
+  },
+  "at_the_latest": {
+   "lemma": "at the latest",
+   "pos": "phrase",
+   "ipa": "æt ðə ˈleɪtɪst",
+   "es": "como muy tarde",
+   "kind": "chunk"
+  },
+  "barely": {
+   "lemma": "barely",
+   "pos": "adverb",
+   "ipa": "ˈbɛrli",
+   "es": "apenas",
+   "kind": "word"
+  },
+  "be_gone": {
+   "lemma": "be gone",
+   "pos": "phrase",
+   "ipa": "bi ɡɔn",
+   "es": "haberse ido",
+   "kind": "chunk"
+  },
+  "boiler": {
+   "lemma": "boiler",
+   "pos": "noun",
+   "ipa": "ˈbɔɪlər",
+   "es": "caldera",
+   "kind": "word"
+  },
+  "break_broken": {
+   "lemma": "break",
+   "pos": "verb",
+   "ipa": "breɪk",
+   "es": "estropearse, averiarse",
+   "kind": "word"
+  },
+  "bring_appetite": {
+   "lemma": "bring an appetite",
+   "pos": "phrase",
+   "ipa": "brɪŋ ən ˈæpəˌtaɪt",
+   "es": "venir con hambre",
+   "kind": "chunk"
+  },
+  "by_mail": {
+   "lemma": "by mail",
+   "pos": "phrase",
+   "ipa": "baɪ meɪl",
+   "es": "por correo",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "cabinet": {
+   "lemma": "cabinet",
+   "pos": "noun",
+   "ipa": "ˈkæbənət",
+   "es": "armario (de cocina)",
+   "kind": "word"
+  },
+  "carry_up": {
+   "lemma": "carry up",
+   "pos": "phrasal verb",
+   "ipa": "ˈkɛri ʌp",
+   "es": "subir (algo pesado)",
+   "kind": "chunk"
+  },
+  "change_back": {
+   "lemma": "change back",
+   "pos": "phrasal verb",
+   "ipa": "tʃeɪndʒ bæk",
+   "es": "volver a ser como antes",
+   "kind": "chunk"
+  },
+  "check_child": {
+   "lemma": "check",
+   "pos": "verb",
+   "ipa": "tʃɛk",
+   "es": "comprobar, tomarle la temperatura a",
+   "kind": "word"
+  },
+  "check_details": {
+   "lemma": "check",
+   "pos": "verb",
+   "ipa": "tʃɛk",
+   "es": "revisar",
+   "kind": "word"
+  },
+  "chop": {
+   "lemma": "chop",
+   "pos": "verb",
+   "ipa": "tʃɑp",
+   "es": "picar, cortar",
+   "kind": "word"
+  },
+  "cleaning_schedule": {
+   "lemma": "cleaning schedule",
+   "pos": "noun",
+   "ipa": "ˈklinɪŋ ˈskɛdʒul",
+   "es": "turnos de limpieza",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "closet": {
+   "lemma": "closet",
+   "pos": "noun",
+   "ipa": "ˈklɑzət",
+   "es": "armario",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "come_and_go": {
+   "lemma": "come and go",
+   "pos": "phrase",
+   "ipa": "kʌm ənd ɡoʊ",
+   "es": "llegar y pasar",
+   "kind": "chunk"
+  },
+  "count_as": {
+   "lemma": "count as",
+   "pos": "phrasal verb",
+   "ipa": "kaʊnt æz",
+   "es": "contar como",
+   "kind": "chunk"
+  },
+  "coursework": {
+   "lemma": "coursework",
+   "pos": "noun",
+   "ipa": "ˈkɔrswɝk",
+   "es": "trabajos de clase",
+   "kind": "word"
+  },
+  "dead_broken": {
+   "lemma": "dead",
+   "pos": "adjective",
+   "ipa": "dɛd",
+   "es": "que no funciona, estropeado",
+   "kind": "word"
+  },
+  "delay": {
+   "lemma": "delay",
+   "pos": "noun",
+   "ipa": "dɪˈleɪ",
+   "es": "retraso",
+   "kind": "word"
+  },
+  "die_slowly": {
+   "lemma": "die",
+   "pos": "verb",
+   "ipa": "daɪ",
+   "es": "morirse, ir estropeándose (una máquina)",
+   "kind": "word"
+  },
+  "discount": {
+   "lemma": "discount",
+   "pos": "noun",
+   "ipa": "ˈdɪskaʊnt",
+   "es": "descuento",
+   "kind": "word"
+  },
+  "dishes": {
+   "lemma": "dishes",
+   "pos": "noun",
+   "ipa": "ˈdɪʃɪz",
+   "es": "platos (para fregar)",
+   "kind": "word"
+  },
+  "do_great": {
+   "lemma": "do great",
+   "pos": "phrase",
+   "ipa": "du ɡreɪt",
+   "es": "irle genial a alguien",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "downstairs": {
+   "lemma": "downstairs",
+   "pos": "adverb",
+   "ipa": "ˌdaʊnˈstɛrz",
+   "es": "abajo (en la planta de abajo)",
+   "kind": "word"
+  },
+  "dumpling": {
+   "lemma": "dumpling",
+   "pos": "noun",
+   "ipa": "ˈdʌmplɪŋ",
+   "es": "empanadilla (de masa al vapor)",
+   "kind": "word"
+  },
+  "either_neither": {
+   "lemma": "either",
+   "pos": "adverb",
+   "ipa": "ˈiðər",
+   "es": "tampoco (en frase negativa)",
+   "kind": "word"
+  },
+  "eventually_finally": {
+   "lemma": "eventually",
+   "pos": "adverb",
+   "ipa": "ɪˈvɛntʃuəli",
+   "es": "al final, finalmente (no \"eventualmente\")",
+   "kind": "word"
+  },
+  "ever_since": {
+   "lemma": "ever since",
+   "pos": "phrase",
+   "ipa": "ˈɛvər sɪns",
+   "es": "desde entonces",
+   "kind": "chunk"
+  },
+  "faint_chill": {
+   "lemma": "faint",
+   "pos": "adjective",
+   "ipa": "feɪnt",
+   "es": "ligero, leve",
+   "kind": "word"
+  },
+  "far_too": {
+   "lemma": "far too",
+   "pos": "phrase",
+   "ipa": "fɑr tu",
+   "es": "demasiado",
+   "kind": "chunk"
+  },
+  "fine_ok": {
+   "lemma": "fine",
+   "pos": "adjective",
+   "ipa": "faɪn",
+   "es": "bien",
+   "kind": "word"
+  },
+  "firm_strict": {
+   "lemma": "firm",
+   "pos": "adjective",
+   "ipa": "fɝm",
+   "es": "firme",
+   "kind": "word"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word"
+  },
+  "floor_storey": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "piso, planta (de un edificio)",
+   "kind": "word"
+  },
+  "for_reason": {
+   "lemma": "for a reason",
+   "pos": "phrase",
+   "ipa": "fɔr ə ˈrizən",
+   "es": "por algo",
+   "kind": "chunk"
+  },
+  "foundation": {
+   "lemma": "foundation",
+   "pos": "noun",
+   "ipa": "faʊnˈdeɪʃən",
+   "es": "base, fundamento",
+   "kind": "word"
+  },
+  "freezer": {
+   "lemma": "freezer",
+   "pos": "noun",
+   "ipa": "ˈfrizər",
+   "es": "congelador",
+   "kind": "word"
+  },
+  "freezing": {
+   "lemma": "freezing",
+   "pos": "adjective",
+   "ipa": "ˈfrizɪŋ",
+   "es": "helado",
+   "kind": "word"
+  },
+  "get_along": {
+   "lemma": "get along with",
+   "pos": "phrasal verb",
+   "ipa": "ɡɛt əˈlɔŋ wɪð",
+   "es": "llevarse bien con",
+   "kind": "chunk"
+  },
+  "get_sick": {
+   "lemma": "get sick",
+   "pos": "phrase",
+   "ipa": "ɡɛt sɪk",
+   "es": "enfermar, ponerse enfermo",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "go_back": {
+   "lemma": "go back",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "guy": {
+   "lemma": "guy",
+   "pos": "noun",
+   "ipa": "ɡaɪ",
+   "es": "tío, chico",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "halfway_through": {
+   "lemma": "halfway through",
+   "pos": "phrase",
+   "ipa": "ˈhæfweɪ θru",
+   "es": "a mitad de",
+   "kind": "chunk"
+  },
+  "hand_give": {
+   "lemma": "hand",
+   "pos": "verb",
+   "ipa": "hænd",
+   "es": "dar, pasar (en la mano)",
+   "kind": "word"
+  },
+  "hands_out": {
+   "lemma": "with your hands out",
+   "pos": "phrase",
+   "ipa": "wɪð jʊr hændz aʊt",
+   "es": "con las manos extendidas",
+   "kind": "chunk"
+  },
+  "hang_up": {
+   "lemma": "hang up",
+   "pos": "phrasal verb",
+   "ipa": "hæŋ ʌp",
+   "es": "colgar (el teléfono)",
+   "kind": "chunk"
+  },
+  "heat_heating": {
+   "lemma": "heat",
+   "pos": "noun",
+   "ipa": "hit",
+   "es": "calefacción",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "hold_in_place": {
+   "lemma": "hold in place",
+   "pos": "phrase",
+   "ipa": "hoʊld ɪn pleɪs",
+   "es": "sujetar",
+   "kind": "chunk"
+  },
+  "holiday_day": {
+   "lemma": "holiday",
+   "pos": "noun",
+   "ipa": "ˈhɑlədeɪ",
+   "es": "(día) festivo",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "hows_it_going": {
+   "lemma": "how's it going",
+   "pos": "phrase",
+   "ipa": "haʊz ɪt ˈɡoʊɪŋ",
+   "es": "¿qué tal?",
+   "kind": "chunk"
+  },
+  "in_reply": {
+   "lemma": "in reply",
+   "pos": "phrase",
+   "ipa": "ɪn rɪˈplaɪ",
+   "es": "como respuesta",
+   "kind": "chunk"
+  },
+  "inconvenience": {
+   "lemma": "inconvenience",
+   "pos": "noun",
+   "ipa": "ˌɪnkənˈvinjəns",
+   "es": "molestias",
+   "kind": "word"
+  },
+  "introduce_to": {
+   "lemma": "introduce to",
+   "pos": "phrasal verb",
+   "ipa": "ˌɪntrəˈdus tu",
+   "es": "dar a conocer",
+   "kind": "chunk"
+  },
+  "it_occurred": {
+   "lemma": "occur to",
+   "pos": "phrasal verb",
+   "ipa": "əˈkɝ tu",
+   "es": "ocurrírsele a uno",
+   "kind": "chunk"
+  },
+  "jollof": {
+   "lemma": "jollof rice",
+   "pos": "noun",
+   "ipa": "ˈdʒɑləf raɪs",
+   "es": "arroz jollof (plato de África occidental)",
+   "kind": "chunk",
+   "variety": "local"
+  },
+  "keep_doing": {
+   "lemma": "keep",
+   "pos": "verb",
+   "ipa": "kip",
+   "es": "seguir (haciendo algo)",
+   "kind": "word"
+  },
+  "keep_promise2": {
+   "lemma": "keep",
+   "pos": "verb",
+   "ipa": "kip",
+   "es": "cumplir (una promesa)",
+   "kind": "word"
+  },
+  "kind_type": {
+   "lemma": "kind",
+   "pos": "noun",
+   "ipa": "kaɪnd",
+   "es": "tipo, clase",
+   "kind": "word"
+  },
+  "knock_on": {
+   "lemma": "knock",
+   "pos": "verb",
+   "ipa": "nɑk",
+   "es": "llamar (a la puerta)",
+   "kind": "word"
+  },
+  "knocking": {
+   "lemma": "knocking",
+   "pos": "noun",
+   "ipa": "ˈnɑkɪŋ",
+   "es": "golpeteo",
+   "kind": "word"
+  },
+  "landlord": {
+   "lemma": "landlord",
+   "pos": "noun",
+   "ipa": "ˈlændlɔrd",
+   "es": "casero, propietario",
+   "kind": "word"
+  },
+  "last_of": {
+   "lemma": "the last of",
+   "pos": "phrase",
+   "ipa": "ðə læst əv",
+   "es": "lo que quedaba de",
+   "kind": "chunk"
+  },
+  "letter_char": {
+   "lemma": "letter",
+   "pos": "noun",
+   "ipa": "ˈlɛtər",
+   "es": "letra (del alfabeto)",
+   "kind": "word"
+  },
+  "lie_down": {
+   "lemma": "lie down",
+   "pos": "phrasal verb",
+   "ipa": "laɪ daʊn",
+   "es": "tumbarse",
+   "kind": "chunk"
+  },
+  "light_up": {
+   "lemma": "light up",
+   "pos": "phrasal verb",
+   "ipa": "laɪt ʌp",
+   "es": "iluminarse",
+   "kind": "chunk"
+  },
+  "look_out_over": {
+   "lemma": "look out over",
+   "pos": "phrasal verb",
+   "ipa": "lʊk aʊt ˈoʊvər",
+   "es": "dar a, tener vistas a",
+   "kind": "chunk"
+  },
+  "masters": {
+   "lemma": "master's degree",
+   "pos": "noun",
+   "ipa": "ˈmæstərz dɪˈɡri",
+   "es": "máster",
+   "kind": "chunk"
+  },
+  "mean_to_do": {
+   "lemma": "mean to",
+   "pos": "phrase",
+   "ipa": "min tu",
+   "es": "tener intención de",
+   "kind": "chunk"
+  },
+  "might_as_well": {
+   "lemma": "might as well",
+   "pos": "phrase",
+   "ipa": "maɪt æz wɛl",
+   "es": "ya puestos, mejor (hacer algo)",
+   "kind": "chunk"
+  },
+  "move_in": {
+   "lemma": "move in with",
+   "pos": "phrasal verb",
+   "ipa": "muv ɪn wɪð",
+   "es": "irse a vivir con",
+   "kind": "chunk"
+  },
+  "movie": {
+   "lemma": "movie",
+   "pos": "noun",
+   "ipa": "ˈmuvi",
+   "es": "película",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "neat_writing": {
+   "lemma": "neat",
+   "pos": "adjective",
+   "ipa": "nit",
+   "es": "pulcro, ordenado (letra)",
+   "kind": "word"
+  },
+  "no_idea": {
+   "lemma": "have no idea",
+   "pos": "phrase",
+   "ipa": "hæv noʊ aɪˈdiə",
+   "es": "no tener ni idea",
+   "kind": "chunk"
+  },
+  "note_paper": {
+   "lemma": "note",
+   "pos": "noun",
+   "ipa": "noʊt",
+   "es": "nota",
+   "kind": "word"
+  },
+  "note_write": {
+   "lemma": "note",
+   "pos": "verb",
+   "ipa": "noʊt",
+   "es": "anotar",
+   "kind": "word"
+  },
+  "only_just": {
+   "lemma": "only just",
+   "pos": "phrase",
+   "ipa": "ˈoʊnli dʒʌst",
+   "es": "por los pelos, a duras penas",
+   "kind": "chunk"
+  },
+  "or_rather": {
+   "lemma": "or rather",
+   "pos": "phrase",
+   "ipa": "ɔr ˈræðər",
+   "es": "o mejor dicho",
+   "kind": "chunk"
+  },
+  "order_buy": {
+   "lemma": "order",
+   "pos": "verb",
+   "ipa": "ˈɔrdər",
+   "es": "pedir, encargar",
+   "kind": "word"
+  },
+  "part_spare2": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "pieza, repuesto",
+   "kind": "word"
+  },
+  "pea_soup": {
+   "lemma": "pea soup",
+   "pos": "noun",
+   "ipa": "pi sup",
+   "es": "sopa de guisantes",
+   "kind": "chunk"
+  },
+  "pepper_sauce": {
+   "lemma": "red pepper sauce",
+   "pos": "noun",
+   "ipa": "rɛd ˈpɛpər sɔs",
+   "es": "salsa de guindilla roja",
+   "kind": "chunk"
+  },
+  "piece_paper": {
+   "lemma": "piece of paper",
+   "pos": "noun",
+   "ipa": "pis əv ˈpeɪpər",
+   "es": "hoja, trozo de papel",
+   "kind": "chunk"
+  },
+  "plantain": {
+   "lemma": "plantain",
+   "pos": "noun",
+   "ipa": "ˈplæntən",
+   "es": "plátano macho",
+   "kind": "word"
+  },
+  "program_study": {
+   "lemma": "program",
+   "pos": "noun",
+   "ipa": "ˈproʊɡræm",
+   "es": "programa de estudios, carrera",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "pull_up": {
+   "lemma": "pull up",
+   "pos": "phrasal verb",
+   "ipa": "pʊl ʌp",
+   "es": "acercar (una silla)",
+   "kind": "chunk"
+  },
+  "put_down": {
+   "lemma": "put down",
+   "pos": "phrasal verb",
+   "ipa": "pʊt daʊn",
+   "es": "dejar, colgar (el teléfono)",
+   "kind": "chunk"
+  },
+  "put_on_clothes2": {
+   "lemma": "put on",
+   "pos": "phrasal verb",
+   "ipa": "pʊt ɑn",
+   "es": "ponerse (ropa)",
+   "kind": "chunk"
+  },
+  "rent_noun": {
+   "lemma": "rent",
+   "pos": "noun",
+   "ipa": "rɛnt",
+   "es": "alquiler",
+   "kind": "word"
+  },
+  "report_tell": {
+   "lemma": "report",
+   "pos": "verb",
+   "ipa": "rɪˈpɔrt",
+   "es": "informar de, avisar de",
+   "kind": "word"
+  },
+  "right_correct": {
+   "lemma": "be right",
+   "pos": "phrase",
+   "ipa": "bi raɪt",
+   "es": "tener razón (no \"derecha\")",
+   "kind": "chunk"
+  },
+  "roommate": {
+   "lemma": "roommate",
+   "pos": "noun",
+   "ipa": "ˈrummeɪt",
+   "es": "compañero de piso",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "schedule_rota": {
+   "lemma": "schedule",
+   "pos": "noun",
+   "ipa": "ˈskɛdʒul",
+   "es": "horario, turnos",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "see_breath": {
+   "lemma": "breath",
+   "pos": "noun",
+   "ipa": "brɛθ",
+   "es": "aliento, vaho",
+   "kind": "word"
+  },
+  "shake_head": {
+   "lemma": "shake your head",
+   "pos": "phrase",
+   "ipa": "ʃeɪk jʊr hɛd",
+   "es": "negar con la cabeza",
+   "kind": "chunk"
+  },
+  "sharp_wind": {
+   "lemma": "sharp",
+   "pos": "adjective",
+   "ipa": "ʃɑrp",
+   "es": "cortante (del viento)",
+   "kind": "word"
+  },
+  "sign_name": {
+   "lemma": "sign",
+   "pos": "verb",
+   "ipa": "saɪn",
+   "es": "firmar",
+   "kind": "word"
+  },
+  "sound_seem": {
+   "lemma": "sound",
+   "pos": "verb",
+   "ipa": "saʊnd",
+   "es": "parecer (por la voz)",
+   "kind": "word"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word"
+  },
+  "stranger": {
+   "lemma": "stranger",
+   "pos": "noun",
+   "ipa": "ˈstreɪndʒər",
+   "es": "desconocido",
+   "kind": "word"
+  },
+  "sweater": {
+   "lemma": "sweater",
+   "pos": "noun",
+   "ipa": "ˈswɛtər",
+   "es": "jersey, suéter",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "take_off_clothes": {
+   "lemma": "take off",
+   "pos": "phrasal verb",
+   "ipa": "teɪk ɔf",
+   "es": "quitarse (ropa)",
+   "kind": "chunk"
+  },
+  "tenant": {
+   "lemma": "tenant",
+   "pos": "noun",
+   "ipa": "ˈtɛnənt",
+   "es": "inquilino",
+   "kind": "word"
+  },
+  "trash": {
+   "lemma": "trash",
+   "pos": "noun",
+   "ipa": "træʃ",
+   "es": "basura",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "turn_on": {
+   "lemma": "turn on",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ɑn",
+   "es": "encender",
+   "kind": "chunk"
+  },
+  "turn_out": {
+   "lemma": "turn out",
+   "pos": "phrasal verb",
+   "ipa": "tɝn aʊt",
+   "es": "resultar",
+   "kind": "chunk"
+  },
+  "turn_red": {
+   "lemma": "turn red",
+   "pos": "phrase",
+   "ipa": "tɝn rɛd",
+   "es": "ponerse rojo",
+   "kind": "chunk"
+  },
+  "type_keyboard": {
+   "lemma": "type",
+   "pos": "verb",
+   "ipa": "taɪp",
+   "es": "escribir (en el teclado)",
+   "kind": "word"
+  },
+  "watch_movies": {
+   "lemma": "watch",
+   "pos": "verb",
+   "ipa": "wɑtʃ",
+   "es": "ver (películas)",
+   "kind": "word"
+  },
+  "we_hadnt_met": {
+   "lemma": "meet",
+   "pos": "verb",
+   "ipa": "mit",
+   "es": "conocerse",
+   "kind": "word"
+  },
+  "wear_clothes": {
+   "lemma": "wear",
+   "pos": "verb",
+   "ipa": "wɛr",
+   "es": "llevar puesto",
+   "kind": "word"
+  },
+  "working_days": {
+   "lemma": "working day",
+   "pos": "noun",
+   "ipa": "ˈwɝkɪŋ deɪ",
+   "es": "día laborable",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 1,
+   "start": 118,
+   "end": 121,
+   "text": "far",
+   "sense": "far_too",
+   "chunk": {
+    "start": 118,
+    "end": 131,
+    "text": "far too heavy",
+    "es": "demasiado pesada"
+   }
+  },
+  {
+   "p": 1,
+   "start": 206,
+   "end": 215,
+   "text": "strangers",
+   "sense": "stranger"
+  },
+  {
+   "p": 1,
+   "start": 217,
+   "end": 223,
+   "text": "either",
+   "sense": "either_neither"
+  },
+  {
+   "p": 1,
+   "start": 323,
+   "end": 327,
+   "text": "once",
+   "sense": "at_once_same",
+   "chunk": {
+    "start": 320,
+    "end": 327,
+    "text": "at once",
+    "es": "a la vez"
+   }
+  },
+  {
+   "p": 2,
+   "start": 31,
+   "end": 36,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 21,
+    "end": 36,
+    "text": "the third floor",
+    "es": "el tercer piso"
+   }
+  },
+  {
+   "p": 2,
+   "start": 317,
+   "end": 323,
+   "text": "looked",
+   "sense": "look_out_over",
+   "chunk": {
+    "start": 317,
+    "end": 342,
+    "text": "looked out over the water",
+    "es": "daba al agua"
+   }
+  },
+  {
+   "p": 3,
+   "start": 4,
+   "end": 12,
+   "text": "landlord",
+   "sense": "landlord"
+  },
+  {
+   "p": 3,
+   "start": 99,
+   "end": 103,
+   "text": "rent",
+   "sense": "rent_noun"
+  },
+  {
+   "p": 3,
+   "start": 164,
+   "end": 169,
+   "text": "trash",
+   "sense": "trash"
+  },
+  {
+   "p": 3,
+   "start": 277,
+   "end": 281,
+   "text": "gone",
+   "sense": "be_gone",
+   "chunk": {
+    "start": 270,
+    "end": 281,
+    "text": "He was gone",
+    "es": "Ya se había ido"
+   }
+  },
+  {
+   "p": 4,
+   "start": 73,
+   "end": 77,
+   "text": "held",
+   "sense": "hold_in_place",
+   "chunk": {
+    "start": 73,
+    "end": 86,
+    "text": "held in place",
+    "es": "sujeto"
+   }
+  },
+  {
+   "p": 4,
+   "start": 132,
+   "end": 137,
+   "text": "piece",
+   "sense": "piece_paper",
+   "chunk": {
+    "start": 130,
+    "end": 146,
+    "text": "a piece of paper",
+    "es": "una hoja de papel"
+   }
+  },
+  {
+   "p": 4,
+   "start": 177,
+   "end": 181,
+   "text": "neat",
+   "sense": "neat_writing"
+  },
+  {
+   "p": 4,
+   "start": 188,
+   "end": 195,
+   "text": "letters",
+   "sense": "letter_char"
+  },
+  {
+   "p": 4,
+   "start": 215,
+   "end": 221,
+   "text": "dishes",
+   "sense": "dishes"
+  },
+  {
+   "p": 5,
+   "start": 61,
+   "end": 67,
+   "text": "dishes",
+   "sense": "dishes"
+  },
+  {
+   "p": 5,
+   "start": 82,
+   "end": 86,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 7,
+   "start": 29,
+   "end": 35,
+   "text": "barely",
+   "sense": "barely"
+  },
+  {
+   "p": 7,
+   "start": 44,
+   "end": 53,
+   "text": "roommates",
+   "sense": "roommate"
+  },
+  {
+   "p": 7,
+   "start": 152,
+   "end": 160,
+   "text": "schedule",
+   "sense": "cleaning_schedule",
+   "chunk": {
+    "start": 143,
+    "end": 160,
+    "text": "cleaning schedule",
+    "es": "turnos de limpieza"
+   }
+  },
+  {
+   "p": 7,
+   "start": 407,
+   "end": 415,
+   "text": "master's",
+   "sense": "masters",
+   "chunk": {
+    "start": 407,
+    "end": 422,
+    "text": "master's degree",
+    "es": "máster"
+   }
+  },
+  {
+   "p": 7,
+   "start": 448,
+   "end": 458,
+   "text": "apparently",
+   "sense": "apparently"
+  },
+  {
+   "p": 8,
+   "start": 157,
+   "end": 164,
+   "text": "carried",
+   "sense": "carry_up",
+   "chunk": {
+    "start": 157,
+    "end": 178,
+    "text": "carried up the stairs",
+    "es": "subida por las escaleras"
+   }
+  },
+  {
+   "p": 9,
+   "start": 115,
+   "end": 120,
+   "text": "going",
+   "sense": "hows_it_going",
+   "chunk": {
+    "start": 106,
+    "end": 120,
+    "text": "How's it going",
+    "es": "¿Qué tal?"
+   }
+  },
+  {
+   "p": 9,
+   "start": 163,
+   "end": 167,
+   "text": "went",
+   "sense": "go_back",
+   "chunk": {
+    "start": 163,
+    "end": 172,
+    "text": "went back",
+    "es": "volvían"
+   }
+  },
+  {
+   "p": 10,
+   "start": 15,
+   "end": 20,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 10,
+   "start": 106,
+   "end": 110,
+   "text": "last",
+   "sense": "last_of",
+   "chunk": {
+    "start": 102,
+    "end": 122,
+    "text": "the last of the milk",
+    "es": "lo que quedaba de la leche"
+   }
+  },
+  {
+   "p": 10,
+   "start": 234,
+   "end": 242,
+   "text": "schedule",
+   "sense": "schedule_rota"
+  },
+  {
+   "p": 10,
+   "start": 258,
+   "end": 264,
+   "text": "reason",
+   "sense": "for_reason",
+   "chunk": {
+    "start": 252,
+    "end": 264,
+    "text": "for a reason",
+    "es": "por algo"
+   }
+  },
+  {
+   "p": 11,
+   "start": 137,
+   "end": 147,
+   "text": "foundation",
+   "sense": "foundation"
+  },
+  {
+   "p": 11,
+   "start": 202,
+   "end": 206,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 11,
+   "start": 210,
+   "end": 215,
+   "text": "reply",
+   "sense": "in_reply",
+   "chunk": {
+    "start": 207,
+    "end": 215,
+    "text": "in reply",
+    "es": "como respuesta"
+   }
+  },
+  {
+   "p": 11,
+   "start": 273,
+   "end": 278,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 11,
+   "start": 319,
+   "end": 326,
+   "text": "letters",
+   "sense": "letter_char"
+  },
+  {
+   "p": 11,
+   "start": 350,
+   "end": 356,
+   "text": "signed",
+   "sense": "sign_name"
+  },
+  {
+   "p": 12,
+   "start": 110,
+   "end": 115,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 14,
+   "start": 64,
+   "end": 69,
+   "text": "sharp",
+   "sense": "sharp_wind"
+  },
+  {
+   "p": 15,
+   "start": 52,
+   "end": 56,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 16,
+   "start": 34,
+   "end": 39,
+   "text": "faint",
+   "sense": "faint_chill"
+  },
+  {
+   "p": 16,
+   "start": 93,
+   "end": 99,
+   "text": "breath",
+   "sense": "see_breath"
+  },
+  {
+   "p": 16,
+   "start": 116,
+   "end": 119,
+   "text": "put",
+   "sense": "put_on_clothes2",
+   "chunk": {
+    "start": 116,
+    "end": 131,
+    "text": "put on her coat",
+    "es": "se puso el abrigo"
+   }
+  },
+  {
+   "p": 16,
+   "start": 247,
+   "end": 255,
+   "text": "checking",
+   "sense": "check_child"
+  },
+  {
+   "p": 17,
+   "start": 6,
+   "end": 10,
+   "text": "dead",
+   "sense": "dead_broken",
+   "chunk": {
+    "start": 1,
+    "end": 10,
+    "text": "It's dead",
+    "es": "No funciona"
+   }
+  },
+  {
+   "p": 17,
+   "start": 34,
+   "end": 38,
+   "text": "dead",
+   "sense": "dead_broken",
+   "chunk": {
+    "start": 23,
+    "end": 38,
+    "text": "Completely dead",
+    "es": "No funciona nada"
+   }
+  },
+  {
+   "p": 17,
+   "start": 52,
+   "end": 58,
+   "text": "boiler",
+   "sense": "boiler"
+  },
+  {
+   "p": 17,
+   "start": 63,
+   "end": 69,
+   "text": "broken",
+   "sense": "break_broken"
+  },
+  {
+   "p": 20,
+   "start": 261,
+   "end": 267,
+   "text": "latest",
+   "sense": "at_the_latest",
+   "chunk": {
+    "start": 254,
+    "end": 267,
+    "text": "at the latest",
+    "es": "como muy tarde"
+   }
+  },
+  {
+   "p": 21,
+   "start": 7,
+   "end": 11,
+   "text": "came",
+   "sense": "come_and_go",
+   "chunk": {
+    "start": 7,
+    "end": 20,
+    "text": "came and went",
+    "es": "llegó y pasó"
+   }
+  },
+  {
+   "p": 21,
+   "start": 81,
+   "end": 85,
+   "text": "part",
+   "sense": "part_spare2"
+  },
+  {
+   "p": 21,
+   "start": 107,
+   "end": 114,
+   "text": "ordered",
+   "sense": "order_buy"
+  },
+  {
+   "p": 22,
+   "start": 53,
+   "end": 60,
+   "text": "wearing",
+   "sense": "wear_clothes"
+  },
+  {
+   "p": 22,
+   "start": 110,
+   "end": 120,
+   "text": "coursework",
+   "sense": "coursework"
+  },
+  {
+   "p": 23,
+   "start": 101,
+   "end": 105,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 23,
+   "start": 179,
+   "end": 186,
+   "text": "knocked",
+   "sense": "knock_on"
+  },
+  {
+   "p": 23,
+   "start": 194,
+   "end": 203,
+   "text": "roommates",
+   "sense": "roommate"
+  },
+  {
+   "p": 23,
+   "start": 269,
+   "end": 273,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 23,
+   "start": 325,
+   "end": 330,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 24,
+   "start": 21,
+   "end": 25,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 24,
+   "start": 180,
+   "end": 188,
+   "text": "watching",
+   "sense": "watch_movies"
+  },
+  {
+   "p": 24,
+   "start": 198,
+   "end": 204,
+   "text": "movies",
+   "sense": "movie"
+  },
+  {
+   "p": 24,
+   "start": 219,
+   "end": 223,
+   "text": "hung",
+   "sense": "hang_up",
+   "chunk": {
+    "start": 219,
+    "end": 226,
+    "text": "hung up",
+    "es": "colgó"
+   }
+  },
+  {
+   "p": 24,
+   "start": 232,
+   "end": 236,
+   "text": "kept",
+   "sense": "keep_doing",
+   "chunk": {
+    "start": 232,
+    "end": 245,
+    "text": "kept thinking",
+    "es": "siguió pensando"
+   }
+  },
+  {
+   "p": 26,
+   "start": 31,
+   "end": 35,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 26,
+   "start": 99,
+   "end": 106,
+   "text": "holiday",
+   "sense": "holiday_day"
+  },
+  {
+   "p": 26,
+   "start": 161,
+   "end": 167,
+   "text": "turned",
+   "sense": "turn_on",
+   "chunk": {
+    "start": 161,
+    "end": 179,
+    "text": "turned on the oven",
+    "es": "encendió el horno"
+   }
+  },
+  {
+   "p": 26,
+   "start": 237,
+   "end": 240,
+   "text": "out",
+   "sense": "hands_out",
+   "chunk": {
+    "start": 222,
+    "end": 240,
+    "text": "with her hands out",
+    "es": "con las manos extendidas"
+   }
+  },
+  {
+   "p": 27,
+   "start": 37,
+   "end": 44,
+   "text": "wearing",
+   "sense": "wear_clothes"
+  },
+  {
+   "p": 27,
+   "start": 49,
+   "end": 57,
+   "text": "sweaters",
+   "sense": "sweater"
+  },
+  {
+   "p": 29,
+   "start": 36,
+   "end": 40,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 29,
+   "start": 85,
+   "end": 89,
+   "text": "idea",
+   "sense": "no_idea",
+   "chunk": {
+    "start": 78,
+    "end": 89,
+    "text": "had no idea",
+    "es": "no tenía ni idea"
+   }
+  },
+  {
+   "p": 30,
+   "start": 4,
+   "end": 10,
+   "text": "pulled",
+   "sense": "pull_up",
+   "chunk": {
+    "start": 4,
+    "end": 33,
+    "text": "pulled a chair up to the oven",
+    "es": "acercó una silla al horno"
+   }
+  },
+  {
+   "p": 30,
+   "start": 83,
+   "end": 91,
+   "text": "actually",
+   "sense": "actually_truth"
+  },
+  {
+   "p": 30,
+   "start": 166,
+   "end": 173,
+   "text": "freezer",
+   "sense": "freezer"
+  },
+  {
+   "p": 32,
+   "start": 34,
+   "end": 41,
+   "text": "program",
+   "sense": "program_study"
+  },
+  {
+   "p": 32,
+   "start": 119,
+   "end": 126,
+   "text": "program",
+   "sense": "program_study"
+  },
+  {
+   "p": 32,
+   "start": 160,
+   "end": 164,
+   "text": "sick",
+   "sense": "get_sick",
+   "chunk": {
+    "start": 156,
+    "end": 164,
+    "text": "get sick",
+    "es": "me pongo enferma"
+   }
+  },
+  {
+   "p": 32,
+   "start": 197,
+   "end": 202,
+   "text": "right",
+   "sense": "right_correct",
+   "chunk": {
+    "start": 180,
+    "end": 202,
+    "text": "She was probably right",
+    "es": "Seguramente tenía razón"
+   }
+  },
+  {
+   "p": 33,
+   "start": 3,
+   "end": 11,
+   "text": "occurred",
+   "sense": "it_occurred",
+   "chunk": {
+    "start": 0,
+    "end": 22,
+    "text": "It occurred to Valeria",
+    "es": "A Valeria se le ocurrió"
+   }
+  },
+  {
+   "p": 33,
+   "start": 92,
+   "end": 96,
+   "text": "well",
+   "sense": "might_as_well",
+   "chunk": {
+    "start": 83,
+    "end": 96,
+    "text": "might as well",
+    "es": "ya puestas, mejor"
+   }
+  },
+  {
+   "p": 33,
+   "start": 139,
+   "end": 146,
+   "text": "cabinet",
+   "sense": "cabinet"
+  },
+  {
+   "p": 35,
+   "start": 11,
+   "end": 14,
+   "text": "lit",
+   "sense": "light_up",
+   "chunk": {
+    "start": 11,
+    "end": 17,
+    "text": "lit up",
+    "es": "se iluminaron"
+   }
+  },
+  {
+   "p": 36,
+   "start": 10,
+   "end": 18,
+   "text": "chopping",
+   "sense": "chop"
+  },
+  {
+   "p": 37,
+   "start": 48,
+   "end": 57,
+   "text": "plantains",
+   "sense": "plantain"
+  },
+  {
+   "p": 37,
+   "start": 75,
+   "end": 81,
+   "text": "pepper",
+   "sense": "pepper_sauce",
+   "chunk": {
+    "start": 71,
+    "end": 87,
+    "text": "red pepper sauce",
+    "es": "salsa de guindilla roja"
+   }
+  },
+  {
+   "p": 37,
+   "start": 307,
+   "end": 313,
+   "text": "handed",
+   "sense": "hand_give"
+  },
+  {
+   "p": 38,
+   "start": 75,
+   "end": 79,
+   "text": "time",
+   "sense": "at_same_time",
+   "chunk": {
+    "start": 63,
+    "end": 79,
+    "text": "at the same time",
+    "es": "a la vez"
+   }
+  },
+  {
+   "p": 40,
+   "start": 94,
+   "end": 99,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 40,
+   "start": 218,
+   "end": 221,
+   "text": "red",
+   "sense": "turn_red",
+   "chunk": {
+    "start": 204,
+    "end": 221,
+    "text": "turned slowly red",
+    "es": "se puso rojo poco a poco"
+   }
+  },
+  {
+   "p": 40,
+   "start": 230,
+   "end": 234,
+   "text": "kept",
+   "sense": "keep_doing",
+   "chunk": {
+    "start": 230,
+    "end": 241,
+    "text": "kept eating",
+    "es": "siguió comiendo"
+   }
+  },
+  {
+   "p": 40,
+   "start": 267,
+   "end": 271,
+   "text": "fine",
+   "sense": "fine_ok"
+  },
+  {
+   "p": 41,
+   "start": 0,
+   "end": 7,
+   "text": "Halfway",
+   "sense": "halfway_through",
+   "chunk": {
+    "start": 0,
+    "end": 24,
+    "text": "Halfway through the meal",
+    "es": "A mitad de la comida"
+   }
+  },
+  {
+   "p": 41,
+   "start": 119,
+   "end": 124,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 42,
+   "start": 106,
+   "end": 109,
+   "text": "put",
+   "sense": "put_down",
+   "chunk": {
+    "start": 106,
+    "end": 124,
+    "text": "put down his spoon",
+    "es": "dejó la cuchara"
+   }
+  },
+  {
+   "p": 43,
+   "start": 120,
+   "end": 123,
+   "text": "guy",
+   "sense": "guy"
+  },
+  {
+   "p": 46,
+   "start": 3,
+   "end": 9,
+   "text": "turned",
+   "sense": "turn_out",
+   "chunk": {
+    "start": 0,
+    "end": 13,
+    "text": "It turned out",
+    "es": "Resultó"
+   }
+  },
+  {
+   "p": 46,
+   "start": 58,
+   "end": 64,
+   "text": "rather",
+   "sense": "or_rather",
+   "chunk": {
+    "start": 55,
+    "end": 64,
+    "text": "Or rather",
+    "es": "O mejor dicho"
+   }
+  },
+  {
+   "p": 46,
+   "start": 76,
+   "end": 84,
+   "text": "admitted",
+   "sense": "admit_to",
+   "chunk": {
+    "start": 76,
+    "end": 91,
+    "text": "admitted to one",
+    "es": "reconoció haber escrito una"
+   }
+  },
+  {
+   "p": 46,
+   "start": 93,
+   "end": 103,
+   "text": "eventually",
+   "sense": "eventually_finally"
+  },
+  {
+   "p": 46,
+   "start": 178,
+   "end": 185,
+   "text": "annoyed",
+   "sense": "annoyed"
+  },
+  {
+   "p": 46,
+   "start": 359,
+   "end": 366,
+   "text": "assumed",
+   "sense": "assume_suppose"
+  },
+  {
+   "p": 48,
+   "start": 111,
+   "end": 116,
+   "text": "guy's",
+   "sense": "guy"
+  },
+  {
+   "p": 53,
+   "start": 48,
+   "end": 56,
+   "text": "freezing",
+   "sense": "freezing"
+  },
+  {
+   "p": 53,
+   "start": 112,
+   "end": 116,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 55,
+   "start": 52,
+   "end": 59,
+   "text": "tenants",
+   "sense": "tenant"
+  },
+  {
+   "p": 55,
+   "start": 159,
+   "end": 166,
+   "text": "Tenants",
+   "sense": "tenant"
+  },
+  {
+   "p": 55,
+   "start": 232,
+   "end": 240,
+   "text": "landlord",
+   "sense": "landlord"
+  },
+  {
+   "p": 55,
+   "start": 259,
+   "end": 263,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 55,
+   "start": 285,
+   "end": 292,
+   "text": "counted",
+   "sense": "count_as",
+   "chunk": {
+    "start": 285,
+    "end": 295,
+    "text": "counted as",
+    "es": "contaba como"
+   }
+  },
+  {
+   "p": 56,
+   "start": 37,
+   "end": 42,
+   "text": "typed",
+   "sense": "type_keyboard"
+  },
+  {
+   "p": 56,
+   "start": 80,
+   "end": 87,
+   "text": "checked",
+   "sense": "check_details"
+  },
+  {
+   "p": 56,
+   "start": 175,
+   "end": 179,
+   "text": "firm",
+   "sense": "firm_strict"
+  },
+  {
+   "p": 56,
+   "start": 231,
+   "end": 238,
+   "text": "arguing",
+   "sense": "argue"
+  },
+  {
+   "p": 56,
+   "start": 307,
+   "end": 312,
+   "text": "noted",
+   "sense": "note_write"
+  },
+  {
+   "p": 56,
+   "start": 322,
+   "end": 326,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 57,
+   "start": 60,
+   "end": 68,
+   "text": "reported",
+   "sense": "report_tell"
+  },
+  {
+   "p": 57,
+   "start": 193,
+   "end": 197,
+   "text": "kept",
+   "sense": "keep_promise2"
+  },
+  {
+   "p": 57,
+   "start": 277,
+   "end": 281,
+   "text": "days",
+   "sense": "working_days",
+   "chunk": {
+    "start": 269,
+    "end": 281,
+    "text": "working days",
+    "es": "días laborables"
+   }
+  },
+  {
+   "p": 57,
+   "start": 339,
+   "end": 346,
+   "text": "tenants",
+   "sense": "tenant"
+  },
+  {
+   "p": 57,
+   "start": 357,
+   "end": 363,
+   "text": "signed",
+   "sense": "sign_name"
+  },
+  {
+   "p": 62,
+   "start": 80,
+   "end": 87,
+   "text": "sounded",
+   "sense": "sound_seem"
+  },
+  {
+   "p": 63,
+   "start": 73,
+   "end": 78,
+   "text": "delay",
+   "sense": "delay"
+  },
+  {
+   "p": 63,
+   "start": 102,
+   "end": 106,
+   "text": "part",
+   "sense": "part_spare2"
+  },
+  {
+   "p": 63,
+   "start": 323,
+   "end": 331,
+   "text": "discount",
+   "sense": "discount"
+  },
+  {
+   "p": 63,
+   "start": 363,
+   "end": 367,
+   "text": "rent",
+   "sense": "rent_noun"
+  },
+  {
+   "p": 63,
+   "start": 390,
+   "end": 403,
+   "text": "inconvenience",
+   "sense": "inconvenience"
+  },
+  {
+   "p": 64,
+   "start": 134,
+   "end": 140,
+   "text": "closet",
+   "sense": "closet",
+   "chunk": {
+    "start": 127,
+    "end": 140,
+    "text": "boiler closet",
+    "es": "armario de la caldera"
+   }
+  },
+  {
+   "p": 64,
+   "start": 300,
+   "end": 304,
+   "text": "just",
+   "sense": "only_just",
+   "chunk": {
+    "start": 295,
+    "end": 304,
+    "text": "only just",
+    "es": "por los pelos"
+   }
+  },
+  {
+   "p": 67,
+   "start": 15,
+   "end": 20,
+   "text": "shook",
+   "sense": "shake_head",
+   "chunk": {
+    "start": 15,
+    "end": 29,
+    "text": "shook his head",
+    "es": "negó con la cabeza"
+   }
+  },
+  {
+   "p": 67,
+   "start": 97,
+   "end": 102,
+   "text": "dying",
+   "sense": "die_slowly"
+  },
+  {
+   "p": 68,
+   "start": 73,
+   "end": 78,
+   "text": "meant",
+   "sense": "mean_to_do",
+   "chunk": {
+    "start": 73,
+    "end": 87,
+    "text": "meant to write",
+    "es": "había tenido intención de escribir"
+   }
+  },
+  {
+   "p": 68,
+   "start": 90,
+   "end": 94,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 69,
+   "start": 52,
+   "end": 60,
+   "text": "knocking",
+   "sense": "knocking"
+  },
+  {
+   "p": 69,
+   "start": 109,
+   "end": 113,
+   "text": "took",
+   "sense": "take_off_clothes",
+   "chunk": {
+    "start": 109,
+    "end": 126,
+    "text": "took off her coat",
+    "es": "se quitó el abrigo"
+   }
+  },
+  {
+   "p": 69,
+   "start": 179,
+   "end": 182,
+   "text": "lay",
+   "sense": "lie_down",
+   "chunk": {
+    "start": 179,
+    "end": 187,
+    "text": "lay down",
+    "es": "se tumbó"
+   }
+  },
+  {
+   "p": 69,
+   "start": 207,
+   "end": 212,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 71,
+   "start": 4,
+   "end": 8,
+   "text": "heat",
+   "sense": "heat_heating"
+  },
+  {
+   "p": 71,
+   "start": 35,
+   "end": 40,
+   "text": "since",
+   "sense": "ever_since",
+   "chunk": {
+    "start": 30,
+    "end": 40,
+    "text": "ever since",
+    "es": "desde entonces"
+   }
+  },
+  {
+   "p": 71,
+   "start": 122,
+   "end": 126,
+   "text": "back",
+   "sense": "change_back",
+   "chunk": {
+    "start": 114,
+    "end": 126,
+    "text": "changed back",
+    "es": "ha vuelto a ser como antes"
+   }
+  },
+  {
+   "p": 72,
+   "start": 120,
+   "end": 124,
+   "text": "soup",
+   "sense": "pea_soup",
+   "chunk": {
+    "start": 116,
+    "end": 124,
+    "text": "pea soup",
+    "es": "sopa de guisantes"
+   }
+  },
+  {
+   "p": 72,
+   "start": 212,
+   "end": 221,
+   "text": "dumplings",
+   "sense": "dumpling"
+  },
+  {
+   "p": 72,
+   "start": 229,
+   "end": 239,
+   "text": "introduced",
+   "sense": "introduce_to",
+   "chunk": {
+    "start": 229,
+    "end": 247,
+    "text": "introduced them to",
+    "es": "les dio a conocer"
+   }
+  },
+  {
+   "p": 72,
+   "start": 248,
+   "end": 254,
+   "text": "jollof",
+   "sense": "jollof",
+   "chunk": {
+    "start": 248,
+    "end": 259,
+    "text": "jollof rice",
+    "es": "arroz jollof"
+   }
+  },
+  {
+   "p": 72,
+   "start": 288,
+   "end": 296,
+   "text": "argument",
+   "sense": "argument_quarrel"
+  },
+  {
+   "p": 72,
+   "start": 434,
+   "end": 438,
+   "text": "mail",
+   "sense": "by_mail",
+   "chunk": {
+    "start": 431,
+    "end": 438,
+    "text": "by mail",
+    "es": "por correo"
+   }
+  },
+  {
+   "p": 73,
+   "start": 8,
+   "end": 13,
+   "text": "notes",
+   "sense": "note_paper"
+  },
+  {
+   "p": 73,
+   "start": 18,
+   "end": 23,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 74,
+   "start": 1,
+   "end": 10,
+   "text": "Dumplings",
+   "sense": "dumpling"
+  },
+  {
+   "p": 74,
+   "start": 31,
+   "end": 39,
+   "text": "appetite",
+   "sense": "bring_appetite",
+   "chunk": {
+    "start": 22,
+    "end": 39,
+    "text": "Bring an appetite",
+    "es": "Venid con hambre"
+   }
+  },
+  {
+   "p": 75,
+   "start": 27,
+   "end": 37,
+   "text": "downstairs",
+   "sense": "downstairs"
+  },
+  {
+   "p": 76,
+   "start": 52,
+   "end": 57,
+   "text": "great",
+   "sense": "do_great",
+   "chunk": {
+    "start": 49,
+    "end": 57,
+    "text": "do great",
+    "es": "te irá genial"
+   }
+  },
+  {
+   "p": 77,
+   "start": 64,
+   "end": 75,
+   "text": "appreciated",
+   "sense": "appreciate"
+  },
+  {
+   "p": 78,
+   "start": 103,
+   "end": 110,
+   "text": "getting",
+   "sense": "get_along",
+   "chunk": {
+    "start": 103,
+    "end": 121,
+    "text": "getting along with",
+    "es": "se llevaba con"
+   }
+  },
+  {
+   "p": 78,
+   "start": 126,
+   "end": 135,
+   "text": "roommates",
+   "sense": "roommate"
+  },
+  {
+   "p": 79,
+   "start": 35,
+   "end": 40,
+   "text": "moved",
+   "sense": "move_in",
+   "chunk": {
+    "start": 35,
+    "end": 48,
+    "text": "moved in with",
+    "es": "me había ido a vivir con"
+   }
+  },
+  {
+   "p": 79,
+   "start": 55,
+   "end": 64,
+   "text": "strangers",
+   "sense": "stranger"
+  },
+  {
+   "p": 79,
+   "start": 108,
+   "end": 113,
+   "text": "moved",
+   "sense": "move_in",
+   "chunk": {
+    "start": 108,
+    "end": 121,
+    "text": "moved in with",
+    "es": "me había ido a vivir con"
+   }
+  },
+  {
+   "p": 79,
+   "start": 152,
+   "end": 155,
+   "text": "met",
+   "sense": "we_hadnt_met",
+   "chunk": {
+    "start": 137,
+    "end": 159,
+    "text": "We just hadn't met yet",
+    "es": "Es que todavía no nos conocíamos"
+   }
+  }
+ ]
+}

@@ -160,7 +160,34 @@ final class ScreenTour: XCTestCase {
         snap("23-word-card-unsure-no-language")
         correctionsTour(labels, count: 1, extra: [], undo: true)
         correctionsTour(labels, count: 5, extra: [], undo: false)
+        storiesTour(labels)
         app.terminate()
+    }
+
+    /// The app's own stories (SPEC S19): the Library rows, Discover's stories at a level, a story in the
+    /// reader and the cards of a word with the story's sense and of a name.
+    private func storiesTour(_ labels: Labels) {
+        launch(labels, ["-ui-testing"])
+        _ = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch.waitForExistence(timeout: 10)
+        snap("24-library-original-stories")
+        openStory(labels, level: "A1", title: "A Shoe in the Fridge")
+        snap("26-story-reader")
+        tapWord("mom", labels)
+        snap("27-story-word-card")
+        launch(labels, ["-ui-testing"])
+        openStory(labels, level: "A2", title: "The Oven Next Door")
+        tapWord("Blue", labels)
+        snap("28-story-name-card")
+    }
+
+    /// Discover at `level`, then Read on the story `title`.
+    private func openStory(_ labels: Labels, level: String, title: String) {
+        tab(1)
+        let chip = app.buttons["level-filter-\(level)"]
+        if chip.waitForExistence(timeout: 10) { chip.tap() }
+        snap("25-discover-original-stories-\(level)")
+        let read = app.buttons["\(labels.read) \(title)"]
+        if read.waitForExistence(timeout: 5) { read.tap() }
     }
 
     /// The test story's unsure "left" and expression "bound for", the senses in Words and a verb
