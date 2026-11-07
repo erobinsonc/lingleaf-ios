@@ -59,24 +59,51 @@ the same intent on both platforms. A change to behaviour updates this file in
 ## Shared logic (same rules, same tests on both platforms)
 
 - Paragraphs: split on blank lines, hard-wrapped lines joined.
-- Words (what can be tapped, marked and saved): `(\p{L}\p{M}{0,4})+(['’](\p{L}\p{M}{0,4})+)*`, possessive (never
-  backtracking), on the text as it is: a run of letters of any script, each with at most four combining marks after
-  it, with apostrophes (' or ’) between letters kept inside ("don't", "l’homme", "O'Brien"). A word starts with a
-  letter, so marks alone, digits, emoji, hyphens and punctuation are not words and end one ("Jean-Luc" is two, "naïve2"
-  is "naïve"); a letter with more than four marks ends the word and the extra marks belong to no word. Composed
-  ("é") and decomposed ("e" + U+0301) spellings are each one word, over different numbers of UTF-16 units. Scripts that
-  write no spaces (Han, kana, Thai) give one word per run of letters. Offsets are UTF-16 units of the unchanged text.
-- Word keys (saved words, marking, dictionary): lower case, ’ → ', and NFC when the word has a letter outside ASCII, so
-  "Café", "CAFÉ" and "cafe" + U+0301 are one key. English rules work on ASCII words only: base forms (plural, past and
-  -ing endings), the irregular-verb table and the verb-or-noun rule never apply to a word with a letter outside ASCII;
-  such a word is its own only key, and next to a verb form it counts as an ordinary word or, capitalised in mid-sentence
-  or opening a sentence, as a name (a subject: "Joaquín left" reads like "Tom left").
-- Dictionary look-up: only a Latin-script word (ASCII or with accents: "café", "naïve", "résumé", a name such as
-  "Joaquín", which just has no entry), of at most 50 UTF-16 units, is sent, as UTF-8 percent-encoded text (only ASCII
-  letters and digits stay as they are); another script (Cyrillic, Greek, Han, Arabic…), a mixed-script word or a longer
-  one is never sent and shows "No definition available." with its translation.
-- Cuts: a cut at the paragraph (2,000), sentence (600) or text (any cap) limit never separates a letter from its
-  combining marks, a surrogate pair or a joiner sequence: it moves back a few units, always forward in all.
+- Words (what can be tapped, marked and saved): the pattern (ICU / Java syntax, possessive quantifiers)
+  `(?:\p{L}\p{M}{0,4}+)++(?:['’](?:\p{L}\p{M}{0,4}+)++)*+`, applied to the text as it is, left to right, longest
+  match. In words: a run of letters of any script, each with at most four combining marks after it ({0,4} counts code
+  points, not UTF-16 units; `\p{M}` is Mn, Mc and Me), with an apostrophe (' or ’) between two letters kept inside
+  ("don't", "l’homme", "O'Brien", "dogs'" is "dogs"). A word starts with a letter, so marks alone, digits, emoji,
+  hyphens and punctuation are not words and end one ("Jean-Luc" is two words, "naïve2" is "naïve"); a letter with a
+  fifth mark ends the word and the extra marks belong to no word. ZWNJ (U+200C) and ZWJ (U+200D) are format
+  characters, neither letters nor marks: they end a word too (Persian "می‌خواهم" is two words). Composed ("é") and
+  decomposed ("e" + U+0301) spellings are each one word, over different numbers of UTF-16 units. Scripts that write no
+  spaces (Han, kana, Thai) give one word per run of letters. Offsets are UTF-16 units of the unchanged text. Reading
+  and cutting text take time linear in its length, whatever it is made of (a long run of marks, letters or
+  apostrophes is read in one pass).
+- Word keys (saved words, undo, translations, marking, dictionary): the word with ’ → ', lower-cased with the Unicode
+  full lower-case mapping of each character on its own (no locale, no final-sigma rule: "ΟΔΟΣ" → "οδοσ"; "İ" → "i" +
+  U+0307), then composed (NFC) when it has a letter outside ASCII, then cut to 600 UTF-16 units (see Cuts). One
+  function makes the key, and every id, look-up and match uses it, so a run of letters longer than 600 units (a Han
+  run) is saved, found, translated, undone and marked under the same key. "Capitalised" (a name, a sentence start)
+  means its first character has the Unicode Uppercase property and the rest of the word has none.
+- English rules work on ASCII words only: base forms (plural, past and -ing endings), the irregular-verb table and the
+  verb-or-noun rule never apply to a word with a letter outside ASCII; such a word is its own only key, and next to a
+  verb form it counts as an ordinary word or, capitalised in mid-sentence or opening a sentence, as a name (a subject:
+  "Joaquín left" reads like "Tom left").
+- Dictionary look-up: the key is sent only when it matches `^\p{Latin}(?:\p{Latin}|\p{M}|['’])*\z` (Java:
+  `\p{IsLatin}`; `\z`, so a trailing line break does not match) and is at most 50 UTF-16 units (measured on the key,
+  after lower-casing and NFC): a Latin-script word with or without accents or apostrophes ("café", "naïve", "résumé",
+  a name such as "Joaquín", which just has no entry). Another script (Cyrillic, Greek, Han, Arabic…), a mixed-script
+  word or a longer one is never sent and shows "No definition available." with its translation. A reading's base is a
+  key too (lower case, NFC) before it is looked up.
+- Text in an address (a dictionary word, a catalog search): UTF-8, each byte outside A–Z a–z 0–9 written %XX with
+  upper-case hexadecimal digits (space is %20, an apostrophe %27, "é" %C3%A9); nothing else stays as it is. A catalog
+  search is cut to 200 UTF-16 units first: "Les Misérables 東京" is `search=Les%20Mis%C3%A9rables%20%E6%9D%B1%E4%BA%AC`.
+- Invisible formatting: text imported or downloaded for a book, and a word's saved sentence, lose their format
+  characters (Cf: bidi overrides and isolates, zero-width spaces, the byte-order mark, soft hyphens) except ZWNJ and
+  ZWJ.
+- Cuts: a cut at the paragraph (2,000), sentence (600) or any other cap moves back up to 6 UTF-16 units, never to less
+  than one unit after the start of the piece, while the unit at the cut continues what comes before it: the second
+  half of a surrogate pair; a combining mark (Mn, Mc, Me, in the BMP); a variation selector U+FE00–FE0F; a joiner
+  U+200D, or the unit right after one. Residual: a combining mark outside the BMP (e.g. U+1D165) is not recognised and
+  may be cut from its letter.
+- Test vectors both platforms pass (names, forms, edges): "Joaquín" composed (one word of 7 units) and decomposed
+  (one word of 8); "Zieliński", "Kraków", "São Paulo" (two words), "café naïve résumé"; a letter with 6 marks (a word
+  with 4, the rest skipped); "\u0301\u0301" (no word); "naïve2" (one word, "naïve"); "Jean-Luc" (two); "dogs'" (one,
+  "dogs"); "我爱你，你好。" (two words; sentences end at 。！？؟ with closing 」』 kept); "مرحبا بالعالم" (two);
+  "Don’t"/"l’homme" (one each); "می\u200Cخواهم" (two); keys "ΟΔΟΣ" → "οδοσ", "İ" → "i\u0307", "CAFE\u0301" → "café";
+  "Les Misérables 東京" in an address; 400,000 units of each hostile shape read in under 10 seconds.
 - Irregular verbs (see `IrregularVerbs`): one table, `irregular-verbs.json` (identical in both repos, bundled in
   the core module), is the only list of irregular forms. Each verb has its base, past and participle (most common
   first, US spelling before UK: gotten/got, learned/learnt), -ing and -s forms, pattern group, level, Spanish
@@ -215,7 +242,7 @@ the same intent on both platforms. A change to behaviour updates this file in
   longer than 600 UTF-16 units comes in consecutive pieces of at most 600, cut before a space. Reading starts at the
   sentence holding the offset (or the next one) and goes on to the next, skipping empty paragraphs, to the book's end.
   The previous sentence skips empty paragraphs too; a repeated stretch counts its sentences from first to last.
-- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end; or `[。！？؟]+` plus closing quotes and 」『, with no space needed), trimmed.
+- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end; or `[。！？؟]+` plus closing quotes and 」』, with no space needed), trimmed.
 - Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals, each due at the start of that review day (04:00 local time; 01:00 still belongs to the day before); a new word is due at the start of the next review day; "Again" → first box, due now.
 - Marking a saved word in a sentence: its forms (match keys, with homographs read in the sentence as above), or a
   saved group of words, ignoring case.

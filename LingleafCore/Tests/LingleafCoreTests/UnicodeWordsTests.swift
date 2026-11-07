@@ -28,6 +28,11 @@ final class UnicodeWordsTests: XCTestCase {
                        "the same key, whichever way it is typed")
         XCTAssertEqual(TextTools.normalize("CAFE\u{0301}"), "café")
         XCTAssertEqual(TextTools.normalize("Don’t"), "don't", "ASCII as before")
+        // Lower case is the Unicode full mapping of each scalar: no locale, no final sigma.
+        XCTAssertEqual(TextTools.normalize("ΟΔΟΣ"), "οδοσ", "no final-sigma rule")
+        XCTAssertEqual(TextTools.normalize("İ"), "i\u{0307}", "i with its dot above, not composed")
+        XCTAssertEqual(TextTools.normalize("ǅ"), "ǆ")
+        XCTAssertEqual(TextTools.normalize("STRASSE"), "strasse")
         // Vietnamese stacks two marks on one letter.
         XCTAssertEqual(words("Việt Nam".decomposedStringWithCanonicalMapping).count, 2)
     }
@@ -44,6 +49,12 @@ final class UnicodeWordsTests: XCTestCase {
         XCTAssertEqual(words("Don’t it's l’homme O'Brien d'Artagnan"), ["Don’t", "it's", "l’homme", "O'Brien", "d'Artagnan"])
         XCTAssertEqual(words("the dogs' bones 'quoted' ’tis"), ["the", "dogs", "bones", "quoted", "tis"],
                        "an apostrophe needs a letter after it")
+    }
+
+    /// ZWNJ (U+200C, a format character) is not a letter and not a mark: it splits a word.
+    func testAJoinerSplitsAWord() {
+        XCTAssertEqual(words("می\u{200C}خواهم"), ["می", "خواهم"])
+        XCTAssertEqual(words("a\u{200C}b a\u{200D}b"), ["a", "b", "a", "b"])
     }
 
     func testOtherScriptsAreWordsToo() {
@@ -75,6 +86,9 @@ final class UnicodeWordsTests: XCTestCase {
     func testSentencesEndAtFullWidthAndArabicMarksToo() {
         let chinese = "你好。再见！你是谁？好"
         XCTAssertEqual(TextTools.sentenceRanges(chinese).map { TextTools.substring(chinese, $0) }, ["你好。", "再见！", "你是谁？", "好"])
+        // Closing brackets after the mark stay with its sentence: 」 (U+300D) and 』 (U+300F).
+        let quoted = "他说「你好。」我说『再见！』好"
+        XCTAssertEqual(TextTools.sentenceRanges(quoted).map { TextTools.substring(quoted, $0) }, ["他说「你好。」", "我说『再见！』", "好"])
         let arabic = "ما اسمك؟ اسمي علي"
         XCTAssertEqual(TextTools.sentenceRanges(arabic).count, 2)
         let spanish = "¿Cómo estás? ¡Muy bien! Joaquín llegó."
@@ -133,7 +147,9 @@ final class UnicodeWordsTests: XCTestCase {
         return Date().timeIntervalSince(start)
     }
 
-    /// Ten times the text must not take a hundred times as long, whatever it is made of.
+    /// Reading is linear in the text, whatever it is made of: about 400,000 units of each hostile
+    /// shape take far less than a generous absolute bound (a quadratic pass over such text would
+    /// take minutes). One retry, so a busy machine doesn't fail it.
     func testHostileUnicodeTextIsReadInLinearTime() {
         let shapes: [String: String] = [
             "marks": "\u{0301}",
@@ -146,10 +162,10 @@ final class UnicodeWordsTests: XCTestCase {
         ]
         _ = seconds("warm up the shared table Joaquín")
         for (name, unit) in shapes {
-            let short = seconds(String(repeating: unit, count: 4_000_000 / (unit.utf16.count * 100) + 1))
-            let long = seconds(String(repeating: unit, count: 40_000_000 / (unit.utf16.count * 100) + 1))
-            XCTAssertLessThan(long, max(short, 0.01) * 30, "\(name): 10× the text took \(long / max(short, 0.01))× as long")
-            XCTAssertLessThan(long, 20, "\(name) took \(long) s")
+            let text = String(repeating: unit, count: 400_000 / unit.utf16.count + 1)
+            var elapsed = seconds(text)
+            if elapsed >= 10 { elapsed = min(elapsed, seconds(text)) }
+            XCTAssertLessThan(elapsed, 10, "\(name): \(text.utf16.count) units took \(elapsed) s")
         }
     }
 
@@ -265,11 +281,69 @@ final class UnicodeWordsTests: XCTestCase {
         func add(_ url: String) { list.append(url) }
     }
 
+    /// The same key wherever an id is made from a word: a run of letters longer than the cap is cut
+    /// once, so it can be saved, found, translated, undone and marked.
+    func testAVeryLongWordHasOneKeyEverywhere() throws {
+        let long = String(repeating: "东", count: VocabWord.maxWord + 100)
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        let previous = library.saveWord(long, learned: false, context: "他说 \(long).")
+        XCTAssertNil(previous)
+        let key = TextTools.key(long)
+        XCTAssertEqual(key.utf16.count, VocabWord.maxWord)
+        XCTAssertEqual(library.state.words.map(\.word), [key])
+        XCTAssertNotNil(library.state.word(long), "shown as saved")
+        XCTAssertNotNil(library.state.saved(long, sense: nil))
+        library.setTranslation(long, "dice", language: "es")
+        library.setContextTranslation(long, "él dice", language: "es")
+        XCTAssertEqual(library.state.words.first?.translation, "dice")
+        XCTAssertEqual(library.state.words.first?.contextTranslation, "él dice")
+        let text = long
+        let ranges = TextTools.wordRanges(text)
+        XCTAssertEqual(library.learningRanges(text, ranges), Set(ranges), "marked where it is read")
+        library.restoreWord(long, previous: nil)
+        XCTAssertTrue(library.state.words.isEmpty, "Undo removes it")
+    }
+
+    /// What is stored and shown has no bidi override or zero-width character; joiners stay.
+    func testInvisibleFormattingIsStrippedFromImportedTextAndSavedSentences() throws {
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        let text = "\u{FEFF}Hello \u{202E}evil\u{200B} w\u{00AD}orld\n\nمی\u{200C}خواهم a\u{200D}b"
+        let book = library.addBook(title: "T", author: "A", text: text)
+        XCTAssertEqual(library.openBook(book.id), ["Hello evil world", "می\u{200C}خواهم a\u{200D}b"])
+        library.saveWord("hello", learned: false, context: "Hello \u{2066}evil\u{2069} world.")
+        XCTAssertEqual(library.state.word("hello")?.context, "Hello evil world.")
+        XCTAssertEqual(TextTools.stripFormat("plain é 東"), "plain é 東")
+    }
+
+    /// A search text is cut before it is sent, and an address stays ASCII.
+    func testASearchTextIsCutToItsLimit() async throws {
+        let urls = UrlRecorder()
+        let catalog = GutenbergClient(http: ClosureFetcher { url in
+            await urls.add(url)
+            return HttpResponse(status: 200, text: #"{"results": []}"#)
+        })
+        _ = try await catalog.search(String(repeating: "東", count: 5000))
+        let seen = await urls.list
+        XCTAssertEqual(seen[0].hasSuffix("search=" + String(repeating: "%E6%9D%B1", count: GutenbergClient.maxQuery)), true)
+    }
+
+    /// A reading's base is a key: "Café" and "café" are one dictionary entry.
+    func testAReadingsBaseIsNormalisedLikeTheWord() async {
+        let requests = Requests()
+        let dictionary = client(requests)
+        let found = await dictionary.lookup("cafés", reading: Reading(kind: .noun, base: "CAFE\u{0301}", step: .noun))
+        XCTAssertEqual(found?.definition, "A place.")
+        let sent = await requests.words
+        XCTAssertEqual(sent, ["caf%C3%A9"])
+    }
+
     func testWhichTokensMayBeLookedUp() {
         for yes in ["cat", "café", "naïve", "résumé", "joaquín", "zieliński", "kraków", "straße", "o'clock", "l’homme", "đà"] {
             XCTAssertTrue(DictionaryClient.canLookUp(yes), yes)
         }
-        for no in ["", "привет", "你好", "مرحبا", "Tokyo東京", "东京tokyo", "a b", "a-b", "3d", "\u{0301}", "😀",
+        for no in ["", "привет", "你好", "مرحبا", "Tokyo東京", "东京tokyo", "a b", "a-b", "3d", "\u{0301}", "😀", "cat\n", "cat\n\n", "\ncat",
                    String(repeating: "a", count: 51)] {
             XCTAssertFalse(DictionaryClient.canLookUp(no), no)
         }

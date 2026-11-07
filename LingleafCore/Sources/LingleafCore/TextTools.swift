@@ -204,6 +204,27 @@ public enum TextTools {
 
     /// A word as a key: lower case, straight apostrophe, and composed (NFC) when it has letters
     /// outside ASCII, so "Café" typed with a combining accent matches "café".
+    /// Longest saved word and word key, in UTF-16 units.
+    public static let maxKey = maxSentence
+
+    /// The key of a word everywhere an id or a match is made from one (saving, undoing, translating,
+    /// marking): `normalize`, cut to `maxKey` so a very long run of letters (a Han run) is the same
+    /// key wherever it is derived.
+    public static func key(_ word: String) -> String { truncated(normalize(word), maxKey) }
+
+    /// `text` without invisible formatting characters (bidi overrides and isolates, zero-width
+    /// spaces, the byte-order mark, soft hyphens), except the joiners ZWNJ and ZWJ, which some
+    /// scripts spell with (Persian, Indic, emoji sequences).
+    public static func stripFormat(_ text: String) -> String {
+        func isFormat(_ scalar: Unicode.Scalar) -> Bool {
+            scalar.properties.generalCategory == .format && scalar.value != 0x200C && scalar.value != 0x200D
+        }
+        guard text.unicodeScalars.contains(where: isFormat) else { return text }
+        var out = String.UnicodeScalarView()
+        for scalar in text.unicodeScalars where !isFormat(scalar) { out.append(scalar) }
+        return String(out)
+    }
+
     public static func normalize(_ word: String) -> String {
         let lower = word.replacingOccurrences(of: "’", with: "'").lowercased()
         return lower.isPlainASCII ? lower : lower.precomposedStringWithCanonicalMapping
@@ -399,7 +420,7 @@ public enum TextTools {
     /// "animal"), read in the sentence ("leave" marks "she left", not "turn left"), or, for a
     /// saved group of words ("did not go"), that group (ignoring case).
     public static func occurrences(of word: String, in sentence: String) -> [WordRange] {
-        let key = normalize(word)
+        let key = Self.key(word)
         if key.contains(" ") {
             // Offsets in `sentence` itself: only length-preserving changes (the apostrophe) and a
             // search that ignores case and treats composed and decomposed accents alike.
@@ -413,7 +434,7 @@ public enum TextTools {
 
     /// The word plus its likely base forms, without its sentence: what to match against saved words.
     public static func matchKeys(_ word: String) -> Set<String> {
-        Set([normalize(word)] + baseFormCandidates(word))
+        Set([key(word)] + baseFormCandidates(word))
     }
 
     /// The word at `range` of `text` plus its likely base forms, read in its sentence. A form that
@@ -448,7 +469,7 @@ public enum TextTools {
 
     /// `matchKeys(in:at:)` for word `i` of `words`.
     static func matchKeys(_ words: Words, _ i: Int) -> Set<String> {
-        let w = words.token(i)
+        let w = key(words.token(i))
         let candidates = baseFormCandidates(words, i)
         if IrregularVerbs.shared.homographs[w] != nil, let reading = IrregularVerbs.shared.resolve(words, i),
            reading.kind != .unsure, reading.base != w {
