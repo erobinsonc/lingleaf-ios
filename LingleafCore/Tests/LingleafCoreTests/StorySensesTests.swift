@@ -39,7 +39,7 @@ final class StorySensesTests: XCTestCase {
     /// Changes one sense's field.
     private func sense(_ key: String, _ field: String, _ value: Any?) throws -> Data {
         try file { json in
-            var senses = json["senses"] as! [String: [String: Any]]
+            var senses = json["senses"] as? [String: [String: Any]] ?? [:]
             senses[key]![field] = value
             json["senses"] = senses
         }
@@ -48,9 +48,9 @@ final class StorySensesTests: XCTestCase {
     /// Changes the first matching entry's field (or the group's, with `inChunk`).
     private func entry(_ index: Int, _ field: String, _ value: Any?, inChunk: Bool = false) throws -> Data {
         try file { json in
-            var entries = json["entries"] as! [[String: Any]]
+            var entries = json["entries"] as? [[String: Any]] ?? []
             if inChunk {
-                var chunk = entries[index]["chunk"] as! [String: Any]
+                var chunk = entries[index]["chunk"] as? [String: Any] ?? [:]
                 chunk[field] = value
                 entries[index]["chunk"] = chunk
             } else {
@@ -160,14 +160,14 @@ final class StorySensesTests: XCTestCase {
             XCTAssertThrowsError(try StorySenses.load(try file { $0["story"] = id }, story: id, paragraphs: paragraphs), id)
         }
         let renamed = try file { json in
-            var senses = json["senses"] as! [String: Any]
+            var senses = json["senses"] as? [String: Any] ?? [:]
             senses["Bad Key"] = senses.removeValue(forKey: "go_red")
             json["senses"] = senses
         }
         assertRefused(renamed, "a sense key outside a–z, 0–9 and _")
         let long = String(repeating: "a", count: 41)
         assertRefused(try file { json in
-            var senses = json["senses"] as! [String: Any]
+            var senses = json["senses"] as? [String: Any] ?? [:]
             senses[long] = senses.removeValue(forKey: "go_red")
             json["senses"] = senses
         }, "a sense key over 40 characters")
@@ -211,7 +211,7 @@ final class StorySensesTests: XCTestCase {
         assertRefused(try entry(0, "text", String(repeating: "w", count: 41)), "a text over 40 characters")
         assertRefused(try entry(0, "sense", "missing"), "an unknown sense")
         assertRefused(try file { json in
-            var entries = json["entries"] as! [[String: Any]]
+            var entries = json["entries"] as? [[String: Any]] ?? []
             entries.append(entries[0])
             json["entries"] = entries
         }, "two entries for one word")
@@ -239,12 +239,12 @@ final class StorySensesTests: XCTestCase {
 
     func testTooManySensesOrEntriesAreRefused() throws {
         assertRefused(try file { json in
-            var senses = json["senses"] as! [String: Any]
+            var senses = json["senses"] as? [String: Any] ?? [:]
             for n in 0..<StorySenses.maxSenses { senses["s\(n)"] = senses["go_red"] }
             json["senses"] = senses
         }, "over 2000 senses")
         assertRefused(try file { json in
-            let entries = json["entries"] as! [[String: Any]]
+            let entries = json["entries"] as? [[String: Any]] ?? []
             json["entries"] = (0...StorySenses.maxEntries).map { _ in entries[1] }
         }, "over 5000 entries")
         XCTAssertThrowsError(try StorySenses.load(try file(), story: story, paragraphs: Array(repeating: "A.", count: 1001)),
