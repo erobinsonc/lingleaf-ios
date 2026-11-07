@@ -8,16 +8,19 @@ final class GrammarRulesTests: XCTestCase {
 
     func testTheBundledRulesLoad() throws {
         let grammar = GrammarRules.shared
-        XCTAssertEqual(grammar.rules.count, 12, "the bundled grammar-rules.json must load")
+        XCTAssertEqual(grammar.rules.count, 13, "the bundled grammar-rules.json must load")
         XCTAssertEqual(grammar.categories.map(\.id), ["sentence", "verbs", "prepositions"])
         XCTAssertEqual(grammar.rules(in: "prepositions").map(\.id), ["time-prepositions", "place-prepositions"])
         XCTAssertNil(grammar.rule(id: "nope"))
         let time = try XCTUnwrap(grammar.rule(id: "time-prepositions"))
         XCTAssertEqual(time.level, "A1")
-        XCTAssertEqual(time.title.text(for: "es"), "In, on, at para el tiempo")
-        XCTAssertEqual(time.title.text(for: "fr"), "In, on, at for time")
+        XCTAssertEqual(time.title.text(for: "es"), "In, on, at: fechas y horas")
+        XCTAssertEqual(time.title.text(for: "fr"), "In, on, at: time")
         XCTAssertEqual(time.lines.lines(for: "es").count, time.lines.lines(for: "en").count)
         XCTAssertNotNil(time.note)
+        XCTAssertNotNil(time.spanish)
+        XCTAssertEqual(time.books.mode, .patterns)
+        XCTAssertEqual(try XCTUnwrap(grammar.rule(id: "his-her-its")).books, GrammarBooks(mode: .none, patterns: []))
         XCTAssertNil(try XCTUnwrap(grammar.rule(id: "present-s")).note)
     }
 
@@ -25,10 +28,10 @@ final class GrammarRulesTests: XCTestCase {
         let time = try XCTUnwrap(GrammarRules.shared.rule(id: "time-prepositions"))
         let item = time.practice[0]
         XCTAssertEqual(item.kind, .gap)
-        XCTAssertEqual(item.correct, "in")
-        XCTAssertTrue(item.isRight(0))
-        XCTAssertFalse(item.isRight(1))
-        XCTAssertEqual(item.filled(with: 0), "My birthday is in July.")
+        XCTAssertEqual(item.correct, "on")
+        XCTAssertTrue(item.isRight(1))
+        XCTAssertFalse(item.isRight(0))
+        XCTAssertEqual(item.filled(with: 1), "I'll see you on Monday.")
         XCTAssertEqual(item.filled(with: 9), "")
         let order = try XCTUnwrap(GrammarRules.shared.rule(id: "question-order"))
         XCTAssertEqual(order.practice[0].kind, .choose)
@@ -83,7 +86,7 @@ final class GrammarRulesTests: XCTestCase {
     }
 
     func testTheBundledDataLoadsFromBytes() throws {
-        XCTAssertEqual(try GrammarRules.load(Self.bundled).rules.count, 12)
+        XCTAssertEqual(try GrammarRules.load(Self.bundled).rules.count, 13)
     }
 
     func testAFileThatIsTooLargeTooDeepOrAnotherSchemaIsRefused() throws {

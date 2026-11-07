@@ -69,6 +69,7 @@ final class GrammarRulesRefusalTests: XCTestCase {
             ("contrast.gloss.es", { $0["contrast"] = ["forms": ["a", "b"], "gloss": ["en": "x", "es": $1]] }),
             ("note.en", { $0["note"] = ["en": $1, "es": "x"] }), ("note.es", { $0["note"] = ["en": "x", "es": $1] }),
             ("alias", { $0["aliases"] = [$1] }),
+            ("spanish.en", { $0["spanish"] = ["en": $1, "es": "x"] }), ("spanish.es", { $0["spanish"] = ["en": "x", "es": $1] }),
         ]
         for (name, edit) in ruleFields {
             try loads(try rule { edit(&$0, "fine") }, "\(name) with a good text must load")
@@ -225,7 +226,7 @@ final class GrammarRulesRefusalTests: XCTestCase {
                 }
                 return ["id": "r\(index)", "category": "c", "level": "A1", "title": ["en": "t", "es": "t"],
                         "rule": ["en": ["l"], "es": ["l"]], "examples": [["en": "e", "es": "e"], ["en": "e", "es": "e"]],
-                        "contrast": ["forms": ["a", "b"]], "aliases": ["a"], "practice": items]
+                        "contrast": ["forms": ["a", "b"]], "aliases": ["a"], "books": ["mode": "none"], "practice": items]
             }
             return ["schema": 1, "categories": [["id": "c", "title": ["en": "c", "es": "c"]]], "rules": rules]
         }
@@ -270,7 +271,7 @@ final class GrammarRulesRefusalTests: XCTestCase {
         try refused(try item("his-her-its") { $0["extra"] = 1 }, "item: unknown key")
         let extraKey: [Json] = [["en": "a", "es": "b", "fr": "c"], ["en": "a", "es": "b"], ["en": "a", "es": "b"]]
         try refused(try item("his-her-its") { $0["feedback"] = extraKey }, "item feedback: unknown key")
-        for key in ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "practice"] {
+        for key in ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "books", "practice"] {
             try refused(try rule { $0[key] = nil }, "rule: missing \(key)")
         }
         try refused(try rule { $0["extra"] = 1 }, "rule: unknown key")
@@ -278,12 +279,34 @@ final class GrammarRulesRefusalTests: XCTestCase {
         try refused(try item("his-her-its") { $0["answer"] = "0" }, "item: answer of the wrong type")
     }
 
+    // MARK: Books
+
+    func testTheBooksMatcherIsStrict() throws {
+        func books(_ value: Any) -> (inout Json) -> Void { { $0["books"] = value } }
+        func many(_ count: Int) -> [String] { (0..<count).map { "w" + String(repeating: "x", count: $0 + 1) } }
+        try loads(try rule("his-her-its", books(["mode": "none"])), "none")
+        try loads(try rule("his-her-its", books(["mode": "none", "patterns": [String]()])), "none with an empty list")
+        try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": ["went|came"]])), "one pattern")
+        try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": ["on monday|tuesday", "at * night", "a b c d e"]])), "wildcards")
+        try refused(try rule("his-her-its", books(["mode": "none", "patterns": ["went"]])), "none with patterns")
+        try refused(try rule("his-her-its", books(["mode": "patterns"])), "patterns without a list")
+        try refused(try rule("his-her-its", books(["mode": "patterns", "patterns": [String]()])), "an empty list")
+        try refused(try rule("his-her-its", books(["mode": "patterns", "patterns": many(13)])), "13 patterns")
+        try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": many(12)])), "12 patterns")
+        try refused(try rule("his-her-its", books(["mode": "regex", "patterns": ["a"]])), "unknown mode")
+        try refused(try rule("his-her-its", books(["patterns": ["a"]])), "missing mode")
+        try refused(try rule("his-her-its", books(["mode": "none", "extra": 1])), "unknown key")
+        for bad in ["", " ", "a  b", "a b c d e f", "Went", "went!", "a(b)", "a.*", "went\u{200B}", "caf\u{E9}", " went", "went "] {
+            try refused(try rule("his-her-its", books(["mode": "patterns", "patterns": [bad]])), "pattern \(bad.debugDescription)")
+        }
+    }
+
     // MARK: Gap and ask
 
     func testAGapItemHasNoAskAndAChooseItemNeedsOne() throws {
         try refused(try item("his-her-its") { $0["ask"] = ["en": "Pick.", "es": "Elige."] }, "gap with ask")
         try refused(try item("question-order") { $0["ask"] = nil }, "choose without ask")
-        try loads(try item("question-order") { $0["text"] = nil }, "choose without text")
+        try refused(try item("question-order") { $0["text"] = nil }, "choose without a stimulus")
         try refused(try item("his-her-its") { $0["text"] = "no gap" }, "gap text without a gap")
         try refused(try item("his-her-its") { $0["text"] = "___ and ___" }, "two gaps")
         try refused(try item("his-her-its") { $0["text"] = nil }, "gap without text")

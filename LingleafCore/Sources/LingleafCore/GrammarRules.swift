@@ -42,6 +42,11 @@ public struct GrammarRules: Sendable {
     /// (see `GrammarProgress.encoded(for:)`).
     public var isAvailable: Bool { !rules.isEmpty }
 
+    /// The item ids of every rule, to read saved progress against.
+    public var knownItems: [String: Set<String>] {
+        Dictionary(uniqueKeysWithValues: rules.map { ($0.id, Set($0.practice.map(\.id))) })
+    }
+
     public func rule(id: String) -> GrammarRule? { rules.first { $0.id == id } }
 
     public func rules(in category: String) -> [GrammarRule] { rules.filter { $0.category == category } }
@@ -94,10 +99,28 @@ public struct GrammarRules: Sendable {
         try check(rule.examples.allSatisfy { isText($0.en) && isText($0.es) }, "\(id): example")
         try check(rule.contrast.forms.count == 2 && rule.contrast.forms.allSatisfy(isText), "\(id): contrast needs two forms")
         try check(isPair(rule.contrast.gloss), "\(id): contrast gloss")
-        try check(isPair(rule.note), "\(id): note")
+        try check(isPair(rule.note) && isPair(rule.spanish), "\(id): note or Spanish-speaker line")
+        try validate(books: rule.books, id)
         try check((1...20).contains(rule.aliases.count), "\(id): 1–20 aliases")
         try check(rule.aliases.allSatisfy { isText($0) && $0.unicodeScalars.count <= maxAlias }, "\(id): alias")
         try check((3...12).contains(rule.practice.count), "\(id): 3–12 practice items")
+    }
+
+    /// `none` has no patterns; `patterns` has 1–12, each of 1–5 words made of a–z, `|` (alternatives) and `*` (any word).
+    private static func validate(books: GrammarBooks, _ id: String) throws {
+        switch books.mode {
+        case .none:
+            try check(books.patterns.isEmpty, "\(id): books none has no patterns")
+        case .patterns:
+            try check((1...12).contains(books.patterns.count), "\(id): 1–12 book patterns")
+            for pattern in books.patterns {
+                let words = pattern.split(separator: " ", omittingEmptySubsequences: false)
+                let letters: (Substring) -> Bool = { word in
+                    !word.isEmpty && word.utf8.allSatisfy { (0x61...0x7A).contains($0) || $0 == 0x7C || $0 == 0x2A }
+                }
+                try check((1...5).contains(words.count) && words.allSatisfy(letters) && pattern.utf8.count <= 80, "\(id): book pattern \(pattern)")
+            }
+        }
     }
 
     private static func validate(_ item: PracticeItem) throws {
@@ -116,7 +139,7 @@ public struct GrammarRules: Sendable {
             try check(item.text.map { isText($0) && $0.components(separatedBy: gap).count == 2 } ?? false, "\(item.id): one gap")
         case .choose:
             try check(item.ask != nil, "\(item.id): choose needs ask")
-            try check(item.text.map(isText) ?? true, "\(item.id): text")
+            try check(item.text.map(isText) ?? false, "\(item.id): a choose item needs a visible stimulus")
         }
     }
 
@@ -181,13 +204,22 @@ public struct GrammarContrast: Equatable, Sendable {
     public let gloss: GrammarText?
 }
 
+/// How "In your books" finds sentences for a rule (SPEC.md S23): none, or word patterns ("on monday|tuesday",
+/// "there is|are"; `|` lists alternatives, `*` is any word).
+public struct GrammarBooks: Equatable, Sendable {
+    public enum Mode: String, Sendable { case none, patterns }
+
+    public let mode: Mode
+    public let patterns: [String]
+}
+
 public struct PracticeItem: Equatable, Sendable {
     public enum Kind: String, Sendable { case gap, choose }
 
     public let id: String
     public let level: String
     public let kind: Kind
-    /// A sentence with one "___" (`gap`); optional for `choose`.
+    /// A sentence with one "___" (`gap`); the visible stimulus of a `choose` item (a situation, a question or a Spanish sentence).
     public let text: String?
     /// The instruction of a `choose` item ("Choose the question.").
     public let ask: GrammarText?
@@ -217,7 +249,10 @@ public struct GrammarRule: Equatable, Sendable {
     public let examples: [GrammarExample]
     public let contrast: GrammarContrast
     public let note: GrammarText?
+    /// A line for Spanish speakers where Spanish interferes (S21).
+    public let spanish: GrammarText?
     public let aliases: [String]
+    public let books: GrammarBooks
     /// The first item is the pretest of a first visit.
     public let practice: [PracticeItem]
 }
@@ -304,6 +339,17 @@ extension GrammarContrast: Decodable {
     }
 }
 
+extension GrammarBooks.Mode: Decodable {}
+
+extension GrammarBooks: Decodable {
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.strictObject(["mode"], optional: ["patterns"])
+        mode = try c.value("mode")
+        patterns = try c.optional("patterns") ?? []
+        // `patterns: []` for mode none is the same as no key; mode patterns is checked in validation.
+    }
+}
+
 extension PracticeItem.Kind: Decodable {}
 
 extension PracticeItem: Decodable {
@@ -323,7 +369,7 @@ extension PracticeItem: Decodable {
 extension GrammarRule: Decodable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.strictObject(
-            ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "practice"], optional: ["note"]
+            ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "books", "practice"], optional: ["note", "spanish"]
         )
         id = try c.value("id")
         category = try c.value("category")
@@ -333,7 +379,9 @@ extension GrammarRule: Decodable {
         examples = try c.value("examples")
         contrast = try c.value("contrast")
         note = try c.optional("note")
+        spanish = try c.optional("spanish")
         aliases = try c.value("aliases")
+        books = try c.value("books")
         practice = try c.value("practice")
     }
 }
