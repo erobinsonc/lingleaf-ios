@@ -15,7 +15,7 @@ struct WordCardView: View {
     /// the message (and its Undo) the reader shows.
     let onAction: (UndoMessage) -> Void
 
-    @Environment(AppModel.self) private var model
+    @Environment(AppModel.self) var model
     @Environment(\.dismiss) private var dismiss
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @State private var entry: DictionaryEntry?
@@ -23,7 +23,7 @@ struct WordCardView: View {
     @State private var lookup: Task<DictionaryEntry?, Never>?
     /// Translations by normalized source text: the tapped form and, when the
     /// dictionary gives a different one, the base form ("animals", "animal").
-    @State private var translations: [String: String] = [:]
+    @State var translations: [String: String] = [:]
     /// The language `translations` and `sentenceTranslation` are in.
     @State private var translatedInto: String?
     @State private var sentenceTranslation: String?
@@ -37,7 +37,7 @@ struct WordCardView: View {
     @State private var choiceLoaded = false
     @State private var choiceMeanings: [String: String] = [:]
     /// The dictionary's entry for a story sense's base form, when it has one of the sense's part of speech.
-    @State private var storyEntry: DictionaryEntry?
+    @State var storyEntry: DictionaryEntry?
 
     /// Where the translation of a reading ("to leave" → "irse") is kept in `translations`.
     private static let readingKey = "\u{1}reading"
@@ -57,13 +57,6 @@ struct WordCardView: View {
         guard entryLoaded, let base = tableBase else { return selection.word }
         return base
     }
-
-    /// The story's sense for the tapped word (SPEC S19), which comes before the verb-or-noun rule.
-    private var story: StorySenseHit? { selection.story }
-    private var storySense: StorySense? { selection.story?.sense }
-
-    /// The card's language is Spanish: the story's meanings are in it.
-    private var isSpanish: Bool { ReadingTranslation.isSpanish(model.targetLanguage) }
 
     /// How a form that is also another word reads in its sentence ("she left": the verb "leave").
     private var reading: Reading? {
@@ -126,11 +119,6 @@ struct WordCardView: View {
         return IrregularVerbs.shared.listenText(headword: headword, in: selection.sentence, at: range, chosen: chosen)
     }
 
-    /// How the voice is told to say a story sense's word: its IPA (one word only).
-    private var spokenIPA: String? {
-        storySense.flatMap { $0.speaksIPA ? $0.ipa : nil }
-    }
-
     /// The IPA under the headword: unsure, only once a reading is chosen, the tapped form's in it;
     /// a verb's from the table when the table has its slot ("read": /riːd/), else the dictionary's.
     private var phonetic: String? {
@@ -172,32 +160,6 @@ struct WordCardView: View {
         if isUnsure { return chosen.flatMap { rowMeanings[$0.id] } }
         if meaningReading != nil { return translations[Self.readingKey] }
         return translations[TextTools.normalize(headword)] ?? translations[TextTools.normalize(selection.word)]
-    }
-
-    /// A story sense's meaning (SPEC S19): the file's, in Spanish; in another language the translation of
-    /// the group or base form once it is there; none for a name.
-    private func storyTranslation(_ story: StorySenseHit) -> String? {
-        if story.sense.kind == .name { return nil }
-        if isSpanish { return story.sense.spanish }
-        return story.translationSource.flatMap { translations[TextTools.normalize($0)] }
-    }
-
-    /// The small label under the headword: "Name", "Word from another language", "US English"…
-    private var storyLabel: Text? {
-        guard let label = story?.label else { return nil }
-        switch label {
-        case .name: return Text("Name")
-        case .foreign: return Text("Word from another language")
-        case .american: return Text("US English")
-        case .british: return Text("UK English")
-        case .local: return Text("Local use")
-        }
-    }
-
-    /// The group of words the tapped word belongs to, with its meaning on one line (Spanish), as it is in the story.
-    private var storyGroupLine: String? {
-        guard let story, let group = story.group else { return nil }
-        return isSpanish && story.sense.kind != .name ? "\(group.text) — \(group.spanish)" : group.text
     }
 
     /// What Save stores: the word's base form, or a helper or modal verb's verb group (the
@@ -329,30 +291,11 @@ struct WordCardView: View {
         }
     }
 
-    /// A story sense's remarks and definition (SPEC S19): what a name is and the note, in Spanish, then the
-    /// dictionary's definition when it has one of the sense's part of speech, else none.
-    @ViewBuilder
-    private var storyDefinition: some View {
-        if isSpanish, let sense = storySense {
-            if sense.kind == .name { storyRemark(sense.spanish) }
-            if let note = sense.note { storyRemark(note) }
-        }
-        if let entry = storyEntry, let definition = entry.definition { definitionText(entry, definition) }
-    }
-
-    private func storyRemark(_ text: String) -> some View {
-        Text(text)
-            .font(.footnote)
-            .foregroundStyle(Brand.secondaryText)
-            .multilineTextAlignment(.center)
-            .fixedSize(horizontal: false, vertical: true)
-    }
-
     /// The definition with its source at the end of the paragraph (Wiktionary's CC BY-SA asks for
     /// credit and to say when the text was shortened). One Text, so VoiceOver reads it as one
     /// static text; `.accessibilityElement(children:)` would make it a generic element, which the
     /// accessibility audit then measures as a (too small) control.
-    private func definitionText(_ entry: DictionaryEntry, _ definition: String) -> some View {
+    func definitionText(_ entry: DictionaryEntry, _ definition: String) -> some View {
         let source = Text(Credits.definitionSource(shortened: entry.definitionTruncated)).font(.caption)
         let partOfSpeech = entry.partOfSpeech ?? ""
         // "To walk." + ". Source" would read "walk.. Source": the label adds its own full stop.
