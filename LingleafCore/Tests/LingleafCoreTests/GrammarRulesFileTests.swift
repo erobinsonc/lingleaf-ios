@@ -65,13 +65,19 @@ final class GrammarRulesFileTests: XCTestCase {
             let contrast = try XCTUnwrap(rule["contrast"] as? [String: Any], id)
             XCTAssertEqual((contrast["forms"] as? [String])?.count, 2, "\(id): two forms")
             XCTAssertFalse((rule["aliases"] as? [String] ?? []).isEmpty, "\(id): aliases for search")
+            let books = try XCTUnwrap(rule["books"] as? [String: Any], "\(id): books")
+            switch books["mode"] as? String {
+            case "none": XCTAssertNil(books["patterns"], "\(id): none has no patterns")
+            case "patterns": XCTAssertTrue((1...12).contains((books["patterns"] as? [String])?.count ?? 0), "\(id): 1–12 patterns")
+            default: XCTFail("\(id): unknown books mode")
+            }
         }
     }
 
     func testEveryPracticeItemIsAnswerableAndExplained() throws {
         for rule in try rules() {
             let items = try XCTUnwrap(rule["practice"] as? [[String: Any]])
-            XCTAssertGreaterThanOrEqual(items.count, 3, "\(rule["id"] ?? "?"): 3 practice items")
+            XCTAssertGreaterThanOrEqual(items.count, 6, "\(rule["id"] ?? "?"): a bank of at least 6 items")
             var seen = Set<String>()
             for item in items {
                 let id = try XCTUnwrap(item["id"] as? String)
@@ -91,8 +97,11 @@ final class GrammarRulesFileTests: XCTestCase {
                 case "gap":
                     let text = try XCTUnwrap(item["text"] as? String, id)
                     XCTAssertEqual(text.components(separatedBy: "___").count, 2, "\(id): exactly one gap")
+                    XCTAssertNil(item["ask"], "\(id): a gap item has no ask")
                 case "choose":
                     XCTAssertNotNil(item["ask"] as? [String: String], "\(id): a choose item needs ask")
+                    let stimulus = (item["text"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                    XCTAssertFalse(stimulus.isEmpty, "\(id): a choose item needs a visible stimulus")
                 default:
                     XCTFail("\(id): unknown kind")
                 }
@@ -100,12 +109,34 @@ final class GrammarRulesFileTests: XCTestCase {
         }
     }
 
+    func testTheRightAnswerIsSpreadOverThePositions() throws {
+        var counts: [Int: Int] = [:]
+        for rule in try rules() {
+            for item in try XCTUnwrap(rule["practice"] as? [[String: Any]]) where (item["options"] as? [String])?.count == 3 {
+                counts[item["answer"] as? Int ?? -1, default: 0] += 1
+            }
+        }
+        let total = counts.values.reduce(0, +)
+        XCTAssertGreaterThan(total, 30)
+        for (position, count) in counts {
+            XCTAssertLessThanOrEqual(Double(count) / Double(total), 0.4, "position \(position) holds too many right answers: \(counts)")
+        }
+    }
+
+    func testTheSpecDoesNotWriteTheVerbCount() throws {
+        let spec = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
+            .appending(path: "../../../SPEC.md").standardizedFileURL
+        let text = try String(contentsOf: spec, encoding: .utf8)
+        let row = try XCTUnwrap(text.components(separatedBy: "\n").first { $0.hasPrefix("| S24 |") })
+        XCTAssertNil(row.range(of: #"\b\d{2,3} (irregular )?verbs\b"#, options: .regularExpression), "S24 must not hard-code a verb count")
+    }
+
     func testNoTextIsLongAndRulesNeverShowTheWrongForms() throws {
         for text in texts(try root()) { XCTAssertLessThanOrEqual(text.count, 400) }
         // Rules, examples and contrasts show only correct English; wrong forms live in practice options and feedback.
-        let wrong = ["goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree", "carrys"]
+        let wrong = ["goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree", "carrys", "telled", "comed", "bigs"]
         for rule in try rules() {
-            let shown = texts(rule["rule"]) + texts(rule["examples"]) + texts(rule["contrast"]) + texts(rule["note"])
+            let shown = texts(rule["rule"]) + texts(rule["examples"]) + texts(rule["contrast"]) + texts(rule["note"]) + texts(rule["spanish"])
             for form in wrong {
                 XCTAssertFalse(shown.contains { $0.contains(form) }, "\(rule["id"] ?? "?") shows a wrong form: \(form)")
             }
