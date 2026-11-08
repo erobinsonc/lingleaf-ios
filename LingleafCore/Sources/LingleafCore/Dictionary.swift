@@ -137,6 +137,8 @@ public actor DictionaryClient {
         let w = TextTools.normalize(word)
         let table = IrregularVerbs.shared
         if let reading, reading.kind == .homonym { return nil }
+        // The reading's base is a key like the word: lower case, composed.
+        let reading = reading.map { Reading(kind: $0.kind, base: TextTools.normalize($0.base), step: $0.step) }
         if let reading, reading.kind == .noun, table.twinNounEs(reading.base) != nil { return nil }
         if let reading, reading.kind == .expression {
             return await get(w)?.first { $0.partOfSpeech?.lowercased() == "adjective" }
@@ -175,10 +177,25 @@ public actor DictionaryClient {
         return nil
     }
 
+    /// Longest word looked up, in UTF-16 units (the longest English word has 45 letters).
+    static let maxLookupWord = 50
+    private static let lookupWord = try! NSRegularExpression(pattern: "^\\p{Latin}(?:\\p{Latin}|\\p{M}|['’])*\\z")
+
+    /// Whether `word` (normalized) may be sent to the dictionary: a Latin-script word, with or
+    /// without accents ("café", "naïve", "résumé", "Joaquín"), of a sane length. Another script
+    /// ("привет", "你好", "مرحبا"), a mixed one or a hostile one is never sent: the English
+    /// dictionary has no entry for it, and nothing the learner didn't tap as a word leaves the device.
+    static func canLookUp(_ word: String) -> Bool {
+        let length = (word as NSString).length
+        guard length > 0, length <= maxLookupWord else { return false }
+        return lookupWord.firstMatch(in: word, range: NSRange(location: 0, length: length)) != nil
+    }
+
     /// Every meaning of `word`'s answer; nil when there is none (missing, offline, refused).
     private func get(_ word: String) async -> [DictionaryEntry]? {
+        guard Self.canLookUp(word) else { return nil }
         if let cached = cache[word] { return cached }
-        let encoded = word.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? word
+        let encoded = word.addingPercentEncoding(withAllowedCharacters: .asciiAlphanumerics) ?? word
         guard let response = try? await http.get("https://api.dictionaryapi.dev/api/v2/entries/en/\(encoded)") else { return nil }
         if response.status == 404 { cache[word] = .some(nil) }
         guard response.status == 200 else { return nil }
