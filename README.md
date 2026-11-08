@@ -56,6 +56,8 @@ Apple Translation doesn't run in the Simulator; try translations on a real devic
 | Vulnerable dependencies | Dependabot, dependency review* |
 | Static security analysis | CodeQL* |
 
+Dependabot bumps to pinned CI actions are verified by hand first: see [docs/dependabot.md](docs/dependabot.md).
+
 \* Runs automatically once the repository is public (free for open source).
 
 ## Privacy

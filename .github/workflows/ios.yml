@@ -13,6 +13,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scripts:
+    name: CI script tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - run: .github/scripts/test-screenshot-scripts.sh
+
   core:
     name: Core logic (tests, coverage ≥90%)
     runs-on: macos-15
@@ -83,14 +93,20 @@ jobs:
           path: screenshots
           if-no-files-found: ignore
 
-  screenshots:
-    name: Publish screenshots
+  # Two jobs on purpose. The first runs the bumped actions with a read-only token and
+  # hands over only files that passed a strict check. The second holds the write token
+  # and runs nothing but a pinned checkout and the publish script (docs/dependabot.md).
+  screenshots-prepare:
+    name: Prepare screenshots
     needs: app
     # Not for forks or Dependabot, whose tokens can't write to the repository.
-    if: always() && github.event.pull_request.head.repo.fork != true && github.actor != 'dependabot[bot]'
+    if: always() && github.event.pull_request.head.repo.fork != true && github.actor != 'dependabot[bot]' && github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
+    outputs:
+      ready: ${{ steps.done.outputs.ready }}
+      artifact: ${{ steps.done.outputs.artifact }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
@@ -100,6 +116,48 @@ jobs:
         with:
           name: ios-screenshots
           path: screenshots
+      - id: verify
+        run: ./.github/scripts/verify-screenshots.sh screenshots
+      # Unguessable name, made here, so no earlier job can pre-plant an artifact under it.
+      - id: name
+        run: echo "artifact=ios-screenshots-verified-$(openssl rand -hex 16)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: steps.verify.outputs.ready == 'true'
+        with:
+          name: ${{ steps.name.outputs.artifact }}
+          path: screenshots
+          if-no-files-found: error
+      # Last step, and only reached if every step above succeeded.
+      - id: done
+        env:
+          READY: ${{ steps.verify.outputs.ready }}
+          ARTIFACT: ${{ steps.name.outputs.artifact }}
+        run: |
+          echo "ready=$READY" >> "$GITHUB_OUTPUT"
+          echo "artifact=$ARTIFACT" >> "$GITHUB_OUTPUT"
+
+  screenshots:
+    name: Publish screenshots
+    needs: screenshots-prepare
+    # Only when the prepare job itself succeeded: no always() on an output.
+    if: needs.screenshots-prepare.result == 'success' && needs.screenshots-prepare.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read # lets the gh CLI fetch the verified artifact of this run
+    steps:
+      # On pull_request this is the merge commit; accepted because forks are excluded above.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      # gh CLI (preinstalled), not an action: nothing third-party runs with the write token.
+      - name: Fetch the verified screenshots
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT: ${{ needs.screenshots-prepare.outputs.artifact }}
+        run: gh run download "$GITHUB_RUN_ID" --repo "$GITHUB_REPOSITORY" --name "$ARTIFACT" --dir screenshots
+      # Checked again here, with the script from the pinned checkout: this job does not trust the other.
+      - run: ./.github/scripts/verify-screenshots.sh screenshots
       # Values go through env, never interpolated into the script (branch names are untrusted).
       - run: ./.github/scripts/publish-screenshots.sh ios "$BRANCH" "$COMMIT"
         env:
