@@ -83,7 +83,8 @@ struct SettingsView: View {
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text("No accounts, no ads, no tracking.")
-                        Text(Credits.publicDomainNotice)
+                        // The US-specific notice is under Discover's search results only.
+                        Text(Credits.recommendedPublicDomain)
                         Text(Credits.definitionsCredit)
                             .accessibilityHint(Text("Contains links"))
                     }

@@ -54,6 +54,9 @@ enum Credits {
     static let publicDomainNotice: LocalizedStringResource =
         "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."
 
+    /// About: the recommended books (authors who died in 1925 or earlier) are public domain worldwide.
+    static let recommendedPublicDomain: LocalizedStringResource = "Recommended books are public domain worldwide."
+
     /// At the end of a definition on the word card: its source and license, and whether the app cut it.
     static func definitionSource(shortened: Bool) -> LocalizedStringResource {
         shortened ? "— Wiktionary, CC BY-SA, shortened" : "— Wiktionary, CC BY-SA"

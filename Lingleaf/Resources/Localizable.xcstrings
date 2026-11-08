@@ -1168,6 +1168,16 @@
         }
       }
     },
+    "Recommended books are public domain worldwide.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Los libros recomendados son de dominio público en todo el mundo."
+          }
+        }
+      }
+    },
     "Recommended for learners": {
       "localizations": {
         "es": {

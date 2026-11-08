@@ -146,6 +146,15 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
     }
 
+    /// About says the recommended books are public domain worldwide; the US-only notice is for search results.
+    func testAboutSaysTheRecommendedBooksArePublicDomainWorldwide() {
+        app.tabBars.buttons["Settings"].tap()
+        let worldwide = app.staticTexts["Recommended books are public domain worldwide."]
+        for _ in 0..<8 where !worldwide.exists { app.swipeUp() }
+        XCTAssertTrue(worldwide.exists)
+        XCTAssertFalse(app.staticTexts["Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."].exists)
+    }
+
     private func relaunch(_ arguments: String...) {
         app.terminate()
         app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
