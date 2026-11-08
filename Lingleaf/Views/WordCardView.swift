@@ -331,7 +331,6 @@ struct WordCardView: View {
                 }
                 Text(headword).font(.largeTitle.weight(.semibold))
                     .accessibilityLabel(Text(spokenHeadword))
-                    .accessibilityLanguage(story == nil ? nil : "en")
                     .accessibilityAddTraits(.isHeader)
             }
             if let phonetic {
@@ -364,7 +363,6 @@ struct WordCardView: View {
                 }
                 if let translation {
                     Text(translation).font(.title2).multilineTextAlignment(.center)
-                        .accessibilityLanguage(story == nil ? nil : translatedInto)
                 } else if wordSource == nil {
                     EmptyView()
                 } else if translationFailed {
