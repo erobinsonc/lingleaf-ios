@@ -237,6 +237,24 @@ final class StorySensesTests: XCTestCase {
         }, story: story, paragraphs: [longParagraph]), "a group over 120 characters")
     }
 
+    func testSensesApplyOnlyToTheTextTheyWereMadeFor() throws {
+        let text = paragraphs.joined(separator: "\n\n")
+        XCTAssertNotNil(StorySenses.load(try file(), story: story, paragraphs: paragraphs, bundledText: text))
+        // A book saved under the story's title and author with other text gets none.
+        let rewritten = ["His face went red. Free food.", "Mr. Long likes the cafe!"]
+        XCTAssertNil(StorySenses.load(try file(), story: story, paragraphs: rewritten, bundledText: text))
+        XCTAssertNil(StorySenses.load(try file(), story: story, paragraphs: Array(paragraphs.dropLast()), bundledText: text))
+        XCTAssertNil(StorySenses.load(Data("{}".utf8), story: story, paragraphs: paragraphs, bundledText: text), "a refused file")
+    }
+
+    func testTextWithBlankFillersOrOddCharactersIsRefused() throws {
+        assertRefused(try sense("go_red", "es", "poner\u{3164}se"), "a Hangul filler")
+        assertRefused(try sense("go_red", "es", "poner\u{E000}se"), "a private-use character")
+        assertRefused(try sense("go_red", "es", "ponerse  colorado"), "a doubled space")
+        assertRefused(try sense("go_red", "es", "a" + String(repeating: "\u{0301}", count: 5)), "a pile of accents")
+        assertRefused(try sense("go_red", "ipa", " "), "an IPA of only spaces")
+    }
+
     func testTooManySensesOrEntriesAreRefused() throws {
         assertRefused(try file { json in
             var senses = json["senses"] as? [String: Any] ?? [:]

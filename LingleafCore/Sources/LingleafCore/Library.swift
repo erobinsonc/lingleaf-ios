@@ -160,11 +160,14 @@ public struct BundledStory: Sendable {
     public let title: String
     public let level: String
     public let text: String
+    /// One of the 18 stories added with senses (SPEC S19), not one of the first three.
+    public let hasSenses: Bool
 
-    public init(title: String, level: String, text: String) {
+    public init(title: String, level: String, text: String, hasSenses: Bool = false) {
         self.title = title
         self.level = level
         self.text = text
+        self.hasSenses = hasSenses
     }
 }
 
@@ -185,16 +188,19 @@ public struct ShelfStory: Hashable, Sendable {
 }
 
 extension BundledStory {
-    /// The original stories shipped with the app (resource file name, title, level), easiest first:
-    /// the 18 stories with senses (SPEC S19), three a level, then the first three. Discover lists
-    /// them under their level too, so no level of the filter is empty.
+    /// The original stories shipped with the app (resource file name, title, level), in the order the
+    /// Library lists them on a first launch, top to bottom: A1 to C2, the first three at the start of
+    /// their own level. Discover lists them under their level too, so no level of the filter is empty.
     public static let shelf: [ShelfStory] = [
+        ShelfStory(resource: "the-red-boat", title: "The Red Boat", level: "A1", hasSenses: false),
         ShelfStory(resource: "a-shoe-in-the-fridge", title: "A Shoe in the Fridge", level: "A1"),
         ShelfStory(resource: "an-empty-apartment", title: "An Empty Apartment", level: "A1"),
         ShelfStory(resource: "nours-long-race", title: "Nour's Long Race", level: "A1"),
+        ShelfStory(resource: "a-day-at-the-market", title: "A Day at the Market", level: "A2", hasSenses: false),
         ShelfStory(resource: "a-part-for-lila", title: "A Part for Lila", level: "A2"),
         ShelfStory(resource: "the-oven-next-door", title: "The Oven Next Door", level: "A2"),
         ShelfStory(resource: "the-tree-in-the-second-row", title: "The Tree in the Second Row", level: "A2"),
+        ShelfStory(resource: "the-lighthouse-keeper", title: "The Lighthouse Keeper", level: "B1", hasSenses: false),
         ShelfStory(resource: "a-very-important-visitor", title: "A Very Important Visitor", level: "B1"),
         ShelfStory(resource: "the-beat-on-the-hill", title: "The Beat on the Hill", level: "B1"),
         ShelfStory(resource: "the-chess-table-by-the-lake", title: "The Chess Table by the Lake", level: "B1"),
@@ -207,9 +213,6 @@ extension BundledStory {
         ShelfStory(resource: "five-minutes-maximum", title: "Five Minutes, Maximum", level: "C2"),
         ShelfStory(resource: "the-exit-interview", title: "The Exit Interview", level: "C2"),
         ShelfStory(resource: "the-second-violin", title: "The Second Violin", level: "C2"),
-        ShelfStory(resource: "the-red-boat", title: "The Red Boat", level: "A1", hasSenses: false),
-        ShelfStory(resource: "a-day-at-the-market", title: "A Day at the Market", level: "A2", hasSenses: false),
-        ShelfStory(resource: "the-lighthouse-keeper", title: "The Lighthouse Keeper", level: "B1", hasSenses: false),
     ]
 
     /// The author the bundled stories are saved with.
@@ -370,11 +373,36 @@ public final class Library {
         state = loaded
     }
 
-    /// Adds the bundled stories the first time the app runs.
+    /// Adds the bundled stories the first time the app runs. `stories` is in the order the Library should
+    /// show them, top to bottom; the Library lists the newest book first, so they are added in reverse.
     public func seedIfNeeded(_ stories: () -> [BundledStory]) {
         guard storage.read("seeded") == nil else { return }
-        for story in stories() { addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level) }
+        for story in stories().reversed() {
+            addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level)
+        }
         storage.write("seeded", "1")
+        storage.write(Self.storiesV2Key, "1")
+    }
+
+    static let storiesV2Key = "seeded-stories-v2"
+
+    /// Once, for an install that was seeded before the 18 stories with senses (SPEC S1): adds only those
+    /// 18 (never the first three), below the learner's books, in the order A1 to C2, as ordinary books
+    /// that can be deleted. The books the learner has keep their places. A story already in the library
+    /// is not added again.
+    public func addNewStoriesIfNeeded(_ stories: () -> [BundledStory]) {
+        guard storage.read(Self.storiesV2Key) == nil else { return }
+        storage.write(Self.storiesV2Key, "1")
+        guard storage.read("seeded") != nil else { return }
+        let before = state.books.count
+        for story in stories().filter(\.hasSenses).reversed()
+        where BundledStory.libraryCopy(of: story.title, in: state.books) == nil {
+            addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level)
+        }
+        // The new books went to the end of the list, which the Library shows first: move them to the start.
+        let added = state.books[before...]
+        state.books = Array(added) + state.books[..<before]
+        saveBooks()
     }
 
     // MARK: Books

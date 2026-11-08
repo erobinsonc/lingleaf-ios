@@ -217,7 +217,9 @@ struct WordCardView: View {
                 .padding(.top, 24)
                 .padding(.bottom, 12)
             }
-            actions
+            // A name or a word from another language is not offered to save: it would mark the common word
+            // it is spelled like ("Long" in "Mr. Long") in every book.
+            if storyAllowsSave { actions }
         }
         // iOS 26: the sheet stays system glass at its edge, but the content sits on one opaque
         // panel so the book never shows through the text (glass is for controls, not content).
@@ -327,10 +329,12 @@ struct WordCardView: View {
                 }
                 Text(headword).font(.largeTitle.weight(.semibold))
                     .accessibilityLabel(Text(spokenHeadword))
+                    .accessibilityLanguage(story == nil ? nil : "en")
                     .accessibilityAddTraits(.isHeader)
             }
             if let phonetic {
-                Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText)
+                // A story's IPA is for the eye: Listen says the word.
+                Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText).accessibilityHidden(story != nil)
             }
             // A helper or modal verb shows its form in the verb group just below.
             if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word) {
@@ -340,7 +344,7 @@ struct WordCardView: View {
                 Text(label).font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
             }
             if let storyLabel {
-                storyLabel.font(.subheadline.weight(.semibold)).foregroundStyle(Brand.secondaryText)
+                storyLabel.font(.caption).foregroundStyle(Brand.secondaryText)
             }
         }
     }
@@ -358,6 +362,7 @@ struct WordCardView: View {
                 }
                 if let translation {
                     Text(translation).font(.title2).multilineTextAlignment(.center)
+                        .accessibilityLanguage(story == nil ? nil : translatedInto)
                 } else if wordSource == nil {
                     EmptyView()
                 } else if translationFailed {
@@ -370,8 +375,10 @@ struct WordCardView: View {
                 }
                 if let line = storyGroupLine {
                     Text(verbatim: line).font(.callout).foregroundStyle(Brand.secondaryText).multilineTextAlignment(.center)
+                        .accessibilityLabel(Text("Group: \(line)"))
                 }
-                LanguageMenu(current: target)
+                // A name has no meaning to translate: no language chip either.
+                if !storyHasNoMeaning { LanguageMenu(current: target) }
             }
         } else {
             LanguageChooser()

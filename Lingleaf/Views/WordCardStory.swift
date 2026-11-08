@@ -24,21 +24,35 @@ extension WordCardView {
         return story.translationSource.flatMap { translations[TextTools.normalize($0)] }
     }
 
+    /// A name, or a word from another language outside Spanish, has no meaning on the card.
+    var storyHasNoMeaning: Bool {
+        guard let kind = story?.sense.kind else { return false }
+        return kind == .name || (kind == .foreign && !isSpanish)
+    }
+
+    /// Save and I know it are for words and groups, not for names and words from another language.
+    var storyAllowsSave: Bool {
+        guard let kind = story?.sense.kind else { return true }
+        return kind == .word || kind == .chunk
+    }
+
     /// The small label under the headword: "Name", "Word from another language", "US English"…
     var storyLabel: Text? {
         guard let label = story?.label else { return nil }
         switch label {
-        case .name: return Text("Name")
+        case .name: return Text("Proper name")
         case .foreign: return Text("Word from another language")
         case .american: return Text("US English")
         case .british: return Text("UK English")
-        case .local: return Text("Local use")
+        case .local: return Text("Local English")
         }
     }
 
     /// The group of words the tapped word belongs to, with its meaning on one line (Spanish), as it is in the story.
     var storyGroupLine: String? {
         guard let story, let group = story.group else { return nil }
+        // The group is the headword already ("The Blue Table").
+        if group.text.caseInsensitiveCompare(story.sense.lemma) == .orderedSame { return nil }
         return isSpanish && story.sense.kind != .name ? "\(group.text) — \(group.spanish)" : group.text
     }
 

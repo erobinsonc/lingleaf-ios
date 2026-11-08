@@ -47,7 +47,11 @@ enum Credits {
 
     /// Where the app's own stories come from: written with AI help, free for anyone to use.
     static let storiesNotice: LocalizedStringResource =
-        "Our original stories were written with AI help. They are free for anyone to use (CC0)."
+        "Our stories were written with AI help. Anyone can use them freely."
+
+    /// What a row of one of the app's own stories says where a book shows its author: the one place to
+    /// change its name ("Original story" or "Lingleaf story"), with its translation in the string catalog.
+    static let storyRowLabel: LocalizedStringResource = "Original story"
 
     /// At the end of a definition on the word card: its source and license, and whether the app cut it.
     static func definitionSource(shortened: Bool) -> LocalizedStringResource {
@@ -171,7 +175,7 @@ struct BookRow: View {
                     if let level = book.level { LevelBadge(level: level) }
                     // The app's own stories say so, instead of the author they are all saved under.
                     if BundledStory.shelfStory(for: book) != nil {
-                        Text("Original story").font(.subheadline).foregroundStyle(Brand.secondaryText).lineLimit(1)
+                        Text(Credits.storyRowLabel).font(.subheadline).foregroundStyle(Brand.secondaryText)
                     } else {
                         Text(book.author).font(.subheadline).foregroundStyle(Brand.secondaryText).lineLimit(1)
                     }

@@ -1,10 +1,14 @@
 # Original stories: provenance and originality
 
 The stories in `Lingleaf/Resources/Books` are original works dedicated to the public domain
-([CC0 1.0](../Lingleaf/Resources/Books/LICENSE)). The first three (The Red Boat, A Day at the Market, The
-Lighthouse Keeper) were written for Lingleaf earlier and are not covered by the log below. The 18 below were
-**written with AI assistance (Claude, Anthropic) from the maintainer's brief, and reviewed by the maintainer**. The senses files
-(`<id>.senses.json`) were made the same way and are checked by the tests against the story texts.
+([CC0 1.0](../Lingleaf/Resources/Books/LICENSE)). **All 21 were written with AI assistance (Claude, Anthropic)
+from the maintainer's brief, and reviewed by the maintainer**, the first three (The Red Boat, A Day at the Market,
+The Lighthouse Keeper) included. The 18 below also ship senses files (`<id>.senses.json`).
+
+What is and is not verified: the tests check the structure of the senses files and every offset against the
+story text. The IPA (US English) and the Spanish meanings are AI-written and were read by the maintainer's review
+agents; they were not checked against a dictionary. The originality log below covers the 18 stories; **no
+similarity check was done on the first three**.
 
 | Level | Title | Id | Words | License |
 |---|---|---|---|---|

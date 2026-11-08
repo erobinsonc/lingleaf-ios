@@ -24,9 +24,9 @@ The stories in this folder are original works written for Lingleaf:
 
 and the senses files (<story>.senses.json) next to the 18 newest: notes on how a word is used
 in each story. They are dedicated to the public domain under Creative Commons CC0 1.0 Universal.
-Eighteen of the stories (all but the first three) were written with AI assistance (Claude, Anthropic)
-from the maintainer's brief and reviewed by the maintainer; their senses files were made with the
-same help. Their originality checks are kept in docs/stories-provenance.md.
+All 21 stories were written with AI assistance (Claude, Anthropic) from the maintainer's brief and reviewed by the
+maintainer; the senses files were made with the same help. The originality checks of the 18 newest are kept in
+docs/stories-provenance.md.
 The full legal text follows.
 
 Creative Commons Legal Code

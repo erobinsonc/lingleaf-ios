@@ -65,9 +65,10 @@ final class LibraryTests: XCTestCase {
         let library = library()
         library.seedIfNeeded { stories }
         library.seedIfNeeded { stories }
-        XCTAssertEqual(library.state.books.map(\.title), ["The Red Boat", "A Day at the Market"])
-        XCTAssertEqual(library.state.books.first?.level, "A1")
-        XCTAssertEqual(library.state.books.first?.paragraphCount, 2)
+        // Added last first: the Library lists the newest first, so it shows them in the order given.
+        XCTAssertEqual(library.state.books.reversed().map(\.title), ["The Red Boat", "A Day at the Market"])
+        XCTAssertEqual(library.state.books.last?.level, "A1")
+        XCTAssertEqual(library.state.books.last?.paragraphCount, 2)
 
         let reloaded = self.library()
         reloaded.seedIfNeeded { stories }
@@ -75,11 +76,11 @@ final class LibraryTests: XCTestCase {
     }
 
     func testBundledStoriesAreListedByLevelAndFoundInTheLibrary() {
-        // Three original stories a level (A1–C2), then the first three, which have no senses.
-        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A1", "A1", "A2", "A2", "A2", "B1", "B1", "B1", "B2", "B2", "B2",
-                                                          "C1", "C1", "C1", "C2", "C2", "C2", "A1", "A2", "B1"])
+        // A1 to C2, the first three (no senses) at the start of their own level.
+        XCTAssertEqual(BundledStory.shelf.map(\.level), ["A1", "A1", "A1", "A1", "A2", "A2", "A2", "A2", "B1", "B1", "B1", "B1",
+                                                          "B2", "B2", "B2", "C1", "C1", "C1", "C2", "C2", "C2"])
         XCTAssertEqual(BundledStory.shelf(level: "A2").map(\.title),
-                       ["A Part for Lila", "The Oven Next Door", "The Tree in the Second Row", "A Day at the Market"])
+                       ["A Day at the Market", "A Part for Lila", "The Oven Next Door", "The Tree in the Second Row"])
         XCTAssertEqual(BundledStory.shelf(level: "C2").count, 3)
         XCTAssertEqual(BundledStory.shelf(level: nil).count, BundledStory.shelf.count)
         XCTAssertTrue(BundledStory.shelf(level: "C3").isEmpty)
@@ -101,6 +102,65 @@ final class LibraryTests: XCTestCase {
         library.deleteBook(imported.id)
         library.deleteBook(copy!.id)
         XCTAssertNil(BundledStory.libraryCopy(of: "A Day at the Market", in: library.state.books), "deleted: Discover offers it again")
+    }
+
+    private var shelfStories: [BundledStory] {
+        BundledStory.shelf.map { BundledStory(title: $0.title, level: $0.level, text: "One.\n\nTwo.", hasSenses: $0.hasSenses) }
+    }
+
+    func testAFirstLaunchListsTheStoriesFromA1ToC2() {
+        let library = library()
+        library.seedIfNeeded { shelfStories }
+        XCTAssertEqual(library.state.books.reversed().map(\.title), BundledStory.shelf.map(\.title), "the Library shows the newest first")
+        XCTAssertEqual(library.state.books.reversed().first?.title, "The Red Boat")
+        XCTAssertEqual(library.state.books.reversed().prefix(6).compactMap(\.level), ["A1", "A1", "A1", "A1", "A2", "A2"])
+        XCTAssertNotNil(storage.files["seeded-stories-v2"], "a new install needs no later migration")
+        library.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertEqual(library.state.books.count, 21)
+    }
+
+    /// An install seeded before the 18 stories: they come below the learner's books, once.
+    private func oldInstall(deleting deleted: [String] = []) -> Library {
+        let old = library()
+        old.seedIfNeeded { Array(self.shelfStories.filter { !$0.hasSenses }) }
+        storage.files["seeded-stories-v2"] = nil
+        for title in deleted { old.deleteBook(BundledStory.libraryCopy(of: title, in: old.state.books)!.id) }
+        return old
+    }
+
+    func testAnUpdateAddsOnlyTheNewStoriesBelowTheLearnersBooks() {
+        let old = oldInstall()
+        let mine = old.addBook(title: "My Book", author: "Me", text: "Hello there.")
+        let before = old.state.books.reversed().map(\.title)
+        let reloaded = library()
+        reloaded.addNewStoriesIfNeeded { shelfStories }
+        let shown = reloaded.state.books.reversed().map(\.title)
+        XCTAssertEqual(Array(shown.prefix(before.count)), before, "the books the learner has keep their places")
+        XCTAssertEqual(shown.first, "My Book")
+        XCTAssertEqual(Array(shown.dropFirst(before.count)), BundledStory.shelf.filter(\.hasSenses).map(\.title), "A1 to C2")
+        XCTAssertEqual(shown.count, 3 + 1 + 18)
+        XCTAssertEqual(reloaded.state.books.filter { $0.title == "The Red Boat" }.count, 1, "the first three are not added again")
+        XCTAssertNotNil(mine)
+        reloaded.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertEqual(reloaded.state.books.count, 22, "once")
+        let again = library()
+        again.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertEqual(again.state.books.count, 22, "also after a restart")
+    }
+
+    func testAnUpdateDoesNotBringBackTheFirstThreeTheLearnerDeleted() {
+        let old = oldInstall(deleting: ["The Red Boat", "A Day at the Market", "The Lighthouse Keeper"])
+        XCTAssertTrue(old.state.books.isEmpty)
+        old.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertEqual(old.state.books.count, 18, "an empty Library gets the 18, not the first three")
+        XCTAssertNil(BundledStory.libraryCopy(of: "The Red Boat", in: old.state.books))
+    }
+
+    func testANewInstallIsNotMigratedWhenNothingWasSeeded() {
+        let fresh = library()
+        fresh.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertTrue(fresh.state.books.isEmpty, "seedIfNeeded does the first launch")
+        XCTAssertNotNil(storage.files["seeded-stories-v2"])
     }
 
     func testOpenProgressAndDeleteABook() {

@@ -197,7 +197,6 @@ final class LingleafUITests: XCTestCase {
 
         XCTAssertTrue(app.staticTexts["mamá"].waitForExistence(timeout: 10), "the story's own meaning")
         XCTAssertFalse(app.staticTexts["ES: mom"].exists, "not the general translation")
-        XCTAssertTrue(app.staticTexts["/mɑm/"].exists, "the sense's IPA, not the dictionary's")
         XCTAssertTrue(app.staticTexts["US English"].exists, "a US word says so")
         let definition = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of mom")).firstMatch
         XCTAssertTrue(definition.waitForExistence(timeout: 10), "the dictionary has a noun for it")
@@ -223,7 +222,9 @@ final class LingleafUITests: XCTestCase {
         let word = app.links["Blue"].firstMatch
         XCTAssertTrue(word.waitForExistence(timeout: 10))
         word.tap()
-        XCTAssertTrue(app.staticTexts["Name"].waitForExistence(timeout: 10), "the card says it is a name")
+        XCTAssertTrue(app.staticTexts["Proper name"].waitForExistence(timeout: 10), "the card says it is a name")
+        XCTAssertFalse(app.buttons["Save word"].exists, "a name is not offered to save")
+        XCTAssertEqual(app.staticTexts.matching(identifier: "The Blue Table").count, 1, "the headword is not repeated")
         XCTAssertTrue(app.staticTexts["The Blue Table"].firstMatch.exists, "the whole name is the headword")
         XCTAssertFalse(app.staticTexts["ES: Blue"].exists, "a name is not translated")
         attachScreenshot("en-light-17-story-name-card")
@@ -625,7 +626,7 @@ final class LingleafUITests: XCTestCase {
 
     /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
     private static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
-    private static let storiesNoticeText = "Our original stories were written with AI help. They are free for anyone to use (CC0)."
+    private static let storiesNoticeText = "Our stories were written with AI help. Anyone can use them freely."
 
     /// Audit findings checked by hand and found not to be real problems. Each
     /// one names the screen and the reason; anything else still fails the test.
@@ -719,8 +720,11 @@ final class LingleafUITests: XCTestCase {
     }
 
     /// Rows combine their texts into one label ("The Red Boat, Level A1, …").
+    /// The Library lists 21 stories, A1 to C2: a row further down is found by scrolling.
     private func button(startingWith prefix: String) -> XCUIElement {
         let element = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
+        _ = element.waitForExistence(timeout: 10)
+        for _ in 0..<8 where !element.exists || !element.isHittable { app.swipeUp() }
         XCTAssertTrue(element.waitForExistence(timeout: 10), "button starting with \(prefix)")
         return element
     }

@@ -48,8 +48,8 @@ public struct StorySense: Equatable, Sendable {
         }
     }
 
-    /// Whether the voice should be told how the word sounds: one word only (a group is said as text).
-    public var speaksIPA: Bool { ipa != nil && kind != .chunk && !lemma.contains(" ") }
+    /// Whether the voice should be told how the word sounds: a base form of one word only (a group is said as text).
+    public var speaksIPA: Bool { ipa != nil && !lemma.contains(" ") }
 }
 
 /// The group of words an entry belongs to, in the paragraph's UTF-16 units ("his face went red").
@@ -125,6 +125,13 @@ public struct StorySenses: Sendable {
 
     // MARK: Loading
 
+    /// `load`, but only for the text the file was made for: nil unless the book's `paragraphs` are those of
+    /// `bundledText`, so a book that has a story's title and author with other text gets no senses.
+    public static func load(_ data: Data, story: String, paragraphs: [String], bundledText: String) -> StorySenses? {
+        guard TextTools.splitParagraphs(bundledText) == paragraphs else { return nil }
+        return try? load(data, story: story, paragraphs: paragraphs)
+    }
+
     /// Reads the senses file of story `story` (`Data` of a `<story>.senses.json`) against the story's
     /// `paragraphs` (as `TextTools.splitParagraphs` splits its text), refusing the whole file at the
     /// first problem.
@@ -190,12 +197,16 @@ public struct StorySenses: Sendable {
     }
 
     /// Characters no story text may hold: controls, invisible formatting (bidi, zero-width) and line breaks.
-    private static let invisible: [Unicode.GeneralCategory] = [.control, .format, .lineSeparator, .paragraphSeparator]
+    private static let invisible: [Unicode.GeneralCategory] = [
+        .control, .format, .lineSeparator, .paragraphSeparator, .privateUse, .unassigned, .surrogate,
+    ]
 
     /// Text with no control or format character, at most `max` code points.
     static func isShort(_ s: String, max: Int) -> Bool {
         !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && s.unicodeScalars.count <= max
             && !s.unicodeScalars.contains { invisible.contains($0.properties.generalCategory) }
+            // Already what `cleanText` would make of it: no blank fillers, extra accents or doubled spaces.
+            && TextTools.cleanText(s) == s
     }
 
     /// A Spanish meaning: text with no surrounding space.
@@ -214,6 +225,7 @@ public struct StorySenses: Sendable {
     static func isIPA(_ s: String) -> Bool {
         let count = s.unicodeScalars.count
         return (1...maxIPA).contains(count) && s.unicodeScalars.allSatisfy(ipaScalars.contains)
+            && s.unicodeScalars.contains { $0 != " " }
             && s.precomposedStringWithCanonicalMapping.unicodeScalars.elementsEqual(s.unicodeScalars)
     }
 }

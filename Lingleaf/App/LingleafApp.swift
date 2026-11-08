@@ -80,6 +80,8 @@ final class AppModel {
         self.autoLanguage = autoLanguage
         library.load()
         library.seedIfNeeded(Self.bundledStories)
+        // An install from before the stories with senses gets them once, below its books.
+        library.addNewStoriesIfNeeded(Self.bundledStories)
         self.state = library.state
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
@@ -213,7 +215,7 @@ final class AppModel {
     private static func bundledStory(_ entry: ShelfStory) -> BundledStory? {
         guard let url = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
-        return BundledStory(title: entry.title, level: entry.level, text: text)
+        return BundledStory(title: entry.title, level: entry.level, text: text, hasSenses: entry.hasSenses)
     }
 
     /// The senses of a bundled story's copy in the library (SPEC S19), read strictly against the book's own
@@ -225,7 +227,10 @@ final class AppModel {
         defer { try? handle.close() }
         // One byte past the cap is enough to know the file is too large.
         guard let data = try? handle.read(upToCount: StorySenses.maxBytes + 1) else { return nil }
-        return try? StorySenses.load(data, story: entry.resource, paragraphs: paragraphs)
+        // Only for the text the file was made for: a book with the story's title and author but other text gets none.
+        guard let textURL = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
+              let bundledText = try? String(contentsOf: textURL, encoding: .utf8) else { return nil }
+        return StorySenses.load(data, story: entry.resource, paragraphs: paragraphs, bundledText: bundledText)
     }
 
     /// Puts a bundled story back in the library (the learner deleted it) and returns its id.

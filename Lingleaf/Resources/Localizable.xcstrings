@@ -662,6 +662,16 @@
         }
       }
     },
+    "Group: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grupo: %@"
+          }
+        }
+      }
+    },
     "Helper verb": {
       "localizations": {
         "es": {
@@ -822,12 +832,12 @@
         }
       }
     },
-    "Local use": {
+    "Local English": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Uso local"
+            "value": "Inglés local"
           }
         }
       }
@@ -858,16 +868,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Más idiomas"
-          }
-        }
-      }
-    },
-    "Name": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nombre"
           }
         }
       }
@@ -982,22 +982,22 @@
         }
       }
     },
-    "Our original stories were written with AI help. They are free for anyone to use (CC0).": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nuestros cuentos originales se escribieron con ayuda de IA. Cualquiera puede usarlos libremente (CC0)."
-          }
-        }
-      }
-    },
     "Our stories and free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Nuestros cuentos y clásicos gratuitos de Project Gutenberg."
+          }
+        }
+      }
+    },
+    "Our stories were written with AI help. Anyone can use them freely.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuestros cuentos se escribieron con ayuda de IA. Cualquiera puede usarlos libremente."
           }
         }
       }
@@ -1058,6 +1058,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Proper name": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre propio"
           }
         }
       }
@@ -1631,7 +1641,7 @@
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inglés de EE. UU."
+            "value": "Inglés estadounidense"
           }
         }
       }

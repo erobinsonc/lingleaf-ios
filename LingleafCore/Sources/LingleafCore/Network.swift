@@ -88,7 +88,9 @@ public enum JSONGuard {
             case 0x5B, 0x7B:
                 depth += 1
                 if depth > maxDepth { return false }
-            case 0x5D, 0x7D: depth -= 1
+            case 0x5D, 0x7D:
+                depth -= 1
+                if depth < 0 { return false }
             default: break
             }
         }

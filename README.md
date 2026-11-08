@@ -85,7 +85,7 @@ Definitions come from [Wiktionary](https://en.wiktionary.org/) under
 [MIT](LICENSE) for the code. The MIT license does not cover the Lingleaf name and icon:
 please don't use them for your own builds or forks. Bundled stories in `Lingleaf/Resources/Books`
 (21: three a level from A1 to C2 with word-by-word senses, plus the first three) are original and
-dedicated to the public domain ([CC0 1.0](Lingleaf/Resources/Books/LICENSE)); eighteen of them were written
+dedicated to the public domain ([CC0 1.0](Lingleaf/Resources/Books/LICENSE)); all were written
 with AI assistance (Claude, Anthropic) and reviewed by the maintainer, and the app says so in Settings and Discover.
 Their originality checks are in [docs/stories-provenance.md](docs/stories-provenance.md). That
 license file stays in the repository and is not copied into the app (`project.yml` excludes it).

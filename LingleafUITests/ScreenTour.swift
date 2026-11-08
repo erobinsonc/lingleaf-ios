@@ -58,6 +58,7 @@ final class ScreenTour: XCTestCase {
         readingsTour(labels, extra: Self.largestText, unsureChosen: true, expression: true)
         reviewUnsure(labels, extra: Self.largestText)
         correctionsTour(labels, count: 1, extra: Self.largestText, undo: false)
+        storiesTour(labels, extra: Self.largestText)
         app.terminate()
     }
 
@@ -166,15 +167,15 @@ final class ScreenTour: XCTestCase {
 
     /// The app's own stories (SPEC S19): the Library rows, Discover's stories at a level, a story in the
     /// reader and the cards of a word with the story's sense and of a name.
-    private func storiesTour(_ labels: Labels) {
-        launch(labels, ["-ui-testing"])
+    private func storiesTour(_ labels: Labels, extra: [String] = []) {
+        launch(labels, ["-ui-testing"] + extra)
         _ = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch.waitForExistence(timeout: 10)
         snap("24-library-original-stories")
         openStory(labels, level: "A1", title: "A Shoe in the Fridge")
         snap("26-story-reader")
         tapWord("mom", labels)
         snap("27-story-word-card")
-        launch(labels, ["-ui-testing"])
+        launch(labels, ["-ui-testing"] + extra)
         openStory(labels, level: "A2", title: "The Oven Next Door")
         tapWord("Blue", labels)
         snap("28-story-name-card")
