@@ -50,8 +50,8 @@ enum Credits {
         "Our stories were written with AI help. Anyone can use them freely."
 
     /// What a row of one of the app's own stories says where a book shows its author: the one place to
-    /// change its name ("Original story" or "Lingleaf story"), with its translation in the string catalog.
-    static let storyRowLabel: LocalizedStringResource = "Original story"
+    /// change its name ("Our story"; maybe "App story" or "AI story"), with its translation in the string catalog.
+    static let storyRowLabel: LocalizedStringResource = "Our story"
 
     /// At the end of a definition on the word card: its source and license, and whether the app cut it.
     static func definitionSource(shortened: Bool) -> LocalizedStringResource {

@@ -972,16 +972,6 @@
         }
       }
     },
-    "Original story": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cuento original"
-          }
-        }
-      }
-    },
     "Our stories and free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
@@ -998,6 +988,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Nuestros cuentos se escribieron con ayuda de IA. Cualquiera puede usarlos libremente."
+          }
+        }
+      }
+    },
+    "Our story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuento propio"
           }
         }
       }

@@ -169,7 +169,7 @@ final class LingleafUITests: XCTestCase {
 
     /// S19: the app's own stories say so in the Library, and Discover lists all three of a level.
     func testTheOriginalStoriesAreMarkedAndListedByLevel() {
-        XCTAssertTrue(button(startingWith: "The Red Boat").label.contains("Original story"), "the Library row says it is an original story")
+        XCTAssertTrue(button(startingWith: "The Red Boat").label.contains("Our story"), "the Library row says it is one of the app's stories")
         app.tabBars.buttons["Discover"].tap()
         let a1 = app.buttons["level-filter-A1"]
         XCTAssertTrue(a1.waitForExistence(timeout: 10))

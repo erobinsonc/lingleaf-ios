@@ -238,7 +238,8 @@ extension BundledStory {
         ShelfStory(resource: "the-second-violin", title: "The Second Violin", level: "C2"),
     ]
 
-    /// The author the bundled stories are saved with.
+    /// The author the bundled stories are saved with: internal data that finds the library's copy of a shelf
+    /// story, never shown (a row says "Our story"). The one place to change if the app is renamed.
     public static let author = "Lingleaf"
 
     /// Shelf stories at `level`, in order; a nil level keeps every story.
