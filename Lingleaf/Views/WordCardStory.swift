@@ -26,8 +26,8 @@ extension WordCardView {
 
     /// A name, or a word from another language outside Spanish, has no meaning on the card.
     var storyHasNoMeaning: Bool {
-        guard let kind = story?.sense.kind else { return false }
-        return kind == .name || (kind == .foreign && !isSpanish)
+        guard let story else { return false }
+        return !isSpanish && story.translationSource == nil || story.sense.kind == .name
     }
 
     /// Save and I know it are for words and groups, not for names and words from another language.

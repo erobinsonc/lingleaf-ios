@@ -177,7 +177,9 @@ struct WordCardView: View {
     /// The sense Save stores (SPEC S4): the chosen or certain reading's; unsure with nothing
     /// chosen, none (the tapped form with both readings).
     private var savedSense: String? {
-        if selection.function != nil || story != nil { return nil }
+        if selection.function != nil { return nil }
+        // A story's own sense: "get" saved from two senses is two entries (SPEC S19).
+        if let story { return Sense.story(story.id) }
         if isUnsure { return chosen?.sense }
         return certainSense
     }
@@ -532,7 +534,9 @@ struct WordCardView: View {
             sense: savedSense,
             form: range == nil ? nil : selection.word,
             formRange: range,
-            meanings: unsureForm ? savedMeanings : nil
+            meanings: unsureForm ? savedMeanings : nil,
+            story: selection.storyID,
+            groupRange: story == nil ? nil : selection.groupInSentence
         )
         // Saving never waits: a translation still on its way is done by TranslationWorker.
         if translation == nil { model.translateMissing() }

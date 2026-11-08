@@ -69,7 +69,7 @@
    "lemma": "flat tire",
    "pos": "noun",
    "ipa": "flæt ˈtaɪər",
-   "es": "rueda pinchada",
+   "es": "llanta pinchada",
    "kind": "chunk",
    "variety": "AmE"
   },
@@ -78,7 +78,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "front_teeth": {
    "lemma": "front teeth",
@@ -99,7 +100,8 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "guardar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to put something away safely"
   },
   "mall": {
    "lemma": "mall",
@@ -114,14 +116,16 @@
    "pos": "noun",
    "ipa": "pɑrt",
    "es": "parte (de la historia)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a section of a story"
   },
   "part_spare": {
    "lemma": "part",
    "pos": "noun",
    "ipa": "pɑrt",
    "es": "pieza, repuesto",
-   "kind": "word"
+   "kind": "word",
+   "en": "a piece of a machine"
   },
   "put_on_fit": {
    "lemma": "put on",
@@ -155,14 +159,14 @@
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
-   "es": "tomar, coger (un transporte)",
+   "es": "tomar (un transporte)",
    "kind": "word"
   },
   "tire": {
    "lemma": "tire",
    "pos": "noun",
    "ipa": "ˈtaɪər",
-   "es": "rueda, neumático",
+   "es": "llanta, rueda",
    "kind": "word",
    "variety": "AmE"
   }
@@ -192,7 +196,7 @@
     "start": 15,
     "end": 24,
     "text": "flat tire",
-    "es": "rueda pinchada"
+    "es": "llanta pinchada"
    }
   },
   {

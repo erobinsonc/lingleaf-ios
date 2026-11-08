@@ -63,7 +63,8 @@
    "pos": "verb",
    "ipa": "baʊ",
    "es": "hacer una reverencia (/baʊ/, no /boʊ/ de \"arco\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bend forward as a greeting"
   },
   "carry_up": {
    "lemma": "carry up",
@@ -112,7 +113,8 @@
    "pos": "verb",
    "ipa": "daɪ",
    "es": "quedarse sin batería, apagarse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to run out of power"
   },
   "drum_kit": {
    "lemma": "drum kit",
@@ -147,7 +149,8 @@
    "pos": "adjective",
    "ipa": "fəˈmɪljər",
    "es": "conocido (no \"familiar\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "known from before"
   },
   "feel_sick": {
    "lemma": "feel sick",
@@ -168,7 +171,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "free_cost": {
    "lemma": "free",
@@ -188,7 +192,7 @@
    "lemma": "glasses",
    "pos": "noun",
    "ipa": "ˈɡlæsɪz",
-   "es": "gafas, lentes",
+   "es": "lentes, anteojos",
    "kind": "word"
   },
   "ground_floor": {
@@ -296,21 +300,24 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "sonar (de fondo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to be heard in the background"
   },
   "play_instrument": {
    "lemma": "play",
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "tocar (un instrumento, música)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make music with an instrument"
   },
   "play_music_tocar": {
    "lemma": "play",
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "tocar (música)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make music with an instrument"
   },
   "post_online": {
    "lemma": "post",
@@ -325,7 +332,8 @@
    "ipa": "ˈpræktɪs",
    "es": "practicar, ensayar",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "to repeat music to improve"
   },
   "press_play": {
    "lemma": "press play",
@@ -352,7 +360,7 @@
    "lemma": "right now",
    "pos": "phrase",
    "ipa": "raɪt naʊ",
-   "es": "ahora mismo",
+   "es": "en este momento",
    "kind": "chunk"
   },
   "run_manage": {
@@ -388,14 +396,16 @@
    "pos": "noun",
    "ipa": "ʃoʊ",
    "es": "actuación, programa (en directo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a live performance"
   },
   "show_program": {
    "lemma": "show",
    "pos": "noun",
    "ipa": "ʃoʊ",
    "es": "programa (de radio o tele)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a program on radio or television"
   },
   "sit_up": {
    "lemma": "sit up",
@@ -450,7 +460,7 @@
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
-   "es": "tomar, coger (un transporte)",
+   "es": "tomar (un transporte)",
    "kind": "word"
   },
   "turn_into": {
@@ -493,14 +503,16 @@
    "pos": "verb",
    "ipa": "weɪv",
    "es": "saludar con la mano",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the hand to say hello"
   },
   "wave_noun": {
    "lemma": "wave",
    "pos": "noun",
    "ipa": "weɪv",
    "es": "saludo con la mano",
-   "kind": "word"
+   "kind": "word",
+   "en": "a movement of the hand to say hello"
   },
   "write_back": {
    "lemma": "write back",
@@ -920,7 +932,7 @@
     "start": 120,
     "end": 138,
     "text": "took out her phone",
-    "es": "sacó el móvil"
+    "es": "sacó el celular"
    }
   },
   {
@@ -933,7 +945,7 @@
     "start": 157,
     "end": 166,
     "text": "right now",
-    "es": "ahora mismo"
+    "es": "en este momento"
    }
   },
   {
@@ -1047,7 +1059,7 @@
     "start": 3,
     "end": 23,
     "text": "turned off his phone",
-    "es": "apagó el móvil"
+    "es": "apagó el celular"
    }
   },
   {
@@ -1244,7 +1256,7 @@
     "start": 3,
     "end": 15,
     "text": "pressed play",
-    "es": "le dio al play"
+    "es": "presionó play"
    }
   },
   {
@@ -1391,7 +1403,7 @@
     "start": 110,
     "end": 128,
     "text": "took out his phone",
-    "es": "sacó el móvil"
+    "es": "sacó el celular"
    }
   },
   {

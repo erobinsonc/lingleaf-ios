@@ -131,8 +131,16 @@ private struct WordRow: View {
                 }
                 // A verb group saved without one is the sentence itself: not twice.
                 if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
-                    Text(word.context).font(.caption).italic().foregroundStyle(Brand.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
+                    // A group saved from a story's sense is marked whole in its sentence.
+                    Group {
+                        if word.groupRange == nil {
+                            Text(word.context)
+                        } else {
+                            Text(ReviewView.marked(word.context, word: word))
+                        }
+                    }
+                    .font(.caption).italic().foregroundStyle(Brand.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
             // One VoiceOver element per word ("beach, /biːtʃ/, playa, …") instead of

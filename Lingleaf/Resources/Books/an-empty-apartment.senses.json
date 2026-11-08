@@ -15,7 +15,8 @@
    "ipa": "ˈkɑlɪdʒ",
    "es": "universidad (no \"colegio\")",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a university"
   },
   "come_back": {
    "lemma": "come back",
@@ -52,14 +53,16 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "floor_storey": {
    "lemma": "floor",
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "go_away": {
    "lemma": "go away",

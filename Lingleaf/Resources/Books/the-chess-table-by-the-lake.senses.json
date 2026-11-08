@@ -112,7 +112,8 @@
    "pos": "noun",
    "ipa": "naɪt",
    "es": "caballo (en ajedrez; no \"caballero\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a chess piece shaped like a horse"
   },
   "let_win": {
    "lemma": "let win",
@@ -169,14 +170,16 @@
    "pos": "noun",
    "ipa": "muv",
    "es": "jugada, movimiento",
-   "kind": "word"
+   "kind": "word",
+   "en": "a turn in a game of chess"
   },
   "move_house": {
    "lemma": "move",
    "pos": "verb",
    "ipa": "muv",
    "es": "mudarse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to change the home where you live"
   },
   "moves_ahead": {
    "lemma": "ahead",
@@ -205,7 +208,8 @@
    "pos": "noun",
    "ipa": "ˈɔrdər",
    "es": "pedido (no \"orden\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "goods you ask a shop to send"
   },
   "other_side": {
    "lemma": "side",
@@ -219,7 +223,8 @@
    "pos": "noun",
    "ipa": "ˈpɑrtnər",
    "es": "compañero de juego (no \"socio\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the person you play a game with"
   },
   "piece_chess": {
    "lemma": "piece",
@@ -233,7 +238,8 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "jugar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to take part in a game"
   },
   "put_back": {
    "lemma": "put back",
@@ -317,14 +323,16 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "take_time": {
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
    "es": "tardar (+ tiempo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to need an amount of time"
   },
   "the_kind": {
    "lemma": "the kind that",

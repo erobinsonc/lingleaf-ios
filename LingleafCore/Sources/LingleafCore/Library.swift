@@ -57,6 +57,11 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var meanings: [SavedMeaning]?
     /// A corrected word waiting for its meaning (SPEC S18): not due until it has one.
     public var waitsForMeaning: Bool?
+    /// A word saved from a bundled story's own sense (`sense` is "s:" and the sense's key, S19): the
+    /// story's id, and the group of words it was saved with ("went red") where it is in `context` (UTF-16).
+    public var story: String?
+    public var groupStart: Int?
+    public var groupEnd: Int?
 
     /// One spelling is saved once per sense.
     public var id: String { Self.id(word, sense) }
@@ -67,6 +72,12 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
 
     /// Saved while its sentence didn't tell which word it is.
     public var isUnsure: Bool { meanings != nil && sense == nil }
+
+    /// The group of words a story sense was saved with, in `context`, when it is still there.
+    public var groupRange: WordRange? {
+        guard let groupStart, let groupEnd else { return nil }
+        return WordRange(groupStart, groupEnd)
+    }
 
     /// The tapped form's range in `context`, when it is still there.
     public var formRange: WordRange? {
@@ -96,7 +107,7 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         word.translation = TextTools.truncated(translation, Self.maxTranslation)
         word.contextTranslation = contextTranslation.map { TextTools.truncated($0, Self.maxTranslation) }
         word.source = TextTools.truncated(source, TextTools.maxLabel)
-        if let sense, !Sense.all.contains(sense) { word.sense = nil }
+        if let sense, !Sense.isValid(sense) { word.sense = nil }
         if let form, form.utf16.count > 40 || TextTools.wordRanges(form) != [WordRange(0, (form as NSString).length)] {
             word.form = nil
         }
@@ -110,6 +121,18 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         if !rangeHoldsForm {
             word.formStart = nil
             word.formEnd = nil
+        }
+        // A story sense's story and group: only for a word saved from one, the group holding the tapped form.
+        let fromStory = Sense.isStory(word.sense) && word.kind == nil && word.meanings == nil
+        let storyIsValid = story.map { StorySenses.isID($0, dashes: true) && $0.utf8.count <= 60 } ?? false
+        if !fromStory || !storyIsValid { word.story = nil }
+        var groupIsValid = false
+        if fromStory, let group = groupRange, group.start >= 0, group.start < group.end, group.end <= ns.length {
+            groupIsValid = word.formRange.map { group.start <= $0.start && $0.end <= group.end } ?? true
+        }
+        if !groupIsValid {
+            word.groupStart = nil
+            word.groupEnd = nil
         }
         if let meanings {
             let kept = meanings.prefix(2).compactMap { $0.bounded() }
@@ -286,6 +309,13 @@ public struct LibraryState: Equatable, Sendable {
     public func displayName(_ word: VocabWord, withMeaning: Bool = true) -> String {
         guard let sense = word.sense else { return word.word }
         let others = words.filter { $0.word == word.word && $0.sense != nil && $0.id != word.id }
+        // Two senses of one story word are told apart by their meanings: "get (ponerse)" / "get (agarrar)".
+        if Sense.isStory(sense) {
+            guard withMeaning, !others.isEmpty else { return word.word }
+            let first = word.translation.components(separatedBy: " · ").first ?? ""
+            let short = first.prefix { $0 != "," && $0 != "(" }.trimmingCharacters(in: .whitespaces)
+            return short.isEmpty ? word.word : "\(word.word) (\(short))"
+        }
         guard !others.isEmpty || IrregularVerbs.shared.namesItsSense(word.word) else { return word.word }
         if sense == Sense.noun { return "the \(word.word)" }
         // Review's prompt names it without its meaning: recall comes first (SPEC S7).
@@ -508,10 +538,11 @@ public final class Library {
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
         phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = "",
         kind: FunctionWord.Kind? = nil, base: String? = nil,
-        sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil
+        sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil,
+        story: String? = nil, groupRange: WordRange? = nil
     ) -> VocabWord? {
         let key = TextTools.truncated(TextTools.normalize(word), VocabWord.maxWord)
-        let sense = kind == nil ? sense.flatMap { Sense.all.contains($0) ? $0 : nil } : nil
+        let sense = kind == nil ? sense.flatMap { Sense.isValid($0) ? $0 : nil } : nil
         let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)
         // The same form saved unsure, now saved as one of its readings: it takes its place.
         let unsure = sense == nil ? nil : form
@@ -549,6 +580,11 @@ public final class Library {
             entry.formEnd = formRange?.end
         }
         if kind == nil, sense == nil, let meanings { entry.meanings = Array(meanings.prefix(2)) }
+        // A story sense keeps its story and the group it was saved with (the sentence may change, the range follows it).
+        let fromStory = Sense.isStory(sense)
+        entry.story = fromStory ? story : nil
+        entry.groupStart = fromStory ? groupRange?.start : nil
+        entry.groupEnd = fromStory ? groupRange?.end : nil
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             entry.translation = translation
             entry.translationLanguage = translationLanguage

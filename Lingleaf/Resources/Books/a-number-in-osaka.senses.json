@@ -28,7 +28,8 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de verdad, realmente (no \"actualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "really, truly"
   },
   "afford": {
    "lemma": "afford",
@@ -63,7 +64,8 @@
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
    "es": "discusión (no \"argumento\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a quarrel, a heated discussion"
   },
   "at_last": {
    "lemma": "at last",
@@ -133,14 +135,16 @@
    "pos": "verb",
    "ipa": "baʊ",
    "es": "hacer una reverencia (/baʊ/, no /boʊ/ de \"arco\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bend forward as a greeting"
   },
   "bow_noun": {
    "lemma": "bow",
    "pos": "noun",
    "ipa": "baʊ",
    "es": "reverencia (/baʊ/, no /boʊ/ de \"arco\" o \"lazo\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a bend forward as a greeting"
   },
   "break_pause": {
    "lemma": "break",
@@ -210,7 +214,8 @@
    "pos": "verb",
    "ipa": "tʃɛk",
    "es": "revisar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to look at something carefully"
   },
   "client": {
    "lemma": "client",
@@ -259,7 +264,8 @@
    "pos": "noun",
    "ipa": "kənˈdʌktər",
    "es": "director de orquesta (no \"conductor\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the leader of an orchestra"
   },
   "content_noun": {
    "lemma": "content",
@@ -349,7 +355,7 @@
    "lemma": "elevator",
    "pos": "noun",
    "ipa": "ˈɛləˌveɪtər",
-   "es": "ascensor",
+   "es": "elevador, ascensor",
    "kind": "word",
    "variety": "AmE"
   },
@@ -358,14 +364,16 @@
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
    "es": "avergonzado (no \"embarazada\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
   },
   "embarrassment": {
    "lemma": "embarrassment",
    "pos": "noun",
    "ipa": "ɪmˈbɛrəsmənt",
    "es": "vergüenza, apuro (no \"embarazo\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a feeling of shame"
   },
   "fail_to": {
    "lemma": "fail to",
@@ -387,14 +395,16 @@
    "pos": "adjective",
    "ipa": "fəˈmɪljər",
    "es": "conocido (no \"familiar\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "known from before"
   },
   "figure_number": {
    "lemma": "figure",
    "pos": "noun",
    "ipa": "ˈfɪɡjər",
    "es": "cifra (no \"figura\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a number"
   },
   "fishing_rights": {
    "lemma": "fishing rights",
@@ -408,7 +418,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "folder": {
    "lemma": "folder",
@@ -661,7 +672,8 @@
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (de texto)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of written text"
   },
   "liter_abbr": {
    "lemma": "L",
@@ -703,7 +715,7 @@
    "lemma": "marker",
    "pos": "noun",
    "ipa": "ˈmɑrkər",
-   "es": "rotulador",
+   "es": "marcador",
    "kind": "word"
   },
   "mexico_city": {
@@ -774,28 +786,32 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "note_paper": {
    "lemma": "note",
    "pos": "noun",
    "ipa": "noʊt",
    "es": "nota",
-   "kind": "word"
+   "kind": "word",
+   "en": "a short written message"
   },
   "notes_sticky": {
    "lemma": "notes",
    "pos": "noun",
    "ipa": "noʊts",
    "es": "notas (adhesivas)",
-   "kind": "word"
+   "kind": "word",
+   "en": "small pieces of paper with messages"
   },
   "notes_study": {
    "lemma": "notes",
    "pos": "noun",
    "ipa": "noʊts",
    "es": "apuntes, notas",
-   "kind": "word"
+   "kind": "word",
+   "en": "written notes from a lesson"
   },
   "olive_growers": {
    "lemma": "olive grower",
@@ -816,7 +832,8 @@
    "pos": "noun",
    "ipa": "ˈpɑrti",
    "es": "parte (en un acuerdo; no \"fiesta\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "one of the sides in an agreement"
   },
   "passive_voice": {
    "lemma": "passive voice",
@@ -843,7 +860,7 @@
    "lemma": "pick up",
    "pos": "phrasal verb",
    "ipa": "pɪk ʌp",
-   "es": "adquirir, coger (una costumbre)",
+   "es": "adquirir, tomar (una costumbre)",
    "kind": "chunk"
   },
   "piece_music": {
@@ -858,7 +875,8 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "tocar (música)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make music with an instrument"
   },
   "posture": {
    "lemma": "posture",
@@ -913,7 +931,7 @@
    "lemma": "reading glasses",
    "pos": "noun",
    "ipa": "ˈridɪŋ ˈɡlæsɪz",
-   "es": "gafas de leer",
+   "es": "lentes de lectura",
    "kind": "chunk"
   },
   "regards": {
@@ -1104,7 +1122,8 @@
    "pos": "noun",
    "ipa": "ˈspikər",
    "es": "la persona que habla (no \"altavoz\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a person who is speaking"
   },
   "speech": {
    "lemma": "speech",
@@ -1139,28 +1158,32 @@
    "pos": "adjective",
    "ipa": "stɪl",
    "es": "quieto",
-   "kind": "word"
+   "kind": "word",
+   "en": "not moving"
   },
   "still_however": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "aun así",
-   "kind": "word"
+   "kind": "word",
+   "en": "even so, however"
   },
   "still_room": {
    "lemma": "still",
    "pos": "adjective",
    "ipa": "stɪl",
    "es": "en silencio, inmóvil",
-   "kind": "word"
+   "kind": "word",
+   "en": "quiet and calm"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "storage": {
    "lemma": "storage",
@@ -1201,7 +1224,7 @@
    "lemma": "take someone's arm",
    "pos": "phrase",
    "ipa": "teɪk ˈsʌmwʌnz ɑrm",
-   "es": "coger del brazo",
+   "es": "tomar del brazo",
    "kind": "chunk"
   },
   "take_out_nb": {
@@ -1630,7 +1653,7 @@
     "start": 164,
     "end": 179,
     "text": "reading glasses",
-    "es": "gafas de leer"
+    "es": "lentes de lectura"
    }
   },
   {
@@ -3143,7 +3166,7 @@
     "start": 5,
     "end": 23,
     "text": "took her son's arm",
-    "es": "cogió a su hijo del brazo"
+    "es": "tomó a su hijo del brazo"
    }
   },
   {

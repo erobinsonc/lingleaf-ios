@@ -77,7 +77,8 @@
    "pos": "verb",
    "ipa": "kɛr",
    "es": "importar (a alguien)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to matter to someone"
   },
   "ceiling": {
    "lemma": "ceiling",
@@ -203,14 +204,16 @@
    "pos": "verb",
    "ipa": "daɪ",
    "es": "quedarse sin batería, apagarse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to run out of power"
   },
   "die_device": {
    "lemma": "die",
    "pos": "verb",
    "ipa": "daɪ",
    "es": "estropearse, morirse (un aparato)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to stop working for good"
   },
   "disappointed": {
    "lemma": "disappointed",
@@ -252,7 +255,8 @@
    "pos": "noun",
    "ipa": "fɔlt",
    "es": "culpa",
-   "kind": "word"
+   "kind": "word",
+   "en": "blame"
   },
   "feel_sick2": {
    "lemma": "feel sick",
@@ -393,35 +397,40 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "seguir (haciendo algo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to continue doing something"
   },
   "keep_have": {
    "lemma": "keep",
    "pos": "verb",
    "ipa": "kip",
    "es": "tener (siempre a mano)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to have something and not give it away"
   },
   "keep_store": {
    "lemma": "keep",
    "pos": "verb",
    "ipa": "kip",
    "es": "guardar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to put something away safely"
   },
   "kept_promise": {
    "lemma": "keep",
    "pos": "verb",
    "ipa": "kip",
    "es": "cumplir (una promesa)",
-   "kind": "word"
+   "kind": "word",
+   "en": "did what was promised"
   },
   "kind_nice": {
    "lemma": "kind",
    "pos": "adjective",
    "ipa": "kaɪnd",
    "es": "amable (no \"tipo\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "friendly and helpful"
   },
   "last_endure": {
    "lemma": "last",
@@ -486,7 +495,8 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "not_much_of": {
    "lemma": "not much of a",
@@ -513,7 +523,7 @@
    "lemma": "pick up",
    "pos": "phrasal verb",
    "ipa": "pɪk ʌp",
-   "es": "coger, levantar",
+   "es": "agarrar, levantar",
    "kind": "chunk"
   },
   "plug_in": {
@@ -563,7 +573,7 @@
    "lemma": "reading glasses",
    "pos": "noun",
    "ipa": "ˈridɪŋ ˈɡlæsɪz",
-   "es": "gafas de leer",
+   "es": "lentes de lectura",
    "kind": "chunk"
   },
   "repair_shop": {
@@ -620,21 +630,24 @@
    "pos": "verb",
    "ipa": "seɪv",
    "es": "guardar (un archivo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to keep a computer file"
   },
   "save_money": {
    "lemma": "save",
    "pos": "verb",
    "ipa": "seɪv",
    "es": "ahorrar (no \"salvar\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to keep money for later"
   },
   "save_spare": {
    "lemma": "save",
    "pos": "verb",
    "ipa": "seɪv",
    "es": "ahorrarse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to avoid having to do something"
   },
   "school_fees": {
    "lemma": "school fees",
@@ -711,7 +724,8 @@
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "parecer (por la voz)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem from the way someone speaks"
   },
   "speak_for": {
    "lemma": "speak for",
@@ -725,7 +739,8 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "strong_tea": {
    "lemma": "strong",
@@ -745,15 +760,17 @@
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
-   "es": "tomar, coger (un transporte)",
-   "kind": "word"
+   "es": "tomar (un transporte)",
+   "kind": "word",
+   "en": "to travel on a bus or train"
   },
   "take_hour": {
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (tiempo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to need an amount of time"
   },
   "take_out": {
    "lemma": "take out",
@@ -1378,7 +1395,7 @@
     "start": 98,
     "end": 113,
     "text": "reading glasses",
-    "es": "gafas de leer"
+    "es": "lentes de lectura"
    }
   },
   {
@@ -1748,7 +1765,7 @@
     "start": 4,
     "end": 20,
     "text": "picked up a lamp",
-    "es": "cogió una lámpara"
+    "es": "tomó una lámpara"
    }
   },
   {
@@ -1823,7 +1840,7 @@
     "start": 77,
     "end": 95,
     "text": "took out her phone",
-    "es": "sacó el móvil"
+    "es": "sacó el celular"
    }
   },
   {
@@ -2362,7 +2379,7 @@
     "start": 42,
     "end": 83,
     "text": "Keep your laptop away from the bus window",
-    "es": "Mantén el portátil lejos de la ventanilla del autobús"
+    "es": "Mantén la laptop lejos de la ventanilla del autobús"
    }
   },
   {

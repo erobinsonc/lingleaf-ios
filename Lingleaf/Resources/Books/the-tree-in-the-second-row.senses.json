@@ -42,13 +42,14 @@
    "pos": "noun",
    "ipa": "ˈkɑstum",
    "es": "disfraz (no \"costumbre\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "clothes worn for a play or party"
   },
   "crazy_hectic": {
    "lemma": "crazy",
    "pos": "adjective",
    "ipa": "ˈkreɪzi",
-   "es": "una locura, caótico",
+   "es": "alocado, caótico",
    "kind": "word"
   },
   "cut_out": {
@@ -77,7 +78,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "fly_in": {
    "lemma": "fly in",
@@ -155,7 +157,8 @@
    "pos": "noun",
    "ipa": "pɑrt",
    "es": "parte (de la historia)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a section of a story"
   },
   "play_theatre": {
    "lemma": "play",
@@ -219,7 +222,8 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "story_tale": {
    "lemma": "story",
@@ -232,7 +236,7 @@
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
-   "es": "tomar, coger (un transporte)",
+   "es": "tomar (un transporte)",
    "kind": "word"
   },
   "try_on": {
@@ -275,7 +279,8 @@
    "pos": "verb",
    "ipa": "weɪv",
    "es": "saludar con la mano",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the hand to say hello"
   },
   "wear_clothes": {
    "lemma": "wear",

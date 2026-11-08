@@ -103,10 +103,10 @@ final class StorySensesTests: XCTestCase {
         XCTAssertFalse(chunk.speaksIPA, "a group is said as text")
         XCTAssertFalse(name.speaksIPA, "no IPA, no respelling")
         for (pos, expected) in [("noun", "noun"), ("modal", "verb"), ("phrasal verb", nil), ("proper noun", nil), ("suffix", nil)] {
-            let made = StorySense(lemma: "x", partOfSpeech: pos, ipa: nil, spanish: "x", kind: .word, variety: nil, note: nil)
+            let made = StorySense(lemma: "x", partOfSpeech: pos, ipa: nil, spanish: "x", kind: .word, variety: nil, note: nil, english: nil)
             XCTAssertEqual(made.definitionPartOfSpeech, expected, pos)
         }
-        let foreign = StorySense(lemma: "san", partOfSpeech: "noun", ipa: "sɑn", spanish: "x", kind: .foreign, variety: .local, note: nil)
+        let foreign = StorySense(lemma: "san", partOfSpeech: "noun", ipa: "sɑn", spanish: "x", kind: .foreign, variety: .local, note: nil, english: nil)
         XCTAssertNil(foreign.definitionPartOfSpeech, "a word from another language has none")
     }
 
@@ -128,6 +128,80 @@ final class StorySensesTests: XCTestCase {
         XCTAssertEqual(british.label, .british)
         let local = try XCTUnwrap(load(try sense("free_available", "variety", "local")).hit(paragraph: 0, range: WordRange(19, 23)))
         XCTAssertEqual(local.label, .local)
+    }
+
+    /// A bare word is translated from its English gloss, never from a base form that has another sense or a
+    /// false-friend warning (SPEC S19).
+    func testABareWordIsTranslatedOnlyWhenItCannotPickTheWrongSense() throws {
+        let free = try XCTUnwrap(load(try file()).hit(paragraph: 0, range: WordRange(19, 23)))
+        XCTAssertEqual(free.translationSource, "free", "no sibling, no warning: the base form")
+        let warned = try XCTUnwrap(load(try sense("free_available", "es", "libre (no \"gratis\")"))
+            .hit(paragraph: 0, range: WordRange(19, 23)))
+        XCTAssertNil(warned.translationSource, "a false-friend warning needs a gloss")
+        let glossed = try XCTUnwrap(load(try sense("free_available", "en", "not busy, available"))
+            .hit(paragraph: 0, range: WordRange(19, 23)))
+        XCTAssertEqual(glossed.translationSource, "not busy, available")
+        XCTAssertEqual(glossed.sense.english, "not busy, available")
+        // Two senses of one base form in the story: both need a gloss.
+        let twins = try file { json in
+            var senses = json["senses"] as? [String: Any] ?? [:]
+            senses["free_other"] = ["lemma": "Free", "pos": "verb", "ipa": "fri", "es": "liberar", "kind": "word"]
+            json["senses"] = senses
+            var entries = json["entries"] as? [[String: Any]] ?? []
+            entries[2] = ["p": 1, "start": 4, "end": 8, "text": "Long", "sense": "free_other"]
+            json["entries"] = entries
+        }
+        let sibling = try XCTUnwrap(load(twins).hit(paragraph: 0, range: WordRange(19, 23)))
+        XCTAssertTrue(sibling.siblings)
+        XCTAssertNil(sibling.translationSource)
+        let group = try XCTUnwrap(load(try file()).hit(paragraph: 0, range: WordRange(9, 13)))
+        XCTAssertEqual(group.translationSource, "His face went red", "a group is translated as the group")
+        assertRefused(try sense("free_available", "en", ""), "an empty gloss")
+        assertRefused(try sense("free_available", "en", String(repeating: "a", count: 61)), "a gloss over 60 characters")
+        assertRefused(try sense("free_available", "en", " x"), "a gloss with a space around it")
+    }
+
+    /// SPEC S19: a word saved from a story sense marks, in that story, only the places with the same sense, a group whole.
+    func testSavedStorySensesMarkOnlyTheirOwnPlaces() throws {
+        let senses = try load(try file())
+        let words = TextTools.wordRanges(paragraphs[0])
+        func saved(_ key: String, lemma: String) -> VocabWord {
+            var word = VocabWord(word: lemma, translation: "x", translationLanguage: nil, phonetic: "", context: "",
+                                 source: "", learned: false, box: 0, createdAt: Date(), nextReview: Date())
+            word.sense = Sense.story(key)
+            word.story = story
+            return word
+        }
+        // The generic underline marked "went" and "Free" by their forms.
+        let generic: Set<WordRange> = [WordRange(9, 13), WordRange(19, 23)]
+        let group = senses.underlines(paragraph: 0, generic: generic, words: words, saved: [saved("go_red", lemma: "go red")])
+        XCTAssertEqual(group, generic.union([WordRange(0, 3), WordRange(4, 8), WordRange(14, 17)]), "the whole group: his face went red")
+        // "Free" saved with another sense of the lemma: the place with the file's sense is not marked.
+        let other = senses.underlines(paragraph: 0, generic: generic, words: words, saved: [saved("free_other", lemma: "free")])
+        XCTAssertEqual(other, [WordRange(9, 13)])
+        let same = senses.underlines(paragraph: 0, generic: generic, words: words, saved: [saved("free_available", lemma: "free")])
+        XCTAssertEqual(same, generic)
+        // Known words, other stories and words without a story sense change nothing.
+        var known = saved("go_red", lemma: "go red")
+        known.learned = true
+        XCTAssertEqual(senses.underlines(paragraph: 0, generic: generic, words: words, saved: [known]), generic)
+        var elsewhere = saved("go_red", lemma: "go red")
+        elsewhere.story = "another-story"
+        XCTAssertEqual(senses.underlines(paragraph: 0, generic: generic, words: words, saved: [elsewhere]), generic)
+        XCTAssertEqual(senses.underlines(paragraph: 3, generic: generic, words: words, saved: [saved("go_red", lemma: "go red")]), generic)
+    }
+
+    func testStorySenseNames() {
+        XCTAssertEqual(Sense.story("get_fetch"), "s:get_fetch")
+        XCTAssertEqual(Sense.storyKey("s:get_fetch"), "get_fetch")
+        XCTAssertNil(Sense.storyKey("verb"))
+        XCTAssertNil(Sense.storyKey("s:"))
+        XCTAssertNil(Sense.storyKey("s:Get"))
+        XCTAssertNil(Sense.storyKey("s:" + String(repeating: "a", count: 41)))
+        XCTAssertNil(Sense.storyKey(nil))
+        XCTAssertTrue(Sense.isValid(Sense.noun))
+        XCTAssertTrue(Sense.isValid("s:x"))
+        XCTAssertFalse(Sense.isValid("s:x y"))
     }
 
     func testAFileOverTheLimitsIsRefused() {

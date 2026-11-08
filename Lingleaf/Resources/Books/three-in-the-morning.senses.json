@@ -21,14 +21,16 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de hecho",
-   "kind": "word"
+   "kind": "word",
+   "en": "in fact"
   },
   "actually_really": {
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de verdad, realmente (no \"actualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "really, truly"
   },
   "alarm_on": {
    "lemma": "be on",
@@ -42,7 +44,8 @@
    "pos": "verb",
    "ipa": "əˈsum",
    "es": "suponer (no \"asumir\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to suppose, to take for granted"
   },
   "at_same_time": {
    "lemma": "at the same time",
@@ -62,7 +65,7 @@
    "lemma": "bell",
    "pos": "noun",
    "ipa": "bɛl",
-   "es": "timbre (del colegio)",
+   "es": "timbre (de la escuela)",
    "kind": "word"
   },
   "besides": {
@@ -83,7 +86,7 @@
    "lemma": "cafeteria",
    "pos": "noun",
    "ipa": "ˌkæfəˈtɪriə",
-   "es": "comedor (escolar)",
+   "es": "comedor, cafetería",
    "kind": "word",
    "variety": "AmE"
   },
@@ -114,7 +117,8 @@
    "ipa": "ˈkɛmɪst",
    "es": "químico, química (no \"farmacéutico\")",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a scientist who studies chemicals"
   },
   "chimney": {
    "lemma": "chimney",
@@ -206,14 +210,16 @@
    "pos": "noun",
    "ipa": "fɔlt",
    "es": "culpa",
-   "kind": "word"
+   "kind": "word",
+   "en": "blame"
   },
   "fault_defect": {
    "lemma": "fault",
    "pos": "noun",
    "ipa": "fɔlt",
    "es": "fallo, defecto",
-   "kind": "word"
+   "kind": "word",
+   "en": "a defect, a problem in a machine"
   },
   "faulty": {
    "lemma": "faulty",
@@ -339,7 +345,7 @@
    "lemma": "marker",
    "pos": "noun",
    "ipa": "ˈmɑrkər",
-   "es": "rotulador",
+   "es": "marcador",
    "kind": "word"
   },
   "member_club": {
@@ -368,7 +374,8 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "old_town": {
    "lemma": "old town",
@@ -423,7 +430,7 @@
    "lemma": "phone repair place",
    "pos": "noun",
    "ipa": "foʊn rɪˈpɛr pleɪs",
-   "es": "tienda de reparación de móviles",
+   "es": "tienda de reparación de celulares",
    "kind": "chunk"
   },
   "pole": {
@@ -438,7 +445,8 @@
    "pos": "noun",
    "ipa": "ˈpoʊlɪʃ",
    "es": "polaco (idioma; no \"polish\" /ˈpɑlɪʃ/, sacar brillo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "the language of Poland"
   },
   "pour_out": {
    "lemma": "pour out",
@@ -544,21 +552,24 @@
    "pos": "noun",
    "ipa": "roʊ",
    "es": "hilera",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of buildings"
   },
   "run_business": {
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
    "es": "llevar, regentar (un negocio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to manage a business"
   },
   "run_club": {
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
    "es": "dirigir, llevar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to manage a club"
   },
   "screen_display": {
    "lemma": "screen",
@@ -593,14 +604,16 @@
    "pos": "noun",
    "ipa": "saɪn",
    "es": "cartel, letrero",
-   "kind": "word"
+   "kind": "word",
+   "en": "a board with writing or a picture"
   },
   "sign_shop": {
    "lemma": "sign",
    "pos": "noun",
    "ipa": "saɪn",
    "es": "letrero",
-   "kind": "word"
+   "kind": "word",
+   "en": "a board above a shop with its name"
   },
   "silver_hair": {
    "lemma": "silver",
@@ -670,14 +683,16 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "aun así",
-   "kind": "word"
+   "kind": "word",
+   "en": "even so, however"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "switch_on": {
    "lemma": "switch on",
@@ -1231,7 +1246,7 @@
     "start": 236,
     "end": 254,
     "text": "phone repair place",
-    "es": "tienda de reparación de móviles"
+    "es": "tienda de reparación de celulares"
    }
   },
   {

@@ -34,7 +34,7 @@
    "lemma": "annoyed",
    "pos": "adjective",
    "ipa": "əˈnɔɪd",
-   "es": "molesto, enfadado",
+   "es": "molesto, enojado",
    "kind": "word"
   },
   "anticipate": {
@@ -153,7 +153,7 @@
    "lemma": "blind",
    "pos": "noun",
    "ipa": "blaɪnd",
-   "es": "persiana, estor",
+   "es": "persiana, cortina",
    "kind": "word"
   },
   "board_directors": {
@@ -209,7 +209,7 @@
    "lemma": "cafeteria",
    "pos": "noun",
    "ipa": "ˌkæfəˈtɪriə",
-   "es": "comedor (escolar)",
+   "es": "comedor, cafetería",
    "kind": "word",
    "variety": "AmE"
   },
@@ -385,7 +385,7 @@
    "lemma": "elevator",
    "pos": "noun",
    "ipa": "ˈɛləˌveɪtər",
-   "es": "ascensor",
+   "es": "elevador, ascensor",
    "kind": "word",
    "variety": "AmE"
   },
@@ -394,7 +394,8 @@
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
    "es": "avergonzado (no \"embarazada\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
   },
   "end_up": {
    "lemma": "end up",
@@ -484,7 +485,7 @@
    "lemma": "flat",
    "pos": "noun",
    "ipa": "flæt",
-   "es": "piso, apartamento",
+   "es": "departamento, apartamento",
    "kind": "word",
    "variety": "BrE"
   },
@@ -507,14 +508,16 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "floor_storey": {
    "lemma": "floor",
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "fold_up": {
    "lemma": "fold up",
@@ -598,20 +601,22 @@
    "pos": "noun",
    "ipa": "ɡlæs",
    "es": "vaso",
-   "kind": "word"
+   "kind": "word",
+   "en": "a drinking glass"
   },
   "glass_material": {
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
    "es": "cristal, vidrio (no \"vaso\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the hard clear material of windows"
   },
   "glasses_eyes": {
    "lemma": "glasses",
    "pos": "noun",
    "ipa": "ˈɡlæsɪz",
-   "es": "gafas, lentes",
+   "es": "lentes, anteojos",
    "kind": "word"
   },
   "go_on": {
@@ -834,14 +839,16 @@
    "ipa": "laɪn",
    "es": "cola, fila (de gente)",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a line of people waiting"
   },
   "line_text": {
    "lemma": "line",
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (de texto)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of written text"
   },
   "line_up": {
    "lemma": "line up",
@@ -953,7 +960,8 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "not_anymore": {
    "lemma": "anymore",
@@ -1009,7 +1017,7 @@
    "lemma": "open-plan",
    "pos": "adjective",
    "ipa": "ˌoʊpənˈplæn",
-   "es": "diáfano",
+   "es": "de planta abierta",
    "kind": "word"
   },
   "operations_director": {
@@ -1044,7 +1052,7 @@
    "lemma": "parking lot",
    "pos": "noun",
    "ipa": "ˈpɑrkɪŋ lɑt",
-   "es": "aparcamiento",
+   "es": "estacionamiento",
    "kind": "chunk",
    "variety": "AmE"
   },
@@ -1074,14 +1082,16 @@
    "pos": "noun",
    "ipa": "pəˈzɪʃən",
    "es": "puesto (de trabajo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a job in a company"
   },
   "position_view": {
    "lemma": "position",
    "pos": "noun",
    "ipa": "pəˈzɪʃən",
    "es": "postura, opinión",
-   "kind": "word"
+   "kind": "word",
+   "en": "an opinion about something"
   },
   "postpone": {
    "lemma": "postpone",
@@ -1153,6 +1163,13 @@
    "es": "recurrir a",
    "kind": "chunk"
   },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
+   "kind": "word"
+  },
   "reject": {
    "lemma": "reject",
    "pos": "verb",
@@ -1178,7 +1195,7 @@
    "lemma": "resignation",
    "pos": "noun",
    "ipa": "ˌrɛzɪɡˈneɪʃən",
-   "es": "dimisión",
+   "es": "renuncia",
    "kind": "word"
   },
   "retain": {
@@ -1263,21 +1280,24 @@
    "pos": "verb",
    "ipa": "rʌn",
    "es": "dirigir, llevar (una empresa)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to manage a company"
   },
   "run_route": {
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
    "es": "hacer, mantener (una ruta)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to operate a bus route"
   },
   "run_work": {
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
    "es": "funcionar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to work, said of a machine"
   },
   "ruthlessly": {
    "lemma": "ruthlessly",
@@ -1290,7 +1310,7 @@
    "lemma": "samosa",
    "pos": "noun",
    "ipa": "səˈmoʊsə",
-   "es": "samosa (empanadilla)",
+   "es": "samosa (empanada)",
    "kind": "word"
   },
   "say_more": {
@@ -1313,14 +1333,16 @@
    "ipa": "ˈskɛdʒul",
    "es": "horario, turnos",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a timetable of working hours"
   },
   "schedule_verb": {
    "lemma": "schedule",
    "pos": "verb",
    "ipa": "ˈskɛdʒul",
    "es": "programar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to plan for a certain time"
   },
   "screen_display": {
    "lemma": "screen",
@@ -1446,7 +1468,8 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "stir": {
    "lemma": "stir",
@@ -1495,7 +1518,8 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "tardar (+ tiempo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to need an amount of time"
   },
   "think_over": {
    "lemma": "think over",
@@ -1771,6 +1795,13 @@
   },
   {
    "p": 3,
+   "start": 18,
+   "end": 22,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 3,
    "start": 83,
    "end": 93,
    "text": "management",
@@ -2014,7 +2045,7 @@
     "start": 117,
     "end": 126,
     "text": "open-plan",
-    "es": "diáfana"
+    "es": "de planta abierta"
    }
   },
   {
@@ -2408,6 +2439,13 @@
   },
   {
    "p": 25,
+   "start": 32,
+   "end": 36,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 25,
    "start": 41,
    "end": 45,
    "text": "form",
@@ -2460,6 +2498,13 @@
    "end": 261,
    "text": "ruthlessly",
    "sense": "ruthlessly"
+  },
+  {
+   "p": 26,
+   "start": 8,
+   "end": 12,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 26,
@@ -2599,7 +2644,7 @@
     "start": 95,
     "end": 106,
     "text": "parking lot",
-    "es": "aparcamiento"
+    "es": "estacionamiento"
    }
   },
   {
@@ -2780,6 +2825,13 @@
    "end": 48,
    "text": "annoyed",
    "sense": "annoyed"
+  },
+  {
+   "p": 48,
+   "start": 18,
+   "end": 22,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 50,
@@ -3766,6 +3818,13 @@
   },
   {
    "p": 105,
+   "start": 3,
+   "end": 7,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 105,
    "start": 34,
    "end": 38,
    "text": "took",
@@ -4325,6 +4384,13 @@
    "end": 358,
    "text": "routes",
    "sense": "route"
+  },
+  {
+   "p": 136,
+   "start": 392,
+   "end": 396,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 136,

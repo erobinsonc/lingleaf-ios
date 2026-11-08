@@ -19,6 +19,8 @@ struct WordSelection: Identifiable {
     var story: StorySenseHit?
     /// The story sense's group of words, where it is in `sentence`.
     var groupInSentence: WordRange?
+    /// The id of the story the word is in, for a word saved from its own sense.
+    var storyID: String?
 
     /// The verb group of a helper or modal verb ("did not go"), if there is one.
     var chunk: String? {
@@ -369,8 +371,13 @@ struct ReaderView: View {
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
-        let learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
+        var learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
             model.learningRanges(text, words[index])
+        }
+        // A word saved from a story's own sense marks, in that story, only the places with the same sense (S19).
+        if let storySenses {
+            learningRanges = storySenses.underlines(
+                paragraph: index, generic: learningRanges, words: words[index], saved: model.state.words)
         }
         for range in words[index] {
             guard let stringRange = Range(range.nsRange, in: text),
@@ -481,7 +488,8 @@ struct ReaderView: View {
             groupInSentence: group.flatMap { span -> WordRange? in
                 sentenceRange.start <= span.start && span.end <= sentenceRange.end
                     ? WordRange(span.start - sentenceRange.start, span.end - sentenceRange.start) : nil
-            }
+            },
+            storyID: story == nil ? nil : storySenses?.story
         )
     }
 

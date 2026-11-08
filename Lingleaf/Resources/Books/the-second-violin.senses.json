@@ -7,14 +7,16 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de hecho",
-   "kind": "word"
+   "kind": "word",
+   "en": "in fact"
   },
   "actually_really": {
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de verdad, realmente (no \"actualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "really, truly"
   },
   "adore": {
    "lemma": "adore",
@@ -49,7 +51,8 @@
    "pos": "verb",
    "ipa": "əˈsum",
    "es": "suponer (no \"asumir\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to suppose, to take for granted"
   },
   "at_last": {
    "lemma": "at last",
@@ -84,7 +87,8 @@
    "pos": "noun",
    "ipa": "bɑr",
    "es": "compás (en música; no \"bar\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a measure of music"
   },
   "bathe": {
    "lemma": "bathe",
@@ -112,14 +116,16 @@
    "pos": "verb",
    "ipa": "baʊ",
    "es": "hacer una reverencia (/baʊ/)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bend forward as a greeting"
   },
   "bow_violin": {
    "lemma": "bow",
    "pos": "noun",
    "ipa": "boʊ",
    "es": "arco (del violín; /boʊ/, no /baʊ/ \"reverencia\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the stick used to play a violin"
   },
   "brass": {
    "lemma": "brass",
@@ -168,7 +174,8 @@
    "pos": "verb",
    "ipa": "kɛr",
    "es": "importar (a alguien)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to matter to someone"
   },
   "case_violin": {
    "lemma": "case",
@@ -216,7 +223,7 @@
    "lemma": "closet",
    "pos": "noun",
    "ipa": "ˈklɑzət",
-   "es": "armario",
+   "es": "clóset, armario",
    "kind": "word",
    "variety": "AmE"
   },
@@ -323,7 +330,7 @@
    "lemma": "earring",
    "pos": "noun",
    "ipa": "ˈɪrɪŋ",
-   "es": "pendiente",
+   "es": "arete",
    "kind": "word"
   },
   "either_neither": {
@@ -338,7 +345,8 @@
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
    "es": "avergonzado (no \"embarazada\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
   },
   "encouragement": {
    "lemma": "encouragement",
@@ -352,7 +360,8 @@
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
    "es": "al final, finalmente (no \"eventualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "in the end, after a long time"
   },
   "fair_just": {
    "lemma": "fair",
@@ -379,7 +388,7 @@
    "lemma": "faucet",
    "pos": "noun",
    "ipa": "ˈfɔsɪt",
-   "es": "grifo",
+   "es": "llave de agua",
    "kind": "word",
    "variety": "AmE"
   },
@@ -403,7 +412,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "folk_dance": {
    "lemma": "folk dance",
@@ -430,7 +440,7 @@
    "lemma": "front room",
    "pos": "noun",
    "ipa": "frʌnt rum",
-   "es": "salón",
+   "es": "sala",
    "kind": "chunk"
   },
   "front_row": {
@@ -514,7 +524,7 @@
    "lemma": "handbag",
    "pos": "noun",
    "ipa": "ˈhændbæɡ",
-   "es": "bolso",
+   "es": "bolso, cartera",
    "kind": "word"
   },
   "handed_gift": {
@@ -644,7 +654,8 @@
    "ipa": "laɪn",
    "es": "cola, fila (de gente)",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a line of people waiting"
   },
   "love_address": {
    "lemma": "love",
@@ -744,14 +755,16 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "nod_greet": {
    "lemma": "nod",
    "pos": "verb",
    "ipa": "nɑd",
    "es": "saludar con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head slightly to greet someone"
   },
   "not_anymore": {
    "lemma": "anymore",
@@ -836,7 +849,8 @@
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (telefónica)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a telephone line"
   },
   "phrase_music": {
    "lemma": "phrase",
@@ -849,7 +863,7 @@
    "lemma": "pick up",
    "pos": "phrasal verb",
    "ipa": "pɪk ʌp",
-   "es": "coger, levantar",
+   "es": "agarrar, levantar",
    "kind": "chunk"
   },
   "piece_music2": {
@@ -864,7 +878,8 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "tocar (música)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make music with an instrument"
   },
   "practice_music": {
    "lemma": "practice",
@@ -872,7 +887,8 @@
    "ipa": "ˈpræktɪs",
    "es": "practicar, ensayar",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "to repeat music to improve"
   },
   "practice_training": {
    "lemma": "practice",
@@ -880,7 +896,8 @@
    "ipa": "ˈpræktɪs",
    "es": "entrenamiento",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "training to get better"
   },
   "punish": {
    "lemma": "punish",
@@ -916,6 +933,13 @@
    "ipa": "ritʃ fɔr",
    "es": "alargar la mano hacia",
    "kind": "chunk"
+  },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
+   "kind": "word"
   },
   "recital": {
    "lemma": "recital",
@@ -1098,14 +1122,16 @@
    "pos": "verb",
    "ipa": "sɪŋk",
    "es": "encogerse (el corazón)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to feel sad suddenly"
   },
   "sink_water": {
    "lemma": "sink",
    "pos": "verb",
    "ipa": "sɪŋk",
    "es": "hundirse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to go down under water"
   },
   "snore": {
    "lemma": "snore",
@@ -1118,7 +1144,7 @@
    "lemma": "sour cream",
    "pos": "noun",
    "ipa": "saʊər krim",
-   "es": "nata agria",
+   "es": "crema agria",
    "kind": "chunk"
   },
   "speech": {
@@ -1147,14 +1173,16 @@
    "pos": "adjective",
    "ipa": "stɪl",
    "es": "quieto",
-   "kind": "word"
+   "kind": "word",
+   "en": "not moving"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "sting_eyes": {
    "lemma": "sting",
@@ -1536,7 +1564,7 @@
     "start": 42,
     "end": 69,
     "text": "reaching for the sour cream",
-    "es": "alargaba la mano hacia la nata agria"
+    "es": "extendía la mano hacia la crema agria"
    }
   },
   {
@@ -1549,7 +1577,7 @@
     "start": 59,
     "end": 69,
     "text": "sour cream",
-    "es": "nata agria"
+    "es": "crema agria"
    }
   },
   {
@@ -1702,7 +1730,7 @@
     "start": 71,
     "end": 85,
     "text": "the sour cream",
-    "es": "la nata agria"
+    "es": "la crema agria"
    }
   },
   {
@@ -1722,7 +1750,7 @@
     "start": 194,
     "end": 208,
     "text": "the sour cream",
-    "es": "la nata agria"
+    "es": "la crema agria"
    }
   },
   {
@@ -2317,6 +2345,13 @@
   },
   {
    "p": 62,
+   "start": 283,
+   "end": 287,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 62,
    "start": 342,
    "end": 349,
    "text": "stopped",
@@ -2661,7 +2696,7 @@
     "start": 104,
     "end": 114,
     "text": "front room",
-    "es": "salón"
+    "es": "sala"
    }
   },
   {
@@ -2777,7 +2812,7 @@
     "start": 81,
     "end": 101,
     "text": "turned on the faucet",
-    "es": "abría el grifo"
+    "es": "abría la llave"
    }
   },
   {
@@ -2924,7 +2959,7 @@
     "start": 27,
     "end": 57,
     "text": "tell the music from the fridge",
-    "es": "distinguir la música de la nevera"
+    "es": "distinguir la música del refrigerador"
    }
   },
   {
@@ -3778,7 +3813,7 @@
     "start": 67,
     "end": 83,
     "text": "pick up a violin",
-    "es": "coger un violín"
+    "es": "tomar un violín"
    }
   },
   {

@@ -7,7 +7,8 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "en realidad, de hecho (no \"actualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "in truth, in reality"
   },
   "admit_to": {
    "lemma": "admit to",
@@ -20,7 +21,7 @@
    "lemma": "annoyed",
    "pos": "adjective",
    "ipa": "əˈnɔɪd",
-   "es": "molesto, enfadado",
+   "es": "molesto, enojado",
    "kind": "word"
   },
   "apparently": {
@@ -28,7 +29,8 @@
    "pos": "adverb",
    "ipa": "əˈpɛrəntli",
    "es": "al parecer (no \"aparentemente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "it seems that"
   },
   "appreciate": {
    "lemma": "appreciate",
@@ -49,14 +51,16 @@
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
    "es": "discusión (no \"argumento\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a quarrel, a heated discussion"
   },
   "assume_suppose": {
    "lemma": "assume",
    "pos": "verb",
    "ipa": "əˈsum",
    "es": "suponer (no \"asumir\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to suppose, to take for granted"
   },
   "at_once_same": {
    "lemma": "at once",
@@ -148,14 +152,16 @@
    "pos": "verb",
    "ipa": "tʃɛk",
    "es": "comprobar, tomarle la temperatura a",
-   "kind": "word"
+   "kind": "word",
+   "en": "to look at a child to see if they are well"
   },
   "check_details": {
    "lemma": "check",
    "pos": "verb",
    "ipa": "tʃɛk",
    "es": "revisar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to look at something carefully"
   },
   "chop": {
    "lemma": "chop",
@@ -176,7 +182,7 @@
    "lemma": "closet",
    "pos": "noun",
    "ipa": "ˈklɑzət",
-   "es": "armario",
+   "es": "clóset, armario",
    "kind": "word",
    "variety": "AmE"
   },
@@ -233,7 +239,7 @@
    "lemma": "dishes",
    "pos": "noun",
    "ipa": "ˈdɪʃɪz",
-   "es": "platos (para fregar)",
+   "es": "platos (para lavar)",
    "kind": "word"
   },
   "do_great": {
@@ -255,7 +261,7 @@
    "lemma": "dumpling",
    "pos": "noun",
    "ipa": "ˈdʌmplɪŋ",
-   "es": "empanadilla (de masa al vapor)",
+   "es": "empanada (de masa al vapor)",
    "kind": "word"
   },
   "either_neither": {
@@ -270,7 +276,8 @@
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
    "es": "al final, finalmente (no \"eventualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "in the end, after a long time"
   },
   "ever_since": {
    "lemma": "ever since",
@@ -312,14 +319,16 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "floor_storey": {
    "lemma": "floor",
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "for_reason": {
    "lemma": "for a reason",
@@ -375,7 +384,7 @@
    "lemma": "guy",
    "pos": "noun",
    "ipa": "ɡaɪ",
-   "es": "tío, chico",
+   "es": "tipo, chico",
    "kind": "word",
    "variety": "AmE"
   },
@@ -427,8 +436,7 @@
    "pos": "noun",
    "ipa": "ˈhɑlədeɪ",
    "es": "(día) festivo",
-   "kind": "word",
-   "variety": "AmE"
+   "kind": "word"
   },
   "hows_it_going": {
    "lemma": "how's it going",
@@ -478,14 +486,16 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "seguir (haciendo algo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to continue doing something"
   },
   "keep_promise2": {
    "lemma": "keep",
    "pos": "verb",
    "ipa": "kip",
    "es": "cumplir (una promesa)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to do what you promised"
   },
   "kind_type": {
    "lemma": "kind",
@@ -605,14 +615,16 @@
    "pos": "noun",
    "ipa": "noʊt",
    "es": "nota",
-   "kind": "word"
+   "kind": "word",
+   "en": "a short written message"
   },
   "note_write": {
    "lemma": "note",
    "pos": "verb",
    "ipa": "noʊt",
    "es": "anotar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to write something down"
   },
   "only_just": {
    "lemma": "only just",
@@ -699,6 +711,13 @@
    "es": "ponerse (ropa)",
    "kind": "chunk"
   },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
+   "kind": "word"
+  },
   "rent_noun": {
    "lemma": "rent",
    "pos": "noun",
@@ -724,7 +743,7 @@
    "lemma": "roommate",
    "pos": "noun",
    "ipa": "ˈrummeɪt",
-   "es": "compañero de piso",
+   "es": "compañero de departamento",
    "kind": "word",
    "variety": "AmE"
   },
@@ -734,7 +753,8 @@
    "ipa": "ˈskɛdʒul",
    "es": "horario, turnos",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "a timetable of working hours"
   },
   "see_breath": {
    "lemma": "breath",
@@ -769,14 +789,16 @@
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "parecer (por la voz)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem from the way someone speaks"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "stranger": {
    "lemma": "stranger",
@@ -789,7 +811,7 @@
    "lemma": "sweater",
    "pos": "noun",
    "ipa": "ˈswɛtər",
-   "es": "jersey, suéter",
+   "es": "suéter",
    "kind": "word",
    "variety": "AmE"
   },
@@ -1967,6 +1989,13 @@
   },
   {
    "p": 63,
+   "start": 20,
+   "end": 24,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 63,
    "start": 73,
    "end": 78,
    "text": "delay",
@@ -2010,7 +2039,7 @@
     "start": 127,
     "end": 140,
     "text": "boiler closet",
-    "es": "armario de la caldera"
+    "es": "clóset de la caldera"
    }
   },
   {
@@ -2236,7 +2265,7 @@
     "start": 22,
     "end": 39,
     "text": "Bring an appetite",
-    "es": "Venid con hambre"
+    "es": "Vengan con hambre"
    }
   },
   {

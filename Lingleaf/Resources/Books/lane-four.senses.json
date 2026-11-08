@@ -21,14 +21,16 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de hecho",
-   "kind": "word"
+   "kind": "word",
+   "en": "in fact"
   },
   "actually_really2": {
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de verdad",
-   "kind": "word"
+   "kind": "word",
+   "en": "really"
   },
   "all_right": {
    "lemma": "all right",
@@ -91,7 +93,8 @@
    "pos": "noun",
    "ipa": "bæŋk",
    "es": "orilla (de un río; no \"banco\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the side of a river"
   },
   "bars_light": {
    "lemma": "bar",
@@ -252,7 +255,7 @@
    "lemma": "come on",
    "pos": "phrasal verb",
    "ipa": "kʌm ɑn",
-   "es": "¡vamos!, ¡venga!",
+   "es": "¡vamos!, ¡dale!",
    "kind": "chunk"
   },
   "come_over": {
@@ -274,7 +277,8 @@
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
    "es": "compañía (de personas; no \"empresa\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "being with other people"
   },
   "cookie": {
    "lemma": "cookie",
@@ -359,7 +363,8 @@
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
    "es": "avergonzado (no \"embarazada\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
   },
   "end_up_there": {
    "lemma": "end up",
@@ -373,7 +378,8 @@
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
    "es": "al final, finalmente (no \"eventualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "in the end, after a long time"
   },
   "figure_person": {
    "lemma": "figure",
@@ -401,7 +407,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "foam_float": {
    "lemma": "float",
@@ -449,7 +456,7 @@
    "lemma": "glasses",
    "pos": "noun",
    "ipa": "ˈɡlæsɪz",
-   "es": "gafas, lentes",
+   "es": "lentes, anteojos",
    "kind": "word"
   },
   "go_away_feel": {
@@ -480,11 +487,11 @@
    "es": "meterse (en el agua)",
    "kind": "chunk"
   },
-  "gossip": {
+  "gossip_talk": {
    "lemma": "gossip",
    "pos": "noun",
    "ipa": "ˈɡɑsəp",
-   "es": "cotilla",
+   "es": "chisme, chismes",
    "kind": "word"
   },
   "grab_for": {
@@ -666,7 +673,7 @@
    "lemma": "lifeguard",
    "pos": "noun",
    "ipa": "ˈlaɪfɡɑrd",
-   "es": "socorrista",
+   "es": "salvavidas",
    "kind": "word"
   },
   "lit_up": {
@@ -729,7 +736,7 @@
    "lemma": "natural",
    "pos": "noun",
    "ipa": "ˈnætʃərəl",
-   "es": "talento natural, alguien que vale para algo",
+   "es": "talento natural, alguien que sirve para algo",
    "kind": "word"
   },
   "needn_t": {
@@ -792,7 +799,7 @@
    "lemma": "pick up",
    "pos": "phrasal verb",
    "ipa": "pɪk ʌp",
-   "es": "coger, levantar",
+   "es": "agarrar, levantar",
    "kind": "chunk"
   },
   "properly_look": {
@@ -835,6 +842,13 @@
    "pos": "verb",
    "ipa": "reɪz",
    "es": "criar",
+   "kind": "word"
+  },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
    "kind": "word"
   },
   "rest_verb": {
@@ -933,7 +947,8 @@
    "pos": "verb",
    "ipa": "sɪŋk",
    "es": "hundirse",
-   "kind": "word"
+   "kind": "word",
+   "en": "to go down under water"
   },
   "slap": {
    "lemma": "slap",
@@ -947,7 +962,8 @@
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "sonar, parecer",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem, to give an impression"
   },
   "splutter": {
    "lemma": "splutter",
@@ -989,21 +1005,24 @@
    "pos": "adjective",
    "ipa": "stɪl",
    "es": "quieto",
-   "kind": "word"
+   "kind": "word",
+   "en": "not moving"
   },
   "still_however": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "aun así",
-   "kind": "word"
+   "kind": "word",
+   "en": "even so, however"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "stitching": {
    "lemma": "stitching",
@@ -1044,14 +1063,14 @@
    "lemma": "swimming shorts",
    "pos": "noun",
    "ipa": "ˈswɪmɪŋ ʃɔrts",
-   "es": "bañador (de hombre)",
+   "es": "traje de baño (de hombre)",
    "kind": "chunk"
   },
   "swimsuit": {
    "lemma": "swimsuit",
    "pos": "noun",
    "ipa": "ˈswɪmsut",
-   "es": "bañador",
+   "es": "traje de baño",
    "kind": "word"
   },
   "tailor": {
@@ -1122,7 +1141,8 @@
    "pos": "verb",
    "ipa": "weɪv",
    "es": "saludar con la mano",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the hand to say hello"
   },
   "waver": {
    "lemma": "waver",
@@ -1537,6 +1557,13 @@
   },
   {
    "p": 22,
+   "start": 8,
+   "end": 12,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 22,
    "start": 36,
    "end": 40,
    "text": "sign",
@@ -1925,7 +1952,7 @@
    "start": 427,
    "end": 433,
    "text": "gossip",
-   "sense": "gossip"
+   "sense": "gossip_talk"
   },
   {
    "p": 35,
@@ -3169,7 +3196,7 @@
     "start": 193,
     "end": 208,
     "text": "swimming shorts",
-    "es": "bañador"
+    "es": "traje de baño"
    }
   },
   {

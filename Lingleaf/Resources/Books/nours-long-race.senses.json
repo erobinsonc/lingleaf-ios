@@ -57,7 +57,8 @@
    "ipa": "ˈpræktɪs",
    "es": "entrenamiento",
    "kind": "word",
-   "variety": "AmE"
+   "variety": "AmE",
+   "en": "training to get better"
   },
   "race_run": {
    "lemma": "race",
@@ -78,7 +79,8 @@
    "pos": "noun",
    "ipa": "saɪn",
    "es": "cartel, letrero",
-   "kind": "word"
+   "kind": "word",
+   "en": "a board with writing or a picture"
   },
   "track_sport": {
    "lemma": "track",
@@ -92,14 +94,16 @@
    "pos": "verb",
    "ipa": "traɪ",
    "es": "intentar, probar (no \"probarse\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make an effort to do something"
   },
   "try_noun": {
    "lemma": "try",
    "pos": "noun",
    "ipa": "traɪ",
    "es": "intento",
-   "kind": "word"
+   "kind": "word",
+   "en": "an attempt"
   },
   "walk_noun": {
    "lemma": "walk",

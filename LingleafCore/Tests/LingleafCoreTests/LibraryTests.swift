@@ -163,6 +163,71 @@ final class LibraryTests: XCTestCase {
         XCTAssertNotNil(storage.files["seeded-stories-v2"])
     }
 
+    func testTwoStorySensesOfOneWordAreTwoEntries() {
+        let library = library()
+        let sentence = "She got sad. He got the bags."
+        library.saveWord("get", learned: false, translation: "ponerse (+ adjetivo)", translationLanguage: "es", context: sentence,
+                         sense: Sense.story("get_become"), form: "got", formRange: WordRange(4, 7), story: "a-test-story")
+        library.saveWord("get", learned: false, translation: "agarrar, tomar", translationLanguage: "es", context: sentence,
+                         sense: Sense.story("get_fetch"), form: "got", formRange: WordRange(16, 19), story: "a-test-story")
+        XCTAssertEqual(library.state.words.count, 2, "one entry per sense")
+        let names = library.state.words.map { library.state.displayName($0) }.sorted()
+        XCTAssertEqual(names, ["get (agarrar)", "get (ponerse)"], "told apart by their meanings")
+        XCTAssertEqual(library.state.displayName(library.state.words[0], withMeaning: false), "get", "Review recalls first")
+        XCTAssertTrue(library.state.promptShowsSentence(library.state.words[0]), "and shows the sentence")
+        XCTAssertEqual(library.state.word("get", sense: Sense.story("get_fetch"))?.translation, "agarrar, tomar")
+        // Saving the same sense again is the same entry.
+        library.saveWord("get", learned: false, translation: "agarrar, tomar", context: sentence,
+                         sense: Sense.story("get_fetch"), story: "a-test-story")
+        XCTAssertEqual(library.state.words.count, 2)
+        let reloaded = self.library()
+        XCTAssertEqual(reloaded.state.words.count, 2, "both survive a restart")
+        XCTAssertEqual(reloaded.state.words.first { $0.sense == Sense.story("get_fetch") }?.story, "a-test-story")
+        // A single story sense shows the plain word.
+        library.deleteWord("get", sense: Sense.story("get_become"))
+        XCTAssertEqual(library.state.displayName(library.state.words[0]), "get")
+    }
+
+    func testAGroupSavedFromAStorySenseKeepsItsRange() {
+        let library = library()
+        let sentence = "Then his face went red."
+        library.saveWord("go red", learned: false, translation: "ponerse colorado", translationLanguage: "es", context: sentence,
+                         sense: Sense.story("go_red"), form: "went", formRange: WordRange(14, 18), story: "a-test-story",
+                         groupRange: WordRange(5, 22))
+        let word = library.state.words[0]
+        XCTAssertEqual(word.word, "go red")
+        XCTAssertEqual(word.groupRange, WordRange(5, 22))
+        XCTAssertEqual(TextTools.substring(word.context, word.groupRange!), "his face went red")
+        XCTAssertEqual(word.groupRange.map { [$0] } ?? [], [WordRange(5, 22)])
+    }
+
+    /// What a restored or edited file may hold in the story fields is brought inside.
+    func testStoryFieldsAreBounded() {
+        func word(sense: String?, story: String?, group: (Int, Int)?) -> VocabWord {
+            var word = VocabWord(word: "go red", translation: "x", translationLanguage: nil, phonetic: "", context: "His face went red.",
+                                 source: "", learned: false, box: 0, createdAt: now, nextReview: now)
+            word.sense = sense
+            word.story = story
+            word.form = "went"
+            word.formStart = 9
+            word.formEnd = 13
+            word.groupStart = group?.0
+            word.groupEnd = group?.1
+            return word.bounded()
+        }
+        let kept = word(sense: "s:go_red", story: "a-test-story", group: (0, 17))
+        XCTAssertEqual(kept.story, "a-test-story")
+        XCTAssertEqual(kept.groupRange, WordRange(0, 17))
+        XCTAssertNil(word(sense: "s:Go Red", story: "a-test-story", group: (0, 17)).sense, "an unknown sense is dropped")
+        XCTAssertNil(word(sense: Sense.verb, story: "a-test-story", group: (0, 17)).story, "only a story sense has a story")
+        XCTAssertNil(word(sense: Sense.verb, story: nil, group: (0, 17)).groupRange)
+        XCTAssertNil(word(sense: "s:go_red", story: "Bad Story!", group: (0, 17)).story)
+        XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (0, 99)).groupRange, "past the sentence")
+        XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (10, 17)).groupRange, "must hold the tapped word")
+        XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (5, 5)).groupRange)
+        XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (-1, 5)).groupRange)
+    }
+
     func testOpenProgressAndDeleteABook() {
         let library = library()
         let book = library.addBook(title: "Alice", author: "Lewis Carroll", text: "One.\n\nTwo.\n\nThree.", level: "B2", gutenbergID: 11)

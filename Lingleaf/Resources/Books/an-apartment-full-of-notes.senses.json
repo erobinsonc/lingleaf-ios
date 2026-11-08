@@ -7,7 +7,8 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de hecho",
-   "kind": "word"
+   "kind": "word",
+   "en": "in fact"
   },
   "ajji": {
    "lemma": "Ajji",
@@ -27,8 +28,8 @@
   "amma": {
    "lemma": "Amma",
    "pos": "noun",
-   "ipa": "ˈʌmmɑ",
-   "es": "mamá (en maratí y otras lenguas de la India)",
+   "ipa": "ˈɑmmɑ",
+   "es": "mamá (en tamil, kannada y telugu)",
    "kind": "foreign",
    "variety": "local"
   },
@@ -36,7 +37,7 @@
    "lemma": "annoyed",
    "pos": "adjective",
    "ipa": "əˈnɔɪd",
-   "es": "molesto, enfadado",
+   "es": "molesto, enojado",
    "kind": "word"
   },
   "apologetic": {
@@ -170,7 +171,8 @@
    "pos": "verb",
    "ipa": "kɛr",
    "es": "importar (a alguien)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to matter to someone"
   },
   "care_for": {
    "lemma": "care for",
@@ -184,13 +186,14 @@
    "pos": "noun",
    "ipa": "kɛr",
    "es": "cuidado",
-   "kind": "word"
+   "kind": "word",
+   "en": "looking after something"
   },
   "cast_plaster": {
    "lemma": "cast",
    "pos": "noun",
    "ipa": "kæst",
-   "es": "escayola",
+   "es": "yeso",
    "kind": "word"
   },
   "chart": {
@@ -254,7 +257,8 @@
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
    "es": "compañía (de personas; no \"empresa\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "being with other people"
   },
   "complaint": {
    "lemma": "complaint",
@@ -267,7 +271,7 @@
    "lemma": "container",
    "pos": "noun",
    "ipa": "kənˈteɪnər",
-   "es": "táper, recipiente",
+   "es": "recipiente",
    "kind": "word"
   },
   "counter": {
@@ -388,7 +392,8 @@
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
    "es": "avergonzado (no \"embarazada\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
   },
   "end_up": {
    "lemma": "end up",
@@ -465,7 +470,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "floor_polish": {
    "lemma": "floor polish",
@@ -479,7 +485,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "frond": {
    "lemma": "frond",
@@ -549,20 +556,22 @@
    "pos": "noun",
    "ipa": "ɡlæs",
    "es": "vaso",
-   "kind": "word"
+   "kind": "word",
+   "en": "a drinking glass"
   },
   "glass_material": {
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
    "es": "cristal, vidrio (no \"vaso\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the hard clear material of windows"
   },
   "glasses_eyes": {
    "lemma": "glasses",
    "pos": "noun",
    "ipa": "ˈɡlæsɪz",
-   "es": "gafas, lentes",
+   "es": "lentes, anteojos",
    "kind": "word"
   },
   "go_on": {
@@ -576,7 +585,7 @@
    "lemma": "gossip",
    "pos": "noun",
    "ipa": "ˈɡɑsəp",
-   "es": "cotilla",
+   "es": "chismoso",
    "kind": "word"
   },
   "grow_back": {
@@ -682,7 +691,7 @@
    "lemma": "internship",
    "pos": "noun",
    "ipa": "ˈɪntɝnʃɪp",
-   "es": "prácticas (en una empresa)",
+   "es": "pasantía (en una empresa)",
    "kind": "word",
    "variety": "AmE"
   },
@@ -698,7 +707,8 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "seguir (haciendo algo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to continue doing something"
   },
   "keep_on": {
    "lemma": "keep on",
@@ -712,7 +722,8 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "guardar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to put something away safely"
   },
   "keep_up": {
    "lemma": "keep up",
@@ -908,14 +919,16 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "saludar con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head slightly to greet someone"
   },
   "note_paper": {
    "lemma": "note",
    "pos": "noun",
    "ipa": "noʊt",
    "es": "nota",
-   "kind": "word"
+   "kind": "word",
+   "en": "a short written message"
   },
   "nothing_to_do": {
    "lemma": "have nothing to do with",
@@ -928,7 +941,7 @@
    "lemma": "oh dear",
    "pos": "interjection",
    "ipa": "oʊ dɪr",
-   "es": "¡vaya por Dios!",
+   "es": "¡ay, Dios mío!",
    "kind": "chunk"
   },
   "on_tour": {
@@ -964,7 +977,8 @@
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (telefónica)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a telephone line"
   },
   "phone_call": {
    "lemma": "phone",
@@ -977,7 +991,7 @@
    "lemma": "pick up",
    "pos": "phrasal verb",
    "ipa": "pɪk ʌp",
-   "es": "coger, levantar",
+   "es": "agarrar, levantar",
    "kind": "chunk"
   },
   "pick_up_collect": {
@@ -999,14 +1013,16 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "jugar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to take part in a game"
   },
   "play_radio": {
    "lemma": "play",
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "sonar, poner (música en la radio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to be heard on the radio"
   },
   "pot_and_all": {
    "lemma": "pot and all",
@@ -1034,7 +1050,8 @@
    "pos": "verb",
    "ipa": "prɪˈtɛnd",
    "es": "fingir (no \"pretender\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to act as if something were true"
   },
   "prop_against": {
    "lemma": "prop against",
@@ -1092,11 +1109,18 @@
    "es": "parecer (al leerlo)",
    "kind": "chunk"
   },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
+   "kind": "word"
+  },
   "reading_glasses": {
    "lemma": "reading glasses",
    "pos": "noun",
    "ipa": "ˈridɪŋ ˈɡlæsɪz",
-   "es": "gafas de leer",
+   "es": "lentes de lectura",
    "kind": "chunk"
   },
   "register": {
@@ -1195,7 +1219,8 @@
    "pos": "noun",
    "ipa": "saɪn",
    "es": "letrero",
-   "kind": "word"
+   "kind": "word",
+   "en": "a board above a shop with its name"
   },
   "sit_down": {
    "lemma": "sit down",
@@ -1286,7 +1311,8 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "stool": {
    "lemma": "stool",
@@ -1356,7 +1382,8 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "tardar (+ tiempo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to need an amount of time"
   },
   "teams_for": {
    "lemma": "that's what teams are for",
@@ -1454,7 +1481,7 @@
    "lemma": "walk-up",
    "pos": "noun",
    "ipa": "ˈwɔkʌp",
-   "es": "piso sin ascensor",
+   "es": "departamento sin ascensor",
    "kind": "word",
    "variety": "AmE"
   },
@@ -1586,7 +1613,7 @@
     "start": 21,
     "end": 28,
     "text": "walk-up",
-    "es": "piso sin ascensor"
+    "es": "departamento sin ascensor"
    }
   },
   {
@@ -2391,6 +2418,13 @@
   },
   {
    "p": 25,
+   "start": 388,
+   "end": 392,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 25,
    "start": 397,
    "end": 401,
    "text": "note",
@@ -2429,6 +2463,13 @@
    "end": 47,
    "text": "glass",
    "sense": "glass_cup"
+  },
+  {
+   "p": 27,
+   "start": 122,
+   "end": 126,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 27,
@@ -2631,6 +2672,13 @@
   },
   {
    "p": 31,
+   "start": 6,
+   "end": 10,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 31,
    "start": 63,
    "end": 69,
    "text": "turned",
@@ -2753,7 +2801,7 @@
     "start": 164,
     "end": 179,
     "text": "reading glasses",
-    "es": "gafas de leer"
+    "es": "lentes de lectura"
    }
   },
   {
@@ -2787,7 +2835,7 @@
     "start": 1,
     "end": 8,
     "text": "Oh dear",
-    "es": "Vaya por Dios"
+    "es": "Ay, Dios mío"
    }
   },
   {
@@ -3049,7 +3097,7 @@
     "start": 161,
     "end": 189,
     "text": "picked up a pair of scissors",
-    "es": "cogió unas tijeras"
+    "es": "tomó unas tijeras"
    }
   },
   {

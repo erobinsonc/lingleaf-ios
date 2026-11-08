@@ -14,14 +14,16 @@
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de hecho",
-   "kind": "word"
+   "kind": "word",
+   "en": "in fact"
   },
   "actually_really": {
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
    "es": "de verdad, realmente (no \"actualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "really, truly"
   },
   "advertisement": {
    "lemma": "advertisement",
@@ -49,7 +51,8 @@
    "pos": "adverb",
    "ipa": "əˈpɛrəntli",
    "es": "al parecer (no \"aparentemente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "it seems that"
   },
   "applause": {
    "lemma": "applause",
@@ -70,7 +73,8 @@
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
    "es": "discusión (no \"argumento\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a quarrel, a heated discussion"
   },
   "as_it_happened": {
    "lemma": "as it happened",
@@ -189,14 +193,16 @@
    "pos": "verb",
    "ipa": "breɪk",
    "es": "incumplir (una regla)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to fail to obey a rule"
   },
   "break_silence": {
    "lemma": "break",
    "pos": "verb",
    "ipa": "breɪk",
    "es": "romper (un silencio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to end a silence"
   },
   "break_up": {
    "lemma": "break up",
@@ -244,7 +250,7 @@
    "lemma": "carpet",
    "pos": "noun",
    "ipa": "ˈkɑrpət",
-   "es": "moqueta, alfombra",
+   "es": "alfombra",
    "kind": "word"
   },
   "carry_along": {
@@ -314,7 +320,7 @@
    "lemma": "come on",
    "pos": "phrasal verb",
    "ipa": "kʌm ɑn",
-   "es": "¡vamos!, ¡venga!",
+   "es": "¡vamos!, ¡dale!",
    "kind": "chunk"
   },
   "come_on_light": {
@@ -343,7 +349,8 @@
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
    "es": "compañía (de personas; no \"empresa\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "being with other people"
   },
   "cookie": {
    "lemma": "cookie",
@@ -449,14 +456,16 @@
    "pos": "verb",
    "ipa": "drɑp",
    "es": "cortarse (una llamada)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to be cut off, said of a call"
   },
   "drop_rings": {
    "lemma": "drop",
    "pos": "verb",
    "ipa": "drɑp",
    "es": "dejar caer",
-   "kind": "word"
+   "kind": "word",
+   "en": "to let something fall"
   },
   "drums": {
    "lemma": "drums",
@@ -477,7 +486,8 @@
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
    "es": "al final, finalmente (no \"eventualmente\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "in the end, after a long time"
   },
   "every_right": {
    "lemma": "have every right",
@@ -505,7 +515,8 @@
    "pos": "noun",
    "ipa": "fɔlt",
    "es": "culpa",
-   "kind": "word"
+   "kind": "word",
+   "en": "blame"
   },
   "feather": {
    "lemma": "feather",
@@ -540,7 +551,8 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "following_fans": {
    "lemma": "following",
@@ -816,7 +828,8 @@
    "pos": "verb",
    "ipa": "kip",
    "es": "seguir (haciendo algo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to continue doing something"
   },
   "keep_door_open": {
    "lemma": "keep the door open",
@@ -844,14 +857,16 @@
    "pos": "noun",
    "ipa": "ˈleɪbəl",
    "es": "sello discográfico",
-   "kind": "word"
+   "kind": "word",
+   "en": "a company that produces music"
   },
   "label_verb": {
    "lemma": "label",
    "pos": "verb",
    "ipa": "ˈleɪbəl",
    "es": "etiquetar",
-   "kind": "word"
+   "kind": "word",
+   "en": "to put a name tag on something"
   },
   "last_me": {
    "lemma": "last",
@@ -915,14 +930,16 @@
    "pos": "noun",
    "ipa": "laɪn",
    "es": "hilera",
-   "kind": "word"
+   "kind": "word",
+   "en": "a row of things"
   },
   "line_text": {
    "lemma": "line",
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (de texto)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of written text"
   },
   "lose_nerve": {
    "lemma": "lose your nerve",
@@ -1008,7 +1025,8 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "not_bad": {
    "lemma": "not bad",
@@ -1071,14 +1089,16 @@
    "pos": "verb",
    "ipa": "pæs",
    "es": "pasar (algo en la mesa)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to hand something to someone"
   },
   "pass_mountain": {
    "lemma": "pass",
    "pos": "noun",
    "ipa": "pæs",
    "es": "puerto (de montaña)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a way between mountains"
   },
   "patient_young": {
    "lemma": "patient",
@@ -1092,7 +1112,8 @@
    "pos": "noun",
    "ipa": "laɪn",
    "es": "línea (telefónica)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a telephone line"
   },
   "pediatric": {
    "lemma": "pediatric",
@@ -1107,14 +1128,16 @@
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "tocar (música)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to make music with an instrument"
   },
   "play_radio": {
    "lemma": "play",
    "pos": "verb",
    "ipa": "pleɪ",
    "es": "sonar, poner (música en la radio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to be heard on the radio"
   },
   "point_argument": {
    "lemma": "point",
@@ -1142,7 +1165,8 @@
    "pos": "noun",
    "ipa": "pəˈzɪʃən",
    "es": "postura, opinión",
-   "kind": "word"
+   "kind": "word",
+   "en": "an opinion about something"
   },
   "praise": {
    "lemma": "praise",
@@ -1163,7 +1187,8 @@
    "pos": "verb",
    "ipa": "prɪˈtɛnd",
    "es": "fingir (no \"pretender\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to act as if something were true"
   },
   "program_study": {
    "lemma": "program",
@@ -1207,6 +1232,13 @@
    "ipa": "rid bæk",
    "es": "releer",
    "kind": "chunk"
+  },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena \"red\")",
+   "kind": "word"
   },
   "record_verb": {
    "lemma": "record",
@@ -1290,7 +1322,7 @@
    "lemma": "roommate",
    "pos": "noun",
    "ipa": "ˈrummeɪt",
-   "es": "compañero de piso",
+   "es": "compañero de departamento",
    "kind": "word",
    "variety": "AmE"
   },
@@ -1306,14 +1338,16 @@
    "pos": "noun",
    "ipa": "roʊ",
    "es": "hilera",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of buildings"
   },
   "row_vines": {
    "lemma": "row",
    "pos": "noun",
    "ipa": "roʊ",
    "es": "hilera",
-   "kind": "word"
+   "kind": "word",
+   "en": "a line of plants in a field"
   },
   "run_to": {
    "lemma": "run to",
@@ -1461,21 +1495,24 @@
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "parecer (por la voz)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem from the way someone speaks"
   },
   "sound_verb": {
    "lemma": "sound",
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "sonar, parecer",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem, to give an impression"
   },
   "speaker_person": {
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
    "es": "la persona que habla (no \"altavoz\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a person who is speaking"
   },
   "speech": {
    "lemma": "speech",
@@ -1524,14 +1561,16 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "quieto",
-   "kind": "word"
+   "kind": "word",
+   "en": "without moving"
   },
   "still_yet": {
    "lemma": "still",
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "stop_yourself": {
    "lemma": "stop yourself",
@@ -1622,7 +1661,8 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bring someone to places"
   },
   "take_seriously": {
    "lemma": "take seriously",
@@ -1636,7 +1676,8 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "tardar (+ tiempo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to need an amount of time"
   },
   "take_up_hobby": {
    "lemma": "take up",
@@ -1939,6 +1980,13 @@
   },
   {
    "p": 4,
+   "start": 6,
+   "end": 10,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 4,
    "start": 35,
    "end": 39,
    "text": "took",
@@ -2209,7 +2257,7 @@
     "start": 3,
     "end": 15,
     "text": "pressed send",
-    "es": "le dio a enviar"
+    "es": "presionó enviar"
    }
   },
   {
@@ -2826,6 +2874,13 @@
   },
   {
    "p": 35,
+   "start": 178,
+   "end": 182,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 35,
    "start": 186,
    "end": 190,
    "text": "back",
@@ -2999,6 +3054,20 @@
    "end": 30,
    "text": "stopwatch",
    "sense": "stopwatch"
+  },
+  {
+   "p": 39,
+   "start": 3,
+   "end": 7,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 39,
+   "start": 26,
+   "end": 30,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 39,
@@ -3423,6 +3492,13 @@
   },
   {
    "p": 63,
+   "start": 144,
+   "end": 148,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 63,
    "start": 177,
    "end": 181,
    "text": "case",
@@ -3467,6 +3543,13 @@
    "end": 5,
    "text": "Draft",
    "sense": "draft_text"
+  },
+  {
+   "p": 64,
+   "start": 209,
+   "end": 213,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 64,
@@ -3814,6 +3897,13 @@
     "text": "turned off the television",
     "es": "apagó la televisión"
    }
+  },
+  {
+   "p": 88,
+   "start": 6,
+   "end": 10,
+   "text": "read",
+   "sense": "read_past"
   },
   {
    "p": 88,

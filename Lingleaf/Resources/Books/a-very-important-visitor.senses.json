@@ -134,14 +134,16 @@
    "pos": "noun",
    "ipa": "flɔr",
    "es": "suelo",
-   "kind": "word"
+   "kind": "word",
+   "en": "the surface you walk on indoors"
   },
   "floor_storey": {
    "lemma": "floor",
    "pos": "noun",
    "ipa": "flɔr",
    "es": "piso, planta (de un edificio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a level of a building"
   },
   "for_once": {
    "lemma": "for once",
@@ -155,21 +157,24 @@
    "pos": "verb",
    "ipa": "ɡɛt",
    "es": "llegar (a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to arrive somewhere"
   },
   "get_sad": {
    "lemma": "get",
    "pos": "verb",
    "ipa": "ɡɛt",
    "es": "ponerse (triste)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to become sad"
   },
   "glass_material": {
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
    "es": "cristal, vidrio (no \"vaso\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "the hard clear material of windows"
   },
   "go_back": {
    "lemma": "go back",
@@ -218,7 +223,8 @@
    "pos": "adjective",
    "ipa": "kaɪnd",
    "es": "amable (no \"tipo\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "friendly and helpful"
   },
   "land_plane": {
    "lemma": "land",
@@ -261,7 +267,8 @@
    "pos": "verb",
    "ipa": "nɑd",
    "es": "asentir con la cabeza",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
   },
   "patient_med": {
    "lemma": "patient",
@@ -297,14 +304,16 @@
    "pos": "verb",
    "ipa": "seɪv",
    "es": "ahorrar (no \"salvar\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "to keep money for later"
   },
   "saved_shout": {
    "lemma": "save",
    "pos": "verb",
    "ipa": "seɪv",
    "es": "ahorrar",
-   "kind": "word"
+   "kind": "word",
+   "en": "kept money instead of spending it"
   },
   "screen_display": {
    "lemma": "screen",
@@ -339,7 +348,8 @@
    "pos": "verb",
    "ipa": "saʊnd",
    "es": "parecer (por la voz)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to seem from the way someone speaks"
   },
   "spend_money": {
    "lemma": "spend",
@@ -353,7 +363,8 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "supposed_to": {
    "lemma": "be supposed to",
@@ -367,14 +378,16 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bring someone to a place"
   },
   "take_into": {
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bring someone to a place"
   },
   "take_notes": {
    "lemma": "take notes",

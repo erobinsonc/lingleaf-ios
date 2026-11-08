@@ -7,6 +7,24 @@ public enum Sense {
     public static let noun = "noun"
     public static let homonym = "homonym"
     public static let all: Set<String> = [verb, noun, homonym]
+
+    /// A story's own sense (SPEC S19): "s:" and the sense's key in the story's file ("s:get_fetch"), so
+    /// "get" saved from two senses is two entries.
+    public static func story(_ key: String) -> String { "s:\(key)" }
+
+    /// The key of a story sense; nil for any other sense.
+    public static func storyKey(_ sense: String?) -> String? {
+        guard let sense, sense.hasPrefix("s:") else { return nil }
+        let key = sense.dropFirst(2)
+        let valid = (1...40).contains(key.utf8.count)
+            && key.utf8.allSatisfy { (0x61...0x7A).contains($0) || (0x30...0x39).contains($0) || $0 == 0x5F }
+        return valid ? String(key) : nil
+    }
+
+    public static func isStory(_ sense: String?) -> Bool { storyKey(sense) != nil }
+
+    /// A sense a saved word may have: one of the three, or a story's.
+    public static func isValid(_ sense: String) -> Bool { all.contains(sense) || isStory(sense) }
 }
 
 /// One reading of a word saved unsure, as its card showed it: "to leave — irse, salir".

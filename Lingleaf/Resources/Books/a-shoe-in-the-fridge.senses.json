@@ -6,7 +6,7 @@
    "lemma": "come on",
    "pos": "phrasal verb",
    "ipa": "kʌm ɑn",
-   "es": "¡vamos!, ¡venga!",
+   "es": "¡vamos!, ¡dale!",
    "kind": "chunk"
   },
   "for_sale": {
@@ -21,14 +21,16 @@
    "pos": "verb",
    "ipa": "ɡɛt",
    "es": "ponerse (+ adjetivo)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to become"
   },
   "get_fetch": {
    "lemma": "get",
    "pos": "verb",
    "ipa": "ɡɛt",
-   "es": "coger, agarrar, ir a por",
-   "kind": "word"
+   "es": "agarrar, tomar, ir por",
+   "kind": "word",
+   "en": "to go and bring something"
   },
   "get_on": {
    "lemma": "get on",
@@ -106,14 +108,16 @@
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bring someone to a place"
   },
   "wave_hand": {
    "lemma": "wave",
    "pos": "verb",
    "ipa": "weɪv",
    "es": "saludar con la mano",
-   "kind": "word"
+   "kind": "word",
+   "en": "to move the hand to say hello"
   }
  },
  "entries": [
@@ -248,7 +252,7 @@
     "start": 58,
     "end": 71,
     "text": "Get your bags",
-    "es": "coged las mochilas"
+    "es": "agarren las mochilas"
    }
   },
   {

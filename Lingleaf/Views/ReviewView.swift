@@ -232,7 +232,8 @@ struct ReviewView: View {
     /// knows it (SPEC S7), else its forms read in the sentence, or the saved group of words.
     static func marked(_ sentence: String, word: VocabWord) -> AttributedString {
         var text = AttributedString(sentence)
-        let ranges = word.formRange.map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
+        // A word saved from a story's sense with a group of words ("went red") marks the whole group.
+        let ranges = (word.groupRange ?? word.formRange).map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
         for range in ranges {
             guard let stringRange = Range(range.nsRange, in: sentence), let marked = Range(stringRange, in: text) else { continue }
             text[marked].inlinePresentationIntent = .stronglyEmphasized

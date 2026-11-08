@@ -32,6 +32,9 @@ public struct StorySense: Equatable, Sendable {
     public let variety: Variety?
     /// A Spanish remark on the sense ("en inglés británico … es el primer piso").
     public let note: String?
+    /// A short English gloss written with the sense ("a level of a building"), which is what the card
+    /// translates outside Spanish for a bare word that needs one; nil when the sense has none.
+    public let english: String?
 
     /// The IPA as the card shows it: between slashes.
     public var displayIPA: String? { ipa.map { "/\($0)/" } }
@@ -66,6 +69,8 @@ public struct StorySenseHit: Equatable, Sendable {
     public let id: String
     public let sense: StorySense
     public let group: StoryGroup?
+    /// The story has another sense of the same base form: a bare translation of the word could pick the wrong one.
+    public let siblings: Bool
 }
 
 /// The senses of one bundled story, read strictly and checked against the story's own text (SPEC S19).
@@ -82,6 +87,7 @@ public struct StorySenses: Sendable {
     static let maxMeaning = 140
     static let maxGroup = 120
     static let maxNote = 200
+    static let maxEnglish = 60
     static let maxIPA = 80
     static let maxWord = 40
     static let maxParagraphs = 1000
@@ -108,6 +114,7 @@ public struct StorySenses: Sendable {
     }
 
     private let entries: [Place: StorySenseHit]
+    private let byParagraph: [Int: [(range: WordRange, hit: StorySenseHit)]]
 
     /// The entry of the word at `range` of paragraph `paragraph`, if the story has one.
     public func hit(paragraph: Int, range: WordRange) -> StorySenseHit? {
@@ -151,6 +158,13 @@ public struct StorySenses: Sendable {
             try check(isID(key, dashes: false) && key.utf8.count <= 40, "sense key \(key)")
             senses[key] = try raw.sense(key)
         }
+        // Base forms that have more than one sense in this story ("get", "still", "floor").
+        var seen: Set<String> = []
+        var siblingLemmas: Set<String> = []
+        for sense in senses.values {
+            let lemma = sense.lemma.lowercased()
+            if !seen.insert(lemma).inserted { siblingLemmas.insert(lemma) }
+        }
         var places: [Place: StorySenseHit] = [:]
         var ranges: [Int: [WordRange]] = [:]
         for entry in file.entries {
@@ -176,13 +190,16 @@ public struct StorySenses: Sendable {
             }
             let place = Place(paragraph: entry.p, start: entry.start, end: entry.end)
             try check(places[place] == nil, "\(key): twice")
-            places[place] = StorySenseHit(id: entry.sense, sense: sense, group: group)
+            let siblings = siblingLemmas.contains(sense.lemma.lowercased())
+            places[place] = StorySenseHit(id: entry.sense, sense: sense, group: group, siblings: siblings)
         }
-        return StorySenses(story: file.story, senses: senses, entries: places)
+        var byParagraph: [Int: [(range: WordRange, hit: StorySenseHit)]] = [:]
+        for (place, hit) in places { byParagraph[place.paragraph, default: []].append((WordRange(place.start, place.end), hit)) }
+        return StorySenses(story: file.story, senses: senses, entries: places, byParagraph: byParagraph)
     }
 
     /// Lower-case letters and digits (and dashes in a story id, underscores in a sense key), nothing else.
-    private static func isID(_ s: String, dashes: Bool) -> Bool {
+    static func isID(_ s: String, dashes: Bool) -> Bool {
         guard !s.isEmpty else { return false }
         let bytes = Array(s.utf8)
         let separator: UInt8 = dashes ? 0x2D : 0x5F
@@ -294,9 +311,10 @@ private struct RawSense: Decodable {
     let kind: String
     let variety: String?
     let note: String?
+    let en: String?
 
     init(from decoder: Decoder) throws {
-        let c = try decoder.strict(["lemma", "pos", "ipa", "es", "kind"], optional: ["variety", "note"])
+        let c = try decoder.strict(["lemma", "pos", "ipa", "es", "kind"], optional: ["variety", "note", "en"])
         lemma = try c.value("lemma")
         pos = try c.value("pos")
         // "ipa" is required but may be null.
@@ -305,6 +323,7 @@ private struct RawSense: Decodable {
         kind = try c.value("kind")
         variety = try c.optional("variety")
         note = try c.optional("note")
+        en = try c.optional("en")
     }
 
     func sense(_ key: String) throws -> StorySense {
@@ -325,7 +344,11 @@ private struct RawSense: Decodable {
             let trimmed = note.trimmingCharacters(in: .whitespacesAndNewlines) == note
             try check(StorySenses.isShort(note, max: StorySenses.maxNote) && trimmed, "note")
         }
-        return StorySense(lemma: lemma, partOfSpeech: pos, ipa: ipa, spanish: es, kind: kind, variety: parsedVariety, note: note)
+        if let en {
+            let trimmed = en.trimmingCharacters(in: .whitespacesAndNewlines) == en
+            try check(StorySenses.isShort(en, max: StorySenses.maxEnglish) && trimmed, "english gloss")
+        }
+        return StorySense(lemma: lemma, partOfSpeech: pos, ipa: ipa, spanish: es, kind: kind, variety: parsedVariety, note: note, english: en)
     }
 }
 
@@ -394,13 +417,46 @@ extension StorySenseHit {
         }
     }
 
-    /// What the card has translated into a language that is not Spanish (the file's meaning is in
-    /// Spanish): the group, else the base form. A name and a word from another language are not
-    /// translated.
+    /// What the card translates into a language that is not Spanish (the file's meaning is in Spanish).
+    /// A name and a word from another language are not translated; a group of words is, as the group.
+    /// A bare word is translated from the sense's English gloss; without one, from its group if it has
+    /// one, else from its base form, but never when the story has another sense of that base form or the
+    /// Spanish meaning warns against a false friend (`no "gratis"`): a bare translation would give its most
+    /// common meaning ("floor": piso, suelo). The card then shows the translated sentence instead.
     public var translationSource: String? {
         switch sense.kind {
         case .name, .foreign: return nil
-        case .word, .chunk: return group?.text ?? sense.lemma
+        case .chunk: return group?.text ?? sense.lemma
+        case .word:
+            if let english = sense.english { return english }
+            if let group { return group.text }
+            return siblings || sense.spanish.contains("no \"") ? nil : sense.lemma
         }
+    }
+}
+
+// MARK: Underlining saved story senses
+
+extension StorySenses {
+    /// The words of paragraph `paragraph` to underline as words being learned (SPEC S19), given the ranges
+    /// `generic` that saved words mark by their forms (S4). A word saved from a story sense marks, in this
+    /// story, only the places that have that same sense, a group as a whole ("went red"); a place of the
+    /// same base form with another sense is not marked. Everywhere else (a word with no entry here, another
+    /// book) the generic underline stands. `words` are the paragraph's word ranges; `saved` the saved words.
+    public func underlines(paragraph: Int, generic: Set<WordRange>, words: [WordRange], saved: [VocabWord]) -> Set<WordRange> {
+        let mine = saved.filter { !$0.learned && Sense.isStory($0.sense) && ($0.story == nil || $0.story == story) }
+        guard !mine.isEmpty, let here = byParagraph[paragraph] else { return generic }
+        let keys = Set(mine.compactMap { Sense.storyKey($0.sense) })
+        let lemmas = Set(mine.map(\.word))
+        var out = generic
+        for (range, hit) in here {
+            if keys.contains(hit.id) {
+                let span = hit.group?.range ?? range
+                out.formUnion(words.filter { span.start <= $0.start && $0.end <= span.end })
+            } else if lemmas.contains(TextTools.normalize(hit.sense.lemma)) {
+                out.remove(range)
+            }
+        }
+        return out
     }
 }

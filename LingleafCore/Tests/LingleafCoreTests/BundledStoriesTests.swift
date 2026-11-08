@@ -88,4 +88,34 @@ final class BundledStoriesTests: XCTestCase {
             }
         }
     }
+
+    /// A bare word that has another sense in its story, or a false-friend warning, carries an English gloss, so
+    /// a language other than Spanish never gets the machine translation of the bare word (SPEC S19).
+    func testBareWordsThatCouldBeMistranslatedHaveAnEnglishGloss() throws {
+        for story in BundledStory.shelf where story.hasSenses {
+            for place in try senses(story).places where place.hit.sense.kind == .word && place.hit.group == nil {
+                let hit = place.hit
+                if hit.siblings || hit.sense.spanish.contains("no \"") {
+                    XCTAssertNotNil(hit.sense.english, "\(story.title): \(hit.id) needs an English gloss")
+                }
+            }
+        }
+    }
+
+    /// The Spanish is Latin American: no word that only Spain uses (reviewed by the learning-content validator).
+    func testTheSpanishHasNoPeninsularWords() throws {
+        let spain: Set<String> = ["coger", "cogió", "cogí", "coged", "cojo", "móvil", "móviles", "ordenador", "coche", "zumo",
+                                  "vosotros", "vale", "guay", "enfadado", "enfadada", "escayola", "neumático", "bañador",
+                                  "rotulador", "moqueta", "cotilla", "nevera", "grifo", "aparcamiento", "gafas", "portátil",
+                                  "empanadilla", "socorrista", "dimisión", "venid", "tío"]
+        for story in BundledStory.shelf where story.hasSenses {
+            for place in try senses(story).places {
+                let texts = [place.hit.sense.spanish, place.hit.sense.note, place.hit.group?.spanish].compactMap { $0?.lowercased() }
+                for text in texts {
+                    let words = Set(text.split { !$0.isLetter }.map(String.init))
+                    XCTAssertTrue(words.isDisjoint(with: spain), "\(story.title): \(text)")
+                }
+            }
+        }
+    }
 }

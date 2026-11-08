@@ -56,7 +56,8 @@
    "pos": "adjective",
    "ipa": "fri",
    "es": "libre, disponible (no \"gratis\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "not busy, available"
   },
   "go_red": {
    "lemma": "go red",
@@ -113,14 +114,16 @@
    "pos": "noun",
    "ipa": "pɑrt",
    "es": "parte (de la historia)",
-   "kind": "word"
+   "kind": "word",
+   "en": "a section of a story"
   },
   "pepper_veg": {
    "lemma": "pepper",
    "pos": "noun",
    "ipa": "ˈpɛpər",
    "es": "pimiento (no \"pimienta\")",
-   "kind": "word"
+   "kind": "word",
+   "en": "a vegetable such as a red pepper"
   },
   "piece_paper": {
    "lemma": "piece of paper",
@@ -155,14 +158,16 @@
    "pos": "adverb",
    "ipa": "stɪl",
    "es": "todavía",
-   "kind": "word"
+   "kind": "word",
+   "en": "up to now, even now"
   },
   "take_bring": {
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
-   "kind": "word"
+   "kind": "word",
+   "en": "to bring someone to a place"
   },
   "taste_try": {
    "lemma": "taste",
