@@ -1,2 +1,2 @@
-commit eacf8e551e28b07099e1f523eb0c20111429c636
-run https://github.com/erobinsonc/lingleaf-ios/actions/runs/42548557743
+commit 2504d11b790200f756f4a095d87b64307a892d83
+run https://github.com/erobinsonc/lingleaf-ios/actions/runs/42630042606
