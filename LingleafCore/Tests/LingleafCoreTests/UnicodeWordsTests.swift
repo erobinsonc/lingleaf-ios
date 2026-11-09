@@ -400,7 +400,8 @@ final class UnicodeWordsTests: XCTestCase {
     /// The place in the book moves back by the paragraphs before it that were only invisible
     /// characters, so the reader stays on the same text.
     func testAnOldBooksPlaceFollowsTheParagraphsStrippingRemoved() {
-        let raw = "P0\n\n\u{200B}\n\nP2\n\n\u{202E}\n\nP4"   // five paragraphs: P0, -, P2, -, P4
+        // U+202A and U+202E are format characters but not white space (U+200B counts as blank on Apple platforms).
+        let raw = "P0\n\n\u{202A}\n\nP2\n\n\u{202E}\n\nP4"   // five paragraphs: P0, -, P2, -, P4
         // (place before, name of the paragraph the reader is on after)
         for (place, expected) in [(0, "P0"), (1, "P2"), (2, "P2"), (3, "P4"), (4, "P4")] {
             let (library, storage, book) = oldBook(raw, place: place)
@@ -418,10 +419,10 @@ final class UnicodeWordsTests: XCTestCase {
     }
 
     func testAnOldBooksPlaceAtTheEndOrWithNothingLeft() {
-        let (library, _, book) = oldBook("P0\n\nP1\n\n\u{200B}", place: 2)
+        let (library, _, book) = oldBook("P0\n\nP1\n\n\u{202A}", place: 2)
         XCTAssertEqual(library.openBook(book.id), ["P0", "P1"])
         XCTAssertEqual(library.state.books[0].progressParagraph, 1, "a place past the end goes to the last paragraph")
-        let (empty, _, emptied) = oldBook("\u{200B}\n\n\u{202E}", place: 1)
+        let (empty, _, emptied) = oldBook("\u{202A}\n\n\u{202E}", place: 1)
         XCTAssertEqual(empty.openBook(emptied.id), [])
         XCTAssertEqual(empty.state.books[0].paragraphCount, 0)
         XCTAssertEqual(empty.state.books[0].progressParagraph, 0)
@@ -464,7 +465,7 @@ final class UnicodeWordsTests: XCTestCase {
         let library = Library(storage: Frozen())
         library.load()
         let book = library.addBook(title: "Old", author: "A", text: "x")
-        let raw = "P0\n\n\u{200B}\n\nP2"
+        let raw = "P0\n\n\u{202A}\n\nP2"
         (library.storage as? Frozen)?.base.write(book.fileName, raw)
         library.state.books[0].paragraphCount = 3
         library.updateProgress(book.id, paragraph: 2)
