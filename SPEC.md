@@ -76,9 +76,9 @@ the same intent on both platforms. A change to behaviour updates this file in
   U+0307), then composed (NFC) when it has a letter outside ASCII, then cut to 600 UTF-16 units (see Cuts). One
   function makes the key, and every id, look-up and match uses it, so a run of letters longer than 600 units (a Han
   run) is saved, found, translated, undone and marked under the same key. "Capitalised" (a name, a sentence start)
-  means its first character has the Unicode Uppercase property and the rest of the word has none, unless the word is
-  that one character or has an apostrophe ("O'Brien", "D'Artagnan"); a name (capitalised in mid-sentence) also has some
-  lower-case letter, so "I", "A" and "NASA" are not names.
+  means its first code point has the Unicode Uppercase property (not a titlecase letter such as "ǅ") and the rest of
+  the word has none, unless the word is that one code point or has an apostrophe ("O'Brien", "D'Artagnan"); a name (capitalised in mid-sentence) also has some
+  lower-case letter, so "I", "A" and "NASA" are not names; "ǅ" is not capitalised.
 - English rules work on ASCII words only: base forms (plural, past and -ing endings), the irregular-verb table and the
   verb-or-noun rule never apply to a word with a letter outside ASCII; such a word is its own only key, and next to a
   verb form it counts as an ordinary word or, capitalised in mid-sentence or opening a sentence, as a name (a subject:
@@ -95,11 +95,14 @@ the same intent on both platforms. A change to behaviour updates this file in
   search is cut to 200 UTF-16 units first: "Les Misérables 東京" is `search=Les%20Mis%C3%A9rables%20%E6%9D%B1%E4%BA%AC`.
 - Invisible formatting: text imported or downloaded for a book, and a word's saved sentence, lose their format
   characters (general category Cf: bidi overrides, isolates and marks (LRM U+200E, RLM U+200F, ALM U+061C),
-  zero-width spaces, the byte-order mark, soft hyphens, tag characters U+E0001 and U+E0020–E007F) except ZWNJ and
-  ZWJ, and before any cut to a length (strip, then cut at 600). A book stored before this rule is stripped when it is
-  opened (its paragraph count follows if a paragraph made only of such characters goes). Cf is that of the platform's
-  Unicode version (ICU on iOS, Java's on Android): a character assigned in one version only may be stripped on one
-  platform and not the other, a residual.
+  zero-width spaces, the byte-order mark, soft hyphens, tag characters U+E0001 and U+E0020–E007F, and also the drawn
+  Arabic signs of Cf: U+0600–0605, U+06DD, U+070F, U+0890–0891, U+08E2) except ZWNJ and ZWJ, and before any cut to a length (strip, then cut at 600). A book stored before this rule is stripped when it is
+  opened: if that changes its text, the text is stored again once, and, only when that is confirmed, the book's paragraph
+  count is that of the new text and the place in the book moves back by the number of paragraphs before it that were
+  made only of such characters (a place on one of them goes to the next paragraph, a place past the end to the last,
+  none left to 0); a book whose text cannot be read is left exactly as it is, and shows nothing. Cf is that of the platform's
+  Unicode tables (Swift's standard library on iOS, the Android API level's on Android): a character assigned in one
+  version only may be stripped on one platform and not the other, a residual.
 - Cuts: a cut at the paragraph (2,000), sentence (600) or any other cap moves back up to 6 UTF-16 units, never to less
   than one unit after the start of the piece, while the unit at the cut continues what comes before it: the second
   half of a surrogate pair; a combining mark (Mn, Mc, Me, in the BMP); a variation selector U+FE00–FE0F; a joiner

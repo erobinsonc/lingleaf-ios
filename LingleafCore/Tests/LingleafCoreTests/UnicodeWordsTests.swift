@@ -350,7 +350,10 @@ final class UnicodeWordsTests: XCTestCase {
             return table.isName(sentence, WordRange(5, 5 + word.utf16.count))
         }
         for yes in ["Joaquín", "Ángel", "O'Brien", "Rose"] { XCTAssertTrue(name(yes), yes) }
-        for no in ["I", "A", "NASA", "ángel", "rose"] { XCTAssertFalse(name(no), no) }
+        for no in ["I", "A", "NASA", "ángel", "rose", "ǅemo"] { XCTAssertFalse(name(no), no) }
+        // Unicode Uppercase of the first code point: a titlecase letter ("ǅ", Lt) is not capitalised.
+        let titlecase = Words("ǅ ǅemo Ǆ Ǆemo" as NSString)
+        XCTAssertEqual((0..<titlecase.count).map(titlecase.titlecase), [false, false, true, true])
     }
 
     /// Format characters go (bidi controls, LRM, RLM, ALM, zero-width, soft hyphen, tags), the
@@ -381,18 +384,110 @@ final class UnicodeWordsTests: XCTestCase {
         XCTAssertTrue(library.state.words.isEmpty)
     }
 
-    /// A book stored before invisible characters were stripped is read without them, and a paragraph
-    /// made only of them goes with its count.
-    func testAnOldBookIsStrippedWhenOpened() throws {
-        let storage = MemoryStorage()
+    /// A book stored before invisible characters were stripped: `raw` is its stored text, `place` the
+    /// paragraph the reader was at.
+    private func oldBook(_ raw: String, place: Int, storage: MemoryStorage = MemoryStorage()) -> (Library, MemoryStorage, Book) {
         let library = Library(storage: storage)
         library.load()
-        let book = library.addBook(title: "Old", author: "A", text: "One\n\nTwo\n\nThree")
-        storage.write(book.fileName, "One\u{202E}\n\n\u{200B}\n\nThree")
+        let book = library.addBook(title: "Old", author: "A", text: "x")
+        storage.write(book.fileName, raw)
+        library.state.books[0].paragraphCount = TextTools.splitParagraphs(raw).count
+        library.updateProgress(book.id, paragraph: place)
+        library.flush()
+        return (library, storage, library.state.books[0])
+    }
+
+    /// The place in the book moves back by the paragraphs before it that were only invisible
+    /// characters, so the reader stays on the same text.
+    func testAnOldBooksPlaceFollowsTheParagraphsStrippingRemoved() {
+        let raw = "P0\n\n\u{200B}\n\nP2\n\n\u{202E}\n\nP4"   // five paragraphs: P0, -, P2, -, P4
+        // (place before, name of the paragraph the reader is on after)
+        for (place, expected) in [(0, "P0"), (1, "P2"), (2, "P2"), (3, "P4"), (4, "P4")] {
+            let (library, storage, book) = oldBook(raw, place: place)
+            let paragraphs = library.openBook(book.id)
+            XCTAssertEqual(paragraphs, ["P0", "P2", "P4"])
+            let now = library.state.books[0]
+            XCTAssertEqual(now.paragraphCount, 3)
+            XCTAssertEqual(paragraphs[now.progressParagraph], expected, "place \(place)")
+            XCTAssertEqual(storage.read(book.fileName), "P0\n\n\n\nP2\n\n\n\nP4", "stored again, stripped")
+            // Opened again: nothing moves a second time.
+            XCTAssertEqual(library.openBook(book.id), paragraphs)
+            XCTAssertEqual(library.state.books[0].progressParagraph, now.progressParagraph)
+            XCTAssertEqual(library.state.books[0].paragraphCount, 3)
+        }
+    }
+
+    func testAnOldBooksPlaceAtTheEndOrWithNothingLeft() {
+        let (library, _, book) = oldBook("P0\n\nP1\n\n\u{200B}", place: 2)
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P1"])
+        XCTAssertEqual(library.state.books[0].progressParagraph, 1, "a place past the end goes to the last paragraph")
+        let (empty, _, emptied) = oldBook("\u{200B}\n\n\u{202E}", place: 1)
+        XCTAssertEqual(empty.openBook(emptied.id), [])
+        XCTAssertEqual(empty.state.books[0].paragraphCount, 0)
+        XCTAssertEqual(empty.state.books[0].progressParagraph, 0)
+    }
+
+    /// A text that can't be read changes nothing: not the count, not the place, not the files.
+    func testABookWhoseTextCannotBeReadIsLeftExactlyAsItIs() {
+        let (library, storage, book) = oldBook("P0\n\nP1\n\nP2", place: 2)
+        storage.delete(book.fileName)
+        let booksFile = storage.read("books.json")
+        let before = library.state.books[0]
+        XCTAssertEqual(library.openBook(book.id), [])
+        XCTAssertEqual(library.state.books[0], before, "count, place and last-opened time as they were")
+        XCTAssertEqual(storage.read("books.json"), booksFile)
+        XCTAssertNil(storage.read(book.fileName))
+    }
+
+    /// Only stripping moves the count and the place: a text with nothing to strip is read as it is.
+    func testABookWithNothingToStripKeepsItsCountAndPlace() {
+        let (library, storage, book) = oldBook("P0\n\nP1\n\nP2", place: 2)
+        library.state.books[0].paragraphCount = 9
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P1", "P2"])
+        XCTAssertEqual(library.state.books[0].paragraphCount, 9)
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+        XCTAssertEqual(storage.read(book.fileName), "P0\n\nP1\n\nP2", "not written again")
+    }
+
+    /// A storage that can't write the book again: it is shown stripped, and nothing is moved on a
+    /// guess; the next time tries again.
+    func testAnUnwritableBookIsShownStrippedAndItsPlaceIsNotMoved() {
+        final class Frozen: Storage {
+            let base = MemoryStorage()
+            func read(_ name: String) -> String? { base.read(name) }
+            func write(_ name: String, _ content: String) {
+                // A book's text can be written once; after that the storage refuses.
+                if !name.hasPrefix("book-") || base.read(name) == nil { base.write(name, content) }
+            }
+            func delete(_ name: String) { base.delete(name) }
+        }
+        let library = Library(storage: Frozen())
+        library.load()
+        let book = library.addBook(title: "Old", author: "A", text: "x")
+        let raw = "P0\n\n\u{200B}\n\nP2"
+        (library.storage as? Frozen)?.base.write(book.fileName, raw)
+        library.state.books[0].paragraphCount = 3
         library.updateProgress(book.id, paragraph: 2)
-        XCTAssertEqual(library.openBook(book.id), ["One", "Three"])
-        XCTAssertEqual(library.state.books.first?.paragraphCount, 2)
-        XCTAssertEqual(library.state.books.first?.progressParagraph, 1, "the place stays inside the book")
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P2"])
+        XCTAssertEqual(library.state.books[0].paragraphCount, 3)
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P2"], "and again, nothing doubles")
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+    }
+
+    /// Each closing mark stays with the sentence it closes, after . ! ? and after 。 (SPEC).
+    func testEveryClosingMarkStaysWithItsSentence() {
+        for end in [".", "!", "?"] {
+            for mark in ["\"", "”", "’", ")", "]"] {
+                let text = "One\(end)\(mark) Two."
+                XCTAssertEqual(TextTools.sentenceRanges(text).map { TextTools.substring(text, $0) },
+                               ["One\(end)\(mark)", "Two."], "after \(end) the mark \(mark)")
+            }
+        }
+        for mark in ["\"", "”", "’", ")", "]", "」", "』"] {
+            let text = "你好。\(mark)再见"
+            XCTAssertEqual(TextTools.sentenceRanges(text).map { TextTools.substring(text, $0) }, ["你好。\(mark)", "再见"], "after 。 \(mark)")
+        }
     }
 
     /// A lone surrogate can't be sent as it is: it is U+FFFD.

@@ -86,7 +86,7 @@ extension IrregularVerbs {
     }
 
     func isName(_ words: Words, _ i: Int) -> Bool {
-        !words.startsSentence(i) && words.titlecase(i) && words.surface(i).contains(where: \.isLowercase)
+        !words.startsSentence(i) && words.titlecase(i) && words.surface(i).unicodeScalars.contains { $0.properties.isLowercase }
     }
 
     /// What the voice says for the word at `range` of `text`: the table's respelling of its slot
@@ -181,8 +181,11 @@ struct Words {
     /// Capitalised like a name or a sentence start ("Rose", "Tom's"; not "NASA").
     func titlecase(_ k: Int) -> Bool {
         let s = surface(k)
-        guard let first = s.first, first.isUppercase else { return false }
-        return s.count == 1 || s.contains("'") || s.contains("’") || !s.dropFirst().contains(where: \.isUppercase)
+        // The Unicode Uppercase property of the first code point (not Character.isUppercase, which is
+        // also true of titlecase letters such as "ǅ"): the same on every platform.
+        guard let first = s.unicodeScalars.first, first.properties.isUppercase else { return false }
+        return s.unicodeScalars.count == 1 || s.contains("'") || s.contains("’")
+            || !s.unicodeScalars.dropFirst().contains { $0.properties.isUppercase }
     }
 
     /// A listed adverb, or a lower-case word in -ly ("slowly"; not "Polly").
