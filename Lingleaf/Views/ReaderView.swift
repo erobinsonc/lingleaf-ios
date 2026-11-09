@@ -226,11 +226,11 @@ struct ReaderView: View {
                                 }
                             }
                             .id(index)
-                            .onScrollVisibilityChange(threshold: 0.01) { shown in
+                            .modifier(DiagVisibility(enabled: !Diag.has("-diag-no-visibility")) { shown in
                                 if shown { visible.insert(index) } else { visible.remove(index) }
                                 // The sentence being read is back on screen: follow it again.
                                 if shown, reading?.current?.paragraph == index { following = true }
-                            }
+                            })
                     }
                 }
                 .scrollTargetLayout()
@@ -239,7 +239,7 @@ struct ReaderView: View {
                 .frame(maxWidth: 680)
                 .frame(maxWidth: .infinity)
             }
-            .scrollPosition(id: $position, anchor: .top)
+            .modifier(DiagPosition(enabled: !Diag.has("-diag-no-position"), position: $position))
             // Scrolling by hand while reading aloud: stop following until the sentence is back.
             .onScrollPhaseChange { _, phase in
                 if phase == .interacting { following = false }
@@ -252,9 +252,9 @@ struct ReaderView: View {
             .coordinateSpace(.named(Self.readerSpace))
             .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { viewportHeight = $0 }
             .safeAreaInset(edge: .top, spacing: 0) {
-                ProgressView(value: book?.progress ?? 0)
+                if !Diag.has("-diag-no-progress") { ProgressView(value: book?.progress ?? 0)
                     .accessibilityLabel(Text("Reading progress"))
-                    .accessibilityValue(Text(book?.progress ?? 0, format: .percent.precision(.fractionLength(0))))
+                    .accessibilityValue(Text(book?.progress ?? 0, format: .percent.precision(.fractionLength(0)))) }
             }
             .onAppear {
                 proxy.scrollTo(min(book?.progressParagraph ?? 0, paragraphs.count - 1), anchor: .top)
@@ -495,5 +495,26 @@ private struct BarBackground: ViewModifier {
         } else {
             content.background(.bar)
         }
+    }
+}
+
+/// Diagnostic only (throwaway branch).
+enum Diag {
+    static func has(_ flag: String) -> Bool { ProcessInfo.processInfo.arguments.contains(flag) }
+}
+
+private struct DiagVisibility: ViewModifier {
+    let enabled: Bool
+    let action: (Bool) -> Void
+    func body(content: Content) -> some View {
+        if enabled { content.onScrollVisibilityChange(threshold: 0.01, action) } else { content }
+    }
+}
+
+private struct DiagPosition: ViewModifier {
+    let enabled: Bool
+    @Binding var position: Int?
+    func body(content: Content) -> some View {
+        if enabled { content.scrollPosition(id: $position, anchor: .top) } else { content }
     }
 }
