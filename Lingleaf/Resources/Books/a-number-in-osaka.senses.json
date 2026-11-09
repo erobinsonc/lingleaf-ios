@@ -134,7 +134,7 @@
    "lemma": "bow",
    "pos": "verb",
    "ipa": "baʊ",
-   "es": "hacer una reverencia (/baʊ/, no /boʊ/ de \"arco\")",
+   "es": "hacer una reverencia (/baʊ/)",
    "kind": "word",
    "en": "to bend forward as a greeting"
   },
@@ -142,7 +142,7 @@
    "lemma": "bow",
    "pos": "noun",
    "ipa": "baʊ",
-   "es": "reverencia (/baʊ/, no /boʊ/ de \"arco\" o \"lazo\")",
+   "es": "reverencia (/baʊ/)",
    "kind": "word",
    "en": "a bend forward as a greeting"
   },
@@ -271,7 +271,7 @@
    "lemma": "content",
    "pos": "noun",
    "ipa": "ˈkɑntɛnt",
-   "es": "contenido (/ˈkɑntɛnt/; no /kənˈtɛnt/ \"contento\")",
+   "es": "contenido (/ˈkɑntɛnt/)",
    "kind": "word"
   },
   "contract": {
@@ -994,7 +994,7 @@
    "lemma": "san",
    "pos": "suffix",
    "ipa": "sɑn",
-   "es": "tratamiento de respeto japonés (\"señor/señora\")",
+   "es": "tratamiento japonés de respeto",
    "kind": "foreign",
    "variety": "local"
   },
@@ -1121,7 +1121,7 @@
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
-   "es": "la persona que habla (no \"altavoz\")",
+   "es": "la persona que habla (no \"parlante\")",
    "kind": "word",
    "en": "a person who is speaking"
   },

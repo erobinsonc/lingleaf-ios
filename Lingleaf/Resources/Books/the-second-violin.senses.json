@@ -123,7 +123,7 @@
    "lemma": "bow",
    "pos": "noun",
    "ipa": "boʊ",
-   "es": "arco (del violín; /boʊ/, no /baʊ/ \"reverencia\")",
+   "es": "arco (violín; /boʊ/)",
    "kind": "word",
    "en": "the stick used to play a violin"
   },
@@ -413,7 +413,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "folk_dance": {
    "lemma": "folk dance",
@@ -510,7 +510,7 @@
    "lemma": "hall",
    "pos": "noun",
    "ipa": "hɔl",
-   "es": "salón de actos",
+   "es": "auditorio",
    "kind": "word"
   },
   "hand_over_phone": {
@@ -924,7 +924,7 @@
    "lemma": "quite a",
    "pos": "phrase",
    "ipa": "kwaɪt ə",
-   "es": "menuda, toda una",
+   "es": "toda una",
    "kind": "chunk"
   },
   "reach_for2": {
@@ -2259,7 +2259,7 @@
     "start": 68,
     "end": 84,
     "text": "quite a sentence",
-    "es": "menuda frase"
+    "es": "toda una frase"
    }
   },
   {
@@ -2272,7 +2272,7 @@
     "start": 6,
     "end": 22,
     "text": "quite a sentence",
-    "es": "menuda frase"
+    "es": "toda una frase"
    }
   },
   {
@@ -3961,7 +3961,7 @@
     "start": 53,
     "end": 68,
     "text": "Don't let me in",
-    "es": "No me dejéis entrar"
+    "es": "No me dejen entrar"
    }
   },
   {

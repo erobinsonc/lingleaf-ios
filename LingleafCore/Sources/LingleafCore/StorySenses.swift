@@ -444,13 +444,14 @@ extension StorySenses {
     /// same base form with another sense is not marked. Everywhere else (a word with no entry here, another
     /// book) the generic underline stands. `words` are the paragraph's word ranges; `saved` the saved words.
     public func underlines(paragraph: Int, generic: Set<WordRange>, words: [WordRange], saved: [VocabWord]) -> Set<WordRange> {
-        let mine = saved.filter { !$0.learned && Sense.isStory($0.sense) && ($0.story == nil || $0.story == story) }
+        let mine = saved.filter { !$0.learned && Sense.isStory($0.sense) && $0.story == story }
         guard !mine.isEmpty, let here = byParagraph[paragraph] else { return generic }
-        let keys = Set(mine.compactMap { Sense.storyKey($0.sense) })
+        // "sense key" and the base form it was saved under: a word is only that sense of that base form.
+        let keys = Set(mine.compactMap { word in Sense.storyKey(word.sense).map { "\($0)#\(word.word)" } })
         let lemmas = Set(mine.map(\.word))
         var out = generic
         for (range, hit) in here {
-            if keys.contains(hit.id) {
+            if keys.contains("\(hit.id)#\(TextTools.key(hit.sense.lemma))") {
                 let span = hit.group?.range ?? range
                 out.formUnion(words.filter { span.start <= $0.start && $0.end <= span.end })
             } else if lemmas.contains(TextTools.key(hit.sense.lemma)) {

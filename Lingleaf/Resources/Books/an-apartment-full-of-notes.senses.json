@@ -471,7 +471,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "floor_polish": {
    "lemma": "floor polish",
@@ -1105,9 +1105,10 @@
   "read_like": {
    "lemma": "read like",
    "pos": "phrase",
-   "ipa": "rid laɪk",
+   "ipa": "rɛd laɪk",
    "es": "parecer (al leerlo)",
-   "kind": "chunk"
+   "kind": "chunk",
+   "note": "En pasado, «read» se pronuncia «red»."
   },
   "read_past": {
    "lemma": "read",

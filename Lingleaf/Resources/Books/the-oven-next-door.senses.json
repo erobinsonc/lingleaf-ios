@@ -20,7 +20,7 @@
    "lemma": "break",
    "pos": "verb",
    "ipa": "breɪk",
-   "es": "estropearse, averiarse",
+   "es": "descomponerse, averiarse",
    "kind": "word"
   },
   "come_back": {
@@ -41,7 +41,7 @@
    "lemma": "dead",
    "pos": "adjective",
    "ipa": "dɛd",
-   "es": "que no funciona, estropeado",
+   "es": "que no funciona, descompuesto",
    "kind": "word"
   },
   "do_best": {
@@ -167,7 +167,7 @@
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
    "kind": "word",
-   "en": "to bring someone to a place"
+   "en": "to go with someone to a place"
   },
   "taste_try": {
    "lemma": "taste",

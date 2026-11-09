@@ -79,7 +79,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "fly_in": {
    "lemma": "fly in",
@@ -92,7 +92,7 @@
    "lemma": "hall",
    "pos": "noun",
    "ipa": "hɔl",
-   "es": "salón de actos",
+   "es": "auditorio",
    "kind": "word"
   },
   "keep_promise": {

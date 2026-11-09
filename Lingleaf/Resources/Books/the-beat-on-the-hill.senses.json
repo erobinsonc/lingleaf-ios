@@ -55,14 +55,14 @@
    "lemma": "bite",
    "pos": "verb",
    "ipa": "baɪt",
-   "es": "morder (aquí nadie muerde = no hay que tener miedo)",
+   "es": "morder (aquí: no hay que temer)",
    "kind": "word"
   },
   "bow_head": {
    "lemma": "bow",
    "pos": "verb",
    "ipa": "baʊ",
-   "es": "hacer una reverencia (/baʊ/, no /boʊ/ de \"arco\")",
+   "es": "hacer una reverencia (/baʊ/)",
    "kind": "word",
    "en": "to bend forward as a greeting"
   },
@@ -172,7 +172,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "free_cost": {
    "lemma": "free",
@@ -213,7 +213,7 @@
    "lemma": "have headphones on",
    "pos": "phrase",
    "ipa": "hæv ˈhɛdfoʊnz ɑn",
-   "es": "llevar los auriculares puestos",
+   "es": "llevar los audífonos puestos",
    "kind": "chunk"
   },
   "high_five": {
@@ -248,7 +248,7 @@
    "lemma": "live",
    "pos": "adverb",
    "ipa": "laɪv",
-   "es": "en directo (se pronuncia /laɪv/, no como \"to live\")",
+   "es": "en directo (/laɪv/)",
    "kind": "word"
   },
   "look_over": {
@@ -432,7 +432,7 @@
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
-   "es": "altavoz",
+   "es": "parlante",
    "kind": "word"
   },
   "step_stair": {
@@ -739,7 +739,7 @@
     "start": 139,
     "end": 160,
     "text": "had his headphones on",
-    "es": "llevaba los auriculares puestos"
+    "es": "llevaba los audífonos puestos"
    }
   },
   {

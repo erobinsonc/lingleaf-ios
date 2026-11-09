@@ -338,7 +338,7 @@ struct WordCardView: View {
                 Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText).accessibilityHidden(story != nil)
             }
             // A helper or modal verb shows its form in the verb group just below.
-            if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word) {
+            if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word), !storyShowsTheWord {
                 Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
             if let label = selection.function?.kind.label {
@@ -534,7 +534,9 @@ struct WordCardView: View {
             formRange: range,
             meanings: unsureForm ? savedMeanings : nil,
             story: selection.storyID,
-            groupRange: story == nil ? nil : selection.groupInSentence
+            groupRange: story == nil ? nil : selection.groupInSentence,
+            translationSource: story?.translationSource,
+            storyKind: story?.sense.kind
         )
         // Saving never waits: a translation still on its way is done by TranslationWorker.
         if translation == nil { model.translateMissing() }

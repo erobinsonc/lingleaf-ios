@@ -279,13 +279,15 @@ final class AppModel {
     func translateMissing() {
         guard let target = targetLanguage else { return }
         library.fillTableTranslations(target)
+        library.clearUntranslatableStoryMeanings(target)
         let words = library.wordsNeedingTranslation(target)
         let contexts = library.contextsNeedingTranslation(target)
         let meanings = library.meaningsNeedingTranslation(target)
         guard !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         if let fakeTranslator {
             for word in words {
-                guard let text = try? fakeTranslator(ReadingTranslation.source(word: word.word, sense: word.sense)) else { return }
+                guard let source = ReadingTranslation.source(for: word) else { continue }
+                guard let text = try? fakeTranslator(source) else { return }
                 library.setTranslation(word.word, Self.cleaned(text, sense: word.sense, target), language: target, sense: word.sense)
             }
             for word in contexts {
@@ -326,8 +328,8 @@ final class AppModel {
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
         // A saved sentence and a reading are told apart from the word by a prefix on the identifier.
-        let wordRequests = words.values.map { word in
-            let source = ReadingTranslation.source(word: word.word, sense: word.sense)
+        let wordRequests = words.values.compactMap { word -> TranslationSession.Request? in
+            guard let source = ReadingTranslation.source(for: word) else { return nil }
             return TranslationSession.Request(sourceText: source, clientIdentifier: "word:\(word.id)")
         }
         let requests = wordRequests

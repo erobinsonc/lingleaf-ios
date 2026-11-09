@@ -36,7 +36,7 @@
    "lemma": "first floor",
    "pos": "noun",
    "ipa": "fɝst flɔr",
-   "es": "planta baja (en EE. UU. el \"first floor\" está a nivel de la calle)",
+   "es": "planta baja (en EE. UU.)",
    "kind": "chunk",
    "variety": "AmE",
    "note": "En inglés británico y en Ghana \"first floor\" es el primer piso, encima de la planta baja."
@@ -54,7 +54,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "floor_storey": {
    "lemma": "floor",

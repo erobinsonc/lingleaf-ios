@@ -135,7 +135,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "floor_storey": {
    "lemma": "floor",
@@ -379,7 +379,7 @@
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
    "kind": "word",
-   "en": "to bring someone to a place"
+   "en": "to go with someone to a place"
   },
   "take_into": {
    "lemma": "take",
@@ -387,7 +387,7 @@
    "ipa": "teɪk",
    "es": "llevar (a alguien a un sitio)",
    "kind": "word",
-   "en": "to bring someone to a place"
+   "en": "to go with someone to a place"
   },
   "take_notes": {
    "lemma": "take notes",

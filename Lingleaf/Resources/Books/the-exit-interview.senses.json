@@ -450,7 +450,7 @@
    "lemma": "fill in",
    "pos": "phrasal verb",
    "ipa": "fɪl ɪn",
-   "es": "rellenar",
+   "es": "llenar",
    "kind": "chunk"
   },
   "finance": {
@@ -502,14 +502,6 @@
    "ipa": "ˈflʌdlaɪt",
    "es": "foco",
    "kind": "word"
-  },
-  "floor_ground": {
-   "lemma": "floor",
-   "pos": "noun",
-   "ipa": "flɔr",
-   "es": "suelo",
-   "kind": "word",
-   "en": "the surface you walk on indoors"
   },
   "floor_storey": {
    "lemma": "floor",
@@ -687,7 +679,7 @@
    "lemma": "high school",
    "pos": "noun",
    "ipa": "haɪ skul",
-   "es": "instituto (de secundaria)",
+   "es": "escuela secundaria",
    "kind": "chunk",
    "variety": "AmE"
   },
@@ -787,7 +779,7 @@
    "lemma": "Kilima Freight",
    "pos": "proper noun",
    "ipa": "kiˈlimɑ freɪt",
-   "es": "nombre de la empresa (\"kilima\" = \"colina\" en suajili)",
+   "es": "nombre de la empresa (kilima = colina)",
    "kind": "name",
    "variety": "local"
   },
@@ -1289,7 +1281,7 @@
    "ipa": "rʌn",
    "es": "hacer, mantener (una ruta)",
    "kind": "word",
-   "en": "to operate a bus route"
+   "en": "to keep a transport route going"
   },
   "run_work": {
    "lemma": "run",
@@ -1297,7 +1289,7 @@
    "ipa": "rʌn",
    "es": "funcionar",
    "kind": "word",
-   "en": "to work, said of a machine"
+   "en": "to work, to operate"
   },
   "ruthlessly": {
    "lemma": "ruthlessly",
@@ -1609,7 +1601,7 @@
    "lemma": "voluntary departure",
    "pos": "noun",
    "ipa": "ˈvɑlənˌtɛri dɪˈpɑrtʃər",
-   "es": "baja voluntaria",
+   "es": "renuncia voluntaria",
    "kind": "chunk"
   },
   "vote": {
@@ -1735,7 +1727,7 @@
     "start": 36,
     "end": 56,
     "text": "Voluntary Departures",
-    "es": "Bajas voluntarias"
+    "es": "Renuncias voluntarias"
    }
   },
   {
@@ -1878,7 +1870,7 @@
     "start": 309,
     "end": 328,
     "text": "voluntary departure",
-    "es": "baja voluntaria"
+    "es": "renuncia voluntaria"
    }
   },
   {
@@ -2053,7 +2045,7 @@
    "start": 127,
    "end": 132,
    "text": "floor",
-   "sense": "floor_ground"
+   "sense": "floor_storey"
   },
   {
    "p": 9,
@@ -2475,7 +2467,7 @@
     "start": 173,
     "end": 184,
     "text": "high school",
-    "es": "instituto"
+    "es": "escuela secundaria"
    }
   },
   {
@@ -3936,7 +3928,7 @@
     "start": 322,
     "end": 346,
     "text": "filling in the shift log",
-    "es": "rellenando el parte del turno"
+    "es": "llenando el parte del turno"
    }
   },
   {
@@ -4334,7 +4326,7 @@
    "start": 61,
    "end": 66,
    "text": "floor",
-   "sense": "floor_ground"
+   "sense": "floor_storey"
   },
   {
    "p": 136,

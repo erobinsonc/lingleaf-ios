@@ -24,6 +24,12 @@ extension WordCardView {
         return story.translationSource.flatMap { translations[TextTools.normalize($0)] }
     }
 
+    /// "In the text: …" adds nothing on a name, or when the headword holds the tapped word ("go red" / "red").
+    var storyShowsTheWord: Bool {
+        guard let story else { return false }
+        return story.sense.kind == .name || story.sense.lemma.lowercased().contains(selection.word.lowercased())
+    }
+
     /// A name, or a word from another language outside Spanish, has no meaning on the card.
     var storyHasNoMeaning: Bool {
         guard let story else { return false }

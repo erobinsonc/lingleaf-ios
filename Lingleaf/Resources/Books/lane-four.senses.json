@@ -408,13 +408,13 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "foam_float": {
    "lemma": "float",
    "pos": "noun",
    "ipa": "floʊt",
-   "es": "flotador, churro (de espuma)",
+   "es": "flotador, fideo de espuma",
    "kind": "word"
   },
   "foolish": {
@@ -666,7 +666,7 @@
    "lemma": "lie back",
    "pos": "phrasal verb",
    "ipa": "laɪ bæk",
-   "es": "tumbarse de espaldas",
+   "es": "acostarse de espaldas",
    "kind": "chunk"
   },
   "lifeguard": {
@@ -2598,7 +2598,7 @@
     "start": 181,
     "end": 189,
     "text": "lie back",
-    "es": "tumbarse de espaldas"
+    "es": "acostarse de espaldas"
    }
   },
   {
@@ -2639,7 +2639,7 @@
     "start": 18,
     "end": 37,
     "text": "let go of the float",
-    "es": "soltado el churro"
+    "es": "soltado el flotador"
    }
   },
   {

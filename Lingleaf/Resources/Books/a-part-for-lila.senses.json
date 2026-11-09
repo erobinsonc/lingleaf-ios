@@ -79,7 +79,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "front_teeth": {
    "lemma": "front teeth",
@@ -131,7 +131,7 @@
    "lemma": "put on",
    "pos": "phrasal verb",
    "ipa": "pʊt ɑn",
-   "es": "poner, colocar (una pieza; no \"ponerse ropa\")",
+   "es": "colocar (una pieza)",
    "kind": "chunk"
   },
   "red_face": {

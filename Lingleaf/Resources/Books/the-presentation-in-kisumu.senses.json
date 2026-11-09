@@ -62,7 +62,7 @@
    "lemma": "break",
    "pos": "verb",
    "ipa": "breɪk",
-   "es": "estropearse, romperse",
+   "es": "descomponerse, romperse",
    "kind": "word"
   },
   "call_into2": {
@@ -140,7 +140,7 @@
    "lemma": "Lake Region Farmers' Cooperative",
    "pos": "proper noun",
    "ipa": "leɪk ˈridʒən ˈfɑrmərz koʊˈɑpərətɪv",
-   "es": "Cooperativa de Agricultores de la Región del Lago (nombre)",
+   "es": "Cooperativa del Lago (nombre)",
    "kind": "name"
   },
   "cost_money": {
@@ -168,7 +168,7 @@
    "lemma": "dead",
    "pos": "adjective",
    "ipa": "dɛd",
-   "es": "que no funciona, estropeado",
+   "es": "que no funciona, descompuesto",
    "kind": "word"
   },
   "delivered": {
@@ -211,7 +211,7 @@
    "lemma": "die",
    "pos": "verb",
    "ipa": "daɪ",
-   "es": "estropearse, morirse (un aparato)",
+   "es": "descomponerse, morirse (un aparato)",
    "kind": "word",
    "en": "to stop working for good"
   },
@@ -388,7 +388,7 @@
    "lemma": "Jioni Solar",
    "pos": "proper noun",
    "ipa": "ˈdʒioʊni ˈsoʊlər",
-   "es": "nombre de la empresa (\"jioni\" = \"tarde\" en suajili)",
+   "es": "nombre de la empresa (jioni = tarde)",
    "kind": "name",
    "variety": "local"
   },
@@ -406,7 +406,7 @@
    "ipa": "kip",
    "es": "tener (siempre a mano)",
    "kind": "word",
-   "en": "to have something and not give it away"
+   "en": "to have something ready in one place"
   },
   "keep_store": {
    "lemma": "keep",
@@ -423,14 +423,6 @@
    "es": "cumplir (una promesa)",
    "kind": "word",
    "en": "did what was promised"
-  },
-  "kind_nice": {
-   "lemma": "kind",
-   "pos": "adjective",
-   "ipa": "kaɪnd",
-   "es": "amable (no \"tipo\")",
-   "kind": "word",
-   "en": "friendly and helpful"
   },
   "last_endure": {
    "lemma": "last",
@@ -457,7 +449,7 @@
    "lemma": "Mama",
    "pos": "noun",
    "ipa": "ˈmɑmɑ",
-   "es": "señora (tratamiento de respeto en África oriental; no \"mamá\")",
+   "es": "señora (respeto; no «mamá»)",
    "kind": "foreign",
    "variety": "local"
   },
@@ -518,6 +510,14 @@
    "ipa": "pæs əˈraʊnd",
    "es": "ir pasando (de mano en mano)",
    "kind": "chunk"
+  },
+  "patient_adj": {
+   "lemma": "patient",
+   "pos": "adjective",
+   "ipa": "ˈpeɪʃənt",
+   "es": "paciente",
+   "kind": "word",
+   "en": "able to wait calmly"
   },
   "pick_up": {
    "lemma": "pick up",
@@ -1017,7 +1017,7 @@
    "start": 326,
    "end": 333,
    "text": "patient",
-   "sense": "kind_nice"
+   "sense": "patient_adj"
   },
   {
    "p": 7,

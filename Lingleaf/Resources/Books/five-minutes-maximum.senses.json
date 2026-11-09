@@ -552,7 +552,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "following_fans": {
    "lemma": "following",
@@ -684,7 +684,7 @@
    "lemma": "high school",
    "pos": "noun",
    "ipa": "haɪ skul",
-   "es": "instituto (de secundaria)",
+   "es": "escuela secundaria",
    "kind": "chunk",
    "variety": "AmE"
   },
@@ -1096,7 +1096,7 @@
    "lemma": "pass",
    "pos": "noun",
    "ipa": "pæs",
-   "es": "puerto (de montaña)",
+   "es": "paso de montaña",
    "kind": "word",
    "en": "a way between mountains"
   },
@@ -1229,9 +1229,10 @@
   "read_back": {
    "lemma": "read back",
    "pos": "phrasal verb",
-   "ipa": "rid bæk",
+   "ipa": "rɛd bæk",
    "es": "releer",
-   "kind": "chunk"
+   "kind": "chunk",
+   "note": "En pasado, «read» se pronuncia «red»."
   },
   "read_past": {
    "lemma": "read",
@@ -1510,7 +1511,7 @@
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
-   "es": "la persona que habla (no \"altavoz\")",
+   "es": "la persona que habla (no \"parlante\")",
    "kind": "word",
    "en": "a person who is speaking"
   },
@@ -1662,7 +1663,7 @@
    "ipa": "teɪk",
    "es": "llevar (a un sitio)",
    "kind": "word",
-   "en": "to bring someone to places"
+   "en": "to go with someone to a place"
   },
   "take_seriously": {
    "lemma": "take seriously",
@@ -1995,7 +1996,7 @@
     "start": 35,
     "end": 58,
     "text": "took off his headphones",
-    "es": "se quitó los auriculares"
+    "es": "se quitó los audífonos"
    }
   },
   {
@@ -2055,7 +2056,7 @@
     "start": 56,
     "end": 67,
     "text": "high school",
-    "es": "instituto"
+    "es": "escuela secundaria"
    }
   },
   {
@@ -2704,7 +2705,7 @@
     "start": 98,
     "end": 119,
     "text": "put on his headphones",
-    "es": "se puso los auriculares"
+    "es": "se puso los audífonos"
    }
   },
   {

@@ -164,6 +164,8 @@ public enum TextTools {
         var marks = 0
         for scalar in text.unicodeScalars {
             let category = scalar.properties.generalCategory
+            // Invisible formatting between accents does not start a new letter ("Zalgo" through U+200B).
+            if category == .format { continue }
             if category == .nonspacingMark || category == .enclosingMark {
                 marks += 1
                 if marks <= maxCombiningMarks { scalars.append(scalar) }

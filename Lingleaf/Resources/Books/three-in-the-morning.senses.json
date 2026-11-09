@@ -217,7 +217,7 @@
    "lemma": "fault",
    "pos": "noun",
    "ipa": "fɔlt",
-   "es": "fallo, defecto",
+   "es": "falla, defecto",
    "kind": "word",
    "en": "a defect, a problem in a machine"
   },
@@ -267,7 +267,7 @@
    "lemma": "high school",
    "pos": "noun",
    "ipa": "haɪ skul",
-   "es": "instituto (de secundaria)",
+   "es": "escuela secundaria",
    "kind": "chunk",
    "variety": "AmE"
   },
@@ -444,7 +444,7 @@
    "lemma": "Polish",
    "pos": "noun",
    "ipa": "ˈpoʊlɪʃ",
-   "es": "polaco (idioma; no \"polish\" /ˈpɑlɪʃ/, sacar brillo)",
+   "es": "polaco (idioma; no «polish»)",
    "kind": "word",
    "en": "the language of Poland"
   },
@@ -559,7 +559,7 @@
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
-   "es": "llevar, regentar (un negocio)",
+   "es": "llevar, administrar (un negocio)",
    "kind": "word",
    "en": "to manage a business"
   },

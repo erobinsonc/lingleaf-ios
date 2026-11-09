@@ -160,7 +160,7 @@ final class LibraryTests: XCTestCase {
         let fresh = library()
         fresh.addNewStoriesIfNeeded { shelfStories }
         XCTAssertTrue(fresh.state.books.isEmpty, "seedIfNeeded does the first launch")
-        XCTAssertNotNil(storage.files["seeded-stories-v2"])
+        XCTAssertNil(storage.files["seeded-stories-v2"])
     }
 
     func testTwoStorySensesOfOneWordAreTwoEntries() {
@@ -226,6 +226,80 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (10, 17)).groupRange, "must hold the tapped word")
         XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (5, 5)).groupRange)
         XCTAssertNil(word(sense: "s:go_red", story: "a-test-story", group: (-1, 5)).groupRange)
+    }
+
+    func testTheMigrationMarkIsWrittenOnlyAfterTheBooksAreAdded() {
+        let old = oldInstall()
+        old.addNewStoriesIfNeeded { [] }
+        XCTAssertNil(storage.files["seeded-stories-v2"], "nothing to add: try again at the next launch")
+        old.addNewStoriesIfNeeded { shelfStories }
+        XCTAssertNotNil(storage.files["seeded-stories-v2"])
+        XCTAssertEqual(old.state.books.count, 21)
+    }
+
+    /// A story sense is translated from its own source, never from the bare spelling (SPEC S19).
+    func testAStorySenseIsTranslatedFromItsSourceOrNotAtAll() {
+        let library = library()
+        library.saveWord("floor", learned: false, translation: nil, context: "The sixth floor.", sense: Sense.story("floor_storey"),
+                         story: "a-test-story", translationSource: nil)
+        library.saveWord("free", learned: false, context: "My oven is free.", sense: Sense.story("free_available"),
+                         story: "a-test-story", translationSource: "not busy, available")
+        library.saveWord("cat", learned: false, context: "A cat.")
+        let needing = library.wordsNeedingTranslation("fr").map(\.word).sorted()
+        XCTAssertEqual(needing, ["cat", "free"], "no source, no translation: the bare lemma of floor is not translated")
+        let floor = library.state.word("floor", sense: Sense.story("floor_storey"))!
+        let free = library.state.word("free", sense: Sense.story("free_available"))!
+        XCTAssertNil(ReadingTranslation.source(for: floor))
+        XCTAssertEqual(ReadingTranslation.source(for: free), "not busy, available", "the gloss, not the word")
+        XCTAssertEqual(ReadingTranslation.source(for: library.state.word("cat")!), "cat")
+        // A meaning saved in Spanish is cleared, not translated from the lemma, when the language changes.
+        library.setTranslation("floor", "piso", language: "es", sense: Sense.story("floor_storey"))
+        XCTAssertEqual(library.state.word("floor", sense: Sense.story("floor_storey"))?.translation, "piso")
+        library.clearUntranslatableStoryMeanings("fr")
+        XCTAssertEqual(library.state.word("floor", sense: Sense.story("floor_storey"))?.translation, "")
+        XCTAssertTrue(library.wordsNeedingTranslation("fr").map(\.word).contains("free"), "free is translated from its gloss")
+        library.clearUntranslatableStoryMeanings("fr")
+        XCTAssertEqual(library.state.word("free", sense: Sense.story("free_available"))?.translationSource, "not busy, available")
+    }
+
+    func testANameOrAForeignWordIsNotSaved() {
+        let library = library()
+        XCTAssertNil(library.saveWord("long", learned: false, context: "Mr. Long.", sense: Sense.story("long_name"),
+                                      story: "a-test-story", storyKind: .name))
+        XCTAssertNil(library.saveWord("bunica", learned: false, context: "Bunica.", sense: Sense.story("bunica"),
+                                      story: "a-test-story", storyKind: .foreign))
+        XCTAssertTrue(library.state.words.isEmpty)
+        library.saveWord("go red", learned: false, context: "Went red.", sense: Sense.story("go_red"), story: "a-test-story", storyKind: .chunk)
+        XCTAssertEqual(library.state.words.count, 1)
+    }
+
+    func testAPlainWordSavedAsAStorySenseLosesItsOldMeaning() {
+        let library = library()
+        library.saveWord("free", learned: false, translation: "gratis", translationLanguage: "es", phonetic: "/fri/", context: "Free food.")
+        library.saveWord("free", learned: false, context: "My oven is free.", sense: Sense.story("free_available"),
+                         story: "a-test-story", translationSource: "not busy")
+        XCTAssertEqual(library.state.words.count, 1)
+        XCTAssertEqual(library.state.words[0].translation, "", "the false meaning does not stay")
+        XCTAssertEqual(library.state.words[0].phonetic, "")
+    }
+
+    func testWordsSavedBeforeStorySensesStillLoad() {
+        storage.files["words.json"] = """
+        [{"word":"cat","translation":"gato","phonetic":"","context":"A cat.","source":"","learned":false,"box":0,
+          "createdAt":"2026-10-01T00:00:00Z","nextReview":"2026-10-02T00:00:00Z"}]
+        """
+        let loaded = library()
+        XCTAssertEqual(loaded.state.words.first?.word, "cat")
+        XCTAssertNil(loaded.state.words.first?.story)
+        XCTAssertNil(loaded.state.words.first?.translationSource)
+    }
+
+    func testAWordWithAHashDoesNotBecomeAnotherWordsSense() {
+        var word = VocabWord(word: "a#verb", translation: "x", translationLanguage: nil, phonetic: "", context: "a",
+                             source: "", learned: false, box: 0, createdAt: now, nextReview: now)
+        word.sense = Sense.story("x")
+        XCTAssertFalse(word.bounded().word.contains("#"))
+        XCTAssertFalse(word.bounded().id.hasPrefix("a#verb"))
     }
 
     func testOpenProgressAndDeleteABook() {

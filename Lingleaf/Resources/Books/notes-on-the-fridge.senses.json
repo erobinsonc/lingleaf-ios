@@ -108,7 +108,7 @@
    "lemma": "break",
    "pos": "verb",
    "ipa": "breɪk",
-   "es": "estropearse, averiarse",
+   "es": "descomponerse, averiarse",
    "kind": "word"
   },
   "bring_appetite": {
@@ -211,7 +211,7 @@
    "lemma": "dead",
    "pos": "adjective",
    "ipa": "dɛd",
-   "es": "que no funciona, estropeado",
+   "es": "que no funciona, descompuesto",
    "kind": "word"
   },
   "delay": {
@@ -225,7 +225,7 @@
    "lemma": "die",
    "pos": "verb",
    "ipa": "daɪ",
-   "es": "morirse, ir estropeándose (una máquina)",
+   "es": "morirse, ir descomponiéndose (una máquina)",
    "kind": "word"
   },
   "discount": {
@@ -320,7 +320,7 @@
    "ipa": "flɔr",
    "es": "suelo",
    "kind": "word",
-   "en": "the surface you walk on indoors"
+   "en": "the lower surface of a room or a pool"
   },
   "floor_storey": {
    "lemma": "floor",
@@ -543,7 +543,7 @@
    "lemma": "lie down",
    "pos": "phrasal verb",
    "ipa": "laɪ daʊn",
-   "es": "tumbarse",
+   "es": "acostarse",
    "kind": "chunk"
   },
   "light_up": {
@@ -2125,7 +2125,7 @@
     "start": 179,
     "end": 187,
     "text": "lay down",
-    "es": "se tumbó"
+    "es": "se acostó"
    }
   },
   {
