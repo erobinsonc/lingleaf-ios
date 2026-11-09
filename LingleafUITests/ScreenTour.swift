@@ -204,10 +204,13 @@ final class ScreenTour: XCTestCase {
         let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "A Day at the Market")).firstMatch
         if book.waitForExistence(timeout: 10) {
             book.tap()
-            // No swipe here: on CI (run 42519053992) the plain reader never went idle after a swipe and the
-            // next tap timed out for minutes. The book is opened, left and opened again; the position
-            // restore itself is checked by the Core tests.
+            // Scroll only once the text is up and the saved position restored (the reader restores it
+            // 0.5 s after it appears): a swipe during the restore fought the reader's own scroll on CI
+            // (run 42519053992: the app never went idle and the next tap timed out for minutes).
+            _ = app.links.firstMatch.waitForExistence(timeout: 10)
             RunLoop.current.run(until: Date().addingTimeInterval(2))
+            app.swipeUp()
+            RunLoop.current.run(until: Date().addingTimeInterval(1))
             app.navigationBars.buttons.element(boundBy: 0).tap()
             snap("29-library-resume-row")
             if book.waitForExistence(timeout: 10) {
