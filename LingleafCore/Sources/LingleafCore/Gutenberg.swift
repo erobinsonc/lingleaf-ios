@@ -192,9 +192,12 @@ public struct GutenbergClient: Sendable {
         return books.filter { Self.level(for: $0.id) == level }
     }
 
+    /// Longest search text sent, in UTF-16 units.
+    public static let maxQuery = 200
+
     /// Searches the catalog by title or author. Throws `GutenbergError`; cancelling the task cancels the request.
     public func search(_ query: String) async throws -> [GutenbergBook] {
-        let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+        let encoded = TextTools.truncated(query, Self.maxQuery).addingPercentEncoding(withAllowedCharacters: .asciiAlphanumerics) ?? ""
         let response = try await call { try await http.get("\(Self.base)?languages=en&search=\(encoded)") }
         guard response.status == 200 else { throw GutenbergError(status: response.status) }
         guard JSONGuard.isShallow(response.body) else { throw GutenbergError.failed }

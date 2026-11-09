@@ -90,7 +90,10 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     /// Longest saved word (UTF-16 units): a verb group without one is its sentence, at most
     /// `TextTools.maxSentence`; its id ("…#homonym") is then always short enough for the
     /// corrections cursor to read back.
-    static let maxWord = TextTools.maxSentence
+    static let maxWord = TextTools.maxKey
+
+    /// The id-forming key of a spelling (`TextTools.key`): the same wherever an id is derived.
+    static func key(_ word: String) -> String { TextTools.key(word) }
     /// Dates a saved word can have (2000–2100); others are brought inside.
     static let dateRange = Date(timeIntervalSince1970: 946_684_800)...Date(timeIntervalSince1970: 4_102_444_800)
     /// A translation can be longer than what it translates (a verb group or sentence); twice the sentence's limit.
@@ -101,7 +104,8 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         word.word = TextTools.truncated(self.word, Self.maxWord)
         word.createdAt = min(max(createdAt, Self.dateRange.lowerBound), Self.dateRange.upperBound)
         word.nextReview = min(max(nextReview, Self.dateRange.lowerBound), Self.dateRange.upperBound)
-        word.context = TextTools.truncated(context, TextTools.maxSentence)
+        // Without invisible formatting (bidi overrides, zero-width): it is shown and read aloud.
+        word.context = TextTools.truncated(TextTools.stripFormat(context), TextTools.maxSentence)
         // Same limits as where each comes from: the dictionary's IPA, a translation, a book title.
         word.phonetic = TextTools.truncated(phonetic, DictionaryEntry.maxShortField)
         word.translation = TextTools.truncated(translation, Self.maxTranslation)
@@ -286,13 +290,13 @@ public struct LibraryState: Equatable, Sendable {
 
     /// The saved word spelled `base`: the one without a sense first, else the first saved.
     public func word(_ base: String) -> VocabWord? {
-        let key = TextTools.normalize(base)
+        let key = VocabWord.key(base)
         return words.first { $0.word == key && $0.sense == nil } ?? words.first { $0.word == key }
     }
 
     /// The saved word spelled `base` with exactly `sense`.
     public func word(_ base: String, sense: String?) -> VocabWord? {
-        let id = VocabWord.id(TextTools.normalize(base), sense)
+        let id = VocabWord.id(VocabWord.key(base), sense)
         return words.first { $0.id == id }
     }
 
@@ -439,7 +443,10 @@ public final class Library {
     // MARK: Books
 
     @discardableResult
-    public func addBook(title: String, author: String, text: String, level: String? = nil, gutenbergID: Int? = nil) -> Book {
+    public func addBook(title: String, author: String, text original: String, level: String? = nil, gutenbergID: Int? = nil) -> Book {
+        // Without invisible formatting characters (bidi overrides, zero-width, byte-order mark): the
+        // text is shown, read aloud and cut into words and sentences.
+        let text = TextTools.stripFormat(original)
         let id = "\(Int(now().timeIntervalSince1970 * 1000))-\(state.books.count)"
         let book = Book(
             id: id, title: TextTools.cleanLabel(title), author: TextTools.cleanLabel(author), fileName: "book-\(id).txt",
@@ -542,12 +549,12 @@ public final class Library {
         sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil,
         story: String? = nil, groupRange: WordRange? = nil
     ) -> VocabWord? {
-        let key = TextTools.truncated(TextTools.normalize(word), VocabWord.maxWord)
+        let key = VocabWord.key(word)
         let sense = kind == nil ? sense.flatMap { Sense.isValid($0) ? $0 : nil } : nil
         let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)
         // The same form saved unsure, now saved as one of its readings: it takes its place.
         let unsure = sense == nil ? nil : form
-            .flatMap { state.word(TextTools.normalize($0), sense: nil) }
+            .flatMap { state.word(VocabWord.key($0), sense: nil) }
             .flatMap { $0.isUnsure ? $0 : nil }
         var entry = existing ?? unsure.map { previous in
             var carried = VocabWord(
@@ -613,7 +620,7 @@ public final class Library {
         if let previous {
             replace(previous)
         } else {
-            deleteWord(TextTools.normalize(word), sense: sense)
+            deleteWord(VocabWord.key(word), sense: sense)
         }
     }
 
@@ -642,7 +649,7 @@ public final class Library {
     /// when the word no longer exists, the text is blank, or the word already has
     /// a translation in that language.
     public func setTranslation(_ word: String, _ text: String, language: String, sense: String? = nil) {
-        let id = VocabWord.id(TextTools.normalize(word), sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, var entry = state.words.first(where: { $0.id == id }),
               entry.translation.isEmpty || entry.translationLanguage != language else { return }
         entry.translation = text
@@ -653,7 +660,7 @@ public final class Library {
 
     /// Records the translation of a word's sentence that arrived after it was saved.
     public func setContextTranslation(_ word: String, _ text: String, language: String, sense: String? = nil) {
-        let id = VocabWord.id(TextTools.normalize(word), sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
               var entry = state.words.first(where: { $0.id == id }), !entry.context.isEmpty else { return }
         entry.contextTranslation = text

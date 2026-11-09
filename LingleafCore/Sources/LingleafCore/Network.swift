@@ -113,6 +113,12 @@ public enum Hosts {
     }
 }
 
+extension CharacterSet {
+    /// ASCII letters and digits: what stays as it is in a word put in a URL. (`.alphanumerics` also
+    /// keeps letters of every script, which would leave "café" as it is in the address.)
+    static let asciiAlphanumerics = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+}
+
 /// HTTPS-only fetcher for the allowed hosts. Anything else is refused before any connection is made,
 /// redirects elsewhere are not followed, and responses larger than `maxBytes` are cut off with an error.
 /// No cookies and no disk cache: what the learner looks up stays off the disk.

@@ -167,7 +167,7 @@ struct WordCardView: View {
     private var savedKey: String {
         if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
         // A story sense saves its base form or group ("go red"), with the sense's meaning.
-        if let storySense { return TextTools.normalize(storySense.lemma) }
+        if let storySense { return TextTools.key(storySense.lemma) }
         // A certain reading saves its base, whatever headword the dictionary gave.
         if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }

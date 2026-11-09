@@ -79,7 +79,8 @@ extension IrregularVerbs {
     func isName(_ text: String, _ range: WordRange) -> Bool {
         let ns = text as NSString
         // Most words aren't capitalised: no need to find the words around them.
-        guard range.start >= 0, range.start < ns.length, (0x41...0x5A).contains(ns.character(at: range.start)) else { return false }
+        guard range.start >= 0, range.start < ns.length,
+              Unicode.Scalar(ns.character(at: range.start))?.properties.isUppercase == true else { return false }
         let words = Words(ns)
         return words.index(of: range).map { isName(words, $0) } ?? false
     }

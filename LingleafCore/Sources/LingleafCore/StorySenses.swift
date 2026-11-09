@@ -453,7 +453,7 @@ extension StorySenses {
             if keys.contains(hit.id) {
                 let span = hit.group?.range ?? range
                 out.formUnion(words.filter { span.start <= $0.start && $0.end <= span.end })
-            } else if lemmas.contains(TextTools.normalize(hit.sense.lemma)) {
+            } else if lemmas.contains(TextTools.key(hit.sense.lemma)) {
                 out.remove(range)
             }
         }
