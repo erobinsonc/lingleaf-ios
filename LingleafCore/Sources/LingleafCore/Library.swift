@@ -5,7 +5,7 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
     public let title: String
     public let author: String
     public let fileName: String
-    public let paragraphCount: Int
+    public internal(set) var paragraphCount: Int
     public var level: String?
     public var gutenbergID: Int?
     public let addedAt: Date
@@ -400,8 +400,15 @@ public final class Library {
     public func openBook(_ id: String) -> [String] {
         guard let index = state.books.firstIndex(where: { $0.id == id }) else { return [] }
         state.books[index].lastOpenedAt = now()
+        // A book imported before invisible formatting was stripped is read without it too; if that
+        // removes a paragraph made only of it, the count and the place in the book follow.
+        let paragraphs = TextTools.splitParagraphs(TextTools.stripFormat(storage.read(state.books[index].fileName) ?? ""))
+        if paragraphs.count != state.books[index].paragraphCount {
+            state.books[index].paragraphCount = paragraphs.count
+            state.books[index].progressParagraph = min(max(state.books[index].progressParagraph, 0), max(paragraphs.count - 1, 0))
+        }
         saveBooks()
-        return TextTools.splitParagraphs(storage.read(state.books[index].fileName) ?? "")
+        return paragraphs
     }
 
     /// Updates progress in memory; call `flush()` to persist (e.g. when leaving the reader).
@@ -587,7 +594,7 @@ public final class Library {
     }
 
     public func answerReview(_ word: String, sense: String? = nil, correct: Bool) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard var entry = state.words.first(where: { $0.id == id }) else { return }
         let result = Srs.review(box: entry.box, correct: correct, now: now(), calendar: calendar)
         entry.box = result.box
@@ -597,7 +604,7 @@ public final class Library {
     }
 
     public func setLearned(_ word: String, _ learned: Bool, sense: String? = nil) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard var entry = state.words.first(where: { $0.id == id }) else { return }
         entry.learned = learned
         if !learned {
@@ -608,7 +615,7 @@ public final class Library {
     }
 
     public func deleteWord(_ word: String, sense: String? = nil) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         state.words.removeAll { $0.id == id }
         save(state.words, "words.json")
     }

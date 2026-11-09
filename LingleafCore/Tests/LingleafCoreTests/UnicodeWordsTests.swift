@@ -339,8 +339,77 @@ final class UnicodeWordsTests: XCTestCase {
         XCTAssertEqual(sent, ["caf%C3%A9"])
     }
 
+    /// "Capitalised" (SPEC): first character Uppercase and the rest not, unless one character or an
+    /// apostrophe; a name also has a lower-case letter, so "I", "A" and "NASA" are not names.
+    func testWhatIsCapitalisedAndWhatIsAName() {
+        let text = "Mr O'Brien NASA I A Joaquín Ángel"
+        let words = Words(text as NSString)
+        XCTAssertEqual((0..<words.count).map(words.titlecase), [true, true, false, true, true, true, true])
+        func name(_ word: String) -> Bool {
+            let sentence = "Then \(word) left."
+            return table.isName(sentence, WordRange(5, 5 + word.utf16.count))
+        }
+        for yes in ["Joaquín", "Ángel", "O'Brien", "Rose"] { XCTAssertTrue(name(yes), yes) }
+        for no in ["I", "A", "NASA", "ángel", "rose"] { XCTAssertFalse(name(no), no) }
+    }
+
+    /// Format characters go (bidi controls, LRM, RLM, ALM, zero-width, soft hyphen, tags), the
+    /// joiners stay; before any cut.
+    func testFormatCharactersAreStrippedAndTheJoinersStay() {
+        XCTAssertEqual(TextTools.stripFormat("a\u{202E}b\u{200B}c\u{00AD}d\u{200C}e\u{200D}f"), "abcd\u{200C}e\u{200D}f")
+        XCTAssertEqual(TextTools.stripFormat("x\u{200E}\u{200F}\u{061C}\u{E0001}\u{E0041}\u{E007F}y"), "xy")
+        let sentence = String(repeating: "a", count: TextTools.maxSentence - 1) + "\u{200B}\u{200B}bc"
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord("x", learned: false, context: sentence)
+        XCTAssertEqual(library.state.word("x")?.context, String(repeating: "a", count: TextTools.maxSentence - 1) + "b",
+                       "stripped first (601 units), then cut to 600")
+    }
+
+    /// Every way into a saved word uses its key, so a very long word is answered, marked as known
+    /// and deleted like any other.
+    func testAnswerKnowAndDeleteUseTheKey() throws {
+        let long = String(repeating: "东", count: VocabWord.maxWord + 10)
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord(long, learned: false, context: "他 \(long).")
+        library.answerReview(long, correct: true)
+        XCTAssertGreaterThan(library.state.words.first?.box ?? 0, 0)
+        library.setLearned(long, true)
+        XCTAssertEqual(library.state.words.first?.learned, true)
+        library.deleteWord(long)
+        XCTAssertTrue(library.state.words.isEmpty)
+    }
+
+    /// A book stored before invisible characters were stripped is read without them, and a paragraph
+    /// made only of them goes with its count.
+    func testAnOldBookIsStrippedWhenOpened() throws {
+        let storage = MemoryStorage()
+        let library = Library(storage: storage)
+        library.load()
+        let book = library.addBook(title: "Old", author: "A", text: "One\n\nTwo\n\nThree")
+        storage.write(book.fileName, "One\u{202E}\n\n\u{200B}\n\nThree")
+        library.updateProgress(book.id, paragraph: 2)
+        XCTAssertEqual(library.openBook(book.id), ["One", "Three"])
+        XCTAssertEqual(library.state.books.first?.paragraphCount, 2)
+        XCTAssertEqual(library.state.books.first?.progressParagraph, 1, "the place stays inside the book")
+    }
+
+    /// A lone surrogate can't be sent as it is: it is U+FFFD.
+    func testALoneSurrogateInASearchIsTheReplacementCharacter() async throws {
+        let urls = UrlRecorder()
+        let catalog = GutenbergClient(http: ClosureFetcher { url in
+            await urls.add(url)
+            return HttpResponse(status: 200, text: #"{"results": []}"#)
+        })
+        _ = try await catalog.search(String(decoding: [0x61, 0xD800, 0x62], as: UTF16.self))
+        let seen = await urls.list
+        XCTAssertTrue(seen[0].hasSuffix("search=a%EF%BF%BDb"), seen[0])
+    }
+
     func testWhichTokensMayBeLookedUp() {
-        for yes in ["cat", "café", "naïve", "résumé", "joaquín", "zieliński", "kraków", "straße", "o'clock", "l’homme", "đà"] {
+        for yes in ["cat", "café", "naïve", "résumé", "joaquín", "zieliński", "kraków", "straße", "o'clock", "l’homme", "đà",
+                    String(repeating: "a", count: 50)] {
             XCTAssertTrue(DictionaryClient.canLookUp(yes), yes)
         }
         for no in ["", "привет", "你好", "مرحبا", "Tokyo東京", "东京tokyo", "a b", "a-b", "3d", "\u{0301}", "😀", "cat\n", "cat\n\n", "\ncat",
