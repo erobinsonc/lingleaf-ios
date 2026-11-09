@@ -1,5 +1,10 @@
 import Foundation
 
+extension String {
+    /// Only ASCII characters (a fast check before work that matters only for other scripts).
+    var isPlainASCII: Bool { utf8.allSatisfy { $0 < 0x80 } }
+}
+
 /// A word inside a paragraph, as UTF-16 offsets (the units `NSString` and
 /// `NSAttributedString` use). Same rules as `TextTools` in lingleaf-android.
 public struct WordRange: Hashable, Sendable {
@@ -17,10 +22,20 @@ public struct WordRange: Hashable, Sendable {
 }
 
 public enum TextTools {
-    private static let wordPattern = try! NSRegularExpression(pattern: "[A-Za-z]+(?:['’][A-Za-z]+)*")
+    /// A word (SPEC S3, Shared logic): letters of any script, each with at most `maxCombiningMarks`
+    /// combining marks after it, and apostrophes between letters ("don't", "it’s", "l’homme"). It
+    /// starts with a letter, so marks alone, digits, emoji and punctuation are not words; a letter
+    /// with more marks than that ends the word, and the extra marks are skipped. Possessive
+    /// quantifiers: a hostile run of marks or letters is matched in one pass, never backtracked into.
+    private static let wordPattern = try! NSRegularExpression(
+        pattern: "(?:\\p{L}\\p{M}{0,\(maxCombiningMarks)}+)++(?:['’](?:\\p{L}\\p{M}{0,\(maxCombiningMarks)}+)++)*+"
+    )
     /// Starts only at the first mark of a run and never backtracks into it, so a long run of
-    /// marks ("!!!!…x") is matched in one pass, not once per mark.
-    private static let sentenceEnd = try! NSRegularExpression(pattern: "(?<![.!?])[.!?]++[\"”’)\\]]*+(?=\\s|$)")
+    /// marks ("!!!!…x") is matched in one pass, not once per mark. The full-width and Arabic
+    /// sentence marks end a sentence without a space after them (Chinese and Japanese have none).
+    private static let sentenceEnd = try! NSRegularExpression(
+        pattern: "(?<![.!?])[.!?]++[\"”’)\\]]*+(?=\\s|$)|[。！？؟]++[\"”’)\\]」』]*+"
+    )
 
     /// Longest paragraph kept whole, in UTF-16 units: a text without blank lines can't
     /// become one paragraph the size of a book.
@@ -82,8 +97,8 @@ public enum TextTools {
                 )
                 cut = space.location == NSNotFound ? maxParagraph : space.location - start
             }
-            // Never between the halves of a surrogate pair, and always forward.
-            if cut > 1, UTF16.isLeadSurrogate(ns.character(at: start + cut - 1)) { cut -= 1 }
+            // Never between a letter and its accents or the halves of a surrogate pair, and always forward.
+            cut = clusterSafeCut(ns, start + cut, floor: start) - start
             let piece = ns.substring(with: NSRange(location: start, length: cut)).trimmingCharacters(in: .whitespaces)
             if !piece.isEmpty { pieces.append(piece) }
             start += cut
@@ -94,9 +109,41 @@ public enum TextTools {
     public static func truncated(_ text: String, _ max: Int) -> String {
         let units = text.utf16
         guard units.count > max else { return text }
+        func unit(_ offset: Int) -> UInt16 { units[units.index(units.startIndex, offsetBy: offset)] }
         var end = max
-        if end > 1, UTF16.isLeadSurrogate(units[units.index(units.startIndex, offsetBy: end - 1)]) { end -= 1 }
+        // Never between a letter and its accents, nor the halves of a surrogate pair.
+        var steps = 0
+        while end > 1, steps <= maxCombiningMarks + 1, continuesCluster(unit(end), previous: unit(end - 1)) {
+            end -= 1
+            steps += 1
+        }
         return String(decoding: units.prefix(end), as: UTF16.self)
+    }
+
+    /// Whether the UTF-16 unit `unit`, right after `previous`, continues what `previous` starts: the
+    /// second half of a surrogate pair, a combining mark or variation selector, a joiner, or what
+    /// follows a joiner ("👨‍👩"). A cut here would split a letter from its accent.
+    static func continuesCluster(_ unit: UInt16, previous: UInt16) -> Bool {
+        if UTF16.isTrailSurrogate(unit) || previous == 0x200D || unit == 0x200D { return true }
+        if (0xFE00...0xFE0F).contains(unit) { return true }
+        guard let scalar = Unicode.Scalar(unit) else { return false }
+        switch scalar.properties.generalCategory {
+        case .nonspacingMark, .spacingMark, .enclosingMark: return true
+        default: return false
+        }
+    }
+
+    /// Where to cut `ns` near `position` (not before `floor`): not inside a letter with its accents
+    /// or a surrogate pair, going back at most a few units.
+    static func clusterSafeCut(_ ns: NSString, _ position: Int, floor: Int) -> Int {
+        var cut = position
+        var steps = 0
+        while cut > floor + 1, cut < ns.length, steps <= maxCombiningMarks + 1,
+              continuesCluster(ns.character(at: cut), previous: ns.character(at: cut - 1)) {
+            cut -= 1
+            steps += 1
+        }
+        return cut
     }
 
     /// Accents kept on one letter: real text needs two or three; "Zalgo" text piles up thousands.
@@ -132,7 +179,7 @@ public enum TextTools {
         return String(scalars).split(whereSeparator: \.isWhitespace).joined(separator: " ")
     }
 
-    /// Every English word; contractions such as "don't" stay whole.
+    /// Every word, in any script (see `wordPattern`); contractions such as "don't" stay whole.
     public static func wordRanges(_ text: String) -> [WordRange] {
         let ns = text as NSString
         return wordPattern.matches(in: text, range: NSRange(location: 0, length: ns.length))
@@ -155,8 +202,32 @@ public enum TextTools {
         (text as NSString).substring(with: range.nsRange)
     }
 
+    /// A word as a key: lower case, straight apostrophe, and composed (NFC) when it has letters
+    /// outside ASCII, so "Café" typed with a combining accent matches "café".
+    /// Longest saved word and word key, in UTF-16 units.
+    public static let maxKey = maxSentence
+
+    /// The key of a word everywhere an id or a match is made from one (saving, undoing, translating,
+    /// marking): `normalize`, cut to `maxKey` so a very long run of letters (a Han run) is the same
+    /// key wherever it is derived.
+    public static func key(_ word: String) -> String { truncated(normalize(word), maxKey) }
+
+    /// `text` without invisible formatting characters (bidi overrides and isolates, zero-width
+    /// spaces, the byte-order mark, soft hyphens), except the joiners ZWNJ and ZWJ, which some
+    /// scripts spell with (Persian, Indic, emoji sequences).
+    public static func stripFormat(_ text: String) -> String {
+        func isFormat(_ scalar: Unicode.Scalar) -> Bool {
+            scalar.properties.generalCategory == .format && scalar.value != 0x200C && scalar.value != 0x200D
+        }
+        guard text.unicodeScalars.contains(where: isFormat) else { return text }
+        var out = String.UnicodeScalarView()
+        for scalar in text.unicodeScalars where !isFormat(scalar) { out.append(scalar) }
+        return String(out)
+    }
+
     public static func normalize(_ word: String) -> String {
-        word.replacingOccurrences(of: "’", with: "'").lowercased()
+        let lower = word.replacingOccurrences(of: "’", with: "'").lowercased()
+        return lower.isPlainASCII ? lower : lower.precomposedStringWithCanonicalMapping
     }
 
     /// The sentence of `paragraph` that contains `offset`.
@@ -215,7 +286,12 @@ public enum TextTools {
         // Start just after a space and end just before one, so no word is cut in half.
         if s > range.start { while s < e, !isSpace(ns.character(at: s - 1)) { s += 1 } }
         if e < range.end { while e > s, !isSpace(ns.character(at: e)) { e -= 1 } }
-        if s >= e { (s, e) = (start, end) }
+        if s >= e {
+            // No space to cut at: not between a letter and its accents either.
+            s = start
+            while s < end - 1, s > range.start, continuesCluster(ns.character(at: s), previous: ns.character(at: s - 1)) { s += 1 }
+            e = clusterSafeCut(ns, end, floor: s)
+        }
         return trimmed(ns, WordRange(s, e))
     }
 
@@ -289,8 +365,10 @@ public enum TextTools {
         bases.filter { $0.count >= 2 && $0 != w }
     }
 
-    /// `link` (an irregular form's base), then the plural, past and -ing rules.
+    /// `link` (an irregular form's base), then the plural, past and -ing rules. These are English
+    /// rules: a word with a letter outside ASCII ("café", "Joaquín") has no base form but itself.
     static func candidates(_ w: String, link: String?) -> [String] {
+        guard w.isPlainASCII else { return [] }
         var out: [String] = []
         func add(_ candidate: String) {
             if candidate.count >= 2, candidate != w, !out.contains(candidate) { out.append(candidate) }
@@ -342,9 +420,12 @@ public enum TextTools {
     /// "animal"), read in the sentence ("leave" marks "she left", not "turn left"), or, for a
     /// saved group of words ("did not go"), that group (ignoring case).
     public static func occurrences(of word: String, in sentence: String) -> [WordRange] {
-        let key = normalize(word)
+        let key = Self.key(word)
         if key.contains(" ") {
-            let range = (normalize(sentence) as NSString).range(of: key)
+            // Offsets in `sentence` itself: only length-preserving changes (the apostrophe) and a
+            // search that ignores case and treats composed and decomposed accents alike.
+            let straight = sentence.replacingOccurrences(of: "’", with: "'") as NSString
+            let range = straight.range(of: key, options: .caseInsensitive)
             return range.location == NSNotFound ? [] : [WordRange(range.location, range.location + range.length)]
         }
         let words = Words(sentence as NSString)
@@ -353,7 +434,7 @@ public enum TextTools {
 
     /// The word plus its likely base forms, without its sentence: what to match against saved words.
     public static func matchKeys(_ word: String) -> Set<String> {
-        Set([normalize(word)] + baseFormCandidates(word))
+        Set([key(word)] + baseFormCandidates(word))
     }
 
     /// The word at `range` of `text` plus its likely base forms, read in its sentence. A form that
@@ -388,7 +469,7 @@ public enum TextTools {
 
     /// `matchKeys(in:at:)` for word `i` of `words`.
     static func matchKeys(_ words: Words, _ i: Int) -> Set<String> {
-        let w = words.token(i)
+        let w = key(words.token(i))
         let candidates = baseFormCandidates(words, i)
         if IrregularVerbs.shared.homographs[w] != nil, let reading = IrregularVerbs.shared.resolve(words, i),
            reading.kind != .unsure, reading.base != w {
