@@ -226,11 +226,14 @@ struct ReaderView: View {
                                 }
                             }
                             .id(index)
-                            .onScrollVisibilityChange(threshold: 0.01) { shown in
-                                if shown { visible.indices.insert(index) } else { visible.indices.remove(index) }
+                            // On screen as the lazy stack shows it (not `onScrollVisibilityChange`, which with
+                            // `scrollPosition(id:)` kept the app busy after a flick).
+                            .onAppear {
+                                visible.indices.insert(index)
                                 // The sentence being read is back on screen: follow it again.
-                                if shown, reading?.current?.paragraph == index { following = true }
+                                if reading?.current?.paragraph == index { following = true }
                             }
+                            .onDisappear { visible.indices.remove(index) }
                     }
                 }
                 .scrollTargetLayout()
