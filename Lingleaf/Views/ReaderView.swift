@@ -228,6 +228,8 @@ struct ReaderView: View {
                             .id(index)
                             .onScrollVisibilityChange(threshold: 0.01) { shown in
                                 if shown { visible.indices.insert(index) } else { visible.indices.remove(index) }
+                                // The first paragraph on screen is where the reader is (replaces `scrollPosition(id:)`).
+                                if let first = visible.indices.min(), first != position { position = first }
                                 // The sentence being read is back on screen: follow it again.
                                 if shown, reading?.current?.paragraph == index { following = true }
                             }
@@ -239,7 +241,6 @@ struct ReaderView: View {
                 .frame(maxWidth: 680)
                 .frame(maxWidth: .infinity)
             }
-            .scrollPosition(id: $position, anchor: .top)
             // Scrolling by hand while reading aloud: stop following until the sentence is back.
             .onScrollPhaseChange { _, phase in
                 if phase == .interacting { following = false }
