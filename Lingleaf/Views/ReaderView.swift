@@ -81,7 +81,7 @@ struct ReaderView: View {
     /// Reading aloud sentence by sentence (SPEC S6); made when the reader appears.
     @State private var reading: ReadAloudController?
     /// Paragraphs on screen, to start reading at the top of the screen and to follow the reading.
-    @State private var visible: Set<Int> = []
+    @State private var visible = VisibleParagraphs()
     /// Whether the reader scrolls to follow the sentence being read; scrolling by hand stops it
     /// until that sentence is back on screen.
     @State private var following = true
@@ -227,7 +227,7 @@ struct ReaderView: View {
                             }
                             .id(index)
                             .onScrollVisibilityChange(threshold: 0.01) { shown in
-                                if shown { visible.insert(index) } else { visible.remove(index) }
+                                if shown { visible.indices.insert(index) } else { visible.indices.remove(index) }
                                 // The sentence being read is back on screen: follow it again.
                                 if shown, reading?.current?.paragraph == index { following = true }
                             }
@@ -246,7 +246,7 @@ struct ReaderView: View {
             }
             // The next sentence is in a paragraph off screen: bring it into view.
             .onChange(of: reading?.current?.paragraph) { _, paragraph in
-                guard let paragraph, following, !visible.contains(paragraph) else { return }
+                guard let paragraph, following, !visible.indices.contains(paragraph) else { return }
                 withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(paragraph, anchor: UnitPoint(x: 0, y: 0.1)) }
             }
             .coordinateSpace(.named(Self.readerSpace))
@@ -496,4 +496,12 @@ private struct BarBackground: ViewModifier {
             content.background(.bar)
         }
     }
+}
+
+/// The paragraphs on screen, read only when reading aloud has to bring the next sentence into view.
+/// A class on purpose: as `@State` every visibility change during a scroll re-ran the whole reader, and with
+/// `scrollPosition(id:)` a fast flick left the app busy for minutes (XCUITest never saw it idle; found by
+/// switching each scroll feature off in turn on CI).
+final class VisibleParagraphs {
+    var indices: Set<Int> = []
 }
