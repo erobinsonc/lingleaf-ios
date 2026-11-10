@@ -14,7 +14,7 @@
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
-   "es": "de verdad, realmente (no \"actualmente\")",
+   "es": "de verdad, realmente (no «actualmente»)",
    "kind": "word",
    "en": "really, truly"
   },
@@ -50,7 +50,7 @@
    "lemma": "assume",
    "pos": "verb",
    "ipa": "əˈsum",
-   "es": "suponer (no \"asumir\")",
+   "es": "suponer (no «asumir»)",
    "kind": "word",
    "en": "to suppose, to take for granted"
   },
@@ -86,7 +86,7 @@
    "lemma": "bar",
    "pos": "noun",
    "ipa": "bɑr",
-   "es": "compás (en música; no \"bar\")",
+   "es": "compás (en música; no «bar»)",
    "kind": "word",
    "en": "a measure of music"
   },
@@ -344,7 +344,7 @@
    "lemma": "embarrassed",
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
-   "es": "avergonzado (no \"embarazada\")",
+   "es": "avergonzado (no «embarazada»)",
    "kind": "word",
    "en": "feeling ashamed in front of others"
   },
@@ -359,7 +359,7 @@
    "lemma": "eventually",
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
-   "es": "al final, finalmente (no \"eventualmente\")",
+   "es": "al final (no «eventualmente»)",
    "kind": "word",
    "en": "in the end, after a long time"
   },
@@ -848,7 +848,7 @@
    "lemma": "line",
    "pos": "noun",
    "ipa": "laɪn",
-   "es": "línea (telefónica)",
+   "es": "línea telefónica",
    "kind": "word",
    "en": "a telephone line"
   },
@@ -938,7 +938,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "recital": {
@@ -1106,7 +1106,7 @@
    "lemma": "sidewalk",
    "pos": "noun",
    "ipa": "ˈsaɪdwɔk",
-   "es": "acera",
+   "es": "acera, andén (banqueta en México)",
    "kind": "word",
    "variety": "AmE"
   },
@@ -1926,7 +1926,7 @@
     "start": 421,
     "end": 448,
     "text": "taken the stupid thing down",
-    "es": "bajado aquel trasto"
+    "es": "bajado aquel cacharro"
    }
   },
   {
@@ -3656,7 +3656,7 @@
     "start": 317,
     "end": 343,
     "text": "put down her plastic spoon",
-    "es": "dejó la cucharilla de plástico"
+    "es": "dejó la cucharita de plástico"
    }
   },
   {

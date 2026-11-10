@@ -28,7 +28,7 @@
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
-   "es": "de verdad, realmente (no \"actualmente\")",
+   "es": "de verdad, realmente (no «actualmente»)",
    "kind": "word",
    "en": "really, truly"
   },
@@ -43,7 +43,7 @@
    "lemma": "assume",
    "pos": "verb",
    "ipa": "əˈsum",
-   "es": "suponer (no \"asumir\")",
+   "es": "suponer (no «asumir»)",
    "kind": "word",
    "en": "to suppose, to take for granted"
   },
@@ -115,7 +115,7 @@
    "lemma": "chemist",
    "pos": "noun",
    "ipa": "ˈkɛmɪst",
-   "es": "químico, química (no \"farmacéutico\")",
+   "es": "químico, química (no «farmacéutico»)",
    "kind": "word",
    "variety": "AmE",
    "en": "a scientist who studies chemicals"

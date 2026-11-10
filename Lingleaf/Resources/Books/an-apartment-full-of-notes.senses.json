@@ -256,7 +256,7 @@
    "lemma": "company",
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
-   "es": "compañía (de personas; no \"empresa\")",
+   "es": "compañía (de personas; no «empresa»)",
    "kind": "word",
    "en": "being with other people"
   },
@@ -391,7 +391,7 @@
    "lemma": "embarrassed",
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
-   "es": "avergonzado (no \"embarazada\")",
+   "es": "avergonzado (no «embarazada»)",
    "kind": "word",
    "en": "feeling ashamed in front of others"
   },
@@ -563,7 +563,7 @@
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
-   "es": "cristal, vidrio (no \"vaso\")",
+   "es": "cristal, vidrio (no «vaso»)",
    "kind": "word",
    "en": "the hard clear material of windows"
   },
@@ -976,7 +976,7 @@
    "lemma": "line",
    "pos": "noun",
    "ipa": "laɪn",
-   "es": "línea (telefónica)",
+   "es": "línea telefónica",
    "kind": "word",
    "en": "a telephone line"
   },
@@ -1049,7 +1049,7 @@
    "lemma": "pretend",
    "pos": "verb",
    "ipa": "prɪˈtɛnd",
-   "es": "fingir (no \"pretender\")",
+   "es": "fingir (no «pretender»)",
    "kind": "word",
    "en": "to act as if something were true"
   },
@@ -1114,7 +1114,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "reading_glasses": {

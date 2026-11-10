@@ -393,7 +393,7 @@
    "lemma": "embarrassed",
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
-   "es": "avergonzado (no \"embarazada\")",
+   "es": "avergonzado (no «embarazada»)",
    "kind": "word",
    "en": "feeling ashamed in front of others"
   },
@@ -600,7 +600,7 @@
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
-   "es": "cristal, vidrio (no \"vaso\")",
+   "es": "cristal, vidrio (no «vaso»)",
    "kind": "word",
    "en": "the hard clear material of windows"
   },
@@ -1159,7 +1159,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "reject": {
@@ -1215,7 +1215,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "right_proper": {
@@ -1279,7 +1279,7 @@
    "lemma": "run",
    "pos": "verb",
    "ipa": "rʌn",
-   "es": "hacer, mantener (una ruta)",
+   "es": "operar (una ruta)",
    "kind": "word",
    "en": "to keep a transport route going"
   },

@@ -172,7 +172,7 @@
    "lemma": "glass",
    "pos": "noun",
    "ipa": "ɡlæs",
-   "es": "cristal, vidrio (no \"vaso\")",
+   "es": "cristal, vidrio (no «vaso»)",
    "kind": "word",
    "en": "the hard clear material of windows"
   },
@@ -222,7 +222,7 @@
    "lemma": "kind",
    "pos": "adjective",
    "ipa": "kaɪnd",
-   "es": "amable (no \"tipo\")",
+   "es": "amable (no «tipo»)",
    "kind": "word",
    "en": "friendly and helpful"
   },
@@ -303,17 +303,9 @@
    "lemma": "save",
    "pos": "verb",
    "ipa": "seɪv",
-   "es": "ahorrar (no \"salvar\")",
+   "es": "ahorrar (no «salvar»)",
    "kind": "word",
    "en": "to keep money for later"
-  },
-  "saved_shout": {
-   "lemma": "save",
-   "pos": "verb",
-   "ipa": "seɪv",
-   "es": "ahorrar",
-   "kind": "word",
-   "en": "kept money instead of spending it"
   },
   "screen_display": {
    "lemma": "screen",
@@ -374,14 +366,6 @@
    "kind": "chunk"
   },
   "take_bring": {
-   "lemma": "take",
-   "pos": "verb",
-   "ipa": "teɪk",
-   "es": "llevar (a alguien a un sitio)",
-   "kind": "word",
-   "en": "to go with someone to a place"
-  },
-  "take_into": {
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
@@ -842,7 +826,7 @@
    "start": 224,
    "end": 228,
    "text": "took",
-   "sense": "take_into",
+   "sense": "take_bring",
    "chunk": {
     "start": 224,
     "end": 255,
@@ -969,7 +953,7 @@
    "start": 194,
    "end": 199,
    "text": "SAVED",
-   "sense": "saved_shout",
+   "sense": "save_money",
    "chunk": {
     "start": 190,
     "end": 199,

@@ -922,6 +922,16 @@
         }
       }
     },
+    "No single meaning out of context. See the sentence.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin significado suelto fuera de contexto. Mira la frase."
+          }
+        }
+      }
+    },
     "No translation yet. Connect to the internet once to get it.": {
       "localizations": {
         "es": {

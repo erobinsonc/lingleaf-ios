@@ -36,6 +36,9 @@ public struct StorySense: Equatable, Sendable {
     /// translates outside Spanish for a bare word that needs one; nil when the sense has none.
     public let english: String?
 
+    /// The Spanish meaning says what the word is not: `(no «gratis»)`, or `(no "gratis")`.
+    public var warnsAgainstAFalseFriend: Bool { spanish.contains("no «") || spanish.contains("no \"") }
+
     /// The IPA as the card shows it: between slashes.
     public var displayIPA: String? { ipa.map { "/\($0)/" } }
 
@@ -430,7 +433,7 @@ extension StorySenseHit {
         case .word:
             if let english = sense.english { return english }
             if let group { return group.text }
-            return siblings || sense.spanish.contains("no \"") ? nil : sense.lemma
+            return siblings || sense.warnsAgainstAFalseFriend ? nil : sense.lemma
         }
     }
 }

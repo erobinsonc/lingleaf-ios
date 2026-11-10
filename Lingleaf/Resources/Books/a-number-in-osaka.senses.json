@@ -27,7 +27,7 @@
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
-   "es": "de verdad, realmente (no \"actualmente\")",
+   "es": "de verdad, realmente (no «actualmente»)",
    "kind": "word",
    "en": "really, truly"
   },
@@ -63,7 +63,7 @@
    "lemma": "argument",
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
-   "es": "discusión (no \"argumento\")",
+   "es": "discusión (no «argumento»)",
    "kind": "word",
    "en": "a quarrel, a heated discussion"
   },
@@ -263,7 +263,7 @@
    "lemma": "conductor",
    "pos": "noun",
    "ipa": "kənˈdʌktər",
-   "es": "director de orquesta (no \"conductor\")",
+   "es": "director de orquesta (no «conductor»)",
    "kind": "word",
    "en": "the leader of an orchestra"
   },
@@ -363,7 +363,7 @@
    "lemma": "embarrassed",
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
-   "es": "avergonzado (no \"embarazada\")",
+   "es": "avergonzado (no «embarazada»)",
    "kind": "word",
    "en": "feeling ashamed in front of others"
   },
@@ -371,7 +371,7 @@
    "lemma": "embarrassment",
    "pos": "noun",
    "ipa": "ɪmˈbɛrəsmənt",
-   "es": "vergüenza, apuro (no \"embarazo\")",
+   "es": "vergüenza, apuro (no «embarazo»)",
    "kind": "word",
    "en": "a feeling of shame"
   },
@@ -394,7 +394,7 @@
    "lemma": "familiar",
    "pos": "adjective",
    "ipa": "fəˈmɪljər",
-   "es": "conocido (no \"familiar\")",
+   "es": "conocido (no «familiar»)",
    "kind": "word",
    "en": "known from before"
   },
@@ -402,7 +402,7 @@
    "lemma": "figure",
    "pos": "noun",
    "ipa": "ˈfɪɡjər",
-   "es": "cifra (no \"figura\")",
+   "es": "cifra (no «figura»)",
    "kind": "word",
    "en": "a number"
   },
@@ -614,7 +614,7 @@
    "lemma": "ichiman hassen rittoru",
    "pos": "phrase",
    "ipa": "itɕimaɴ hasːeɴ ɾitːoɾɯ",
-   "es": "\"dieciocho mil litros\" en japonés",
+   "es": "«dieciocho mil litros» en japonés",
    "kind": "foreign",
    "variety": "local"
   },
@@ -831,7 +831,7 @@
    "lemma": "party",
    "pos": "noun",
    "ipa": "ˈpɑrti",
-   "es": "parte (en un acuerdo; no \"fiesta\")",
+   "es": "parte (en un acuerdo; no «fiesta»)",
    "kind": "word",
    "en": "one of the sides in an agreement"
   },
@@ -966,7 +966,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "right_proper": {
@@ -1121,7 +1121,7 @@
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
-   "es": "la persona que habla (no \"parlante\")",
+   "es": "la persona que habla (no «parlante»)",
    "kind": "word",
    "en": "a person who is speaking"
   },
@@ -1273,7 +1273,7 @@
    "lemma": "Kanemori Trading",
    "pos": "proper noun",
    "ipa": "kɑnɛmoɾi ˈtreɪdɪŋ",
-   "es": "nombre de la empresa (\"trading\" = comercio)",
+   "es": "nombre de empresa (trading = comercio)",
    "kind": "name"
   },
   "tray": {

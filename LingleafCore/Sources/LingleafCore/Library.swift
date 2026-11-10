@@ -327,7 +327,8 @@ public final class Library {
         }
         // Saved before contexts were capped, or restored from a backup: within bounds, once per id.
         var ids: Set<String> = []
-        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { $0.bounded() }.filter { ids.insert($0.id).inserted }
+        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { $0.bounded() }
+            .filter { !$0.word.isEmpty && ids.insert($0.id).inserted }
         loaded.readingLog = decode([String: Int].self, "reading-log.json") ?? [:]
         loaded.settings = (decode(Settings.self, "settings.json") ?? Settings()).bounded()
         loaded.corrections = loadCorrections()?.corrections ?? []
@@ -626,12 +627,19 @@ public final class Library {
     /// saved in: the old meaning (Spanish, say) is cleared when the language changes, so a wrong one is not
     /// shown under another language. Review then keeps the translated sentence.
     public func clearUntranslatableStoryMeanings(_ target: String) {
-        for var word in state.words where Sense.isStory(word.sense) && word.translationSource == nil
-            && !word.translation.isEmpty && word.translationLanguage != target {
-            word.translation = ""
-            word.translationLanguage = nil
-            replace(word)
+        var changed = false
+        let words = state.words.map { word -> VocabWord in
+            guard Sense.isStory(word.sense), word.translationSource == nil, !word.translation.isEmpty,
+                  word.translationLanguage != target else { return word }
+            var cleared = word
+            cleared.translation = ""
+            cleared.translationLanguage = nil
+            changed = true
+            return cleared
         }
+        guard changed else { return }
+        state.words = words
+        save(state.words, "words.json")
     }
 
     public func answerReview(_ word: String, sense: String? = nil, correct: Bool) {

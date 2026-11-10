@@ -329,6 +329,13 @@ final class StorySensesTests: XCTestCase {
         assertRefused(try sense("go_red", "ipa", " "), "an IPA of only spaces")
     }
 
+    /// Invisible formatting between accents does not start a new letter: "Zalgo" through U+200B is still capped.
+    func testFormatCharactersBetweenAccentsDoNotResetTheCap() {
+        let accent = "\u{0301}"
+        let zalgo = "a" + accent + accent + "\u{200B}" + accent + accent + "\u{200B}" + accent + accent
+        XCTAssertEqual(TextTools.cleanText(zalgo), "a" + String(repeating: accent, count: TextTools.maxCombiningMarks))
+    }
+
     func testTooManySensesOrEntriesAreRefused() throws {
         assertRefused(try file { json in
             var senses = json["senses"] as? [String: Any] ?? [:]

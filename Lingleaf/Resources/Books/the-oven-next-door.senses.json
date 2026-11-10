@@ -13,7 +13,7 @@
    "lemma": "The Blue Table",
    "pos": "proper noun",
    "ipa": "ðə blu ˈteɪbəl",
-   "es": "nombre del restaurante (\"La Mesa Azul\")",
+   "es": "nombre del restaurante («La Mesa Azul»)",
    "kind": "name"
   },
   "break_down": {
@@ -55,7 +55,7 @@
    "lemma": "free",
    "pos": "adjective",
    "ipa": "fri",
-   "es": "libre, disponible (no \"gratis\")",
+   "es": "libre, disponible (no «gratis»)",
    "kind": "word",
    "en": "not busy, available"
   },
@@ -121,7 +121,7 @@
    "lemma": "pepper",
    "pos": "noun",
    "ipa": "ˈpɛpər",
-   "es": "pimiento (no \"pimienta\")",
+   "es": "pimiento (no «pimienta»)",
    "kind": "word",
    "en": "a vegetable such as a red pepper"
   },
@@ -165,9 +165,9 @@
    "lemma": "take",
    "pos": "verb",
    "ipa": "teɪk",
-   "es": "llevar (a alguien a un sitio)",
+   "es": "llevar (a alguien o algo a un sitio)",
    "kind": "word",
-   "en": "to go with someone to a place"
+   "en": "to carry or lead someone or something to a place"
   },
   "taste_try": {
    "lemma": "taste",
@@ -201,7 +201,7 @@
    "lemma": "waiter",
    "pos": "noun",
    "ipa": "ˈweɪtər",
-   "es": "camarero, camarera",
+   "es": "mesero, mesera",
    "kind": "word"
   },
   "watch_monitor": {

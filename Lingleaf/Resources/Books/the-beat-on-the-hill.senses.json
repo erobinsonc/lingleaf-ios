@@ -148,7 +148,7 @@
    "lemma": "familiar",
    "pos": "adjective",
    "ipa": "fəˈmɪljər",
-   "es": "conocido (no \"familiar\")",
+   "es": "conocido (no «familiar»)",
    "kind": "word",
    "en": "known from before"
   },
@@ -220,7 +220,7 @@
    "lemma": "high five",
    "pos": "noun",
    "ipa": "haɪ faɪv",
-   "es": "choque de manos (\"chocar los cinco\")",
+   "es": "choque de manos («chocar los cinco»)",
    "kind": "chunk"
   },
   "in_the_end": {
@@ -311,14 +311,6 @@
    "kind": "word",
    "en": "to make music with an instrument"
   },
-  "play_music_tocar": {
-   "lemma": "play",
-   "pos": "verb",
-   "ipa": "pleɪ",
-   "es": "tocar (música)",
-   "kind": "word",
-   "en": "to make music with an instrument"
-  },
   "post_online": {
    "lemma": "post",
    "pos": "verb",
@@ -353,7 +345,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "right_now": {
@@ -1040,7 +1032,7 @@
    "start": 43,
    "end": 49,
    "text": "played",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 29,
@@ -1095,7 +1087,7 @@
    "start": 98,
    "end": 102,
    "text": "play",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 37,

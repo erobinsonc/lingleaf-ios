@@ -5,6 +5,8 @@ The stories in `Lingleaf/Resources/Books` are original works dedicated to the pu
 from the maintainer's brief, and reviewed by the maintainer**, the first three (The Red Boat, A Day at the Market,
 The Lighthouse Keeper) included. The 18 below also ship senses files (`<id>.senses.json`).
 
+Spanish policy of the senses: neutral Latin American Spanish, tú/ustedes, no vosotros.
+
 What is and is not verified: the tests check the structure of the senses files and every offset against the
 story text. The IPA (US English) and the Spanish meanings are AI-written and were read by the maintainer's review
 agents; they were not checked against a dictionary. The originality log below covers the 18 stories; **no

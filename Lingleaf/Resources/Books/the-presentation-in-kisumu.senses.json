@@ -601,7 +601,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "run_meeting": {
@@ -637,7 +637,7 @@
    "lemma": "save",
    "pos": "verb",
    "ipa": "seɪv",
-   "es": "ahorrar (no \"salvar\")",
+   "es": "ahorrar (no «salvar»)",
    "kind": "word",
    "en": "to keep money for later"
   },

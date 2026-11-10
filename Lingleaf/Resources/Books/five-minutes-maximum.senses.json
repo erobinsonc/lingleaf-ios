@@ -21,7 +21,7 @@
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
-   "es": "de verdad, realmente (no \"actualmente\")",
+   "es": "de verdad, realmente (no «actualmente»)",
    "kind": "word",
    "en": "really, truly"
   },
@@ -50,7 +50,7 @@
    "lemma": "apparently",
    "pos": "adverb",
    "ipa": "əˈpɛrəntli",
-   "es": "al parecer (no \"aparentemente\")",
+   "es": "al parecer (no «aparentemente»)",
    "kind": "word",
    "en": "it seems that"
   },
@@ -72,7 +72,7 @@
    "lemma": "argument",
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
-   "es": "discusión (no \"argumento\")",
+   "es": "discusión (no «argumento»)",
    "kind": "word",
    "en": "a quarrel, a heated discussion"
   },
@@ -348,7 +348,7 @@
    "lemma": "company",
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
-   "es": "compañía (de personas; no \"empresa\")",
+   "es": "compañía (de personas; no «empresa»)",
    "kind": "word",
    "en": "being with other people"
   },
@@ -485,7 +485,7 @@
    "lemma": "eventually",
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
-   "es": "al final, finalmente (no \"eventualmente\")",
+   "es": "al final (no «eventualmente»)",
    "kind": "word",
    "en": "in the end, after a long time"
   },
@@ -1111,7 +1111,7 @@
    "lemma": "line",
    "pos": "noun",
    "ipa": "laɪn",
-   "es": "línea (telefónica)",
+   "es": "línea telefónica",
    "kind": "word",
    "en": "a telephone line"
   },
@@ -1122,14 +1122,6 @@
    "es": "pediátrico",
    "kind": "word",
    "variety": "AmE"
-  },
-  "play_music_tocar": {
-   "lemma": "play",
-   "pos": "verb",
-   "ipa": "pleɪ",
-   "es": "tocar (música)",
-   "kind": "word",
-   "en": "to make music with an instrument"
   },
   "play_radio": {
    "lemma": "play",
@@ -1186,7 +1178,7 @@
    "lemma": "pretend",
    "pos": "verb",
    "ipa": "prɪˈtɛnd",
-   "es": "fingir (no \"pretender\")",
+   "es": "fingir (no «pretender»)",
    "kind": "word",
    "en": "to act as if something were true"
   },
@@ -1238,7 +1230,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "record_verb": {
@@ -1294,7 +1286,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "right_proper": {
@@ -1340,15 +1332,7 @@
    "ipa": "roʊ",
    "es": "hilera",
    "kind": "word",
-   "en": "a line of buildings"
-  },
-  "row_vines": {
-   "lemma": "row",
-   "pos": "noun",
-   "ipa": "roʊ",
-   "es": "hilera",
-   "kind": "word",
-   "en": "a line of plants in a field"
+   "en": "a line of things side by side"
   },
   "run_to": {
    "lemma": "run to",
@@ -1511,7 +1495,7 @@
    "lemma": "speaker",
    "pos": "noun",
    "ipa": "ˈspikər",
-   "es": "la persona que habla (no \"parlante\")",
+   "es": "la persona que habla (no «parlante»)",
    "kind": "word",
    "en": "a person who is speaking"
   },
@@ -1663,7 +1647,7 @@
    "ipa": "teɪk",
    "es": "llevar (a un sitio)",
    "kind": "word",
-   "en": "to go with someone to a place"
+   "en": "to make someone travel to places"
   },
   "take_seriously": {
    "lemma": "take seriously",
@@ -3184,7 +3168,7 @@
    "start": 46,
    "end": 52,
    "text": "played",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 45,
@@ -4005,7 +3989,7 @@
    "start": 358,
    "end": 362,
    "text": "rows",
-   "sense": "row_vines"
+   "sense": "row_buildings"
   },
   {
    "p": 95,
@@ -4859,7 +4843,7 @@
    "start": 179,
    "end": 183,
    "text": "rows",
-   "sense": "row_vines"
+   "sense": "row_buildings"
   },
   {
    "p": 144,
@@ -4886,7 +4870,7 @@
    "start": 27,
    "end": 31,
    "text": "play",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 145,
@@ -4907,7 +4891,7 @@
    "start": 134,
    "end": 138,
    "text": "play",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 145,
@@ -4921,7 +4905,7 @@
    "start": 13,
    "end": 17,
    "text": "play",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 147,
@@ -4968,7 +4952,7 @@
    "start": 328,
    "end": 332,
    "text": "play",
-   "sense": "play_music_tocar"
+   "sense": "play_instrument"
   },
   {
    "p": 153,

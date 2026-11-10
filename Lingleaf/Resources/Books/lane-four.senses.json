@@ -92,7 +92,7 @@
    "lemma": "bank",
    "pos": "noun",
    "ipa": "bæŋk",
-   "es": "orilla (de un río; no \"banco\")",
+   "es": "orilla (de un río; no «banco»)",
    "kind": "word",
    "en": "the side of a river"
   },
@@ -276,7 +276,7 @@
    "lemma": "company",
    "pos": "noun",
    "ipa": "ˈkʌmpəni",
-   "es": "compañía (de personas; no \"empresa\")",
+   "es": "compañía (de personas; no «empresa»)",
    "kind": "word",
    "en": "being with other people"
   },
@@ -362,7 +362,7 @@
    "lemma": "embarrassed",
    "pos": "adjective",
    "ipa": "ɪmˈbɛrəst",
-   "es": "avergonzado (no \"embarazada\")",
+   "es": "avergonzado (no «embarazada»)",
    "kind": "word",
    "en": "feeling ashamed in front of others"
   },
@@ -377,7 +377,7 @@
    "lemma": "eventually",
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
-   "es": "al final, finalmente (no \"eventualmente\")",
+   "es": "al final (no «eventualmente»)",
    "kind": "word",
    "en": "in the end, after a long time"
   },
@@ -736,7 +736,7 @@
    "lemma": "natural",
    "pos": "noun",
    "ipa": "ˈnætʃərəl",
-   "es": "talento natural, alguien que sirve para algo",
+   "es": "talento natural, persona con facilidad",
    "kind": "word"
   },
   "needn_t": {
@@ -848,7 +848,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "rest_verb": {
@@ -869,7 +869,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "ring_toy": {

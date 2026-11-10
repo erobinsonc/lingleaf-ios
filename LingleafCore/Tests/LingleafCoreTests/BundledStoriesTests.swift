@@ -95,7 +95,7 @@ final class BundledStoriesTests: XCTestCase {
         for story in BundledStory.shelf where story.hasSenses {
             for place in try senses(story).places where place.hit.sense.kind == .word && place.hit.group == nil {
                 let hit = place.hit
-                if hit.siblings || hit.sense.spanish.contains("no \"") {
+                if hit.siblings || hit.sense.warnsAgainstAFalseFriend {
                     XCTAssertNotNil(hit.sense.english, "\(story.title): \(hit.id) needs an English gloss")
                 }
             }
@@ -115,6 +115,53 @@ final class BundledStoriesTests: XCTestCase {
                     let words = Set(text.split { !$0.isLetter }.map(String.init))
                     XCTAssertTrue(words.isDisjoint(with: spain), "\(story.title): \(text)")
                 }
+            }
+        }
+    }
+
+    /// The loader does not detect a repeated key (the last value wins), so the bundled files must have none.
+    func testNoBundledSensesFileRepeatsAKey() throws {
+        for story in BundledStory.shelf where story.hasSenses {
+            let bytes = Array(try Data(contentsOf: Self.books.appendingPathComponent("\(story.resource).senses.json")))
+            var keys: [Set<String>] = []
+            var i = 0
+            var lastString = ""
+            while i < bytes.count {
+                switch bytes[i] {
+                case 0x7B: keys.append([])
+                case 0x7D: _ = keys.popLast()
+                case 0x22:
+                    var j = i + 1
+                    var raw: [UInt8] = []
+                    while j < bytes.count, bytes[j] != 0x22 {
+                        if bytes[j] == 0x5C { raw.append(bytes[j]); j += 1 }
+                        if j < bytes.count { raw.append(bytes[j]) }
+                        j += 1
+                    }
+                    lastString = String(decoding: raw, as: UTF8.self)
+                    var k = j + 1
+                    while k < bytes.count, [0x20, 0x0A, 0x0D, 0x09].contains(bytes[k]) { k += 1 }
+                    if k < bytes.count, bytes[k] == 0x3A, !keys.isEmpty {
+                        XCTAssertTrue(keys[keys.count - 1].insert(lastString).inserted, "\(story.title): \(lastString) twice")
+                    }
+                    i = j
+                default: break
+                }
+                i += 1
+            }
+        }
+    }
+
+    /// Two senses of one base form never start with the same Spanish meaning, so the labels of saved words differ.
+    func testSensesOfOneBaseFormDoNotShareTheirFirstMeaning() throws {
+        for story in BundledStory.shelf where story.hasSenses {
+            var seen: [String: String] = [:]
+            for (key, sense) in try senses(story).senses {
+                let first = sense.spanish.split(whereSeparator: { $0 == "," || $0 == "(" }).first
+                    .map { $0.trimmingCharacters(in: .whitespaces).lowercased() } ?? ""
+                let id = "\(sense.lemma.lowercased())|\(first)"
+                XCTAssertNil(seen[id], "\(story.title): \(key) and \(seen[id] ?? "") both mean \(first)")
+                seen[id] = key
             }
         }
     }

@@ -13,7 +13,7 @@
    "lemma": "college",
    "pos": "noun",
    "ipa": "ˈkɑlɪdʒ",
-   "es": "universidad (no \"colegio\")",
+   "es": "universidad (no «colegio»)",
    "kind": "word",
    "variety": "AmE",
    "en": "a university"
@@ -39,7 +39,7 @@
    "es": "planta baja (en EE. UU.)",
    "kind": "chunk",
    "variety": "AmE",
-   "note": "En inglés británico y en Ghana \"first floor\" es el primer piso, encima de la planta baja."
+   "note": "En inglés británico y en Ghana «first floor» es el primer piso, encima de la planta baja."
   },
   "fix_repair": {
    "lemma": "fix",

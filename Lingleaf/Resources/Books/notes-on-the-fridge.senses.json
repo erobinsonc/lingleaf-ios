@@ -6,7 +6,7 @@
    "lemma": "actually",
    "pos": "adverb",
    "ipa": "ˈæktʃuəli",
-   "es": "en realidad, de hecho (no \"actualmente\")",
+   "es": "en realidad, de hecho (no «actualmente»)",
    "kind": "word",
    "en": "in truth, in reality"
   },
@@ -28,7 +28,7 @@
    "lemma": "apparently",
    "pos": "adverb",
    "ipa": "əˈpɛrəntli",
-   "es": "al parecer (no \"aparentemente\")",
+   "es": "al parecer (no «aparentemente»)",
    "kind": "word",
    "en": "it seems that"
   },
@@ -50,7 +50,7 @@
    "lemma": "argument",
    "pos": "noun",
    "ipa": "ˈɑrɡjəmənt",
-   "es": "discusión (no \"argumento\")",
+   "es": "discusión (no «argumento»)",
    "kind": "word",
    "en": "a quarrel, a heated discussion"
   },
@@ -58,7 +58,7 @@
    "lemma": "assume",
    "pos": "verb",
    "ipa": "əˈsum",
-   "es": "suponer (no \"asumir\")",
+   "es": "suponer (no «asumir»)",
    "kind": "word",
    "en": "to suppose, to take for granted"
   },
@@ -225,7 +225,7 @@
    "lemma": "die",
    "pos": "verb",
    "ipa": "daɪ",
-   "es": "morirse, ir descomponiéndose (una máquina)",
+   "es": "morirse, fallar poco a poco (máquina)",
    "kind": "word"
   },
   "discount": {
@@ -275,7 +275,7 @@
    "lemma": "eventually",
    "pos": "adverb",
    "ipa": "ɪˈvɛntʃuəli",
-   "es": "al final, finalmente (no \"eventualmente\")",
+   "es": "al final (no «eventualmente»)",
    "kind": "word",
    "en": "in the end, after a long time"
   },
@@ -658,14 +658,14 @@
    "lemma": "pea soup",
    "pos": "noun",
    "ipa": "pi sup",
-   "es": "sopa de guisantes",
+   "es": "sopa de arvejas",
    "kind": "chunk"
   },
   "pepper_sauce": {
    "lemma": "red pepper sauce",
    "pos": "noun",
    "ipa": "rɛd ˈpɛpər sɔs",
-   "es": "salsa de guindilla roja",
+   "es": "salsa de chile rojo",
    "kind": "chunk"
   },
   "piece_paper": {
@@ -715,7 +715,7 @@
    "lemma": "read",
    "pos": "verb",
    "ipa": "rɛd",
-   "es": "leer (pasado: suena \"red\")",
+   "es": "leer (pasado: suena «red»)",
    "kind": "word"
   },
   "rent_noun": {
@@ -736,7 +736,7 @@
    "lemma": "be right",
    "pos": "phrase",
    "ipa": "bi raɪt",
-   "es": "tener razón (no \"derecha\")",
+   "es": "tener razón (no «derecha»)",
    "kind": "chunk"
   },
   "roommate": {
