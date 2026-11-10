@@ -509,7 +509,7 @@ struct WordCardView: View {
 
     private func save(learned: Bool) {
         // A name or a word from another language is never saved (and no notice says it was).
-        guard storyAllowsSave else { return }
+        guard Library.canSave(storyKind: story?.sense.kind) else { return }
         let word = savedKey
         let before = model.state.words
         let unsureForm = isUnsure && chosen == nil

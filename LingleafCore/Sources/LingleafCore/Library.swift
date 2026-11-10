@@ -487,6 +487,9 @@ public final class Library {
         return Set(zip(words, matches).filter { $0.1 }.map { $0.0 })
     }
 
+    /// Whether a word of a story sense of this kind may be saved: not a name or a word from another language.
+    public static func canSave(storyKind: StorySense.Kind?) -> Bool { storyKind != .name && storyKind != .foreign }
+
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.
@@ -503,7 +506,8 @@ public final class Library {
         story: String? = nil, groupRange: WordRange? = nil, translationSource: String? = nil, storyKind: StorySense.Kind? = nil
     ) -> VocabWord? {
         // A name or a word from another language is spelled like a common word ("Long" in "Mr. Long"): never saved.
-        if storyKind == .name || storyKind == .foreign { return nil }
+        // Callers ask `canSave(storyKind:)` first: a refusal is not "no previous word" (which Undo would delete).
+        if !Self.canSave(storyKind: storyKind) { return nil }
         let key = VocabWord.key(word)
         let sense = kind == nil ? sense.flatMap { Sense.isValid($0) ? $0 : nil } : nil
         let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)

@@ -269,6 +269,10 @@ final class LibraryTests: XCTestCase {
         XCTAssertNil(library.saveWord("bunica", learned: false, context: "Bunica.", sense: Sense.story("bunica"),
                                       story: "a-test-story", storyKind: .foreign))
         XCTAssertTrue(library.state.words.isEmpty)
+        XCTAssertFalse(Library.canSave(storyKind: .name))
+        XCTAssertFalse(Library.canSave(storyKind: .foreign))
+        XCTAssertTrue(Library.canSave(storyKind: .word))
+        XCTAssertTrue(Library.canSave(storyKind: nil))
         library.saveWord("go red", learned: false, context: "Went red.", sense: Sense.story("go_red"), story: "a-test-story", storyKind: .chunk)
         XCTAssertEqual(library.state.words.count, 1)
     }
