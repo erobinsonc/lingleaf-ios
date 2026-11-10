@@ -22,7 +22,7 @@ Android is paused; this is everything it needs to match iOS later. SPEC.md is th
 | `an-apartment-full-of-notes.txt` | `f0ce84ae2561a019d2eb47acce1f8d1d8aca3741e9fd553cc8ad7ada7c7eecc7` |
 | `an-empty-apartment.senses.json` | `69c345bb82eb86205762a53eb2109a8a657199190d971b1655aa94fd8039abdc` |
 | `an-empty-apartment.txt` | `20df026c93491d1531ab438d45b70a7a8feef6adb1aa387769e1cde333f333a8` |
-| `five-minutes-maximum.senses.json` | `9e4f518c66ca047d5f7f5e718a1ad227a4d7422d101e484e24a96a66dfaf5fc8` |
+| `five-minutes-maximum.senses.json` | `21e9f127fcc05d8c4412ed60b74a02f66a6a81507a36514b7870c70d8e523be3` |
 | `five-minutes-maximum.txt` | `3896f7c4d77f0105584ca93e6eb74805e1be52731e6cdf87fe4a9d02ca7049e9` |
 | `lane-four.senses.json` | `7f56d8f6ace18f1f6cebe2d5d0a1b7880e518408bf1fb59e8553cb772a3fcb43` |
 | `lane-four.txt` | `f98157868e04ab922bcefa86d629e4f130096de835d28433af8999702686837a` |

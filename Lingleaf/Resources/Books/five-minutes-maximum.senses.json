@@ -1123,6 +1123,14 @@
    "kind": "word",
    "variety": "AmE"
   },
+  "play_music_tocar": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "tocar (música)",
+   "kind": "word",
+   "en": "to make music with an instrument"
+  },
   "play_radio": {
    "lemma": "play",
    "pos": "verb",
@@ -3168,7 +3176,7 @@
    "start": 46,
    "end": 52,
    "text": "played",
-   "sense": "play_instrument"
+   "sense": "play_music_tocar"
   },
   {
    "p": 45,
@@ -4870,7 +4878,7 @@
    "start": 27,
    "end": 31,
    "text": "play",
-   "sense": "play_instrument"
+   "sense": "play_music_tocar"
   },
   {
    "p": 145,
@@ -4891,7 +4899,7 @@
    "start": 134,
    "end": 138,
    "text": "play",
-   "sense": "play_instrument"
+   "sense": "play_music_tocar"
   },
   {
    "p": 145,
@@ -4905,7 +4913,7 @@
    "start": 13,
    "end": 17,
    "text": "play",
-   "sense": "play_instrument"
+   "sense": "play_music_tocar"
   },
   {
    "p": 147,
@@ -4952,7 +4960,7 @@
    "start": 328,
    "end": 332,
    "text": "play",
-   "sense": "play_instrument"
+   "sense": "play_music_tocar"
   },
   {
    "p": 153,
