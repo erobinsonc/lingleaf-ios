@@ -142,6 +142,18 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
     }
 
+    /// A fast flick in the reader must leave the app idle: it used to stay busy for minutes (every
+    /// visibility change re-ran the whole reader while `scrollPosition(id:)` followed the scroll).
+    func testAFlickInTheReaderLeavesTheAppIdle() {
+        button(startingWith: "A Day at the Market").tap()
+        XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10))
+        RunLoop.current.run(until: Date().addingTimeInterval(2))
+        let start = Date()
+        app.swipeUp()
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertLessThan(Date().timeIntervalSince(start), 30, "the app was busy after the flick")
+    }
+
     private func relaunch(_ arguments: String...) {
         app.terminate()
         app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]

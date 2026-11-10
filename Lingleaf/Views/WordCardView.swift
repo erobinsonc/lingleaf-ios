@@ -50,10 +50,10 @@ struct WordCardView: View {
         if let storySense { return storySense.lemma }
         if let function = selection.function { return function.base }
         // Unsure: the tapped word stays the headword, chosen reading or not.
-        if isUnsure { return TextTools.normalize(selection.word) }
+        if isUnsure { return TextTools.key(selection.word) }
         // An expression is shown as the unit ("bound for").
         if let meaningReading, meaningReading.kind == .expression { return meaningReading.base }
-        if let base = entry?.word { return base == TextTools.normalize(selection.word) ? selection.word : base }
+        if let base = entry?.word { return base == TextTools.key(selection.word) ? selection.word : base }
         guard entryLoaded, let base = tableBase else { return selection.word }
         return base
     }
@@ -165,7 +165,7 @@ struct WordCardView: View {
     /// What Save stores: the word's base form, or a helper or modal verb's verb group (the
     /// whole sentence when it has none, so there's always something to recall and translate).
     private var savedKey: String {
-        if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
+        if isUnsure { return chosen?.base ?? TextTools.key(selection.word) }
         // A story sense saves its base form or group ("go red"), with the sense's meaning.
         if let storySense { return TextTools.key(storySense.lemma) }
         // A certain reading saves its base, whatever headword the dictionary gave.
@@ -187,7 +187,7 @@ struct WordCardView: View {
     /// How messages name what was saved: "did not go"; without a verb group, the start of the sentence.
     private var savedName: String {
         if let storySense { return storySense.lemma }
-        if isUnsure { return chosen?.base ?? TextTools.normalize(selection.word) }
+        if isUnsure { return chosen?.base ?? TextTools.key(selection.word) }
         if let meaningReading { return meaningReading.base }
         guard selection.function != nil else { return headword }
         if let chunk = selection.chunk { return chunk }
@@ -338,7 +338,7 @@ struct WordCardView: View {
                 Text(phonetic).font(.title3).foregroundStyle(Brand.secondaryText).accessibilityHidden(story != nil)
             }
             // A helper or modal verb shows its form in the verb group just below.
-            if selection.function == nil, TextTools.normalize(headword) != TextTools.normalize(selection.word), !storyShowsTheWord {
+            if selection.function == nil, TextTools.key(headword) != TextTools.key(selection.word), !storyShowsTheWord {
                 Text("In the text: \(selection.word)").font(.caption).foregroundStyle(Brand.secondaryText)
             }
             if let label = selection.function?.kind.label {
@@ -569,7 +569,7 @@ struct WordCardView: View {
     private func remove() {
         let before = model.state.words
         let saved = model.state.saved(savedKey, sense: savedSense)
-        model.library.deleteWord(saved?.word ?? TextTools.normalize(savedKey), sense: saved?.sense)
+        model.library.deleteWord(saved?.word ?? TextTools.key(savedKey), sense: saved?.sense)
         finish(String(localized: "“\(savedName)” removed from Words"), before: before)
     }
 
@@ -708,10 +708,10 @@ struct WordCardView: View {
                 }
             }
             guard selection.function == nil, story == nil, meaningReading == nil, !isUnsure,
-                  let tapped = wordSource.map(TextTools.normalize) else { return }
+                  let tapped = wordSource.map(TextTools.key) else { return }
             let looked: DictionaryEntry? = await lookup?.value
             // The dictionary's base form, else (offline) the irregular-verb table's.
-            guard let base = looked.map({ TextTools.normalize($0.word) }) ?? tableBase, base != tapped else { return }
+            guard let base = looked.map({ TextTools.key($0.word) }) ?? tableBase, base != tapped else { return }
             let response = try await session.translate(base)
             if translatedInto == target { translations[base] = response.targetText }
         } catch {

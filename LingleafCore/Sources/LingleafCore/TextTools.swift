@@ -204,8 +204,6 @@ public enum TextTools {
         (text as NSString).substring(with: range.nsRange)
     }
 
-    /// A word as a key: lower case, straight apostrophe, and composed (NFC) when it has letters
-    /// outside ASCII, so "Café" typed with a combining accent matches "café".
     /// Longest saved word and word key, in UTF-16 units.
     public static let maxKey = maxSentence
 
@@ -214,9 +212,10 @@ public enum TextTools {
     /// key wherever it is derived.
     public static func key(_ word: String) -> String { truncated(normalize(word), maxKey) }
 
-    /// `text` without invisible formatting characters (bidi overrides and isolates, zero-width
-    /// spaces, the byte-order mark, soft hyphens), except the joiners ZWNJ and ZWJ, which some
-    /// scripts spell with (Persian, Indic, emoji sequences).
+    /// `text` without invisible formatting characters (the Unicode Cf category of the platform's
+    /// Unicode version: bidi overrides, isolates and marks (LRM, RLM, ALM), zero-width spaces, the
+    /// byte-order mark, soft hyphens, tag characters), except the joiners ZWNJ and ZWJ, which some
+    /// scripts spell with (Persian, Indic, emoji sequences). Done before any cut to a length.
     public static func stripFormat(_ text: String) -> String {
         func isFormat(_ scalar: Unicode.Scalar) -> Bool {
             scalar.properties.generalCategory == .format && scalar.value != 0x200C && scalar.value != 0x200D
@@ -227,6 +226,8 @@ public enum TextTools {
         return String(out)
     }
 
+    /// A word as a key: lower case, straight apostrophe, and composed (NFC) when it has letters
+    /// outside ASCII, so "Café" typed with a combining accent matches "café".
     public static func normalize(_ word: String) -> String {
         let lower = word.replacingOccurrences(of: "’", with: "'").lowercased()
         return lower.isPlainASCII ? lower : lower.precomposedStringWithCanonicalMapping

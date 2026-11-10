@@ -78,7 +78,9 @@ the same intent on both platforms. A change to behaviour updates this file in
   U+0307), then composed (NFC) when it has a letter outside ASCII, then cut to 600 UTF-16 units (see Cuts). One
   function makes the key, and every id, look-up and match uses it, so a run of letters longer than 600 units (a Han
   run) is saved, found, translated, undone and marked under the same key. "Capitalised" (a name, a sentence start)
-  means its first character has the Unicode Uppercase property and the rest of the word has none.
+  means its first code point has the Unicode Uppercase property (not a titlecase letter such as "ǅ") and the rest of
+  the word has none, unless the word is that one code point or has an apostrophe ("O'Brien", "D'Artagnan"); a name (capitalised in mid-sentence) also has some
+  lower-case letter, so "I", "A" and "NASA" are not names; "ǅ" is not capitalised.
 - English rules work on ASCII words only: base forms (plural, past and -ing endings), the irregular-verb table and the
   verb-or-noun rule never apply to a word with a letter outside ASCII; such a word is its own only key, and next to a
   verb form it counts as an ordinary word or, capitalised in mid-sentence or opening a sentence, as a name (a subject:
@@ -90,11 +92,19 @@ the same intent on both platforms. A change to behaviour updates this file in
   word or a longer one is never sent and shows "No definition available." with its translation. A reading's base is a
   key too (lower case, NFC) before it is looked up.
 - Text in an address (a dictionary word, a catalog search): UTF-8, each byte outside A–Z a–z 0–9 written %XX with
-  upper-case hexadecimal digits (space is %20, an apostrophe %27, "é" %C3%A9); nothing else stays as it is. A catalog
+  upper-case hexadecimal digits (space is %20, an apostrophe %27, "é" %C3%A9); nothing else stays as it is. A lone
+  surrogate in the text is U+FFFD first (%EF%BF%BD). A catalog
   search is cut to 200 UTF-16 units first: "Les Misérables 東京" is `search=Les%20Mis%C3%A9rables%20%E6%9D%B1%E4%BA%AC`.
 - Invisible formatting: text imported or downloaded for a book, and a word's saved sentence, lose their format
-  characters (Cf: bidi overrides and isolates, zero-width spaces, the byte-order mark, soft hyphens) except ZWNJ and
-  ZWJ.
+  characters (general category Cf: bidi overrides, isolates and marks (LRM U+200E, RLM U+200F, ALM U+061C),
+  zero-width spaces, the byte-order mark, soft hyphens, tag characters U+E0001 and U+E0020–E007F, and also the drawn
+  Arabic signs of Cf: U+0600–0605, U+06DD, U+070F, U+0890–0891, U+08E2) except ZWNJ and ZWJ, and before any cut to a length (strip, then cut at 600). A book stored before this rule is stripped when it is
+  opened: if that changes its text, the text is stored again once, and, only when that is confirmed, the book's paragraph
+  count is that of the new text and the place in the book moves back by the number of paragraphs before it that were
+  made only of such characters (a place on one of them goes to the next paragraph, a place past the end to the last,
+  none left to 0); a book whose text cannot be read is left exactly as it is, and shows nothing. Cf is that of the platform's
+  Unicode tables (Swift's standard library on iOS, the Android API level's on Android): a character assigned in one
+  version only may be stripped on one platform and not the other, a residual.
 - Cuts: a cut at the paragraph (2,000), sentence (600) or any other cap moves back up to 6 UTF-16 units, never to less
   than one unit after the start of the piece, while the unit at the cut continues what comes before it: the second
   half of a surrogate pair; a combining mark (Mn, Mc, Me, in the BMP); a variation selector U+FE00–FE0F; a joiner
@@ -105,7 +115,11 @@ the same intent on both platforms. A change to behaviour updates this file in
   with 4, the rest skipped); "\u0301\u0301" (no word); "naïve2" (one word, "naïve"); "Jean-Luc" (two); "dogs'" (one,
   "dogs"); "我爱你，你好。" (two words; sentences end at 。！？؟ with closing 」』 kept); "مرحبا بالعالم" (two);
   "Don’t"/"l’homme" (one each); "می\u200Cخواهم" (two); keys "ΟΔΟΣ" → "οδοσ", "İ" → "i\u0307", "CAFE\u0301" → "café";
-  "Les Misérables 東京" in an address; 400,000 units of each hostile shape read in under 10 seconds.
+  "Les Misérables 東京" in an address; 400,000 units of each hostile shape read in under 10 seconds. Also: "cat\n" is
+  not looked up; "привет" and "Tokyo東京" are never sent; a word of 50 letters is sent, one of 51 is not; a Han run of
+  700 units has a key of 600; a catalog search of 5,000 × "東" is cut to 200 (`%E6%9D%B1` 200 times); a lone
+  surrogate in a search is %EF%BF%BD; stripping "a\u202Eb\u200Bc\u00ADd\u200Ce\u200Df" leaves "abcd\u200Ce\u200Df"
+  (and removes LRM, RLM, ALM and tag characters); a reading base "CAFE\u0301" is looked up as `caf%C3%A9`.
 - Irregular verbs (see `IrregularVerbs`): one table, `irregular-verbs.json` (identical in both repos, bundled in
   the core module), is the only list of irregular forms. Each verb has its base, past and participle (most common
   first, US spelling before UK: gotten/got, learned/learnt), -ing and -s forms, pattern group, level, Spanish
@@ -244,7 +258,7 @@ the same intent on both platforms. A change to behaviour updates this file in
   longer than 600 UTF-16 units comes in consecutive pieces of at most 600, cut before a space. Reading starts at the
   sentence holding the offset (or the next one) and goes on to the next, skipping empty paragraphs, to the book's end.
   The previous sentence skips empty paragraphs too; a repeated stretch counts its sentences from first to last.
-- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing quotes, before a space or the end; or `[。！？؟]+` plus closing quotes and 」』, with no space needed), trimmed.
+- Sentence of a word: the text between sentence ends (`[.!?]+` plus closing marks, before a space or the end; or `[。！？؟]+` plus closing marks, with no space needed), trimmed. Closing marks: `"` `”` `’` `)` `]`, and after the full-width marks also `」` `』`.
 - Spaced repetition: boxes with 1, 3, 7, 14, 30 day intervals, each due at the start of that review day (04:00 local time; 01:00 still belongs to the day before); a new word is due at the start of the next review day; "Again" → first box, due now.
 - Marking a saved word in a sentence: its forms (match keys, with homographs read in the sentence as above), or a
   saved group of words, ignoring case.

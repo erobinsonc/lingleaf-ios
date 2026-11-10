@@ -5,7 +5,7 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
     public let title: String
     public let author: String
     public let fileName: String
-    public let paragraphCount: Int
+    public internal(set) var paragraphCount: Int
     public var level: String?
     public var gutenbergID: Int?
     public let addedAt: Date
@@ -416,9 +416,33 @@ public final class Library {
     /// Marks the book as opened and returns its paragraphs.
     public func openBook(_ id: String) -> [String] {
         guard let index = state.books.firstIndex(where: { $0.id == id }) else { return [] }
+        // A text that can't be read (missing, too large, locked) shows nothing and changes nothing:
+        // neither the count nor the place in the book is made up from an empty text.
+        guard let stored = storage.read(state.books[index].fileName) else { return [] }
         state.books[index].lastOpenedAt = now()
+        let text = TextTools.stripFormat(stored)
+        let paragraphs = TextTools.splitParagraphs(text)
+        // A book stored before invisible formatting was stripped: when that changes its text, the
+        // text is stored again once, and only if that is confirmed the count and the place follow.
+        if text != stored {
+            storage.write(state.books[index].fileName, text)
+            if storage.read(state.books[index].fileName) == text {
+                followStrippedText(index, stored: stored, count: paragraphs.count)
+            }
+        }
         saveBooks()
-        return TextTools.splitParagraphs(storage.read(state.books[index].fileName) ?? "")
+        return paragraphs
+    }
+
+    /// The book at `index` now has `count` paragraphs because its stored text lost invisible
+    /// characters. The place in the book moves back by the paragraphs before it that were made only
+    /// of them (a place on one of them goes to the next paragraph, one past the end to the last).
+    private func followStrippedText(_ index: Int, stored: String, count: Int) {
+        let place = state.books[index].progressParagraph
+        let before = TextTools.splitParagraphs(stored).prefix(max(place, 0))
+        let removed = before.filter { TextTools.stripFormat($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }.count
+        state.books[index].paragraphCount = count
+        state.books[index].progressParagraph = min(max(place - removed, 0), max(count - 1, 0))
     }
 
     /// Updates progress in memory; call `flush()` to persist (e.g. when leaving the reader).
@@ -643,7 +667,7 @@ public final class Library {
     }
 
     public func answerReview(_ word: String, sense: String? = nil, correct: Bool) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard var entry = state.words.first(where: { $0.id == id }) else { return }
         let result = Srs.review(box: entry.box, correct: correct, now: now(), calendar: calendar)
         entry.box = result.box
@@ -653,7 +677,7 @@ public final class Library {
     }
 
     public func setLearned(_ word: String, _ learned: Bool, sense: String? = nil) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         guard var entry = state.words.first(where: { $0.id == id }) else { return }
         entry.learned = learned
         if !learned {
@@ -664,7 +688,7 @@ public final class Library {
     }
 
     public func deleteWord(_ word: String, sense: String? = nil) {
-        let id = VocabWord.id(word, sense)
+        let id = VocabWord.id(VocabWord.key(word), sense)
         state.words.removeAll { $0.id == id }
         save(state.words, "words.json")
     }
