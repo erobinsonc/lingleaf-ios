@@ -339,8 +339,173 @@ final class UnicodeWordsTests: XCTestCase {
         XCTAssertEqual(sent, ["caf%C3%A9"])
     }
 
+    /// "Capitalised" (SPEC): first character Uppercase and the rest not, unless one character or an
+    /// apostrophe; a name also has a lower-case letter, so "I", "A" and "NASA" are not names.
+    func testWhatIsCapitalisedAndWhatIsAName() {
+        let text = "Mr O'Brien NASA I A Joaquín Ángel"
+        let words = Words(text as NSString)
+        XCTAssertEqual((0..<words.count).map(words.titlecase), [true, true, false, true, true, true, true])
+        func name(_ word: String) -> Bool {
+            let sentence = "Then \(word) left."
+            return table.isName(sentence, WordRange(5, 5 + word.utf16.count))
+        }
+        for yes in ["Joaquín", "Ángel", "O'Brien", "Rose"] { XCTAssertTrue(name(yes), yes) }
+        for no in ["I", "A", "NASA", "ángel", "rose", "ǅemo"] { XCTAssertFalse(name(no), no) }
+        // Unicode Uppercase of the first code point: a titlecase letter ("ǅ", Lt) is not capitalised.
+        let titlecase = Words("ǅ ǅemo Ǆ Ǆemo" as NSString)
+        XCTAssertEqual((0..<titlecase.count).map(titlecase.titlecase), [false, false, true, true])
+    }
+
+    /// Format characters go (bidi controls, LRM, RLM, ALM, zero-width, soft hyphen, tags), the
+    /// joiners stay; before any cut.
+    func testFormatCharactersAreStrippedAndTheJoinersStay() {
+        XCTAssertEqual(TextTools.stripFormat("a\u{202E}b\u{200B}c\u{00AD}d\u{200C}e\u{200D}f"), "abcd\u{200C}e\u{200D}f")
+        XCTAssertEqual(TextTools.stripFormat("x\u{200E}\u{200F}\u{061C}\u{E0001}\u{E0041}\u{E007F}y"), "xy")
+        let sentence = String(repeating: "a", count: TextTools.maxSentence - 1) + "\u{200B}\u{200B}bc"
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord("x", learned: false, context: sentence)
+        XCTAssertEqual(library.state.word("x")?.context, String(repeating: "a", count: TextTools.maxSentence - 1) + "b",
+                       "stripped first (601 units), then cut to 600")
+    }
+
+    /// Every way into a saved word uses its key, so a very long word is answered, marked as known
+    /// and deleted like any other.
+    func testAnswerKnowAndDeleteUseTheKey() throws {
+        let long = String(repeating: "东", count: VocabWord.maxWord + 10)
+        let library = Library(storage: MemoryStorage())
+        library.load()
+        library.saveWord(long, learned: false, context: "他 \(long).")
+        library.answerReview(long, correct: true)
+        XCTAssertGreaterThan(library.state.words.first?.box ?? 0, 0)
+        library.setLearned(long, true)
+        XCTAssertEqual(library.state.words.first?.learned, true)
+        library.deleteWord(long)
+        XCTAssertTrue(library.state.words.isEmpty)
+    }
+
+    /// A book stored before invisible characters were stripped: `raw` is its stored text, `place` the
+    /// paragraph the reader was at.
+    private func oldBook(_ raw: String, place: Int, storage: MemoryStorage = MemoryStorage()) -> (Library, MemoryStorage, Book) {
+        let library = Library(storage: storage)
+        library.load()
+        let book = library.addBook(title: "Old", author: "A", text: "x")
+        storage.write(book.fileName, raw)
+        library.state.books[0].paragraphCount = TextTools.splitParagraphs(raw).count
+        library.updateProgress(book.id, paragraph: place)
+        library.flush()
+        return (library, storage, library.state.books[0])
+    }
+
+    /// The place in the book moves back by the paragraphs before it that were only invisible
+    /// characters, so the reader stays on the same text.
+    func testAnOldBooksPlaceFollowsTheParagraphsStrippingRemoved() {
+        // U+202A and U+202E are format characters but not white space (U+200B counts as blank on Apple platforms).
+        let raw = "P0\n\n\u{202A}\n\nP2\n\n\u{202E}\n\nP4"   // five paragraphs: P0, -, P2, -, P4
+        // (place before, name of the paragraph the reader is on after)
+        for (place, expected) in [(0, "P0"), (1, "P2"), (2, "P2"), (3, "P4"), (4, "P4")] {
+            let (library, storage, book) = oldBook(raw, place: place)
+            let paragraphs = library.openBook(book.id)
+            XCTAssertEqual(paragraphs, ["P0", "P2", "P4"])
+            let now = library.state.books[0]
+            XCTAssertEqual(now.paragraphCount, 3)
+            XCTAssertEqual(paragraphs[now.progressParagraph], expected, "place \(place)")
+            XCTAssertEqual(storage.read(book.fileName), "P0\n\n\n\nP2\n\n\n\nP4", "stored again, stripped")
+            // Opened again: nothing moves a second time.
+            XCTAssertEqual(library.openBook(book.id), paragraphs)
+            XCTAssertEqual(library.state.books[0].progressParagraph, now.progressParagraph)
+            XCTAssertEqual(library.state.books[0].paragraphCount, 3)
+        }
+    }
+
+    func testAnOldBooksPlaceAtTheEndOrWithNothingLeft() {
+        let (library, _, book) = oldBook("P0\n\nP1\n\n\u{202A}", place: 2)
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P1"])
+        XCTAssertEqual(library.state.books[0].progressParagraph, 1, "a place past the end goes to the last paragraph")
+        let (empty, _, emptied) = oldBook("\u{202A}\n\n\u{202E}", place: 1)
+        XCTAssertEqual(empty.openBook(emptied.id), [])
+        XCTAssertEqual(empty.state.books[0].paragraphCount, 0)
+        XCTAssertEqual(empty.state.books[0].progressParagraph, 0)
+    }
+
+    /// A text that can't be read changes nothing: not the count, not the place, not the files.
+    func testABookWhoseTextCannotBeReadIsLeftExactlyAsItIs() {
+        let (library, storage, book) = oldBook("P0\n\nP1\n\nP2", place: 2)
+        storage.delete(book.fileName)
+        let booksFile = storage.read("books.json")
+        let before = library.state.books[0]
+        XCTAssertEqual(library.openBook(book.id), [])
+        XCTAssertEqual(library.state.books[0], before, "count, place and last-opened time as they were")
+        XCTAssertEqual(storage.read("books.json"), booksFile)
+        XCTAssertNil(storage.read(book.fileName))
+    }
+
+    /// Only stripping moves the count and the place: a text with nothing to strip is read as it is.
+    func testABookWithNothingToStripKeepsItsCountAndPlace() {
+        let (library, storage, book) = oldBook("P0\n\nP1\n\nP2", place: 2)
+        library.state.books[0].paragraphCount = 9
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P1", "P2"])
+        XCTAssertEqual(library.state.books[0].paragraphCount, 9)
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+        XCTAssertEqual(storage.read(book.fileName), "P0\n\nP1\n\nP2", "not written again")
+    }
+
+    /// A storage that can't write the book again: it is shown stripped, and nothing is moved on a
+    /// guess; the next time tries again.
+    func testAnUnwritableBookIsShownStrippedAndItsPlaceIsNotMoved() {
+        final class Frozen: Storage {
+            let base = MemoryStorage()
+            func read(_ name: String) -> String? { base.read(name) }
+            func write(_ name: String, _ content: String) {
+                // A book's text can be written once; after that the storage refuses.
+                if !name.hasPrefix("book-") || base.read(name) == nil { base.write(name, content) }
+            }
+            func delete(_ name: String) { base.delete(name) }
+        }
+        let library = Library(storage: Frozen())
+        library.load()
+        let book = library.addBook(title: "Old", author: "A", text: "x")
+        let raw = "P0\n\n\u{202A}\n\nP2"
+        (library.storage as? Frozen)?.base.write(book.fileName, raw)
+        library.state.books[0].paragraphCount = 3
+        library.updateProgress(book.id, paragraph: 2)
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P2"])
+        XCTAssertEqual(library.state.books[0].paragraphCount, 3)
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+        XCTAssertEqual(library.openBook(book.id), ["P0", "P2"], "and again, nothing doubles")
+        XCTAssertEqual(library.state.books[0].progressParagraph, 2)
+    }
+
+    /// Each closing mark stays with the sentence it closes, after . ! ? and after 。 (SPEC).
+    func testEveryClosingMarkStaysWithItsSentence() {
+        for end in [".", "!", "?"] {
+            for mark in ["\"", "”", "’", ")", "]"] {
+                let text = "One\(end)\(mark) Two."
+                XCTAssertEqual(TextTools.sentenceRanges(text).map { TextTools.substring(text, $0) },
+                               ["One\(end)\(mark)", "Two."], "after \(end) the mark \(mark)")
+            }
+        }
+        for mark in ["\"", "”", "’", ")", "]", "」", "』"] {
+            let text = "你好。\(mark)再见"
+            XCTAssertEqual(TextTools.sentenceRanges(text).map { TextTools.substring(text, $0) }, ["你好。\(mark)", "再见"], "after 。 \(mark)")
+        }
+    }
+
+    /// A lone surrogate can't be sent as it is: it is U+FFFD.
+    func testALoneSurrogateInASearchIsTheReplacementCharacter() async throws {
+        let urls = UrlRecorder()
+        let catalog = GutenbergClient(http: ClosureFetcher { url in
+            await urls.add(url)
+            return HttpResponse(status: 200, text: #"{"results": []}"#)
+        })
+        _ = try await catalog.search(String(decoding: [0x61, 0xD800, 0x62], as: UTF16.self))
+        let seen = await urls.list
+        XCTAssertTrue(seen[0].hasSuffix("search=a%EF%BF%BDb"), seen[0])
+    }
+
     func testWhichTokensMayBeLookedUp() {
-        for yes in ["cat", "café", "naïve", "résumé", "joaquín", "zieliński", "kraków", "straße", "o'clock", "l’homme", "đà"] {
+        for yes in ["cat", "café", "naïve", "résumé", "joaquín", "zieliński", "kraków", "straße", "o'clock", "l’homme", "đà",
+                    String(repeating: "a", count: 50)] {
             XCTAssertTrue(DictionaryClient.canLookUp(yes), yes)
         }
         for no in ["", "привет", "你好", "مرحبا", "Tokyo東京", "东京tokyo", "a b", "a-b", "3d", "\u{0301}", "😀", "cat\n", "cat\n\n", "\ncat",
