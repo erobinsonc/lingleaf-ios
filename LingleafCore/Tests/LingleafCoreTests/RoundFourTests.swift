@@ -91,6 +91,8 @@ final class RoundFourTests: XCTestCase {
         XCTAssertEqual(table.homographNounEs("wind"), ["viento"])
         XCTAssertNil(table.tableMeaning(.noun, base: "tear"), "its sense depends on its sound: none rather than half")
         XCTAssertNil(table.tableMeaning(.noun, base: "lead"))
+        XCTAssertNil(table.tableMeaning(.noun, base: "fell"), "a rare noun: none rather than a gloss that misleads")
+        XCTAssertNil(table.tableMeaning(.noun, base: "lay"))
         XCTAssertNil(table.tableMeaning(.noun, base: "cat"))
         XCTAssertNil(table.homographNounEs("found"), "not a noun")
     }

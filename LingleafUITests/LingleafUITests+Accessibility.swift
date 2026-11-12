@@ -15,7 +15,11 @@ extension LingleafUITests {
             // than any fixed wait: audited mid-transition, black text on white failed contrast and
             // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
             // tree). So wait until the screen itself has stopped changing, not for a fixed time.
-            if !waitUntilSettled() { attachEvidence("audit-\(screen)-never-settled") }
+            if !waitUntilSettled() {
+                attachEvidence("audit-\(screen)-never-settled")
+                // Auditing a screen that is still changing proves nothing: say so instead of going on.
+                XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
+            }
             // The reader hides the tab bar; then nothing can sit under it.
             let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
             let before = issues.count

@@ -73,7 +73,7 @@ struct ReaderView: View {
     @State private var cardDetent: PresentationDetent = .medium
     /// The height that fits a word card whose sentence doesn't tell (its content and buttons); the
     /// card tells it as it measures itself, and its sheet opens at it.
-    @State private var fittedHeight: CGFloat = 480
+    @State private var fittedHeight: CGFloat = ReaderView.defaultFittedHeight
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
     /// The senses of the story, when the book is a bundled story that has them (SPEC S19).
@@ -152,7 +152,11 @@ struct ReaderView: View {
             // With accessibility text sizes a half-height card shows almost nothing: full height. A word whose
             // sentence doesn't tell opens at the card's own height, its readings in view (SPEC S3).
             .presentationDetents(cardDetents(selection), selection: $cardDetent)
-            .onAppear { cardDetent = openingDetent(selection) }
+            // Each card starts from the default: the height measured for the last one may not fit this one.
+            .onAppear {
+                fittedHeight = Self.defaultFittedHeight
+                cardDetent = openingDetent(selection, fitted: Self.defaultFittedHeight)
+            }
             // The card measured itself again (a translation arrived): the sheet follows, unless it was dragged.
             .onChange(of: fittedHeight) { old, new in
                 if cardDetent == .height(old) { cardDetent = .height(new) }
@@ -516,9 +520,11 @@ struct ReaderView: View {
         return isUnsureCard(selection) ? [.height(fittedHeight), .large] : [.medium, .large]
     }
 
-    private func openingDetent(_ selection: WordSelection) -> PresentationDetent {
+    static let defaultFittedHeight: CGFloat = 480
+
+    private func openingDetent(_ selection: WordSelection, fitted: CGFloat) -> PresentationDetent {
         if dynamicTypeSize.isAccessibilitySize { return .large }
-        return isUnsureCard(selection) ? .height(fittedHeight) : .medium
+        return isUnsureCard(selection) ? .height(fitted) : .medium
     }
 
     private func startTimer() {
