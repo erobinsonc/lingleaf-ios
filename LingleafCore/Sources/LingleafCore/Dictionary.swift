@@ -177,6 +177,12 @@ public actor DictionaryClient {
         return nil
     }
 
+    /// The first meaning of `word`, a base form as a story's sense gives it (SPEC S19), whose part of
+    /// speech is `partOfSpeech`; nothing when it has none: never another part of speech's.
+    public func lookup(base word: String, partOfSpeech: String) async -> DictionaryEntry? {
+        await get(TextTools.normalize(word))?.first { $0.partOfSpeech?.lowercased() == partOfSpeech }
+    }
+
     /// Longest word looked up, in UTF-16 units (the longest English word has 45 letters).
     static let maxLookupWord = 50
     private static let lookupWord = try! NSRegularExpression(pattern: "^\\p{Latin}(?:\\p{Latin}|\\p{M}|['’])*\\z")

@@ -662,6 +662,16 @@
         }
       }
     },
+    "Group: %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grupo: %@"
+          }
+        }
+      }
+    },
     "Helper verb": {
       "localizations": {
         "es": {
@@ -822,6 +832,16 @@
         }
       }
     },
+    "Local English": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inglés local"
+          }
+        }
+      }
+    },
     "Mark as known": {
       "localizations": {
         "es": {
@@ -902,6 +922,16 @@
         }
       }
     },
+    "No single meaning out of context. See the sentence.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sin significado suelto fuera de contexto. Mira la frase."
+          }
+        }
+      }
+    },
     "No translation yet. Connect to the internet once to get it.": {
       "localizations": {
         "es": {
@@ -952,22 +982,32 @@
         }
       }
     },
-    "Original story": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cuento original"
-          }
-        }
-      }
-    },
     "Our stories and free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Nuestros cuentos y clásicos gratuitos de Project Gutenberg."
+          }
+        }
+      }
+    },
+    "Our stories were written with AI help. Anyone can use them freely.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nuestros cuentos se escribieron con ayuda de IA. Cualquiera puede usarlos libremente."
+          }
+        }
+      }
+    },
+    "Our story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuento propio"
           }
         }
       }
@@ -1028,6 +1068,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Project Gutenberg no respondió. Inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Proper name": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nombre propio"
           }
         }
       }
@@ -1566,6 +1616,16 @@
         }
       }
     },
+    "UK English": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inglés británico"
+          }
+        }
+      }
+    },
     "Undo": {
       "localizations": {
         "es": {
@@ -1586,6 +1646,16 @@
         }
       }
     },
+    "US English": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inglés estadounidense"
+          }
+        }
+      }
+    },
     "Voice": {
       "localizations": {
         "es": {
@@ -1602,6 +1672,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "¿Cuál es en esta frase?"
+          }
+        }
+      }
+    },
+    "Word from another language": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Palabra de otro idioma"
           }
         }
       }

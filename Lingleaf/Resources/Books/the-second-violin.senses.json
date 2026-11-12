@@ -1,0 +1,4015 @@
+{
+ "schemaVersion": 1,
+ "story": "the-second-violin",
+ "senses": {
+  "actually_infact": {
+   "lemma": "actually",
+   "pos": "adverb",
+   "ipa": "ˈæktʃuəli",
+   "es": "de hecho",
+   "kind": "word",
+   "en": "in fact"
+  },
+  "actually_really": {
+   "lemma": "actually",
+   "pos": "adverb",
+   "ipa": "ˈæktʃuəli",
+   "es": "de verdad, realmente (no «actualmente»)",
+   "kind": "word",
+   "en": "really, truly"
+  },
+  "adore": {
+   "lemma": "adore",
+   "pos": "verb",
+   "ipa": "əˈdɔr",
+   "es": "adorar",
+   "kind": "word"
+  },
+  "anticipate": {
+   "lemma": "anticipate",
+   "pos": "verb",
+   "ipa": "ænˈtɪsəˌpeɪt",
+   "es": "prever, adelantarse a",
+   "kind": "word"
+  },
+  "applause": {
+   "lemma": "applause",
+   "pos": "noun",
+   "ipa": "əˈplɔz",
+   "es": "aplausos",
+   "kind": "word"
+  },
+  "arrangement": {
+   "lemma": "arrangement",
+   "pos": "noun",
+   "ipa": "əˈreɪndʒmənt",
+   "es": "costumbre, acuerdo",
+   "kind": "word"
+  },
+  "assume_suppose": {
+   "lemma": "assume",
+   "pos": "verb",
+   "ipa": "əˈsum",
+   "es": "suponer (no «asumir»)",
+   "kind": "word",
+   "en": "to suppose, to take for granted"
+  },
+  "at_last": {
+   "lemma": "at last",
+   "pos": "phrase",
+   "ipa": "æt læst",
+   "es": "por fin",
+   "kind": "chunk"
+  },
+  "at_once": {
+   "lemma": "at once",
+   "pos": "phrase",
+   "ipa": "æt wʌns",
+   "es": "enseguida, de inmediato",
+   "kind": "chunk"
+  },
+  "attic": {
+   "lemma": "attic",
+   "pos": "noun",
+   "ipa": "ˈætɪk",
+   "es": "desván",
+   "kind": "word"
+  },
+  "audience": {
+   "lemma": "audience",
+   "pos": "noun",
+   "ipa": "ˈɔdiəns",
+   "es": "público",
+   "kind": "word"
+  },
+  "bar_music": {
+   "lemma": "bar",
+   "pos": "noun",
+   "ipa": "bɑr",
+   "es": "compás (en música; no «bar»)",
+   "kind": "word",
+   "en": "a measure of music"
+  },
+  "bathe": {
+   "lemma": "bathe",
+   "pos": "verb",
+   "ipa": "beɪð",
+   "es": "bañar",
+   "kind": "word"
+  },
+  "battered": {
+   "lemma": "battered",
+   "pos": "adjective",
+   "ipa": "ˈbætərd",
+   "es": "gastado, maltrecho",
+   "kind": "word"
+  },
+  "borrow": {
+   "lemma": "borrow",
+   "pos": "verb",
+   "ipa": "ˈbɑroʊ",
+   "es": "pedir prestado",
+   "kind": "word"
+  },
+  "bow_bend": {
+   "lemma": "bow",
+   "pos": "verb",
+   "ipa": "baʊ",
+   "es": "hacer una reverencia (/baʊ/)",
+   "kind": "word",
+   "en": "to bend forward as a greeting"
+  },
+  "bow_violin": {
+   "lemma": "bow",
+   "pos": "noun",
+   "ipa": "boʊ",
+   "es": "arco (violín; /boʊ/)",
+   "kind": "word",
+   "en": "the stick used to play a violin"
+  },
+  "brass": {
+   "lemma": "brass",
+   "pos": "noun",
+   "ipa": "bræs",
+   "es": "latón",
+   "kind": "word"
+  },
+  "bring_in_music": {
+   "lemma": "bring in",
+   "pos": "phrasal verb",
+   "ipa": "brɪŋ ɪn",
+   "es": "traer",
+   "kind": "chunk"
+  },
+  "bunbun": {
+   "lemma": "Bunbun",
+   "pos": "proper noun",
+   "ipa": "ˈbʌnbʌn",
+   "es": "apodo de la abuela",
+   "kind": "name"
+  },
+  "business_concern": {
+   "lemma": "business",
+   "pos": "noun",
+   "ipa": "ˈbɪznəs",
+   "es": "asunto, competencia",
+   "kind": "word"
+  },
+  "call_out": {
+   "lemma": "call out",
+   "pos": "phrasal verb",
+   "ipa": "kɔl aʊt",
+   "es": "decir en voz alta",
+   "kind": "chunk"
+  },
+  "can_tell": {
+   "lemma": "can tell",
+   "pos": "phrase",
+   "ipa": "kæn tɛl",
+   "es": "notar, saber",
+   "kind": "chunk"
+  },
+  "care_about": {
+   "lemma": "care",
+   "pos": "verb",
+   "ipa": "kɛr",
+   "es": "importar (a alguien)",
+   "kind": "word",
+   "en": "to matter to someone"
+  },
+  "case_violin": {
+   "lemma": "case",
+   "pos": "noun",
+   "ipa": "keɪs",
+   "es": "estuche",
+   "kind": "word"
+  },
+  "catch_photo": {
+   "lemma": "caught in a photograph",
+   "pos": "phrase",
+   "ipa": "kɔt ɪn ə ˈfoʊtəˌɡræf",
+   "es": "como en una foto",
+   "kind": "chunk"
+  },
+  "ceiling": {
+   "lemma": "ceiling",
+   "pos": "noun",
+   "ipa": "ˈsilɪŋ",
+   "es": "techo (de una habitación)",
+   "kind": "word"
+  },
+  "change_mind": {
+   "lemma": "change your mind",
+   "pos": "phrase",
+   "ipa": "tʃeɪndʒ jʊr maɪnd",
+   "es": "cambiar de opinión",
+   "kind": "chunk"
+  },
+  "clause": {
+   "lemma": "clause",
+   "pos": "noun",
+   "ipa": "klɔz",
+   "es": "cláusula",
+   "kind": "word"
+  },
+  "clean_off": {
+   "lemma": "clean off",
+   "pos": "phrasal verb",
+   "ipa": "klin ɔf",
+   "es": "limpiar",
+   "kind": "chunk"
+  },
+  "closet": {
+   "lemma": "closet",
+   "pos": "noun",
+   "ipa": "ˈklɑzət",
+   "es": "clóset, armario",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "come_down": {
+   "lemma": "come down",
+   "pos": "phrasal verb",
+   "ipa": "kʌm daʊn",
+   "es": "bajar, relajarse",
+   "kind": "chunk"
+  },
+  "come_undone": {
+   "lemma": "come undone",
+   "pos": "phrase",
+   "ipa": "kʌm ʌnˈdʌn",
+   "es": "deshacerse",
+   "kind": "chunk"
+  },
+  "concert_hall": {
+   "lemma": "concert hall",
+   "pos": "noun",
+   "ipa": "ˈkɑnsərt hɔl",
+   "es": "sala de conciertos",
+   "kind": "chunk"
+  },
+  "cone": {
+   "lemma": "cone",
+   "pos": "noun",
+   "ipa": "koʊn",
+   "es": "cucurucho",
+   "kind": "word"
+  },
+  "cookie": {
+   "lemma": "cookie",
+   "pos": "noun",
+   "ipa": "ˈkʊki",
+   "es": "galleta",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "counter": {
+   "lemma": "counter",
+   "pos": "noun",
+   "ipa": "ˈkaʊntər",
+   "es": "mostrador",
+   "kind": "word"
+  },
+  "cross_legged": {
+   "lemma": "cross-legged",
+   "pos": "adverb",
+   "ipa": "ˈkrɔsˌlɛɡɪd",
+   "es": "con las piernas cruzadas",
+   "kind": "word"
+  },
+  "defensively": {
+   "lemma": "defensively",
+   "pos": "adverb",
+   "ipa": "dɪˈfɛnsɪvli",
+   "es": "a la defensiva",
+   "kind": "word"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "diplomat": {
+   "lemma": "diplomat",
+   "pos": "noun",
+   "ipa": "ˈdɪpləmæt",
+   "es": "diplomático",
+   "kind": "word"
+  },
+  "disappointed": {
+   "lemma": "disappointed",
+   "pos": "adjective",
+   "ipa": "ˌdɪsəˈpɔɪntɪd",
+   "es": "decepcionado",
+   "kind": "word"
+  },
+  "drum_fingers": {
+   "lemma": "drum",
+   "pos": "verb",
+   "ipa": "drʌm",
+   "es": "tamborilear",
+   "kind": "word"
+  },
+  "duet": {
+   "lemma": "duet",
+   "pos": "noun",
+   "ipa": "duˈɛt",
+   "es": "dúo",
+   "kind": "word"
+  },
+  "earn": {
+   "lemma": "earn",
+   "pos": "verb",
+   "ipa": "ɝn",
+   "es": "ganarse",
+   "kind": "word"
+  },
+  "earring": {
+   "lemma": "earring",
+   "pos": "noun",
+   "ipa": "ˈɪrɪŋ",
+   "es": "arete",
+   "kind": "word"
+  },
+  "either_neither": {
+   "lemma": "either",
+   "pos": "adverb",
+   "ipa": "ˈiðər",
+   "es": "tampoco (en frase negativa)",
+   "kind": "word"
+  },
+  "embarrassed": {
+   "lemma": "embarrassed",
+   "pos": "adjective",
+   "ipa": "ɪmˈbɛrəst",
+   "es": "avergonzado (no «embarazada»)",
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
+  },
+  "encouragement": {
+   "lemma": "encouragement",
+   "pos": "noun",
+   "ipa": "ɪnˈkɝɪdʒmənt",
+   "es": "ánimo",
+   "kind": "word"
+  },
+  "eventually_finally": {
+   "lemma": "eventually",
+   "pos": "adverb",
+   "ipa": "ɪˈvɛntʃuəli",
+   "es": "al final (no «eventualmente»)",
+   "kind": "word",
+   "en": "in the end, after a long time"
+  },
+  "fair_just": {
+   "lemma": "fair",
+   "pos": "adjective",
+   "ipa": "fɛr",
+   "es": "justo, razonable",
+   "kind": "word"
+  },
+  "fall_over": {
+   "lemma": "fall over",
+   "pos": "phrasal verb",
+   "ipa": "fɔl ˈoʊvər",
+   "es": "caerse",
+   "kind": "chunk"
+  },
+  "familiar_noise": {
+   "lemma": "familiar",
+   "pos": "adjective",
+   "ipa": "fəˈmɪljər",
+   "es": "conocido, de siempre",
+   "kind": "word"
+  },
+  "faucet": {
+   "lemma": "faucet",
+   "pos": "noun",
+   "ipa": "ˈfɔsɪt",
+   "es": "llave de agua",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "flavor": {
+   "lemma": "flavor",
+   "pos": "noun",
+   "ipa": "ˈfleɪvər",
+   "es": "sabor",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "flicker_alarm": {
+   "lemma": "flicker",
+   "pos": "noun",
+   "ipa": "ˈflɪkər",
+   "es": "pizca, destello",
+   "kind": "word"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word",
+   "en": "the lower surface of a room or a pool"
+  },
+  "folk_dance": {
+   "lemma": "folk dance",
+   "pos": "noun",
+   "ipa": "foʊk dæns",
+   "es": "danza popular",
+   "kind": "chunk"
+  },
+  "fragile": {
+   "lemma": "fragile",
+   "pos": "adjective",
+   "ipa": "ˈfrædʒəl",
+   "es": "frágil",
+   "kind": "word"
+  },
+  "freeze_still": {
+   "lemma": "freeze",
+   "pos": "verb",
+   "ipa": "friz",
+   "es": "quedarse inmóvil",
+   "kind": "word"
+  },
+  "front_room": {
+   "lemma": "front room",
+   "pos": "noun",
+   "ipa": "frʌnt rum",
+   "es": "sala",
+   "kind": "chunk"
+  },
+  "front_row": {
+   "lemma": "front row",
+   "pos": "noun",
+   "ipa": "frʌnt roʊ",
+   "es": "primera fila",
+   "kind": "chunk"
+  },
+  "furious": {
+   "lemma": "furious",
+   "pos": "adjective",
+   "ipa": "ˈfjʊriəs",
+   "es": "furiosa",
+   "kind": "word"
+  },
+  "give_back": {
+   "lemma": "give back",
+   "pos": "phrasal verb",
+   "ipa": "ɡɪv bæk",
+   "es": "devolver",
+   "kind": "chunk"
+  },
+  "give_up_music": {
+   "lemma": "give up",
+   "pos": "phrasal verb",
+   "ipa": "ɡɪv ʌp",
+   "es": "dejar, abandonar",
+   "kind": "chunk"
+  },
+  "give_way2": {
+   "lemma": "give way",
+   "pos": "phrase",
+   "ipa": "ɡɪv weɪ",
+   "es": "ceder, romperse",
+   "kind": "chunk"
+  },
+  "go_off_bomb": {
+   "lemma": "go off",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɔf",
+   "es": "explotar",
+   "kind": "chunk"
+  },
+  "go_on": {
+   "lemma": "go on",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɑn",
+   "es": "continuar, seguir (hablando)",
+   "kind": "chunk"
+  },
+  "go_on_speak": {
+   "lemma": "go on",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɑn",
+   "es": "adelante, dime",
+   "kind": "chunk"
+  },
+  "grateful": {
+   "lemma": "grateful",
+   "pos": "adjective",
+   "ipa": "ˈɡreɪtfəl",
+   "es": "agradecido",
+   "kind": "word"
+  },
+  "hall_school": {
+   "lemma": "hall",
+   "pos": "noun",
+   "ipa": "hɔl",
+   "es": "auditorio",
+   "kind": "word"
+  },
+  "hand_over_phone": {
+   "lemma": "hand over",
+   "pos": "phrasal verb",
+   "ipa": "hænd ˈoʊvər",
+   "es": "pasar",
+   "kind": "chunk"
+  },
+  "handbag": {
+   "lemma": "handbag",
+   "pos": "noun",
+   "ipa": "ˈhændbæɡ",
+   "es": "bolso, cartera",
+   "kind": "word"
+  },
+  "handed_gift": {
+   "lemma": "hand",
+   "pos": "verb",
+   "ipa": "hænd",
+   "es": "pasar, transmitir",
+   "kind": "word"
+  },
+  "hard_to_read": {
+   "lemma": "hard to read",
+   "pos": "phrase",
+   "ipa": "hɑrd tu rid",
+   "es": "difícil de interpretar",
+   "kind": "chunk"
+  },
+  "helpless": {
+   "lemma": "helpless",
+   "pos": "adjective",
+   "ipa": "ˈhɛlpləs",
+   "es": "incontenible",
+   "kind": "word"
+  },
+  "if_anything": {
+   "lemma": "if anything",
+   "pos": "phrase",
+   "ipa": "ɪf ˈɛniθɪŋ",
+   "es": "en todo caso",
+   "kind": "chunk"
+  },
+  "in_advance": {
+   "lemma": "in advance",
+   "pos": "phrase",
+   "ipa": "ɪn ədˈvæns",
+   "es": "de antemano",
+   "kind": "chunk"
+  },
+  "in_tune": {
+   "lemma": "in tune",
+   "pos": "phrase",
+   "ipa": "ɪn tun",
+   "es": "afinado",
+   "kind": "chunk"
+  },
+  "inner_suburb": {
+   "lemma": "inner suburb",
+   "pos": "noun",
+   "ipa": "ˈɪnər ˈsʌbɝb",
+   "es": "barrio cercano al centro",
+   "kind": "chunk",
+   "variety": "local"
+  },
+  "it_occurred": {
+   "lemma": "occur to",
+   "pos": "phrasal verb",
+   "ipa": "əˈkɝ tu",
+   "es": "ocurrírsele a uno",
+   "kind": "chunk"
+  },
+  "jacaranda": {
+   "lemma": "jacaranda",
+   "pos": "noun",
+   "ipa": "ˌdʒækəˈrændə",
+   "es": "jacarandá",
+   "kind": "word"
+  },
+  "jan": {
+   "lemma": "jan",
+   "pos": "noun",
+   "ipa": "dʒɑn",
+   "es": "querida, cariño (en persa, tras el nombre)",
+   "kind": "foreign",
+   "variety": "local"
+  },
+  "keep_promise": {
+   "lemma": "keep",
+   "pos": "verb",
+   "ipa": "kip",
+   "es": "cumplir (una promesa)",
+   "kind": "word"
+  },
+  "kind_type": {
+   "lemma": "kind",
+   "pos": "noun",
+   "ipa": "kaɪnd",
+   "es": "tipo, clase",
+   "kind": "word"
+  },
+  "ledge": {
+   "lemma": "ledge",
+   "pos": "noun",
+   "ipa": "lɛdʒ",
+   "es": "cornisa",
+   "kind": "word"
+  },
+  "lesson": {
+   "lemma": "lesson",
+   "pos": "noun",
+   "ipa": "ˈlɛsən",
+   "es": "clase",
+   "kind": "word"
+  },
+  "let_in": {
+   "lemma": "let in",
+   "pos": "phrasal verb",
+   "ipa": "lɛt ɪn",
+   "es": "dejar entrar",
+   "kind": "chunk"
+  },
+  "lid": {
+   "lemma": "lid",
+   "pos": "noun",
+   "ipa": "lɪd",
+   "es": "tapa",
+   "kind": "word"
+  },
+  "lie_awake": {
+   "lemma": "lie awake",
+   "pos": "phrase",
+   "ipa": "laɪ əˈweɪk",
+   "es": "quedarse despierto en la cama",
+   "kind": "chunk"
+  },
+  "line_queue": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "cola, fila (de gente)",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "a line of people waiting"
+  },
+  "love_address": {
+   "lemma": "love",
+   "pos": "noun",
+   "ipa": "lʌv",
+   "es": "cariño (al dirigirse a alguien)",
+   "kind": "word"
+  },
+  "make_sense": {
+   "lemma": "make sense",
+   "pos": "phrase",
+   "ipa": "meɪk sɛns",
+   "es": "tener sentido",
+   "kind": "chunk"
+  },
+  "make_up_invent": {
+   "lemma": "make up",
+   "pos": "phrasal verb",
+   "ipa": "meɪk ʌp",
+   "es": "inventar",
+   "kind": "chunk"
+  },
+  "maman": {
+   "lemma": "Maman",
+   "pos": "noun",
+   "ipa": "mɑˈmɑn",
+   "es": "mamá (en persa y francés)",
+   "kind": "foreign",
+   "variety": "local"
+  },
+  "margin": {
+   "lemma": "margin",
+   "pos": "noun",
+   "ipa": "ˈmɑrdʒɪn",
+   "es": "margen",
+   "kind": "word"
+  },
+  "mark_score": {
+   "lemma": "mark",
+   "pos": "verb",
+   "ipa": "mɑrk",
+   "es": "marcar, indicar",
+   "kind": "word"
+  },
+  "melt": {
+   "lemma": "melt",
+   "pos": "verb",
+   "ipa": "mɛlt",
+   "es": "derretirse",
+   "kind": "word"
+  },
+  "mess": {
+   "lemma": "mess",
+   "pos": "noun",
+   "ipa": "mɛs",
+   "es": "desorden, desastre",
+   "kind": "word"
+  },
+  "mind_object": {
+   "lemma": "mind",
+   "pos": "verb",
+   "ipa": "maɪnd",
+   "es": "importar",
+   "kind": "word"
+  },
+  "monitor_med": {
+   "lemma": "monitor",
+   "pos": "noun",
+   "ipa": "ˈmɑnɪtər",
+   "es": "monitor (médico)",
+   "kind": "word"
+  },
+  "music_stand": {
+   "lemma": "music stand",
+   "pos": "noun",
+   "ipa": "ˈmjuzɪk stænd",
+   "es": "atril",
+   "kind": "chunk"
+  },
+  "napkin": {
+   "lemma": "napkin",
+   "pos": "noun",
+   "ipa": "ˈnæpkɪn",
+   "es": "servilleta",
+   "kind": "word"
+  },
+  "neighbor": {
+   "lemma": "neighbor",
+   "pos": "noun",
+   "ipa": "ˈneɪbər",
+   "es": "vecino, vecina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "nod": {
+   "lemma": "nod",
+   "pos": "verb",
+   "ipa": "nɑd",
+   "es": "asentir con la cabeza",
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
+  },
+  "nod_greet": {
+   "lemma": "nod",
+   "pos": "verb",
+   "ipa": "nɑd",
+   "es": "saludar con la cabeza",
+   "kind": "word",
+   "en": "to move the head slightly to greet someone"
+  },
+  "not_anymore": {
+   "lemma": "anymore",
+   "pos": "adverb",
+   "ipa": "ˌɛniˈmɔr",
+   "es": "ya no",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "note_music": {
+   "lemma": "note",
+   "pos": "noun",
+   "ipa": "noʊt",
+   "es": "nota (musical)",
+   "kind": "word"
+  },
+  "nurse": {
+   "lemma": "nurse",
+   "pos": "noun",
+   "ipa": "nɝs",
+   "es": "enfermera",
+   "kind": "word"
+  },
+  "object_protest": {
+   "lemma": "object",
+   "pos": "verb",
+   "ipa": "əbˈdʒɛkt",
+   "es": "oponerse",
+   "kind": "word"
+  },
+  "objection": {
+   "lemma": "objection",
+   "pos": "noun",
+   "ipa": "əbˈdʒɛkʃən",
+   "es": "objeción",
+   "kind": "word"
+  },
+  "opposite": {
+   "lemma": "opposite",
+   "pos": "preposition",
+   "ipa": "ˈɑpəzɪt",
+   "es": "enfrente de",
+   "kind": "word"
+  },
+  "pack_instrument": {
+   "lemma": "pack up",
+   "pos": "phrasal verb",
+   "ipa": "pæk ʌp",
+   "es": "guardar",
+   "kind": "chunk"
+  },
+  "pang": {
+   "lemma": "pang",
+   "pos": "noun",
+   "ipa": "pæŋ",
+   "es": "punzada",
+   "kind": "word"
+  },
+  "part_music": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "parte, voz (en una pieza a dúo)",
+   "kind": "word"
+  },
+  "pass_food2": {
+   "lemma": "pass",
+   "pos": "verb",
+   "ipa": "pæs",
+   "es": "pasar (algo en la mesa)",
+   "kind": "word"
+  },
+  "patch": {
+   "lemma": "patch",
+   "pos": "noun",
+   "ipa": "pætʃ",
+   "es": "mancha",
+   "kind": "word"
+  },
+  "pause_line": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "línea telefónica",
+   "kind": "word",
+   "en": "a telephone line"
+  },
+  "phrase_music": {
+   "lemma": "phrase",
+   "pos": "noun",
+   "ipa": "freɪz",
+   "es": "frase (musical)",
+   "kind": "word"
+  },
+  "pick_up": {
+   "lemma": "pick up",
+   "pos": "phrasal verb",
+   "ipa": "pɪk ʌp",
+   "es": "agarrar, levantar",
+   "kind": "chunk"
+  },
+  "piece_music2": {
+   "lemma": "piece",
+   "pos": "noun",
+   "ipa": "pis",
+   "es": "pieza (musical)",
+   "kind": "word"
+  },
+  "play_music_tocar": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "tocar (música)",
+   "kind": "word",
+   "en": "to make music with an instrument"
+  },
+  "practice_music": {
+   "lemma": "practice",
+   "pos": "verb",
+   "ipa": "ˈpræktɪs",
+   "es": "practicar, ensayar",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "to repeat music to improve"
+  },
+  "practice_training": {
+   "lemma": "practice",
+   "pos": "noun",
+   "ipa": "ˈpræktɪs",
+   "es": "entrenamiento",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "training to get better"
+  },
+  "punish": {
+   "lemma": "punish",
+   "pos": "verb",
+   "ipa": "ˈpʌnɪʃ",
+   "es": "castigar",
+   "kind": "word"
+  },
+  "put_down_object": {
+   "lemma": "put down",
+   "pos": "phrasal verb",
+   "ipa": "pʊt daʊn",
+   "es": "dejar (algo)",
+   "kind": "chunk"
+  },
+  "quiet_room": {
+   "lemma": "go quiet",
+   "pos": "phrase",
+   "ipa": "ɡoʊ ˈkwaɪət",
+   "es": "quedarse en silencio",
+   "kind": "chunk"
+  },
+  "quite_a": {
+   "lemma": "quite a",
+   "pos": "phrase",
+   "ipa": "kwaɪt ə",
+   "es": "toda una",
+   "kind": "chunk"
+  },
+  "reach_for2": {
+   "lemma": "reach for",
+   "pos": "phrasal verb",
+   "ipa": "ritʃ fɔr",
+   "es": "alargar la mano hacia",
+   "kind": "chunk"
+  },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena «red»)",
+   "kind": "word"
+  },
+  "recital": {
+   "lemma": "recital",
+   "pos": "noun",
+   "ipa": "rɪˈsaɪtəl",
+   "es": "audición, recital (de alumnos)",
+   "kind": "word"
+  },
+  "regret": {
+   "lemma": "regret",
+   "pos": "verb",
+   "ipa": "rɪˈɡrɛt",
+   "es": "arrepentirse",
+   "kind": "word"
+  },
+  "rehearse": {
+   "lemma": "rehearse",
+   "pos": "verb",
+   "ipa": "rɪˈhɝs",
+   "es": "ensayar",
+   "kind": "word"
+  },
+  "reluctant": {
+   "lemma": "reluctant",
+   "pos": "adjective",
+   "ipa": "rɪˈlʌktənt",
+   "es": "reacio",
+   "kind": "word"
+  },
+  "rent_verb": {
+   "lemma": "rent",
+   "pos": "verb",
+   "ipa": "rɛnt",
+   "es": "alquilar",
+   "kind": "word"
+  },
+  "retire": {
+   "lemma": "retire",
+   "pos": "verb",
+   "ipa": "rɪˈtaɪər",
+   "es": "jubilarse",
+   "kind": "word"
+  },
+  "right_proper": {
+   "lemma": "right",
+   "pos": "adjective",
+   "ipa": "raɪt",
+   "es": "adecuado, correcto",
+   "kind": "word"
+  },
+  "ring_sound": {
+   "lemma": "ring",
+   "pos": "verb",
+   "ipa": "rɪŋ",
+   "es": "sonar, vibrar",
+   "kind": "word"
+  },
+  "romance_music": {
+   "lemma": "romance",
+   "pos": "noun",
+   "ipa": "roʊˈmæns",
+   "es": "romanza (pieza musical)",
+   "kind": "word"
+  },
+  "saffron": {
+   "lemma": "saffron",
+   "pos": "noun",
+   "ipa": "ˈsæfrən",
+   "es": "azafrán",
+   "kind": "word"
+  },
+  "scrape": {
+   "lemma": "scrape",
+   "pos": "verb",
+   "ipa": "skreɪp",
+   "es": "rascar, chirriar",
+   "kind": "word"
+  },
+  "second_violin": {
+   "lemma": "second violin",
+   "pos": "noun",
+   "ipa": "ˈsɛkənd ˌvaɪəˈlɪn",
+   "es": "segundo violín (en una orquesta)",
+   "kind": "chunk"
+  },
+  "section_music": {
+   "lemma": "section",
+   "pos": "noun",
+   "ipa": "ˈsɛkʃən",
+   "es": "sección, parte",
+   "kind": "word"
+  },
+  "see_better_days": {
+   "lemma": "have seen better days",
+   "pos": "phrase",
+   "ipa": "hæv sin ˈbɛtər deɪz",
+   "es": "haber conocido tiempos mejores",
+   "kind": "chunk"
+  },
+  "see_ghost": {
+   "lemma": "see a ghost",
+   "pos": "phrase",
+   "ipa": "si ə ɡoʊst",
+   "es": "ver un fantasma",
+   "kind": "chunk"
+  },
+  "set_pace": {
+   "lemma": "set the pace",
+   "pos": "phrase",
+   "ipa": "sɛt ðə peɪs",
+   "es": "marcar el ritmo",
+   "kind": "chunk"
+  },
+  "shake_head": {
+   "lemma": "shake your head",
+   "pos": "phrase",
+   "ipa": "ʃeɪk jʊr hɛd",
+   "es": "negar con la cabeza",
+   "kind": "chunk"
+  },
+  "sharp_pitch": {
+   "lemma": "sharp",
+   "pos": "adjective",
+   "ipa": "ʃɑrp",
+   "es": "alto, desafinado por arriba",
+   "kind": "word"
+  },
+  "sheet_music": {
+   "lemma": "sheet",
+   "pos": "noun",
+   "ipa": "ʃit",
+   "es": "hoja (de partitura)",
+   "kind": "word"
+  },
+  "shield": {
+   "lemma": "shield",
+   "pos": "noun",
+   "ipa": "ʃild",
+   "es": "escudo",
+   "kind": "word"
+  },
+  "shift_nurse": {
+   "lemma": "shift",
+   "pos": "noun",
+   "ipa": "ʃɪft",
+   "es": "turno",
+   "kind": "word"
+  },
+  "shrug": {
+   "lemma": "shrug",
+   "pos": "verb",
+   "ipa": "ʃrʌɡ",
+   "es": "encogerse de hombros",
+   "kind": "word"
+  },
+  "sick_nerves": {
+   "lemma": "sick with nerves",
+   "pos": "phrase",
+   "ipa": "sɪk wɪð nɝvz",
+   "es": "con náuseas de los nervios",
+   "kind": "chunk"
+  },
+  "sidewalk": {
+   "lemma": "sidewalk",
+   "pos": "noun",
+   "ipa": "ˈsaɪdwɔk",
+   "es": "acera, andén (banqueta en México)",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "silver_hair": {
+   "lemma": "silver",
+   "pos": "adjective",
+   "ipa": "ˈsɪlvər",
+   "es": "canoso, plateado",
+   "kind": "word"
+  },
+  "sink_heart": {
+   "lemma": "sink",
+   "pos": "verb",
+   "ipa": "sɪŋk",
+   "es": "encogerse (el corazón)",
+   "kind": "word",
+   "en": "to feel sad suddenly"
+  },
+  "sink_water": {
+   "lemma": "sink",
+   "pos": "verb",
+   "ipa": "sɪŋk",
+   "es": "hundirse",
+   "kind": "word",
+   "en": "to go down under water"
+  },
+  "snore": {
+   "lemma": "snore",
+   "pos": "verb",
+   "ipa": "snɔr",
+   "es": "roncar",
+   "kind": "word"
+  },
+  "sour_cream": {
+   "lemma": "sour cream",
+   "pos": "noun",
+   "ipa": "saʊər krim",
+   "es": "crema agria",
+   "kind": "chunk"
+  },
+  "speech": {
+   "lemma": "speech",
+   "pos": "noun",
+   "ipa": "spitʃ",
+   "es": "discurso",
+   "kind": "word"
+  },
+  "stand_violin": {
+   "lemma": "stand",
+   "pos": "noun",
+   "ipa": "stænd",
+   "es": "soporte",
+   "kind": "word"
+  },
+  "step_off": {
+   "lemma": "step off",
+   "pos": "phrasal verb",
+   "ipa": "stɛp ɔf",
+   "es": "saltar de",
+   "kind": "chunk"
+  },
+  "still_hands": {
+   "lemma": "still",
+   "pos": "adjective",
+   "ipa": "stɪl",
+   "es": "quieto",
+   "kind": "word",
+   "en": "not moving"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word",
+   "en": "up to now, even now"
+  },
+  "sting_eyes": {
+   "lemma": "sting",
+   "pos": "verb",
+   "ipa": "stɪŋ",
+   "es": "escocer",
+   "kind": "word"
+  },
+  "stop_by2": {
+   "lemma": "stop by",
+   "pos": "phrasal verb",
+   "ipa": "stɑp baɪ",
+   "es": "pasarse",
+   "kind": "chunk"
+  },
+  "strand": {
+   "lemma": "strand",
+   "pos": "noun",
+   "ipa": "strænd",
+   "es": "mechón",
+   "kind": "word"
+  },
+  "string_instrument": {
+   "lemma": "string",
+   "pos": "noun",
+   "ipa": "strɪŋ",
+   "es": "cuerda",
+   "kind": "word"
+  },
+  "string_quartet": {
+   "lemma": "string quartet",
+   "pos": "noun",
+   "ipa": "strɪŋ kwɔrˈtɛt",
+   "es": "cuarteto de cuerda",
+   "kind": "chunk"
+  },
+  "strip_paint": {
+   "lemma": "strip paint",
+   "pos": "phrase",
+   "ipa": "strɪp peɪnt",
+   "es": "arrancar la pintura",
+   "kind": "chunk"
+  },
+  "suburb": {
+   "lemma": "suburb",
+   "pos": "noun",
+   "ipa": "ˈsʌbɝb",
+   "es": "barrio residencial (a las afueras)",
+   "kind": "word"
+  },
+  "suffer": {
+   "lemma": "suffer",
+   "pos": "verb",
+   "ipa": "ˈsʌfər",
+   "es": "sufrir",
+   "kind": "word"
+  },
+  "suit_fit": {
+   "lemma": "suit",
+   "pos": "verb",
+   "ipa": "sut",
+   "es": "venir bien",
+   "kind": "word"
+  },
+  "supposed_to": {
+   "lemma": "be supposed to",
+   "pos": "phrase",
+   "ipa": "bi səˈpoʊzd tu",
+   "es": "se supone que (debe)",
+   "kind": "chunk"
+  },
+  "take_break": {
+   "lemma": "take a break",
+   "pos": "phrase",
+   "ipa": "teɪk ə breɪk",
+   "es": "tomarse un descanso",
+   "kind": "chunk"
+  },
+  "take_down": {
+   "lemma": "take down",
+   "pos": "phrasal verb",
+   "ipa": "teɪk daʊn",
+   "es": "bajar",
+   "kind": "chunk"
+  },
+  "telephone_verb": {
+   "lemma": "telephone",
+   "pos": "verb",
+   "ipa": "ˈtɛləfoʊn",
+   "es": "llamar por teléfono",
+   "kind": "word"
+  },
+  "tell_from": {
+   "lemma": "tell from",
+   "pos": "phrasal verb",
+   "ipa": "tɛl frʌm",
+   "es": "distinguir de",
+   "kind": "chunk"
+  },
+  "think_hard": {
+   "lemma": "think hard",
+   "pos": "phrase",
+   "ipa": "θɪŋk hɑrd",
+   "es": "pensar mucho",
+   "kind": "chunk"
+  },
+  "tighten": {
+   "lemma": "tighten",
+   "pos": "verb",
+   "ipa": "ˈtaɪtən",
+   "es": "apretar",
+   "kind": "word"
+  },
+  "tone_deaf": {
+   "lemma": "tone-deaf",
+   "pos": "adjective",
+   "ipa": "ˈtoʊnˌdɛf",
+   "es": "sin oído musical",
+   "kind": "word"
+  },
+  "train_teach": {
+   "lemma": "train",
+   "pos": "verb",
+   "ipa": "treɪn",
+   "es": "formar, capacitar",
+   "kind": "word"
+  },
+  "tram": {
+   "lemma": "tram",
+   "pos": "noun",
+   "ipa": "træm",
+   "es": "tranvía",
+   "kind": "word"
+  },
+  "treaty": {
+   "lemma": "treaty",
+   "pos": "noun",
+   "ipa": "ˈtriti",
+   "es": "tratado",
+   "kind": "word"
+  },
+  "triumphant": {
+   "lemma": "triumphant",
+   "pos": "adjective",
+   "ipa": "traɪˈʌmfənt",
+   "es": "triunfante",
+   "kind": "word"
+  },
+  "tune_melody": {
+   "lemma": "tune",
+   "pos": "noun",
+   "ipa": "tun",
+   "es": "melodía",
+   "kind": "word"
+  },
+  "tune_up": {
+   "lemma": "tune up",
+   "pos": "phrasal verb",
+   "ipa": "tun ʌp",
+   "es": "afinar",
+   "kind": "chunk"
+  },
+  "turn_around": {
+   "lemma": "turn around",
+   "pos": "phrasal verb",
+   "ipa": "tɝn əˈraʊnd",
+   "es": "darse la vuelta",
+   "kind": "chunk"
+  },
+  "turn_go": {
+   "lemma": "turn",
+   "pos": "noun",
+   "ipa": "tɝn",
+   "es": "turno",
+   "kind": "word"
+  },
+  "turn_on": {
+   "lemma": "turn on",
+   "pos": "phrasal verb",
+   "ipa": "tɝn ɑn",
+   "es": "encender",
+   "kind": "chunk"
+  },
+  "turn_to": {
+   "lemma": "turn to",
+   "pos": "phrasal verb",
+   "ipa": "tɝn tu",
+   "es": "volverse hacia",
+   "kind": "chunk"
+  },
+  "twist_story": {
+   "lemma": "twist",
+   "pos": "noun",
+   "ipa": "twɪst",
+   "es": "giro (argumental)",
+   "kind": "word"
+  },
+  "unguarded": {
+   "lemma": "unguarded",
+   "pos": "adjective",
+   "ipa": "ʌnˈɡɑrdɪd",
+   "es": "espontáneo, sin reservas",
+   "kind": "word"
+  },
+  "violin_rented": {
+   "lemma": "second violin",
+   "pos": "noun",
+   "ipa": "ˈsɛkənd ˌvaɪəˈlɪn",
+   "es": "otro violín, un segundo violín",
+   "kind": "chunk"
+  },
+  "washing_machine": {
+   "lemma": "washing machine",
+   "pos": "noun",
+   "ipa": "ˈwɑʃɪŋ məˈʃin",
+   "es": "lavadora",
+   "kind": "chunk"
+  },
+  "weatherboard": {
+   "lemma": "weatherboard",
+   "pos": "adjective",
+   "ipa": "ˈwɛðərbɔrd",
+   "es": "de tablas de madera (casa)",
+   "kind": "word",
+   "variety": "local"
+  },
+  "weep": {
+   "lemma": "weep",
+   "pos": "verb",
+   "ipa": "wip",
+   "es": "llorar",
+   "kind": "word"
+  },
+  "whats_wrong": {
+   "lemma": "what's wrong",
+   "pos": "phrase",
+   "ipa": "wʌts rɔŋ",
+   "es": "¿qué te pasa?",
+   "kind": "chunk"
+  },
+  "whole_point": {
+   "lemma": "the whole point",
+   "pos": "phrase",
+   "ipa": "ðə hoʊl pɔɪnt",
+   "es": "lo esencial, el objetivo",
+   "kind": "chunk"
+  },
+  "work_out": {
+   "lemma": "work out",
+   "pos": "phrasal verb",
+   "ipa": "wɝk aʊt",
+   "es": "averiguar, resolver",
+   "kind": "chunk"
+  },
+  "yawn": {
+   "lemma": "yawn",
+   "pos": "verb",
+   "ipa": "jɔn",
+   "es": "bostezar",
+   "kind": "word"
+  },
+  "you_mean": {
+   "lemma": "you mean",
+   "pos": "phrase",
+   "ipa": "ju min",
+   "es": "quieres decir",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 2,
+   "start": 143,
+   "end": 155,
+   "text": "weatherboard",
+   "sense": "weatherboard"
+  },
+  {
+   "p": 2,
+   "start": 174,
+   "end": 180,
+   "text": "suburb",
+   "sense": "inner_suburb",
+   "chunk": {
+    "start": 168,
+    "end": 180,
+    "text": "inner suburb",
+    "es": "barrio cercano al centro"
+   }
+  },
+  {
+   "p": 2,
+   "start": 331,
+   "end": 335,
+   "text": "gone",
+   "sense": "go_off_bomb",
+   "chunk": {
+    "start": 308,
+    "end": 339,
+    "text": "a small flour bomb had gone off",
+    "es": "hubiera explotado una pequeña bomba de harina"
+   }
+  },
+  {
+   "p": 2,
+   "start": 392,
+   "end": 396,
+   "text": "mess",
+   "sense": "mess"
+  },
+  {
+   "p": 2,
+   "start": 457,
+   "end": 463,
+   "text": "adored",
+   "sense": "adore"
+  },
+  {
+   "p": 2,
+   "start": 529,
+   "end": 536,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 3,
+   "start": 262,
+   "end": 271,
+   "text": "rehearsed",
+   "sense": "rehearse"
+  },
+  {
+   "p": 3,
+   "start": 322,
+   "end": 327,
+   "text": "right",
+   "sense": "right_proper"
+  },
+  {
+   "p": 4,
+   "start": 48,
+   "end": 53,
+   "text": "nurse",
+   "sense": "nurse"
+  },
+  {
+   "p": 4,
+   "start": 157,
+   "end": 161,
+   "text": "work",
+   "sense": "work_out",
+   "chunk": {
+    "start": 157,
+    "end": 176,
+    "text": "work out how to say",
+    "es": "averiguar cómo decir"
+   }
+  },
+  {
+   "p": 4,
+   "start": 335,
+   "end": 340,
+   "text": "wrong",
+   "sense": "whats_wrong",
+   "chunk": {
+    "start": 326,
+    "end": 340,
+    "text": "what was wrong",
+    "es": "qué les pasaba"
+   }
+  },
+  {
+   "p": 6,
+   "start": 42,
+   "end": 50,
+   "text": "reaching",
+   "sense": "reach_for2",
+   "chunk": {
+    "start": 42,
+    "end": 69,
+    "text": "reaching for the sour cream",
+    "es": "extendía la mano hacia la crema agria"
+   }
+  },
+  {
+   "p": 6,
+   "start": 64,
+   "end": 69,
+   "text": "cream",
+   "sense": "sour_cream",
+   "chunk": {
+    "start": 59,
+    "end": 69,
+    "text": "sour cream",
+    "es": "crema agria"
+   }
+  },
+  {
+   "p": 6,
+   "start": 71,
+   "end": 76,
+   "text": "froze",
+   "sense": "freeze_still"
+  },
+  {
+   "p": 6,
+   "start": 114,
+   "end": 120,
+   "text": "caught",
+   "sense": "catch_photo",
+   "chunk": {
+    "start": 114,
+    "end": 136,
+    "text": "caught in a photograph",
+    "es": "atrapado en una foto"
+   }
+  },
+  {
+   "p": 7,
+   "start": 39,
+   "end": 43,
+   "text": "mean",
+   "sense": "you_mean",
+   "chunk": {
+    "start": 35,
+    "end": 43,
+    "text": "You mean",
+    "es": "¿Quieres decir"
+   }
+  },
+  {
+   "p": 7,
+   "start": 51,
+   "end": 56,
+   "text": "break",
+   "sense": "take_break",
+   "chunk": {
+    "start": 44,
+    "end": 56,
+    "text": "take a break",
+    "es": "tomarte un descanso"
+   }
+  },
+  {
+   "p": 8,
+   "start": 3,
+   "end": 7,
+   "text": "mean",
+   "sense": "you_mean",
+   "chunk": {
+    "start": 1,
+    "end": 7,
+    "text": "I mean",
+    "es": "Quiero decir"
+   }
+  },
+  {
+   "p": 8,
+   "start": 30,
+   "end": 33,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 30,
+    "end": 47,
+    "text": "put down her fork",
+    "es": "dejó el tenedor"
+   }
+  },
+  {
+   "p": 8,
+   "start": 132,
+   "end": 139,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 8,
+   "start": 170,
+   "end": 174,
+   "text": "play",
+   "sense": "play_music_tocar"
+  },
+  {
+   "p": 8,
+   "start": 258,
+   "end": 265,
+   "text": "anymore",
+   "sense": "not_anymore",
+   "chunk": {
+    "start": 229,
+    "end": 265,
+    "text": "I don't want to have lessons anymore",
+    "es": "ya no quiero tener clases"
+   }
+  },
+  {
+   "p": 9,
+   "start": 61,
+   "end": 67,
+   "text": "speech",
+   "sense": "speech"
+  },
+  {
+   "p": 9,
+   "start": 117,
+   "end": 128,
+   "text": "anticipated",
+   "sense": "anticipate"
+  },
+  {
+   "p": 9,
+   "start": 139,
+   "end": 148,
+   "text": "objection",
+   "sense": "objection"
+  },
+  {
+   "p": 9,
+   "start": 168,
+   "end": 175,
+   "text": "advance",
+   "sense": "in_advance",
+   "chunk": {
+    "start": 165,
+    "end": 175,
+    "text": "in advance",
+    "es": "de antemano"
+   }
+  },
+  {
+   "p": 12,
+   "start": 51,
+   "end": 57,
+   "text": "passed",
+   "sense": "pass_food2"
+  },
+  {
+   "p": 12,
+   "start": 80,
+   "end": 85,
+   "text": "cream",
+   "sense": "sour_cream",
+   "chunk": {
+    "start": 71,
+    "end": 85,
+    "text": "the sour cream",
+    "es": "la crema agria"
+   }
+  },
+  {
+   "p": 12,
+   "start": 127,
+   "end": 131,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 12,
+   "start": 203,
+   "end": 208,
+   "text": "cream",
+   "sense": "sour_cream",
+   "chunk": {
+    "start": 194,
+    "end": 208,
+    "text": "the sour cream",
+    "es": "la crema agria"
+   }
+  },
+  {
+   "p": 18,
+   "start": 57,
+   "end": 63,
+   "text": "second",
+   "sense": "second_violin",
+   "chunk": {
+    "start": 57,
+    "end": 70,
+    "text": "second violin",
+    "es": "segundo violín"
+   }
+  },
+  {
+   "p": 18,
+   "start": 308,
+   "end": 316,
+   "text": "battered",
+   "sense": "battered"
+  },
+  {
+   "p": 18,
+   "start": 323,
+   "end": 327,
+   "text": "case",
+   "sense": "case_violin"
+  },
+  {
+   "p": 18,
+   "start": 371,
+   "end": 377,
+   "text": "closet",
+   "sense": "closet"
+  },
+  {
+   "p": 18,
+   "start": 466,
+   "end": 471,
+   "text": "attic",
+   "sense": "attic"
+  },
+  {
+   "p": 19,
+   "start": 46,
+   "end": 50,
+   "text": "down",
+   "sense": "take_down",
+   "chunk": {
+    "start": 37,
+    "end": 50,
+    "text": "taken it down",
+    "es": "lo había bajado"
+   }
+  },
+  {
+   "p": 19,
+   "start": 90,
+   "end": 98,
+   "text": "Practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 19,
+   "start": 209,
+   "end": 215,
+   "text": "punish",
+   "sense": "punish"
+  },
+  {
+   "p": 19,
+   "start": 272,
+   "end": 281,
+   "text": "practiced",
+   "sense": "practice_music"
+  },
+  {
+   "p": 20,
+   "start": 22,
+   "end": 28,
+   "text": "called",
+   "sense": "call_out",
+   "chunk": {
+    "start": 22,
+    "end": 32,
+    "text": "called out",
+    "es": "decía en voz alta"
+   }
+  },
+  {
+   "p": 20,
+   "start": 92,
+   "end": 98,
+   "text": "margin",
+   "sense": "margin"
+  },
+  {
+   "p": 22,
+   "start": 174,
+   "end": 179,
+   "text": "piece",
+   "sense": "piece_music2"
+  },
+  {
+   "p": 22,
+   "start": 239,
+   "end": 243,
+   "text": "bars",
+   "sense": "bar_music"
+  },
+  {
+   "p": 22,
+   "start": 401,
+   "end": 404,
+   "text": "way",
+   "sense": "give_way2",
+   "chunk": {
+    "start": 395,
+    "end": 404,
+    "text": "given way",
+    "es": "cedido"
+   }
+  },
+  {
+   "p": 22,
+   "start": 463,
+   "end": 470,
+   "text": "strings",
+   "sense": "string_instrument"
+  },
+  {
+   "p": 22,
+   "start": 471,
+   "end": 475,
+   "text": "rang",
+   "sense": "ring_sound"
+  },
+  {
+   "p": 23,
+   "start": 242,
+   "end": 247,
+   "text": "cared",
+   "sense": "care_about"
+  },
+  {
+   "p": 23,
+   "start": 298,
+   "end": 303,
+   "text": "given",
+   "sense": "give_up_music",
+   "chunk": {
+    "start": 298,
+    "end": 321,
+    "text": "given up her own violin",
+    "es": "dejado su propio violín"
+   }
+  },
+  {
+   "p": 23,
+   "start": 346,
+   "end": 352,
+   "text": "suffer",
+   "sense": "suffer"
+  },
+  {
+   "p": 23,
+   "start": 444,
+   "end": 448,
+   "text": "down",
+   "sense": "take_down",
+   "chunk": {
+    "start": 421,
+    "end": 448,
+    "text": "taken the stupid thing down",
+    "es": "bajado aquel cacharro"
+   }
+  },
+  {
+   "p": 23,
+   "start": 458,
+   "end": 464,
+   "text": "closet",
+   "sense": "closet"
+  },
+  {
+   "p": 24,
+   "start": 82,
+   "end": 86,
+   "text": "case",
+   "sense": "case_violin"
+  },
+  {
+   "p": 24,
+   "start": 96,
+   "end": 100,
+   "text": "case",
+   "sense": "case_violin"
+  },
+  {
+   "p": 24,
+   "start": 129,
+   "end": 135,
+   "text": "closet",
+   "sense": "closet"
+  },
+  {
+   "p": 25,
+   "start": 66,
+   "end": 70,
+   "text": "case",
+   "sense": "case_violin"
+  },
+  {
+   "p": 25,
+   "start": 219,
+   "end": 223,
+   "text": "down",
+   "sense": "take_down",
+   "chunk": {
+    "start": 210,
+    "end": 223,
+    "text": "taken it down",
+    "es": "lo había bajado"
+   }
+  },
+  {
+   "p": 26,
+   "start": 14,
+   "end": 22,
+   "text": "objected",
+   "sense": "object_protest"
+  },
+  {
+   "p": 28,
+   "start": 93,
+   "end": 98,
+   "text": "bathe",
+   "sense": "bathe"
+  },
+  {
+   "p": 29,
+   "start": 24,
+   "end": 30,
+   "text": "legged",
+   "sense": "cross_legged",
+   "chunk": {
+    "start": 18,
+    "end": 30,
+    "text": "cross-legged",
+    "es": "con las piernas cruzadas"
+   }
+  },
+  {
+   "p": 29,
+   "start": 85,
+   "end": 91,
+   "text": "shield",
+   "sense": "shield"
+  },
+  {
+   "p": 29,
+   "start": 115,
+   "end": 120,
+   "text": "stand",
+   "sense": "stand_violin"
+  },
+  {
+   "p": 29,
+   "start": 151,
+   "end": 156,
+   "text": "stand",
+   "sense": "music_stand",
+   "chunk": {
+    "start": 145,
+    "end": 156,
+    "text": "music stand",
+    "es": "atril"
+   }
+  },
+  {
+   "p": 29,
+   "start": 180,
+   "end": 186,
+   "text": "sheets",
+   "sense": "sheet_music"
+  },
+  {
+   "p": 29,
+   "start": 256,
+   "end": 260,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 29,
+   "start": 381,
+   "end": 386,
+   "text": "notes",
+   "sense": "note_music"
+  },
+  {
+   "p": 32,
+   "start": 11,
+   "end": 19,
+   "text": "practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 32,
+   "start": 36,
+   "end": 44,
+   "text": "practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 33,
+   "start": 14,
+   "end": 22,
+   "text": "practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 34,
+   "start": 18,
+   "end": 22,
+   "text": "love",
+   "sense": "love_address"
+  },
+  {
+   "p": 39,
+   "start": 103,
+   "end": 107,
+   "text": "tune",
+   "sense": "in_tune",
+   "chunk": {
+    "start": 100,
+    "end": 107,
+    "text": "in tune",
+    "es": "afinado"
+   }
+  },
+  {
+   "p": 39,
+   "start": 116,
+   "end": 119,
+   "text": "bow",
+   "sense": "bow_violin"
+  },
+  {
+   "p": 39,
+   "start": 169,
+   "end": 175,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 39,
+   "start": 228,
+   "end": 232,
+   "text": "tell",
+   "sense": "can_tell",
+   "chunk": {
+    "start": 222,
+    "end": 232,
+    "text": "I can tell",
+    "es": "noto"
+   }
+  },
+  {
+   "p": 39,
+   "start": 276,
+   "end": 282,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 39,
+   "start": 419,
+   "end": 423,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 39,
+   "start": 472,
+   "end": 480,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 468,
+    "end": 489,
+    "text": "I'm supposed to reach",
+    "es": "se supone que tengo que alcanzar"
+   }
+  },
+  {
+   "p": 40,
+   "start": 13,
+   "end": 24,
+   "text": "embarrassed",
+   "sense": "embarrassed"
+  },
+  {
+   "p": 40,
+   "start": 41,
+   "end": 46,
+   "text": "still",
+   "sense": "still_hands"
+  },
+  {
+   "p": 42,
+   "start": 16,
+   "end": 21,
+   "text": "sense",
+   "sense": "make_sense",
+   "chunk": {
+    "start": 11,
+    "end": 21,
+    "text": "make sense",
+    "es": "tiene sentido"
+   }
+  },
+  {
+   "p": 43,
+   "start": 38,
+   "end": 43,
+   "text": "sense",
+   "sense": "make_sense",
+   "chunk": {
+    "start": 23,
+    "end": 43,
+    "text": "makes a lot of sense",
+    "es": "tiene mucho sentido"
+   }
+  },
+  {
+   "p": 45,
+   "start": 35,
+   "end": 41,
+   "text": "strand",
+   "sense": "strand"
+  },
+  {
+   "p": 47,
+   "start": 67,
+   "end": 73,
+   "text": "suburb",
+   "sense": "suburb"
+  },
+  {
+   "p": 47,
+   "start": 170,
+   "end": 176,
+   "text": "handed",
+   "sense": "handed_gift"
+  },
+  {
+   "p": 48,
+   "start": 102,
+   "end": 109,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 48,
+   "start": 170,
+   "end": 174,
+   "text": "fair",
+   "sense": "fair_just"
+  },
+  {
+   "p": 49,
+   "start": 48,
+   "end": 56,
+   "text": "diplomat",
+   "sense": "diplomat"
+  },
+  {
+   "p": 49,
+   "start": 108,
+   "end": 112,
+   "text": "mind",
+   "sense": "change_mind",
+   "chunk": {
+    "start": 98,
+    "end": 112,
+    "text": "change my mind",
+    "es": "cambiar de opinión"
+   }
+  },
+  {
+   "p": 51,
+   "start": 85,
+   "end": 92,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 52,
+   "start": 76,
+   "end": 84,
+   "text": "sentence",
+   "sense": "quite_a",
+   "chunk": {
+    "start": 68,
+    "end": 84,
+    "text": "quite a sentence",
+    "es": "toda una frase"
+   }
+  },
+  {
+   "p": 53,
+   "start": 14,
+   "end": 22,
+   "text": "sentence",
+   "sense": "quite_a",
+   "chunk": {
+    "start": 6,
+    "end": 22,
+    "text": "quite a sentence",
+    "es": "toda una frase"
+   }
+  },
+  {
+   "p": 55,
+   "start": 208,
+   "end": 214,
+   "text": "either",
+   "sense": "either_neither"
+  },
+  {
+   "p": 56,
+   "start": 91,
+   "end": 95,
+   "text": "read",
+   "sense": "hard_to_read",
+   "chunk": {
+    "start": 83,
+    "end": 95,
+    "text": "hard to read",
+    "es": "difícil de interpretar"
+   }
+  },
+  {
+   "p": 58,
+   "start": 111,
+   "end": 117,
+   "text": "yawned",
+   "sense": "yawn"
+  },
+  {
+   "p": 60,
+   "start": 112,
+   "end": 119,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 60,
+   "start": 129,
+   "end": 136,
+   "text": "snoring",
+   "sense": "snore"
+  },
+  {
+   "p": 60,
+   "start": 193,
+   "end": 198,
+   "text": "awake",
+   "sense": "lie_awake",
+   "chunk": {
+    "start": 189,
+    "end": 198,
+    "text": "lay awake",
+    "es": "se quedó despierta"
+   }
+  },
+  {
+   "p": 62,
+   "start": 63,
+   "end": 70,
+   "text": "retired",
+   "sense": "retire"
+  },
+  {
+   "p": 62,
+   "start": 102,
+   "end": 106,
+   "text": "tram",
+   "sense": "tram"
+  },
+  {
+   "p": 62,
+   "start": 283,
+   "end": 287,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 62,
+   "start": 342,
+   "end": 349,
+   "text": "stopped",
+   "sense": "stop_by2",
+   "chunk": {
+    "start": 342,
+    "end": 352,
+    "text": "stopped by",
+    "es": "se pasaba"
+   }
+  },
+  {
+   "p": 62,
+   "start": 363,
+   "end": 368,
+   "text": "shift",
+   "sense": "shift_nurse"
+  },
+  {
+   "p": 62,
+   "start": 434,
+   "end": 443,
+   "text": "neighbors",
+   "sense": "neighbor"
+  },
+  {
+   "p": 62,
+   "start": 461,
+   "end": 468,
+   "text": "saffron",
+   "sense": "saffron"
+  },
+  {
+   "p": 62,
+   "start": 540,
+   "end": 551,
+   "text": "arrangement",
+   "sense": "arrangement"
+  },
+  {
+   "p": 62,
+   "start": 575,
+   "end": 581,
+   "text": "suited",
+   "sense": "suit_fit"
+  },
+  {
+   "p": 63,
+   "start": 101,
+   "end": 111,
+   "text": "eventually",
+   "sense": "eventually_finally"
+  },
+  {
+   "p": 63,
+   "start": 112,
+   "end": 115,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 112,
+    "end": 132,
+    "text": "put down her own cup",
+    "es": "dejó su taza"
+   }
+  },
+  {
+   "p": 66,
+   "start": 39,
+   "end": 45,
+   "text": "nodded",
+   "sense": "nod"
+  },
+  {
+   "p": 67,
+   "start": 11,
+   "end": 18,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 70,
+   "start": 140,
+   "end": 148,
+   "text": "familiar",
+   "sense": "familiar_noise"
+  },
+  {
+   "p": 71,
+   "start": 150,
+   "end": 154,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 71,
+   "start": 209,
+   "end": 213,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 71,
+   "start": 223,
+   "end": 228,
+   "text": "Maman",
+   "sense": "maman"
+  },
+  {
+   "p": 72,
+   "start": 77,
+   "end": 84,
+   "text": "cookies",
+   "sense": "cookie"
+  },
+  {
+   "p": 75,
+   "start": 48,
+   "end": 52,
+   "text": "tram",
+   "sense": "tram"
+  },
+  {
+   "p": 79,
+   "start": 80,
+   "end": 87,
+   "text": "fragile",
+   "sense": "fragile"
+  },
+  {
+   "p": 79,
+   "start": 177,
+   "end": 184,
+   "text": "assumed",
+   "sense": "assume_suppose"
+  },
+  {
+   "p": 79,
+   "start": 348,
+   "end": 355,
+   "text": "trained",
+   "sense": "train_teach"
+  },
+  {
+   "p": 79,
+   "start": 399,
+   "end": 406,
+   "text": "trained",
+   "sense": "train_teach"
+  },
+  {
+   "p": 79,
+   "start": 510,
+   "end": 514,
+   "text": "hall",
+   "sense": "concert_hall",
+   "chunk": {
+    "start": 502,
+    "end": 514,
+    "text": "concert hall",
+    "es": "sala de conciertos"
+   }
+  },
+  {
+   "p": 81,
+   "start": 27,
+   "end": 31,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 27,
+    "end": 34,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 83,
+   "start": 30,
+   "end": 37,
+   "text": "furious",
+   "sense": "furious"
+  },
+  {
+   "p": 83,
+   "start": 155,
+   "end": 163,
+   "text": "shrugged",
+   "sense": "shrug"
+  },
+  {
+   "p": 84,
+   "start": 19,
+   "end": 25,
+   "text": "speech",
+   "sense": "speech"
+  },
+  {
+   "p": 84,
+   "start": 93,
+   "end": 101,
+   "text": "stinging",
+   "sense": "sting_eyes"
+  },
+  {
+   "p": 84,
+   "start": 124,
+   "end": 128,
+   "text": "mind",
+   "sense": "mind_object"
+  },
+  {
+   "p": 85,
+   "start": 21,
+   "end": 33,
+   "text": "disappointed",
+   "sense": "disappointed"
+  },
+  {
+   "p": 87,
+   "start": 26,
+   "end": 33,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 88,
+   "start": 146,
+   "end": 150,
+   "text": "keep",
+   "sense": "keep_promise"
+  },
+  {
+   "p": 89,
+   "start": 28,
+   "end": 33,
+   "text": "shift",
+   "sense": "shift_nurse"
+  },
+  {
+   "p": 90,
+   "start": 71,
+   "end": 80,
+   "text": "jacaranda",
+   "sense": "jacaranda"
+  },
+  {
+   "p": 90,
+   "start": 120,
+   "end": 128,
+   "text": "sidewalk",
+   "sense": "sidewalk"
+  },
+  {
+   "p": 90,
+   "start": 171,
+   "end": 176,
+   "text": "brass",
+   "sense": "brass"
+  },
+  {
+   "p": 92,
+   "start": 32,
+   "end": 38,
+   "text": "regret",
+   "sense": "regret"
+  },
+  {
+   "p": 93,
+   "start": 39,
+   "end": 47,
+   "text": "business",
+   "sense": "business_concern"
+  },
+  {
+   "p": 93,
+   "start": 161,
+   "end": 164,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 161,
+    "end": 177,
+    "text": "put down her cup",
+    "es": "dejó la taza"
+   }
+  },
+  {
+   "p": 95,
+   "start": 28,
+   "end": 33,
+   "text": "tunes",
+   "sense": "tune_melody"
+  },
+  {
+   "p": 96,
+   "start": 6,
+   "end": 11,
+   "text": "shook",
+   "sense": "shake_head",
+   "chunk": {
+    "start": 6,
+    "end": 20,
+    "text": "shook her head",
+    "es": "negó con la cabeza"
+   }
+  },
+  {
+   "p": 97,
+   "start": 5,
+   "end": 10,
+   "text": "makes",
+   "sense": "make_up_invent",
+   "chunk": {
+    "start": 5,
+    "end": 18,
+    "text": "makes them up",
+    "es": "se las inventa"
+   }
+  },
+  {
+   "p": 97,
+   "start": 147,
+   "end": 151,
+   "text": "bars",
+   "sense": "bar_music"
+  },
+  {
+   "p": 98,
+   "start": 28,
+   "end": 37,
+   "text": "jacaranda",
+   "sense": "jacaranda"
+  },
+  {
+   "p": 98,
+   "start": 110,
+   "end": 114,
+   "text": "room",
+   "sense": "front_room",
+   "chunk": {
+    "start": 104,
+    "end": 114,
+    "text": "front room",
+    "es": "sala"
+   }
+  },
+  {
+   "p": 98,
+   "start": 130,
+   "end": 135,
+   "text": "tunes",
+   "sense": "tune_melody"
+  },
+  {
+   "p": 98,
+   "start": 215,
+   "end": 223,
+   "text": "occurred",
+   "sense": "it_occurred",
+   "chunk": {
+    "start": 212,
+    "end": 230,
+    "text": "It occurred to her",
+    "es": "Se le ocurrió"
+   }
+  },
+  {
+   "p": 98,
+   "start": 260,
+   "end": 264,
+   "text": "pang",
+   "sense": "pang"
+  },
+  {
+   "p": 99,
+   "start": 11,
+   "end": 19,
+   "text": "Practice",
+   "sense": "practice_training"
+  },
+  {
+   "p": 100,
+   "start": 17,
+   "end": 26,
+   "text": "practiced",
+   "sense": "practice_music"
+  },
+  {
+   "p": 100,
+   "start": 89,
+   "end": 94,
+   "text": "piece",
+   "sense": "piece_music2"
+  },
+  {
+   "p": 100,
+   "start": 121,
+   "end": 128,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 100,
+   "start": 148,
+   "end": 155,
+   "text": "romance",
+   "sense": "romance_music"
+  },
+  {
+   "p": 100,
+   "start": 223,
+   "end": 230,
+   "text": "brought",
+   "sense": "bring_in_music",
+   "chunk": {
+    "start": 223,
+    "end": 236,
+    "text": "brought it in",
+    "es": "la trajo"
+   }
+  },
+  {
+   "p": 100,
+   "start": 268,
+   "end": 275,
+   "text": "section",
+   "sense": "section_music"
+  },
+  {
+   "p": 100,
+   "start": 293,
+   "end": 297,
+   "text": "sank",
+   "sense": "sink_water"
+  },
+  {
+   "p": 100,
+   "start": 355,
+   "end": 360,
+   "text": "piece",
+   "sense": "piece_music2"
+  },
+  {
+   "p": 100,
+   "start": 391,
+   "end": 399,
+   "text": "actually",
+   "sense": "actually_really"
+  },
+  {
+   "p": 101,
+   "start": 81,
+   "end": 87,
+   "text": "turned",
+   "sense": "turn_on",
+   "chunk": {
+    "start": 81,
+    "end": 101,
+    "text": "turned on the faucet",
+    "es": "abría la llave"
+   }
+  },
+  {
+   "p": 101,
+   "start": 95,
+   "end": 101,
+   "text": "faucet",
+   "sense": "faucet"
+  },
+  {
+   "p": 102,
+   "start": 170,
+   "end": 177,
+   "text": "section",
+   "sense": "section_music"
+  },
+  {
+   "p": 102,
+   "start": 196,
+   "end": 201,
+   "text": "sharp",
+   "sense": "sharp_pitch"
+  },
+  {
+   "p": 102,
+   "start": 222,
+   "end": 225,
+   "text": "bow",
+   "sense": "bow_violin"
+  },
+  {
+   "p": 102,
+   "start": 226,
+   "end": 233,
+   "text": "scraped",
+   "sense": "scrape"
+  },
+  {
+   "p": 103,
+   "start": 151,
+   "end": 159,
+   "text": "stepping",
+   "sense": "step_off",
+   "chunk": {
+    "start": 151,
+    "end": 171,
+    "text": "stepping off a ledge",
+    "es": "saltar de una cornisa"
+   }
+  },
+  {
+   "p": 103,
+   "start": 166,
+   "end": 171,
+   "text": "ledge",
+   "sense": "ledge"
+  },
+  {
+   "p": 103,
+   "start": 200,
+   "end": 207,
+   "text": "section",
+   "sense": "section_music"
+  },
+  {
+   "p": 103,
+   "start": 253,
+   "end": 261,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 246,
+    "end": 264,
+    "text": "it was supposed to",
+    "es": "debía"
+   }
+  },
+  {
+   "p": 104,
+   "start": 44,
+   "end": 52,
+   "text": "opposite",
+   "sense": "opposite"
+  },
+  {
+   "p": 106,
+   "start": 84,
+   "end": 88,
+   "text": "tone",
+   "sense": "tone_deaf",
+   "chunk": {
+    "start": 84,
+    "end": 93,
+    "text": "tone-deaf",
+    "es": "sin oído musical"
+   }
+  },
+  {
+   "p": 106,
+   "start": 141,
+   "end": 146,
+   "text": "strip",
+   "sense": "strip_paint",
+   "chunk": {
+    "start": 141,
+    "end": 152,
+    "text": "strip paint",
+    "es": "arrancar la pintura"
+   }
+  },
+  {
+   "p": 106,
+   "start": 203,
+   "end": 210,
+   "text": "quartet",
+   "sense": "string_quartet",
+   "chunk": {
+    "start": 196,
+    "end": 210,
+    "text": "string quartet",
+    "es": "cuarteto de cuerda"
+   }
+  },
+  {
+   "p": 106,
+   "start": 240,
+   "end": 247,
+   "text": "machine",
+   "sense": "washing_machine",
+   "chunk": {
+    "start": 232,
+    "end": 247,
+    "text": "washing machine",
+    "es": "lavadora"
+   }
+  },
+  {
+   "p": 108,
+   "start": 27,
+   "end": 31,
+   "text": "tell",
+   "sense": "tell_from",
+   "chunk": {
+    "start": 27,
+    "end": 57,
+    "text": "tell the music from the fridge",
+    "es": "distinguir la música del refrigerador"
+   }
+  },
+  {
+   "p": 108,
+   "start": 217,
+   "end": 224,
+   "text": "monitor",
+   "sense": "monitor_med"
+  },
+  {
+   "p": 110,
+   "start": 49,
+   "end": 53,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 46,
+    "end": 53,
+    "text": "at last",
+    "es": "por fin"
+   }
+  },
+  {
+   "p": 116,
+   "start": 3,
+   "end": 11,
+   "text": "shrugged",
+   "sense": "shrug"
+  },
+  {
+   "p": 116,
+   "start": 31,
+   "end": 38,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 116,
+   "start": 60,
+   "end": 65,
+   "text": "patch",
+   "sense": "patch"
+  },
+  {
+   "p": 116,
+   "start": 92,
+   "end": 97,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 118,
+   "start": 232,
+   "end": 237,
+   "text": "twist",
+   "sense": "twist_story"
+  },
+  {
+   "p": 119,
+   "start": 25,
+   "end": 35,
+   "text": "telephoned",
+   "sense": "telephone_verb"
+  },
+  {
+   "p": 119,
+   "start": 96,
+   "end": 103,
+   "text": "flicker",
+   "sense": "flicker_alarm"
+  },
+  {
+   "p": 120,
+   "start": 6,
+   "end": 12,
+   "text": "handed",
+   "sense": "hand_over_phone",
+   "chunk": {
+    "start": 6,
+    "end": 27,
+    "text": "handed over the phone",
+    "es": "le pasó el teléfono"
+   }
+  },
+  {
+   "p": 120,
+   "start": 254,
+   "end": 260,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 121,
+   "start": 36,
+   "end": 40,
+   "text": "give",
+   "sense": "give_back",
+   "chunk": {
+    "start": 36,
+    "end": 55,
+    "text": "give back the phone",
+    "es": "devolver el teléfono"
+   }
+  },
+  {
+   "p": 122,
+   "start": 10,
+   "end": 16,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 123,
+   "start": 88,
+   "end": 94,
+   "text": "nerves",
+   "sense": "sick_nerves",
+   "chunk": {
+    "start": 78,
+    "end": 94,
+    "text": "sick with nerves",
+    "es": "con náuseas de los nervios"
+   }
+  },
+  {
+   "p": 123,
+   "start": 110,
+   "end": 118,
+   "text": "Actually",
+   "sense": "actually_really"
+  },
+  {
+   "p": 125,
+   "start": 273,
+   "end": 278,
+   "text": "ghost",
+   "sense": "see_ghost",
+   "chunk": {
+    "start": 266,
+    "end": 278,
+    "text": "seen a ghost",
+    "es": "visto un fantasma"
+   }
+  },
+  {
+   "p": 127,
+   "start": 4,
+   "end": 11,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 127,
+   "start": 52,
+   "end": 56,
+   "text": "hall",
+   "sense": "hall_school"
+  },
+  {
+   "p": 127,
+   "start": 107,
+   "end": 112,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 127,
+   "start": 162,
+   "end": 166,
+   "text": "days",
+   "sense": "see_better_days",
+   "chunk": {
+    "start": 146,
+    "end": 166,
+    "text": "had seen better days",
+    "es": "había conocido tiempos mejores"
+   }
+  },
+  {
+   "p": 127,
+   "start": 210,
+   "end": 216,
+   "text": "silver",
+   "sense": "silver_hair"
+  },
+  {
+   "p": 127,
+   "start": 217,
+   "end": 225,
+   "text": "earrings",
+   "sense": "earring"
+  },
+  {
+   "p": 128,
+   "start": 34,
+   "end": 37,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 27,
+    "end": 37,
+    "text": "second row",
+    "es": "segunda fila"
+   }
+  },
+  {
+   "p": 128,
+   "start": 88,
+   "end": 96,
+   "text": "earrings",
+   "sense": "earring"
+  },
+  {
+   "p": 128,
+   "start": 107,
+   "end": 114,
+   "text": "handbag",
+   "sense": "handbag"
+  },
+  {
+   "p": 129,
+   "start": 126,
+   "end": 131,
+   "text": "tunes",
+   "sense": "tune_melody"
+  },
+  {
+   "p": 129,
+   "start": 162,
+   "end": 167,
+   "text": "bowed",
+   "sense": "bow_bend"
+  },
+  {
+   "p": 129,
+   "start": 195,
+   "end": 199,
+   "text": "fell",
+   "sense": "fall_over",
+   "chunk": {
+    "start": 188,
+    "end": 204,
+    "text": "nearly fell over",
+    "es": "casi se caían"
+   }
+  },
+  {
+   "p": 129,
+   "start": 256,
+   "end": 261,
+   "text": "dance",
+   "sense": "folk_dance",
+   "chunk": {
+    "start": 251,
+    "end": 261,
+    "text": "folk dance",
+    "es": "danza popular"
+   }
+  },
+  {
+   "p": 129,
+   "start": 303,
+   "end": 313,
+   "text": "triumphant",
+   "sense": "triumphant"
+  },
+  {
+   "p": 129,
+   "start": 403,
+   "end": 408,
+   "text": "piece",
+   "sense": "piece_music2"
+  },
+  {
+   "p": 129,
+   "start": 555,
+   "end": 563,
+   "text": "applause",
+   "sense": "applause"
+  },
+  {
+   "p": 130,
+   "start": 20,
+   "end": 24,
+   "text": "turn",
+   "sense": "turn_go"
+  },
+  {
+   "p": 131,
+   "start": 11,
+   "end": 15,
+   "text": "turn",
+   "sense": "turn_go"
+  },
+  {
+   "p": 131,
+   "start": 51,
+   "end": 54,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 44,
+    "end": 54,
+    "text": "second row",
+    "es": "segunda fila"
+   }
+  },
+  {
+   "p": 131,
+   "start": 207,
+   "end": 211,
+   "text": "case",
+   "sense": "case_violin"
+  },
+  {
+   "p": 131,
+   "start": 243,
+   "end": 251,
+   "text": "drumming",
+   "sense": "drum_fingers"
+  },
+  {
+   "p": 131,
+   "start": 268,
+   "end": 271,
+   "text": "lid",
+   "sense": "lid"
+  },
+  {
+   "p": 135,
+   "start": 115,
+   "end": 123,
+   "text": "Actually",
+   "sense": "actually_infact"
+  },
+  {
+   "p": 136,
+   "start": 57,
+   "end": 61,
+   "text": "came",
+   "sense": "come_down",
+   "chunk": {
+    "start": 57,
+    "end": 74,
+    "text": "came down an inch",
+    "es": "bajaron un poco"
+   }
+  },
+  {
+   "p": 137,
+   "start": 184,
+   "end": 187,
+   "text": "bow",
+   "sense": "bow_violin"
+  },
+  {
+   "p": 137,
+   "start": 195,
+   "end": 201,
+   "text": "string",
+   "sense": "string_instrument"
+  },
+  {
+   "p": 137,
+   "start": 224,
+   "end": 232,
+   "text": "audience",
+   "sense": "audience"
+  },
+  {
+   "p": 137,
+   "start": 295,
+   "end": 298,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 288,
+    "end": 298,
+    "text": "second row",
+    "es": "segunda fila"
+   }
+  },
+  {
+   "p": 138,
+   "start": 29,
+   "end": 36,
+   "text": "tighten",
+   "sense": "tighten"
+  },
+  {
+   "p": 139,
+   "start": 81,
+   "end": 90,
+   "text": "unguarded",
+   "sense": "unguarded"
+  },
+  {
+   "p": 139,
+   "start": 102,
+   "end": 106,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 139,
+   "start": 214,
+   "end": 217,
+   "text": "nod",
+   "sense": "nod_greet"
+  },
+  {
+   "p": 139,
+   "start": 234,
+   "end": 236,
+   "text": "Go",
+   "sense": "go_on_speak",
+   "chunk": {
+    "start": 234,
+    "end": 239,
+    "text": "Go on",
+    "es": "Adelante"
+   }
+  },
+  {
+   "p": 141,
+   "start": 53,
+   "end": 58,
+   "text": "sharp",
+   "sense": "sharp_pitch"
+  },
+  {
+   "p": 141,
+   "start": 64,
+   "end": 67,
+   "text": "bow",
+   "sense": "bow_violin"
+  },
+  {
+   "p": 141,
+   "start": 68,
+   "end": 75,
+   "text": "scraped",
+   "sense": "scrape"
+  },
+  {
+   "p": 141,
+   "start": 109,
+   "end": 115,
+   "text": "phrase",
+   "sense": "phrase_music"
+  },
+  {
+   "p": 141,
+   "start": 162,
+   "end": 165,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 156,
+    "end": 165,
+    "text": "front row",
+    "es": "primera fila"
+   }
+  },
+  {
+   "p": 141,
+   "start": 214,
+   "end": 221,
+   "text": "section",
+   "sense": "section_music"
+  },
+  {
+   "p": 142,
+   "start": 58,
+   "end": 66,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 50,
+    "end": 69,
+    "text": "she was supposed to",
+    "es": "debía"
+   }
+  },
+  {
+   "p": 142,
+   "start": 97,
+   "end": 103,
+   "text": "marked",
+   "sense": "mark_score"
+  },
+  {
+   "p": 142,
+   "start": 198,
+   "end": 207,
+   "text": "reluctant",
+   "sense": "reluctant"
+  },
+  {
+   "p": 142,
+   "start": 264,
+   "end": 268,
+   "text": "once",
+   "sense": "at_once",
+   "chunk": {
+    "start": 261,
+    "end": 268,
+    "text": "at once",
+    "es": "enseguida"
+   }
+  },
+  {
+   "p": 142,
+   "start": 332,
+   "end": 336,
+   "text": "pace",
+   "sense": "set_pace",
+   "chunk": {
+    "start": 324,
+    "end": 336,
+    "text": "set the pace",
+    "es": "marcar el ritmo"
+   }
+  },
+  {
+   "p": 143,
+   "start": 19,
+   "end": 24,
+   "text": "quiet",
+   "sense": "quiet_room",
+   "chunk": {
+    "start": 0,
+    "end": 24,
+    "text": "The room went very quiet",
+    "es": "La sala se quedó en silencio"
+   }
+  },
+  {
+   "p": 143,
+   "start": 63,
+   "end": 66,
+   "text": "row",
+   "sense": "front_row",
+   "chunk": {
+    "start": 57,
+    "end": 66,
+    "text": "front row",
+    "es": "primera fila"
+   }
+  },
+  {
+   "p": 143,
+   "start": 71,
+   "end": 76,
+   "text": "still",
+   "sense": "still_hands"
+  },
+  {
+   "p": 145,
+   "start": 22,
+   "end": 29,
+   "text": "weeping",
+   "sense": "weep"
+  },
+  {
+   "p": 145,
+   "start": 50,
+   "end": 57,
+   "text": "handbag",
+   "sense": "handbag"
+  },
+  {
+   "p": 147,
+   "start": 78,
+   "end": 82,
+   "text": "tram",
+   "sense": "tram"
+  },
+  {
+   "p": 147,
+   "start": 99,
+   "end": 103,
+   "text": "line",
+   "sense": "line_queue",
+   "chunk": {
+    "start": 97,
+    "end": 119,
+    "text": "a line out of the door",
+    "es": "una cola que salía por la puerta"
+   }
+  },
+  {
+   "p": 147,
+   "start": 136,
+   "end": 143,
+   "text": "flavors",
+   "sense": "flavor"
+  },
+  {
+   "p": 147,
+   "start": 193,
+   "end": 199,
+   "text": "flavor",
+   "sense": "flavor"
+  },
+  {
+   "p": 148,
+   "start": 51,
+   "end": 58,
+   "text": "recital",
+   "sense": "recital"
+  },
+  {
+   "p": 148,
+   "start": 117,
+   "end": 123,
+   "text": "packed",
+   "sense": "pack_instrument",
+   "chunk": {
+    "start": 117,
+    "end": 141,
+    "text": "packed up her instrument",
+    "es": "guardó su instrumento"
+   }
+  },
+  {
+   "p": 148,
+   "start": 200,
+   "end": 204,
+   "text": "cone",
+   "sense": "cone"
+  },
+  {
+   "p": 148,
+   "start": 247,
+   "end": 253,
+   "text": "earned",
+   "sense": "earn"
+  },
+  {
+   "p": 150,
+   "start": 7,
+   "end": 10,
+   "text": "jan",
+   "sense": "jan"
+  },
+  {
+   "p": 152,
+   "start": 33,
+   "end": 37,
+   "text": "part",
+   "sense": "part_music"
+  },
+  {
+   "p": 153,
+   "start": 14,
+   "end": 18,
+   "text": "sank",
+   "sense": "sink_heart"
+  },
+  {
+   "p": 153,
+   "start": 26,
+   "end": 29,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 26,
+    "end": 48,
+    "text": "put down his ice cream",
+    "es": "dejó el helado"
+   }
+  },
+  {
+   "p": 154,
+   "start": 143,
+   "end": 147,
+   "text": "hall",
+   "sense": "concert_hall",
+   "chunk": {
+    "start": 135,
+    "end": 147,
+    "text": "concert hall",
+    "es": "sala de conciertos"
+   }
+  },
+  {
+   "p": 154,
+   "start": 317,
+   "end": 320,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 317,
+    "end": 343,
+    "text": "put down her plastic spoon",
+    "es": "dejó la cucharita de plástico"
+   }
+  },
+  {
+   "p": 154,
+   "start": 372,
+   "end": 380,
+   "text": "grateful",
+   "sense": "grateful"
+  },
+  {
+   "p": 155,
+   "start": 142,
+   "end": 146,
+   "text": "melt",
+   "sense": "melt"
+  },
+  {
+   "p": 156,
+   "start": 3,
+   "end": 8,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 156,
+   "start": 22,
+   "end": 29,
+   "text": "lessons",
+   "sense": "lesson"
+  },
+  {
+   "p": 156,
+   "start": 72,
+   "end": 78,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 158,
+   "start": 42,
+   "end": 46,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 42,
+    "end": 49,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 158,
+   "start": 96,
+   "end": 103,
+   "text": "lessons",
+   "sense": "lesson"
+  },
+  {
+   "p": 159,
+   "start": 165,
+   "end": 171,
+   "text": "undone",
+   "sense": "come_undone",
+   "chunk": {
+    "start": 152,
+    "end": 171,
+    "text": "came quietly undone",
+    "es": "se deshizo en silencio"
+   }
+  },
+  {
+   "p": 161,
+   "start": 7,
+   "end": 12,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 162,
+   "start": 78,
+   "end": 86,
+   "text": "borrowed",
+   "sense": "borrow"
+  },
+  {
+   "p": 163,
+   "start": 32,
+   "end": 38,
+   "text": "turned",
+   "sense": "turn_to",
+   "chunk": {
+    "start": 32,
+    "end": 52,
+    "text": "turned to her mother",
+    "es": "se volvió hacia su madre"
+   }
+  },
+  {
+   "p": 163,
+   "start": 78,
+   "end": 86,
+   "text": "diplomat",
+   "sense": "diplomat"
+  },
+  {
+   "p": 163,
+   "start": 105,
+   "end": 111,
+   "text": "clause",
+   "sense": "clause"
+  },
+  {
+   "p": 163,
+   "start": 124,
+   "end": 130,
+   "text": "treaty",
+   "sense": "treaty"
+  },
+  {
+   "p": 166,
+   "start": 23,
+   "end": 29,
+   "text": "Bunbun",
+   "sense": "bunbun"
+  },
+  {
+   "p": 166,
+   "start": 181,
+   "end": 185,
+   "text": "part",
+   "sense": "part_music"
+  },
+  {
+   "p": 166,
+   "start": 208,
+   "end": 213,
+   "text": "duets",
+   "sense": "duet"
+  },
+  {
+   "p": 167,
+   "start": 101,
+   "end": 108,
+   "text": "counter",
+   "sense": "counter"
+  },
+  {
+   "p": 168,
+   "start": 67,
+   "end": 71,
+   "text": "pick",
+   "sense": "pick_up",
+   "chunk": {
+    "start": 67,
+    "end": 83,
+    "text": "pick up a violin",
+    "es": "tomar un violín"
+   }
+  },
+  {
+   "p": 169,
+   "start": 45,
+   "end": 50,
+   "text": "point",
+   "sense": "whole_point",
+   "chunk": {
+    "start": 34,
+    "end": 50,
+    "text": "That's the point",
+    "es": "De eso se trata"
+   }
+  },
+  {
+   "p": 173,
+   "start": 13,
+   "end": 17,
+   "text": "hard",
+   "sense": "think_hard",
+   "chunk": {
+    "start": 5,
+    "end": 17,
+    "text": "thought hard",
+    "es": "pensó mucho"
+   }
+  },
+  {
+   "p": 174,
+   "start": 40,
+   "end": 48,
+   "text": "helpless",
+   "sense": "helpless"
+  },
+  {
+   "p": 174,
+   "start": 94,
+   "end": 98,
+   "text": "turn",
+   "sense": "turn_around",
+   "chunk": {
+    "start": 94,
+    "end": 105,
+    "text": "turn around",
+    "es": "se dieran la vuelta"
+   }
+  },
+  {
+   "p": 174,
+   "start": 247,
+   "end": 253,
+   "text": "napkin",
+   "sense": "napkin"
+  },
+  {
+   "p": 175,
+   "start": 38,
+   "end": 44,
+   "text": "second",
+   "sense": "violin_rented",
+   "chunk": {
+    "start": 38,
+    "end": 51,
+    "text": "second violin",
+    "es": "segundo violín"
+   }
+  },
+  {
+   "p": 175,
+   "start": 53,
+   "end": 59,
+   "text": "rented",
+   "sense": "rent_verb"
+  },
+  {
+   "p": 175,
+   "start": 171,
+   "end": 176,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 175,
+   "start": 198,
+   "end": 203,
+   "text": "clean",
+   "sense": "clean_off",
+   "chunk": {
+    "start": 198,
+    "end": 219,
+    "text": "clean off the ceiling",
+    "es": "limpiar del techo"
+   }
+  },
+  {
+   "p": 175,
+   "start": 212,
+   "end": 219,
+   "text": "ceiling",
+   "sense": "ceiling"
+  },
+  {
+   "p": 175,
+   "start": 300,
+   "end": 308,
+   "text": "familiar",
+   "sense": "familiar_noise"
+  },
+  {
+   "p": 176,
+   "start": 34,
+   "end": 40,
+   "text": "rented",
+   "sense": "rent_verb"
+  },
+  {
+   "p": 176,
+   "start": 88,
+   "end": 99,
+   "text": "defensively",
+   "sense": "defensively"
+  },
+  {
+   "p": 176,
+   "start": 166,
+   "end": 170,
+   "text": "line",
+   "sense": "pause_line"
+  },
+  {
+   "p": 178,
+   "start": 55,
+   "end": 60,
+   "text": "Maman",
+   "sense": "maman"
+  },
+  {
+   "p": 179,
+   "start": 59,
+   "end": 62,
+   "text": "let",
+   "sense": "let_in",
+   "chunk": {
+    "start": 53,
+    "end": 68,
+    "text": "Don't let me in",
+    "es": "No me dejen entrar"
+   }
+  },
+  {
+   "p": 180,
+   "start": 50,
+   "end": 56,
+   "text": "tuning",
+   "sense": "tune_up",
+   "chunk": {
+    "start": 50,
+    "end": 59,
+    "text": "tuning up",
+    "es": "afinando"
+   }
+  },
+  {
+   "p": 182,
+   "start": 14,
+   "end": 17,
+   "text": "bow",
+   "sense": "bow_violin"
+  },
+  {
+   "p": 182,
+   "start": 25,
+   "end": 31,
+   "text": "string",
+   "sense": "string_instrument"
+  },
+  {
+   "p": 182,
+   "start": 237,
+   "end": 245,
+   "text": "anything",
+   "sense": "if_anything",
+   "chunk": {
+    "start": 234,
+    "end": 245,
+    "text": "if anything",
+    "es": "en todo caso"
+   }
+  },
+  {
+   "p": 182,
+   "start": 252,
+   "end": 265,
+   "text": "encouragement",
+   "sense": "encouragement"
+  }
+ ]
+}

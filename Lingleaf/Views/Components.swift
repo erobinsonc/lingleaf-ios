@@ -45,6 +45,14 @@ enum Credits {
     static let publicDomainNotice: LocalizedStringResource =
         "Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."
 
+    /// Where the app's own stories come from: written with AI help, free for anyone to use.
+    static let storiesNotice: LocalizedStringResource =
+        "Our stories were written with AI help. Anyone can use them freely."
+
+    /// What a row of one of the app's own stories says where a book shows its author: the one place to
+    /// change its name ("Our story"; maybe "App story" or "AI story"), with its translation in the string catalog.
+    static let storyRowLabel: LocalizedStringResource = "Our story"
+
     /// At the end of a definition on the word card: its source and license, and whether the app cut it.
     static func definitionSource(shortened: Bool) -> LocalizedStringResource {
         shortened ? "— Wiktionary, CC BY-SA, shortened" : "— Wiktionary, CC BY-SA"
@@ -165,7 +173,12 @@ struct BookRow: View {
                 Text(book.title).font(.headline).lineLimit(2)
                 HStack(spacing: 6) {
                     if let level = book.level { LevelBadge(level: level) }
-                    Text(book.author).font(.subheadline).foregroundStyle(Brand.secondaryText).lineLimit(1)
+                    // The app's own stories say so, instead of the author they are all saved under.
+                    if BundledStory.shelfStory(for: book) != nil {
+                        Text(Credits.storyRowLabel).font(.subheadline).foregroundStyle(Brand.secondaryText)
+                    } else {
+                        Text(book.author).font(.subheadline).foregroundStyle(Brand.secondaryText).lineLimit(1)
+                    }
                 }
                 if book.progress > 0 {
                     ProgressView(value: book.progress).padding(.top, 2)
