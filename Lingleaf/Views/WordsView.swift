@@ -113,6 +113,15 @@ private struct WordRow: View {
             VStack(alignment: .leading, spacing: 3) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(verbatim: model.state.displayName(word)).font(.headline)
+                    // While the corrections card is open, the words it fixed say so (SPEC S18).
+                    if isFixed {
+                        Text("Fixed")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Brand.marker, in: Capsule())
+                    }
                     if !word.phonetic.isEmpty, word.kind == nil {
                         Text(word.phonetic).font(.caption).foregroundStyle(Brand.secondaryText)
                     }
@@ -174,6 +183,9 @@ private struct WordRow: View {
         }
         .accessibilityAction(named: Text("Delete word"), onDelete)
     }
+
+    /// A correction of the card still open ended on this spelling.
+    private var isFixed: Bool { model.state.corrections.contains { $0.to == word.word } }
 
     /// Known words go back to review; the others are marked as known.
     private var stateActionTitle: Text {

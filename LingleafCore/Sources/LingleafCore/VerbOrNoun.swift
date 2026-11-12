@@ -69,7 +69,7 @@ extension IrregularVerbs {
         guard let tableForm = tableForms[form] else { return nil }
         // The steps for other forms look only at the words around; they need no homograph entry.
         let around = Homograph(
-            form: form, noun: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
+            form: form, noun: nil, nounEs: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
             nounPair: nil, noTo: false, nounPhrases: [], subjectNounNext: nil, nounIpa: [], expressions: []
         )
         return Resolver(table: self, h: around, form: form, words: words, i: i).tableFormReading(tableForm)

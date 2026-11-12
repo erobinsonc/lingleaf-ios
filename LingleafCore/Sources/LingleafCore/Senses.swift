@@ -188,19 +188,25 @@ extension IrregularVerbs {
         nounIPARule(words, i)?.spokenAs
     }
 
-    /// The first `nounIpa` rule of the homograph at `i` its sentence matches, in the table's order.
+    /// The first `nounIpa` rule of the homograph at `i` its sentence matches, in the table's order;
+    /// nil when it matches only by words near it (`near`) and another sound's `near` words are there too
+    /// ("The detective found lead in the metal pipes": nothing proves it).
     private func nounIPARule(_ words: Words, _ i: Int) -> Homograph.NounIPA? {
         guard let h = homographs[words.token(i)], !h.nounIpa.isEmpty else { return nil }
         let before = i >= 1 && words.gapOK(i - 1, i) ? words.token(i - 1) : nil
         let after = i + 1 < words.count && words.gapOK(i, i + 1) ? words.token(i + 1) : nil
         let sentence = Set(words.ranges.indices.filter { $0 != i }.map(words.token))
-        for rule in h.nounIpa {
-            if let allowed = rule.after, !(before.map(allowed.contains) ?? false) { continue }
-            if let allowed = rule.before, !(after.map(allowed.contains) ?? false) { continue }
-            if let near = rule.near, near.isDisjoint(with: sentence) { continue }
-            return rule
+        func matches(_ rule: Homograph.NounIPA) -> Bool {
+            if let allowed = rule.after, !(before.map(allowed.contains) ?? false) { return false }
+            if let allowed = rule.before, !(after.map(allowed.contains) ?? false) { return false }
+            if let near = rule.near, near.isDisjoint(with: sentence) { return false }
+            return true
         }
-        return nil
+        func nearOnly(_ rule: Homograph.NounIPA) -> Bool { rule.near != nil && rule.after == nil && rule.before == nil }
+        guard let rule = h.nounIpa.first(where: matches) else { return nil }
+        // The word right before or after it is firmer evidence than the words around.
+        if nearOnly(rule), h.nounIpa.contains(where: { nearOnly($0) && $0.ipa != rule.ipa && matches($0) }) { return nil }
+        return rule
     }
 
     /// What Listen says for a noun saved with the IPA its sentence proved (`phonetic`, "/lɛd/", or the
@@ -218,7 +224,7 @@ extension IrregularVerbs {
         case .verb: sEs(base, form: form).map { [$0] } ?? verb(base: base)?.es ?? []
         case .homonym: verb(base: base).map { $0.homonym?.es ?? $0.es } ?? []
         case .expression: expression(base)?.es ?? []
-        case .noun: twinNounEs(base) ?? []
+        case .noun: twinNounEs(base) ?? homographNounEs(base) ?? []
         case .word, .unsure: []
         }
         guard let head = meanings.first else { return nil }
@@ -234,6 +240,11 @@ extension IrregularVerbs {
     /// The twin's noun meanings in Spanish ("lie": ["mentira"]), when `noun` is a twin's noun.
     public func twinNounEs(_ noun: String) -> [String]? {
         verbs.lazy.compactMap { $0.homonym?.noun == noun ? $0.homonym?.nounEs : nil }.first
+    }
+
+    /// The Spanish meanings of the noun of a homograph ("left": ["izquierda"]), when the table has them.
+    public func homographNounEs(_ noun: String) -> [String]? {
+        homographs.values.lazy.compactMap { $0.noun == noun ? $0.nounEs : nil }.first
     }
 
     /// The expression `unit` is ("bound for"), if the table has it.

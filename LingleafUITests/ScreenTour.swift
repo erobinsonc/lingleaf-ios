@@ -5,6 +5,9 @@ import XCTest
 /// publishes them to the `screenshots` branch, so the app can be looked at
 /// without running it. The tour asserts little on purpose: its job is to
 /// capture what is on screen, the other UI tests check behaviour.
+///
+/// Shot numbers: the tour owns 01-79; the behaviour tests in `LingleafUITests` own 81-99 (their
+/// names never collide with the tour's).
 final class ScreenTour: XCTestCase {
     private struct Labels {
         let language: String
@@ -58,6 +61,15 @@ final class ScreenTour: XCTestCase {
         readingsTour(labels, extra: Self.largestText, unsureChosen: true, expression: true)
         reviewUnsure(labels, extra: Self.largestText)
         correctionsTour(labels, count: 1, extra: Self.largestText, undo: false)
+        // Discover and About at the largest size: the screens whose rows wrap the most.
+        launch(labels, ["-ui-testing"] + Self.largestText)
+        tab(1)
+        _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
+        snap("48-discover-ax5")
+        tab(3)
+        let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
+        for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
+        snap("49-settings-about-ax5")
         storiesTour(labels, extra: Self.largestText)
         app.terminate()
     }
@@ -66,6 +78,8 @@ final class ScreenTour: XCTestCase {
     private func reviewUnsure(_ labels: Labels, extra: [String]) {
         launch(labels, ["-ui-testing", "-ui-testing-due-unsure"] + extra)
         tab(2)
+        // The word saved unsure as Words lists it: both readings in its row.
+        snap("40-words-unsure-row")
         startReview(labels)
         if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { app.buttons[labels.showMeaning].tap() }
         snap("22-review-unsure-meaning")
@@ -162,6 +176,7 @@ final class ScreenTour: XCTestCase {
         correctionsTour(labels, count: 1, extra: [], undo: true)
         correctionsTour(labels, count: 5, extra: [], undo: false)
         storiesTour(labels)
+        moreScreens(labels)
         app.terminate()
     }
 
@@ -189,6 +204,63 @@ final class ScreenTour: XCTestCase {
         snap("25-discover-original-stories-\(level)")
         let read = app.buttons["\(labels.read) \(title)"]
         if read.waitForExistence(timeout: 5) { read.tap() }
+    }
+
+    /// Screens the main tour doesn't reach: Words with nothing saved, Discover offline and with a
+    /// download that fails, a library of long titles, resuming a book, and where the privacy link goes.
+    private func moreScreens(_ labels: Labels) {
+        launch(labels, ["-ui-testing"])
+        tab(2)
+        snap("41-words-empty")
+        launch(labels, ["-ui-testing-offline"])
+        tab(1)
+        snap("42-discover-offline")
+        // The fake catalog has one book that is "not available right now": its row says so.
+        launch(labels, ["-ui-testing"])
+        tab(1)
+        let unavailable = app.buttons["\(labels.get) The Marvelous Land of Oz"]
+        if unavailable.waitForExistence(timeout: 10) {
+            unavailable.tap()
+            RunLoop.current.run(until: Date().addingTimeInterval(2))
+            snap("43-discover-download-failed")
+        }
+        launch(labels, ["-ui-testing", "-ui-testing-long-titles"])
+        _ = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Extraordinary")).firstMatch.waitForExistence(timeout: 10)
+        snap("44-library-long-titles")
+        // Resuming: leave a book part-way and open it again.
+        launch(labels, ["-ui-testing"])
+        let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "A Day at the Market")).firstMatch
+        if book.waitForExistence(timeout: 10) {
+            book.tap()
+            // Scroll only once the text is up and the saved position restored (the reader restores it
+            // 0.5 s after it appears): a swipe during the restore fought the reader's own scroll on CI
+            // (run 42519053992: the app never went idle and the next tap timed out for minutes).
+            _ = app.links.firstMatch.waitForExistence(timeout: 10)
+            RunLoop.current.run(until: Date().addingTimeInterval(2))
+            app.swipeUp()
+            RunLoop.current.run(until: Date().addingTimeInterval(1))
+            app.navigationBars.buttons.element(boundBy: 0).tap()
+            snap("45-library-resume-row")
+            if book.waitForExistence(timeout: 10) {
+                book.tap()
+                RunLoop.current.run(until: Date().addingTimeInterval(1.5))
+                snap("46-reader-resumed")
+            }
+        }
+        privacyPolicyPage(labels)
+    }
+
+    /// The privacy link opens the policy in the app's browser view, at the Spanish summary in Spanish.
+    private func privacyPolicyPage(_ labels: Labels) {
+        launch(labels, ["-ui-testing"])
+        tab(3)
+        let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
+        for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
+        guard privacy.exists else { return }
+        privacy.tap()
+        // The page comes from the network: give it a moment, and keep whatever it shows.
+        RunLoop.current.run(until: Date().addingTimeInterval(6))
+        snap("47-privacy-policy-page")
     }
 
     /// The test story's unsure "left" and expression "bound for", the senses in Words and a verb

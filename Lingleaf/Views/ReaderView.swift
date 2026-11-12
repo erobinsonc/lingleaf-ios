@@ -71,6 +71,9 @@ struct ReaderView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The word card's height, so the card drops its half-height panel when full height.
     @State private var cardDetent: PresentationDetent = .medium
+    /// The height that fits a word card whose sentence doesn't tell (its content and buttons); the
+    /// card tells it as it measures itself, and its sheet opens at it.
+    @State private var fittedHeight: CGFloat = 480
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
     /// The senses of the story, when the book is a bundled story that has them (SPEC S19).
@@ -140,14 +143,20 @@ struct ReaderView: View {
         .sheet(item: $selection) { selection in
             WordCardView(
                 selection: selection, source: book?.title ?? "", fullHeight: cardDetent == .large,
-                onReadFromHere: { readFrom(paragraph: selection.paragraph, offset: selection.range.start) }
-            ) { message in
-                undo = message
+                onReadFromHere: { readFrom(paragraph: selection.paragraph, offset: selection.range.start) },
+                onFittedHeight: { height in
+                    if abs(height - fittedHeight) > 1 { fittedHeight = height }
+                },
+                onAction: { message in undo = message }
+            )
+            // With accessibility text sizes a half-height card shows almost nothing: full height. A word whose
+            // sentence doesn't tell opens at the card's own height, its readings in view (SPEC S3).
+            .presentationDetents(cardDetents(selection), selection: $cardDetent)
+            .onAppear { cardDetent = openingDetent(selection) }
+            // The card measured itself again (a translation arrived): the sheet follows, unless it was dragged.
+            .onChange(of: fittedHeight) { old, new in
+                if cardDetent == .height(old) { cardDetent = .height(new) }
             }
-            // With accessibility text sizes a half-height card shows almost nothing, and a word whose
-            // sentence doesn't tell needs its readings in view (SPEC S3): open it full height.
-            .presentationDetents(fullHeightCard(selection) ? [.large] : [.medium, .large], selection: $cardDetent)
-            .onAppear { cardDetent = fullHeightCard(selection) ? .large : .medium }
             .presentationDragIndicator(.visible)
         }
         .environment(\.openURL, OpenURLAction { url in
@@ -496,10 +505,20 @@ struct ReaderView: View {
         )
     }
 
-    private func fullHeightCard(_ selection: WordSelection) -> Bool {
-        if dynamicTypeSize.isAccessibilitySize { return true }
+    /// The sentence doesn't tell which of two readings the word is (SPEC S3).
+    private func isUnsureCard(_ selection: WordSelection) -> Bool {
         guard selection.function == nil, selection.story == nil, let range = selection.rangeInSentence else { return false }
         return IrregularVerbs.shared.choices(in: selection.sentence, at: range).count == 2
+    }
+
+    private func cardDetents(_ selection: WordSelection) -> Set<PresentationDetent> {
+        if dynamicTypeSize.isAccessibilitySize { return [.large] }
+        return isUnsureCard(selection) ? [.height(fittedHeight), .large] : [.medium, .large]
+    }
+
+    private func openingDetent(_ selection: WordSelection) -> PresentationDetent {
+        if dynamicTypeSize.isAccessibilitySize { return .large }
+        return isUnsureCard(selection) ? .height(fittedHeight) : .medium
     }
 
     private func startTimer() {
