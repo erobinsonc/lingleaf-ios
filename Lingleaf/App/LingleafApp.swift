@@ -80,6 +80,8 @@ final class AppModel {
         self.autoLanguage = autoLanguage
         library.load()
         library.seedIfNeeded(Self.bundledStories)
+        // An install from before the stories with senses gets them once, below its books.
+        library.addNewStoriesIfNeeded(Self.bundledStories)
         self.state = library.state
         library.onChange = { [weak self] newState in
             MainActor.assumeIsolated { self?.state = newState }
@@ -213,7 +215,22 @@ final class AppModel {
     private static func bundledStory(_ entry: ShelfStory) -> BundledStory? {
         guard let url = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
               let text = try? String(contentsOf: url, encoding: .utf8) else { return nil }
-        return BundledStory(title: entry.title, level: entry.level, text: text)
+        return BundledStory(title: entry.title, level: entry.level, text: text, hasSenses: entry.hasSenses)
+    }
+
+    /// The senses of a bundled story's copy in the library (SPEC S19), read strictly against the book's own
+    /// paragraphs; nil for any other book, and when the file is missing, too large or refused.
+    func storySenses(for book: Book, paragraphs: [String]) -> StorySenses? {
+        guard let entry = BundledStory.shelfStory(for: book), entry.hasSenses,
+              let url = Bundle.main.url(forResource: "\(entry.resource).senses", withExtension: "json"),
+              let handle = try? FileHandle(forReadingFrom: url) else { return nil }
+        defer { try? handle.close() }
+        // One byte past the cap is enough to know the file is too large.
+        guard let data = try? handle.read(upToCount: StorySenses.maxBytes + 1) else { return nil }
+        // Only for the text the file was made for: a book with the story's title and author but other text gets none.
+        guard let textURL = Bundle.main.url(forResource: entry.resource, withExtension: "txt"),
+              let bundledText = try? String(contentsOf: textURL, encoding: .utf8) else { return nil }
+        return StorySenses.load(data, story: entry.resource, paragraphs: paragraphs, bundledText: bundledText)
     }
 
     /// Puts a bundled story back in the library (the learner deleted it) and returns its id.
@@ -262,13 +279,15 @@ final class AppModel {
     func translateMissing() {
         guard let target = targetLanguage else { return }
         library.fillTableTranslations(target)
+        library.clearUntranslatableStoryMeanings(target)
         let words = library.wordsNeedingTranslation(target)
         let contexts = library.contextsNeedingTranslation(target)
         let meanings = library.meaningsNeedingTranslation(target)
         guard !words.isEmpty || !contexts.isEmpty || !meanings.isEmpty else { return }
         if let fakeTranslator {
             for word in words {
-                guard let text = try? fakeTranslator(ReadingTranslation.source(word: word.word, sense: word.sense)) else { return }
+                guard let source = ReadingTranslation.source(for: word) else { continue }
+                guard let text = try? fakeTranslator(source) else { return }
                 library.setTranslation(word.word, Self.cleaned(text, sense: word.sense, target), language: target, sense: word.sense)
             }
             for word in contexts {
@@ -309,8 +328,8 @@ final class AppModel {
         let status = await LanguageAvailability().status(from: Locale.Language(identifier: "en"), to: language)
         guard status == .installed else { return }
         // A saved sentence and a reading are told apart from the word by a prefix on the identifier.
-        let wordRequests = words.values.map { word in
-            let source = ReadingTranslation.source(word: word.word, sense: word.sense)
+        let wordRequests = words.values.compactMap { word -> TranslationSession.Request? in
+            guard let source = ReadingTranslation.source(for: word) else { return nil }
             return TranslationSession.Request(sourceText: source, clientIdentifier: "word:\(word.id)")
         }
         let requests = wordRequests

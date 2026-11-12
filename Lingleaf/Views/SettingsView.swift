@@ -85,6 +85,7 @@ struct SettingsView: View {
                         Text("No accounts, no ads, no tracking.")
                         // The US-specific notice is under Discover's search results only.
                         Text(Credits.recommendedPublicDomain)
+                        Text(Credits.storiesNotice)
                         Text(Credits.definitionsCredit)
                             .accessibilityHint(Text("Contains links"))
                     }

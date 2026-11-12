@@ -1,0 +1,320 @@
+{
+ "schemaVersion": 1,
+ "story": "an-empty-apartment",
+ "senses": {
+  "carry_up": {
+   "lemma": "carry up",
+   "pos": "phrasal verb",
+   "ipa": "ˈkɛri ʌp",
+   "es": "subir (algo pesado)",
+   "kind": "chunk"
+  },
+  "college_university": {
+   "lemma": "college",
+   "pos": "noun",
+   "ipa": "ˈkɑlɪdʒ",
+   "es": "universidad (no «colegio»)",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "a university"
+  },
+  "come_back": {
+   "lemma": "come back",
+   "pos": "phrasal verb",
+   "ipa": "kʌm bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "come_in": {
+   "lemma": "come in",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɪn",
+   "es": "pasar, entrar",
+   "kind": "chunk"
+  },
+  "first_floor_us": {
+   "lemma": "first floor",
+   "pos": "noun",
+   "ipa": "fɝst flɔr",
+   "es": "planta baja (en EE. UU.)",
+   "kind": "chunk",
+   "variety": "AmE",
+   "note": "En inglés británico y en Ghana «first floor» es el primer piso, encima de la planta baja."
+  },
+  "fix_repair": {
+   "lemma": "fix",
+   "pos": "verb",
+   "ipa": "fɪks",
+   "es": "arreglar, reparar",
+   "kind": "word"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word",
+   "en": "the lower surface of a room or a pool"
+  },
+  "floor_storey": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "piso, planta (de un edificio)",
+   "kind": "word",
+   "en": "a level of a building"
+  },
+  "go_away": {
+   "lemma": "go away",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ əˈweɪ",
+   "es": "irse, marcharse",
+   "kind": "chunk"
+  },
+  "knock_door": {
+   "lemma": "knock on the door",
+   "pos": "phrase",
+   "ipa": "nɑk ɑn ðə dɔr",
+   "es": "llamar a la puerta",
+   "kind": "chunk"
+  },
+  "look_around": {
+   "lemma": "look around",
+   "pos": "phrasal verb",
+   "ipa": "lʊk əˈraʊnd",
+   "es": "mirar a su alrededor",
+   "kind": "chunk"
+  },
+  "neighbor": {
+   "lemma": "neighbor",
+   "pos": "noun",
+   "ipa": "ˈneɪbər",
+   "es": "vecino, vecina",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "next_door": {
+   "lemma": "next door",
+   "pos": "adverb",
+   "ipa": "nɛkst dɔr",
+   "es": "al lado, en la casa de al lado",
+   "kind": "chunk"
+  },
+  "on_the_corner": {
+   "lemma": "corner",
+   "pos": "noun",
+   "ipa": "ˈkɔrnər",
+   "es": "esquina",
+   "kind": "word"
+  },
+  "plant_pot": {
+   "lemma": "plant",
+   "pos": "noun",
+   "ipa": "plænt",
+   "es": "planta (de maceta)",
+   "kind": "word"
+  },
+  "take_have": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "llevarse, quedarse con",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 1,
+   "start": 30,
+   "end": 35,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 20,
+    "end": 35,
+    "text": "the third floor",
+    "es": "el tercer piso"
+   }
+  },
+  {
+   "p": 3,
+   "start": 18,
+   "end": 23,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 6,
+   "start": 86,
+   "end": 91,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 8,
+   "start": 17,
+   "end": 22,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 9,
+   "start": 14,
+   "end": 20,
+   "text": "knocks",
+   "sense": "knock_door",
+   "chunk": {
+    "start": 14,
+    "end": 32,
+    "text": "knocks on the door",
+    "es": "llama a la puerta"
+   }
+  },
+  {
+   "p": 9,
+   "start": 82,
+   "end": 87,
+   "text": "plant",
+   "sense": "plant_pot"
+  },
+  {
+   "p": 10,
+   "start": 43,
+   "end": 47,
+   "text": "next",
+   "sense": "next_door",
+   "chunk": {
+    "start": 43,
+    "end": 52,
+    "text": "next door",
+    "es": "al lado"
+   }
+  },
+  {
+   "p": 11,
+   "start": 32,
+   "end": 36,
+   "text": "come",
+   "sense": "come_in",
+   "chunk": {
+    "start": 32,
+    "end": 39,
+    "text": "come in",
+    "es": "pasa"
+   }
+  },
+  {
+   "p": 12,
+   "start": 16,
+   "end": 21,
+   "text": "looks",
+   "sense": "look_around",
+   "chunk": {
+    "start": 16,
+    "end": 28,
+    "text": "looks around",
+    "es": "mira a su alrededor"
+   }
+  },
+  {
+   "p": 12,
+   "start": 69,
+   "end": 71,
+   "text": "go",
+   "sense": "go_away",
+   "chunk": {
+    "start": 69,
+    "end": 76,
+    "text": "go away",
+    "es": "te vayas"
+   }
+  },
+  {
+   "p": 13,
+   "start": 23,
+   "end": 28,
+   "text": "comes",
+   "sense": "come_back",
+   "chunk": {
+    "start": 23,
+    "end": 33,
+    "text": "comes back",
+    "es": "vuelve"
+   }
+  },
+  {
+   "p": 14,
+   "start": 58,
+   "end": 62,
+   "text": "Take",
+   "sense": "take_have",
+   "chunk": {
+    "start": 58,
+    "end": 67,
+    "text": "Take them",
+    "es": "llévatelas"
+   }
+  },
+  {
+   "p": 16,
+   "start": 59,
+   "end": 65,
+   "text": "corner",
+   "sense": "on_the_corner"
+  },
+  {
+   "p": 16,
+   "start": 128,
+   "end": 133,
+   "text": "floor",
+   "sense": "first_floor_us",
+   "chunk": {
+    "start": 122,
+    "end": 133,
+    "text": "first floor",
+    "es": "planta baja"
+   }
+  },
+  {
+   "p": 16,
+   "start": 134,
+   "end": 139,
+   "text": "fixes",
+   "sense": "fix_repair"
+  },
+  {
+   "p": 17,
+   "start": 89,
+   "end": 94,
+   "text": "carry",
+   "sense": "carry_up",
+   "chunk": {
+    "start": 89,
+    "end": 111,
+    "text": "carry it up the stairs",
+    "es": "la suben por las escaleras"
+   }
+  },
+  {
+   "p": 18,
+   "start": 49,
+   "end": 56,
+   "text": "college",
+   "sense": "college_university"
+  },
+  {
+   "p": 20,
+   "start": 93,
+   "end": 98,
+   "text": "plant",
+   "sense": "plant_pot"
+  },
+  {
+   "p": 22,
+   "start": 34,
+   "end": 43,
+   "text": "neighbors",
+   "sense": "neighbor"
+  }
+ ]
+}

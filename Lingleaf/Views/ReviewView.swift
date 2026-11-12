@@ -211,7 +211,7 @@ struct ReviewView: View {
                     }
                 }
             } else if word.translation.isEmpty {
-                Text("No translation yet. Connect to the internet once to get it.")
+                Text(Self.noMeaningText(word))
                     .font(.callout)
                     .foregroundStyle(Brand.secondaryText)
                     .multilineTextAlignment(.center)
@@ -253,7 +253,8 @@ struct ReviewView: View {
     /// knows it (SPEC S7), else its forms read in the sentence, or the saved group of words.
     static func marked(_ sentence: String, word: VocabWord) -> AttributedString {
         var text = AttributedString(sentence)
-        let ranges = word.formRange.map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
+        // A word saved from a story's sense with a group of words ("went red") marks the whole group.
+        let ranges = (word.groupRange ?? word.formRange).map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
         for range in ranges {
             guard let stringRange = Range(range.nsRange, in: sentence), let marked = Range(stringRange, in: text) else { continue }
             text[marked].inlinePresentationIntent = .stronglyEmphasized
@@ -261,12 +262,20 @@ struct ReviewView: View {
         return text
     }
 
+    /// Why a word has no meaning: a story sense with no source to translate has none out of context (S19), the
+    /// sentence's translation tells; any other word is waiting for its translation to arrive.
+    static func noMeaningText(_ word: VocabWord) -> String {
+        Sense.isStory(word.sense) && word.translationSource == nil
+            ? String(localized: "No single meaning out of context. See the sentence.")
+            : String(localized: "No translation yet. Connect to the internet once to get it.")
+    }
+
     /// The button VoiceOver was on disappears; say what appeared in its place.
     private func announceMeaning(of word: VocabWord) {
         let readings = word.isUnsure ? word.meanings?.map { $0.text.isEmpty ? $0.label : "\($0.label), \($0.text)" } : nil
         var announcement = AttributedString(
             readings?.joined(separator: ". ") ?? (word.translation.isEmpty
-                ? String(localized: "No translation yet. Connect to the internet once to get it.") : word.translation)
+                ? Self.noMeaningText(word) : word.translation)
         )
         // High priority: not cut off by VoiceOver moving focus away from the vanished button.
         announcement.accessibilitySpeechAnnouncementPriority = .high

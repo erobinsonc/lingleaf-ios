@@ -42,8 +42,9 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         }
     }
 
-    /// Speaks `text`, stopping anything being said. `onFinish` runs when it ends by itself.
-    func speak(_ text: String, rate: Double, onFinish: (() -> Void)? = nil) {
+    /// Speaks `text`, stopping anything being said. `onFinish` runs when it ends by itself. With `ipa`
+    /// (a word's reading in a story, SPEC S19) the voice says `text` as that IPA, not as it spells it.
+    func speak(_ text: String, rate: Double, ipa: String? = nil, onFinish: (() -> Void)? = nil) {
         self.onFinish = nil
         #if DEBUG
         if let record {
@@ -71,7 +72,16 @@ final class Speaker: NSObject, AVSpeechSynthesizerDelegate {
         try? session.setCategory(.playback, mode: .spokenAudio, options: [.duckOthers])
         try? session.setActive(true)
         synthesizer.stopSpeaking(at: .immediate)
-        let utterance = AVSpeechUtterance(string: text)
+        let utterance: AVSpeechUtterance
+        if let ipa, !ipa.isEmpty {
+            let attributed = NSMutableAttributedString(string: text)
+            attributed.addAttribute(
+                NSAttributedString.Key(rawValue: AVSpeechSynthesisIPANotationAttribute), value: ipa,
+                range: NSRange(location: 0, length: attributed.length))
+            utterance = AVSpeechUtterance(attributedString: attributed)
+        } else {
+            utterance = AVSpeechUtterance(string: text)
+        }
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = Float(rate)
         spoken = utterance

@@ -57,6 +57,14 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
     public var meanings: [SavedMeaning]?
     /// A corrected word waiting for its meaning (SPEC S18): not due until it has one.
     public var waitsForMeaning: Bool?
+    /// A word saved from a bundled story's own sense (`sense` is "s:" and the sense's key, S19): the
+    /// story's id, and the group of words it was saved with ("went red") where it is in `context` (UTF-16).
+    public var story: String?
+    /// What to translate to give a story sense its meaning in another language (an English gloss, the group of
+    /// words or the base form); nil when there is none to give (S19), and then nothing is translated.
+    public var translationSource: String?
+    public var groupStart: Int?
+    public var groupEnd: Int?
 
     /// One spelling is saved once per sense.
     public var id: String { Self.id(word, sense) }
@@ -67,6 +75,12 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
 
     /// Saved while its sentence didn't tell which word it is.
     public var isUnsure: Bool { meanings != nil && sense == nil }
+
+    /// The group of words a story sense was saved with, in `context`, when it is still there.
+    public var groupRange: WordRange? {
+        guard let groupStart, let groupEnd else { return nil }
+        return WordRange(groupStart, groupEnd)
+    }
 
     /// The tapped form's range in `context`, when it is still there.
     public var formRange: WordRange? {
@@ -100,7 +114,7 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         word.translation = TextTools.truncated(translation, Self.maxTranslation)
         word.contextTranslation = contextTranslation.map { TextTools.truncated($0, Self.maxTranslation) }
         word.source = TextTools.truncated(source, TextTools.maxLabel)
-        if let sense, !Sense.all.contains(sense) { word.sense = nil }
+        if let sense, !Sense.isValid(sense) { word.sense = nil }
         if let form, form.utf16.count > 40 || TextTools.wordRanges(form) != [WordRange(0, (form as NSString).length)] {
             word.form = nil
         }
@@ -114,6 +128,23 @@ public struct VocabWord: Codable, Identifiable, Hashable, Sendable {
         if !rangeHoldsForm {
             word.formStart = nil
             word.formEnd = nil
+        }
+        // A story sense's story and group: only for a word saved from one, the group holding the tapped form.
+        let fromStory = Sense.isStory(word.sense) && word.kind == nil && word.meanings == nil
+        let storyIsValid = story.map { StorySenses.isID($0, dashes: true) && $0.utf8.count <= 60 } ?? false
+        if !fromStory || !storyIsValid { word.story = nil }
+        // A '#' in a word would make its id read as another word's sense.
+        word.word = word.word.replacingOccurrences(of: "#", with: "")
+        word.translationSource = fromStory
+            ? translationSource.map { TextTools.truncated(TextTools.cleanText($0), 120) }.flatMap { $0.isEmpty ? nil : $0 } : nil
+        var groupIsValid = false
+        // A context that was cut or cleaned no longer matches where the group was.
+        if fromStory, context == word.context, let group = groupRange, group.start >= 0, group.start < group.end, group.end <= ns.length {
+            groupIsValid = word.formRange.map { group.start <= $0.start && $0.end <= group.end } ?? true
+        }
+        if !groupIsValid {
+            word.groupStart = nil
+            word.groupEnd = nil
         }
         if let meanings {
             let kept = meanings.prefix(2).compactMap { $0.bounded() }
@@ -157,55 +188,6 @@ public struct Settings: Codable, Equatable, Sendable {
         fontSize = try c.decodeIfPresent(Double.self, forKey: .fontSize) ?? defaults.fontSize
         speechRate = try c.decodeIfPresent(Double.self, forKey: .speechRate) ?? defaults.speechRate
         targetLanguage = try c.decodeIfPresent(String.self, forKey: .targetLanguage)
-    }
-}
-
-public struct BundledStory: Sendable {
-    public let title: String
-    public let level: String
-    public let text: String
-
-    public init(title: String, level: String, text: String) {
-        self.title = title
-        self.level = level
-        self.text = text
-    }
-}
-
-/// A story shipped with the app: its resource file name (without ".txt"), title and level.
-public struct ShelfStory: Hashable, Sendable {
-    public let resource: String
-    public let title: String
-    public let level: String
-
-    public init(resource: String, title: String, level: String) {
-        self.resource = resource
-        self.title = title
-        self.level = level
-    }
-}
-
-extension BundledStory {
-    /// The original stories shipped with the app (resource file name, title, level), easiest first.
-    /// Discover lists them under their level too, so no level of the filter is empty.
-    public static let shelf: [ShelfStory] = [
-        ShelfStory(resource: "the-red-boat", title: "The Red Boat", level: "A1"),
-        ShelfStory(resource: "a-day-at-the-market", title: "A Day at the Market", level: "A2"),
-        ShelfStory(resource: "the-lighthouse-keeper", title: "The Lighthouse Keeper", level: "B1"),
-    ]
-
-    /// The author the bundled stories are saved with.
-    public static let author = "Lingleaf"
-
-    /// Shelf stories at `level`, in order; a nil level keeps every story.
-    public static func shelf(level: String?) -> [ShelfStory] {
-        guard let level else { return shelf }
-        return shelf.filter { $0.level == level }
-    }
-
-    /// The library's copy of the bundled story titled `title`, if the learner still has it.
-    public static func libraryCopy(of title: String, in books: [Book]) -> Book? {
-        books.first { $0.title == title && $0.author == author && $0.gutenbergID == nil }
     }
 }
 
@@ -258,6 +240,13 @@ public struct LibraryState: Equatable, Sendable {
     public func displayName(_ word: VocabWord, withMeaning: Bool = true) -> String {
         guard let sense = word.sense else { return word.word }
         let others = words.filter { $0.word == word.word && $0.sense != nil && $0.id != word.id }
+        // Two senses of one story word are told apart by their meanings: "get (ponerse)" / "get (agarrar)".
+        if Sense.isStory(sense) {
+            guard withMeaning, !others.isEmpty else { return word.word }
+            let first = word.translation.components(separatedBy: " · ").first ?? ""
+            let short = first.prefix { $0 != "," && $0 != "(" }.trimmingCharacters(in: .whitespaces)
+            return short.isEmpty ? word.word : "\(word.word) (\(short))"
+        }
         guard !others.isEmpty || IrregularVerbs.shared.namesItsSense(word.word) else { return word.word }
         if sense == Sense.noun { return "the \(word.word)" }
         // Review's prompt names it without its meaning: recall comes first (SPEC S7).
@@ -338,18 +327,46 @@ public final class Library {
         }
         // Saved before contexts were capped, or restored from a backup: within bounds, once per id.
         var ids: Set<String> = []
-        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { $0.bounded() }.filter { ids.insert($0.id).inserted }
+        loaded.words = (decode([VocabWord].self, "words.json") ?? []).map { $0.bounded() }
+            .filter { !$0.word.isEmpty && ids.insert($0.id).inserted }
         loaded.readingLog = decode([String: Int].self, "reading-log.json") ?? [:]
         loaded.settings = (decode(Settings.self, "settings.json") ?? Settings()).bounded()
         loaded.corrections = loadCorrections()?.corrections ?? []
         state = loaded
     }
 
-    /// Adds the bundled stories the first time the app runs.
+    /// Adds the bundled stories the first time the app runs. `stories` is in the order the Library should
+    /// show them, top to bottom; the Library lists the newest book first, so they are added in reverse.
     public func seedIfNeeded(_ stories: () -> [BundledStory]) {
         guard storage.read("seeded") == nil else { return }
-        for story in stories() { addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level) }
+        for story in stories().reversed() {
+            addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level)
+        }
         storage.write("seeded", "1")
+        storage.write(Self.storiesV2Key, "1")
+    }
+
+    static let storiesV2Key = "seeded-stories-v2"
+
+    /// Once, for an install that was seeded before the 18 stories with senses (SPEC S1): adds only those
+    /// 18 (never the first three), below the learner's books, in the order A1 to C2, as ordinary books
+    /// that can be deleted. The books the learner has keep their places. A story already in the library
+    /// is not added again.
+    public func addNewStoriesIfNeeded(_ stories: () -> [BundledStory]) {
+        guard storage.read(Self.storiesV2Key) == nil, storage.read("seeded") != nil else { return }
+        let new = stories().filter(\.hasSenses)
+        // The mark is written once the books are saved, and only when there was something to add: a failed
+        // launch (or a story list that did not load) tries again at the next one.
+        guard !new.isEmpty else { return }
+        let before = state.books.count
+        for story in new.reversed() where BundledStory.libraryCopy(of: story.title, in: state.books) == nil {
+            addBook(title: story.title, author: BundledStory.author, text: story.text, level: story.level)
+        }
+        // The new books went to the end of the list, which the Library shows first: move them to the start.
+        let added = state.books[before...]
+        state.books = Array(added) + state.books[..<before]
+        saveBooks()
+        storage.write(Self.storiesV2Key, "1")
     }
 
     // MARK: Books
@@ -470,6 +487,9 @@ public final class Library {
         return Set(zip(words, matches).filter { $0.1 }.map { $0.0 })
     }
 
+    /// Whether a word of a story sense of this kind may be saved: not a name or a word from another language.
+    public static func canSave(storyKind: StorySense.Kind?) -> Bool { storyKind != .name && storyKind != .foreign }
+
     /// Saves the word as being learned or as known and returns the record it
     /// replaced (nil when the word was new), so the change can be undone with
     /// `restoreWord`. A blank translation, phonetic, context or source keeps the saved one.
@@ -482,10 +502,14 @@ public final class Library {
         _ word: String, learned: Bool, translation: String? = nil, translationLanguage: String? = nil,
         phonetic: String? = nil, context: String = "", contextTranslation: String? = nil, source: String = "",
         kind: FunctionWord.Kind? = nil, base: String? = nil,
-        sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil
+        sense: String? = nil, form: String? = nil, formRange: WordRange? = nil, meanings: [SavedMeaning]? = nil,
+        story: String? = nil, groupRange: WordRange? = nil, translationSource: String? = nil, storyKind: StorySense.Kind? = nil
     ) -> VocabWord? {
+        // A name or a word from another language is spelled like a common word ("Long" in "Mr. Long"): never saved.
+        // Callers ask `canSave(storyKind:)` first: a refusal is not "no previous word" (which Undo would delete).
+        if !Self.canSave(storyKind: storyKind) { return nil }
         let key = VocabWord.key(word)
-        let sense = kind == nil ? sense.flatMap { Sense.all.contains($0) ? $0 : nil } : nil
+        let sense = kind == nil ? sense.flatMap { Sense.isValid($0) ? $0 : nil } : nil
         let existing = kind == nil ? state.saved(key, sense: sense) : state.word(key, sense: nil)
         // The same form saved unsure, now saved as one of its readings: it takes its place.
         let unsure = sense == nil ? nil : form
@@ -523,6 +547,19 @@ public final class Library {
             entry.formEnd = formRange?.end
         }
         if kind == nil, sense == nil, let meanings { entry.meanings = Array(meanings.prefix(2)) }
+        // A story sense keeps its story and the group it was saved with (the sentence may change, the range follows it).
+        let fromStory = Sense.isStory(sense)
+        // A word saved before as a plain word and now as a story sense loses the old meaning, which was for the
+        // spelling and may be the false one ("free": "gratis"); it is filled again from the sense.
+        if fromStory, let existing, existing.sense == nil {
+            entry.translation = ""
+            entry.translationLanguage = nil
+            entry.phonetic = ""
+        }
+        entry.story = fromStory ? story : nil
+        entry.translationSource = fromStory ? translationSource : nil
+        entry.groupStart = fromStory ? groupRange?.start : nil
+        entry.groupEnd = fromStory ? groupRange?.end : nil
         if let translation, !translation.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             entry.translation = translation
             entry.translationLanguage = translationLanguage
@@ -607,7 +644,30 @@ public final class Library {
     /// another language (or in an unknown one).
     public func wordsNeedingTranslation(_ target: String) -> [VocabWord] {
         // A word saved unsure is translated by its readings (`meaningsNeedingTranslation`).
-        state.words.filter { !$0.isUnsure && ($0.translation.isEmpty || $0.translationLanguage != target) }
+        // A story sense is translated from its own source, and from nothing when it has none (S19).
+        state.words.filter {
+            !$0.isUnsure && ($0.translation.isEmpty || $0.translationLanguage != target)
+                && (!Sense.isStory($0.sense) || $0.translationSource != nil)
+        }
+    }
+
+    /// A story sense with no source to translate has no meaning in another language than the one it was
+    /// saved in: the old meaning (Spanish, say) is cleared when the language changes, so a wrong one is not
+    /// shown under another language. Review then keeps the translated sentence.
+    public func clearUntranslatableStoryMeanings(_ target: String) {
+        var changed = false
+        let words = state.words.map { word -> VocabWord in
+            guard Sense.isStory(word.sense), word.translationSource == nil, !word.translation.isEmpty,
+                  word.translationLanguage != target else { return word }
+            var cleared = word
+            cleared.translation = ""
+            cleared.translationLanguage = nil
+            changed = true
+            return cleared
+        }
+        guard changed else { return }
+        state.words = words
+        save(state.words, "words.json")
     }
 
     public func answerReview(_ word: String, sense: String? = nil, correct: Bool) {
