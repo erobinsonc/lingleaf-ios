@@ -49,6 +49,8 @@ struct ExpandableText: View {
                 .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
                 .accessibilityLabel(Text("Show the full definition"))
+                // Voice Control says what is on screen: "tap More" ("tocar Más") must find it (WCAG 2.5.3).
+                .accessibilityInputLabels([Text("More")])
             }
         }
     }
