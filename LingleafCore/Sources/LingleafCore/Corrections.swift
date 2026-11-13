@@ -297,6 +297,13 @@ extension Library {
             && floor(a.nextReview.timeIntervalSince1970) == floor(b.nextReview.timeIntervalSince1970)
     }
 
+    /// The ids of the words the open corrections card changed, for the "Fixed" tag in Words: not a word
+    /// the correction merged into (it was saved before), nor one with the same spelling saved since.
+    public func correctedWordIDs() -> Set<String> {
+        guard !state.corrections.isEmpty else { return [] }
+        return Set(loadCorrections()?.changes.compactMap { $0.after?.id } ?? [])
+    }
+
     /// Close on the card: the corrections stay.
     public func closeCorrections() {
         storage.delete(Self.correctionsFile)

@@ -81,6 +81,25 @@ final class CorrectionsTests: XCTestCase {
         XCTAssertTrue(library.dueWords().contains { $0.id == left.id }, "due once its meaning arrives")
     }
 
+    func testOnlyTheWordsTheOpenCardChangedAreTaggedFixed() throws {
+        let library = library()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "no card")
+        library.saveWord("leave", learned: false, context: "Turn left at the bank.")
+        library.saveWord("left", learned: false, translation: "izquierda", context: "", sense: Sense.verb)
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(library.correctedWordIDs(), ["left#noun"], "the changed word, not the one with the same spelling")
+        library.closeCorrections()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "closed")
+    }
+
+    func testAWordCorrectedIntoOneAlreadySavedIsNotTagged() {
+        let library = library()
+        library.saveWord("left", learned: false, translation: "izquierda", sense: Sense.noun)
+        library.saveWord("leave", learned: false, translation: "irse", context: "Turn left now.")
+        library.correctWordsIfNeeded()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "it merged into a word saved before")
+    }
+
     func testCorrectingIntoAWordAlreadySavedMergesIntoIt() throws {
         let library = library()
         library.saveWord("left", learned: false, translation: "izquierda", sense: Sense.noun)

@@ -1,3 +1,4 @@
+import Accessibility
 import SwiftUI
 
 /// The word card's definition: cut to three lines with "More" to read the rest, so the sentence's
@@ -19,7 +20,12 @@ struct ExpandableText: View {
 
     private static let collapsedLines = 3
 
-    private var isCut: Bool { !expanded && fullHeight > shownHeight + 1 }
+    /// Whether the limit cuts the text; known while collapsed, kept once it is expanded so it can fold again.
+    @State private var foldable = false
+
+    private func measured() {
+        if !expanded { foldable = fullHeight > shownHeight + 1 }
+    }
 
     var body: some View {
         VStack(alignment: fillsWidth ? .leading : .center, spacing: 0) {
@@ -29,7 +35,10 @@ struct ExpandableText: View {
                 .multilineTextAlignment(alignment)
                 .lineLimit(expanded ? nil : Self.collapsedLines)
                 .frame(maxWidth: fillsWidth ? .infinity : nil, alignment: .leading)
-                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { shownHeight = $0 }
+                .onGeometryChange(for: CGFloat.self) { $0.size.height } action: {
+                    shownHeight = $0
+                    measured()
+                }
                 .accessibilityLabel(spoken)
                 // The same text without a limit, unseen, to know whether the limit cuts it.
                 .background {
@@ -39,18 +48,26 @@ struct ExpandableText: View {
                         .frame(maxWidth: fillsWidth ? .infinity : nil, alignment: .leading)
                         .fixedSize(horizontal: false, vertical: true)
                         .hidden()
-                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: { fullHeight = $0 }
+                        .onGeometryChange(for: CGFloat.self) { $0.size.height } action: {
+                            fullHeight = $0
+                            measured()
+                        }
                 }
-            if isCut {
-                Button("More") {
-                    expanded = true
+            if foldable {
+                // LocalizedStringKey on purpose: a ternary of two literals would be a plain String, not localized.
+                Button(expanded ? LocalizedStringKey("Less") : LocalizedStringKey("More")) {
+                    expanded.toggle()
+                    // VoiceOver reads the whole definition either way: say what changed.
+                    AccessibilityNotification.Announcement(
+                        String(localized: expanded ? "Full definition shown" : "Definition shortened")
+                    ).post()
                 }
                 .font(.footnote.weight(.semibold))
                 .frame(minWidth: 44, minHeight: 44)
                 .contentShape(Rectangle())
-                .accessibilityLabel(Text("Show the full definition"))
+                .accessibilityLabel(expanded ? Text("Show less of the definition") : Text("Show the full definition"))
                 // Voice Control says what is on screen: "tap More" ("tocar Más") must find it (WCAG 2.5.3).
-                .accessibilityInputLabels([Text("More")])
+                .accessibilityInputLabels([expanded ? Text("Less") : Text("More")])
             }
         }
     }

@@ -499,6 +499,16 @@
         }
       }
     },
+    "Definition shortened": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definición reducida"
+          }
+        }
+      }
+    },
     "Definitions from Wiktionary, CC BY-SA 3.0/4.0, via Free Dictionary API.": {
       "localizations": {
         "es": {
@@ -638,6 +648,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Clásicos gratuitos de Project Gutenberg."
+          }
+        }
+      }
+    },
+    "Full definition shown": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Definición completa mostrada"
           }
         }
       }
@@ -788,6 +808,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Palabras en aprendizaje"
+          }
+        }
+      }
+    },
+    "Less": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menos"
           }
         }
       }
@@ -1430,6 +1460,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajustes"
+          }
+        }
+      }
+    },
+    "Show less of the definition": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mostrar menos de la definición"
           }
         }
       }

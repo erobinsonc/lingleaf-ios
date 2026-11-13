@@ -10,6 +10,8 @@ struct WordsView: View {
     var body: some View {
         let due = model.library.dueWords().count
         let words = model.state.words.filter { $0.learned == showLearned }
+        // The words the open corrections card changed, read once for the whole list.
+        let fixedIDs = model.library.correctedWordIDs()
         NavigationStack {
             List {
                 Section {
@@ -59,7 +61,7 @@ struct WordsView: View {
                     .multilineTextAlignment(.center)
                 }
                 ForEach(words) { word in
-                    WordRow(word: word) { delete(word) }
+                    WordRow(word: word, isFixed: fixedIDs.contains(word.id)) { delete(word) }
                 }
             }
             .navigationTitle("Words")
@@ -105,13 +107,20 @@ struct WordsView: View {
 
 private struct WordRow: View {
     let word: VocabWord
+    /// The open corrections card changed this word (SPEC S18).
+    let isFixed: Bool
     let onDelete: () -> Void
     @Environment(AppModel.self) private var model
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(alignment: .top) {
+        // At accessibility sizes the name, the tag and the IPA each get a line.
+        let heading = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+        return HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 3) {
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                heading {
                     Text(verbatim: model.state.displayName(word)).font(.headline)
                     // While the corrections card is open, the words it fixed say so (SPEC S18).
                     if isFixed {
@@ -183,9 +192,6 @@ private struct WordRow: View {
         }
         .accessibilityAction(named: Text("Delete word"), onDelete)
     }
-
-    /// A correction of the card still open ended on this spelling.
-    private var isFixed: Bool { model.state.corrections.contains { $0.to == word.word } }
 
     /// Known words go back to review; the others are marked as known.
     private var stateActionTitle: Text {

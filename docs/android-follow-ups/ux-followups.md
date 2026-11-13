@@ -42,3 +42,15 @@ UI behaviour to mirror (Compose):
   worldwide."; removed: "Done".
 
 Not done: item 15 (the maintainer does not understand "keep before[] of merged corrections for a while": nothing changed).
+
+## Parity notes (added with the 0.4.0 fixes)
+- **SPEC.md:** copy it wholesale from iOS at merge time (it is identical in both repos); the lists above are the
+  behaviour to build, not a substitute for it.
+- **Android UI tests to write** (the iOS ones to mirror): a flick/fling in the reader leaves the UI idle; the definition
+  folds with "More"/"Less"; the Words tag "Fixed" shows only on a word the open card changed (not on one merged into,
+  not on one with the same spelling saved since); About shows the worldwide public-domain line and not the US one;
+  Review's end button is "Back to Words"; the unsure card with no meaning on a row shows none on either.
+- **Nouns without `nounEs`:** lead, leads, tear, tears (their sense depends on their sound) and fell, lay (rare nouns:
+  a gloss would mislead). Offline their unsure rows show no meaning; the table is identical in both repos.
+- **Also in this round:** Less/Menos toggle with a VoiceOver/TalkBack announcement; the card's fitted height resets for
+  each new card; the Fixed tag moves to its own line at accessibility sizes.
