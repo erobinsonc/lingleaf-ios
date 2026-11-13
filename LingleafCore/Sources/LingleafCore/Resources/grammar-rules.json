@@ -34,13 +34,13 @@
    },
    "rule": {
     "en": [
-     "his = of a man or boy. her = of a woman or girl.",
+     "his = belongs to a man or boy. her = belongs to a woman or girl.",
      "The owner decides, not the thing: his mother, her father.",
      "its = of a thing or animal, no apostrophe. it's = it is.",
      "their = of several people or things."
     ],
     "es": [
-     "his = de él (hombre o niño). her = de ella (mujer o niña).",
+     "his = de un hombre o niño. her = de una mujer o niña.",
      "Importa quién es el dueño, no lo que se posee: his mother (la mamá de él), her father (el papá de ella).",
      "its = de una cosa o animal, sin apóstrofo. it's = it is.",
      "their = de varias personas o cosas."
@@ -67,7 +67,7 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: «su» fits every owner. English chooses by the owner: his, her, its, their.",
+    "en": "«su» fits every owner. English chooses by the owner: his, her, its, their.",
     "es": "En español «su» sirve para todos los dueños. En inglés se elige según el dueño: his, her, its, their."
    },
    "aliases": [
@@ -98,8 +98,8 @@
      "answer": 0,
      "feedback": [
       {
-       "en": "Maria is a woman: her book.",
-       "es": "María es una mujer: her."
+       "en": "Maria is the owner, a woman: her book.",
+       "es": "Maria es la dueña, una mujer: her book."
       },
       {
        "en": "his is for a man or boy.",
@@ -248,21 +248,21 @@
    "category": "verbs",
    "level": "A2",
    "title": {
-    "en": "Irregular past: went, saw, took",
-    "es": "Pasado irregular: went, saw, took"
+    "en": "Irregular past",
+    "es": "Pasado irregular"
    },
    "rule": {
     "en": [
      "Most verbs add -ed for the past: walked, opened.",
      "Many common verbs change: go → went, see → saw, take → took.",
      "The past form is the same for all persons: I went, she went.",
-     "Stories are told in the past, so learn the most frequent ones first."
+     "Stories are told in the past, so the most common verbs are worth learning first."
     ],
     "es": [
      "La mayoría de los verbos agrega -ed en pasado: walked, opened.",
      "Muchos verbos comunes cambian: go → went, see → saw, take → took.",
      "El pasado es igual para todas las personas: I went, she went.",
-     "Los cuentos se narran en pasado: aprende primero los más frecuentes."
+     "Los cuentos se narran en pasado, así que conviene aprender primero los verbos más comunes."
     ]
    },
    "examples": [
@@ -286,7 +286,7 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: «fui», «vi», «tomé» are different words; English also changes the word: went, saw, took.",
+    "en": "«fui», «vi», «tomé» are different words; English also changes the word: went, saw, took.",
     "es": "En español «fui», «vi», «tomé» son palabras distintas. En inglés también cambia la palabra: went, saw, took."
    },
    "aliases": [
@@ -456,16 +456,16 @@
      "answer": 2,
      "feedback": [
       {
-       "en": "come is irregular: came.",
-       "es": "come es irregular: came."
+       "en": "comed isn't a word: come is irregular, its past is came.",
+       "es": "comed no existe: come es irregular y su pasado es came."
       },
       {
-       "en": "at six, in a story, needs the past: came.",
-       "es": "En un cuento, el pasado: came."
+       "en": "Last night is a finished time, so the verb must be past: came.",
+       "es": "Last night es un tiempo terminado: el verbo va en pasado, came."
       },
       {
-       "en": "came is the past of come.",
-       "es": "came es el pasado de come."
+       "en": "came is the past of come: they came home at six.",
+       "es": "came es el pasado de come: they came home at six."
       }
      ]
     }
@@ -476,8 +476,8 @@
    "category": "verbs",
    "level": "A1",
    "title": {
-    "en": "Questions and negatives: do, does, did",
-    "es": "Preguntas y negativas: do, does, did"
+    "en": "Questions and negatives",
+    "es": "Preguntas y negativas"
    },
    "rule": {
     "en": [
@@ -512,7 +512,7 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: English needs a helper in questions and negatives: «¿Dónde vives?» is Where do you live?, «No sé» is I don't know.",
+    "en": "English needs a helper in questions and negatives: «¿Dónde vives?» is Where do you live?, «No sé» is I don't know.",
     "es": "En inglés las preguntas y las negativas necesitan un auxiliar: «¿Dónde vives?» es Where do you live?, «No sé» es I don't know."
    },
    "aliases": [
@@ -693,8 +693,8 @@
    "category": "sentence",
    "level": "A1",
    "title": {
-    "en": "Every sentence needs a subject: it, there",
-    "es": "Toda oración necesita sujeto: it, there"
+    "en": "Every sentence needs a subject",
+    "es": "Toda oración necesita sujeto"
    },
    "rule": {
     "en": [
@@ -707,7 +707,7 @@
      "Las oraciones en inglés necesitan sujeto, aunque en español se omita: She is tired.",
      "Para clima, hora y distancia usa it: It's raining. It's late.",
      "Para decir que algo existe (hay): there is (uno) o there are (varios).",
-     "En pasado (había): there was, there were. Ej.: There was a door."
+     "En pasado (había): there was, there were: There was a door."
     ]
    },
    "examples": [
@@ -731,7 +731,7 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish drops the subject («Llueve», «Hay un gato»). English always has one: It's raining. There is a cat.",
+    "en": "Spanish drops the subject («Llueve», «Hay un gato»). English always has one: It's raining. There is a cat.",
     "es": "En español se omite el sujeto («Llueve», «Hay un gato»). En inglés siempre hay uno: It's raining. There is a cat."
    },
    "aliases": [
@@ -742,7 +742,8 @@
     "había",
     "sujeto",
     "clima",
-    "weather"
+    "weather",
+    "there"
    ],
    "books": {
     "mode": "none"
@@ -987,7 +988,7 @@
     "es": "Las cosas únicas llevan the: the sun, the sea."
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish says «Los perros son leales» and «Es profesora». English: Dogs are loyal (no the). She is a teacher (with a).",
+    "en": "Spanish says «Los perros son leales» and «Es profesora». English: Dogs are loyal (no the). She is a teacher (with a).",
     "es": "En español se dice «Los perros son leales» y «Es profesora». En inglés: Dogs are loyal (sin the). She is a teacher (con a)."
    },
    "aliases": [
@@ -1248,7 +1249,7 @@
     "es": "Arcaico, solo en libros muy antiguos: whither = adónde, whence = de dónde. Hoy se usa where y from where."
    },
    "spanish": {
-    "en": "Spanish speakers: «allí» is there, «luego» is then, and «que» after a comparison is than: taller than her.",
+    "en": "«allí» is there, «luego» is then, and «que» after a comparison is than: taller than her.",
     "es": "«allí» es there, «luego» es then y «que» en una comparación es than: taller than her (más alta que ella)."
    },
    "aliases": [
@@ -1437,8 +1438,8 @@
    "category": "sentence",
    "level": "A1",
    "title": {
-    "en": "Word order in questions: Where do you live?",
-    "es": "El orden en las preguntas: Where do you live?"
+    "en": "Word order in questions",
+    "es": "El orden en las preguntas"
    },
    "rule": {
     "en": [
@@ -1473,8 +1474,8 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish can put the verb first or leave the subject out («¿Dónde vive ella?»). English keeps the order question word + helper + subject + verb: Where does she live?",
-    "es": "En español el verbo puede ir primero o se omite el sujeto («¿Dónde vive ella?»). En inglés el orden es palabra interrogativa + auxiliar + sujeto + verbo: Where does she live?"
+    "en": "Spanish can put the verb first or drop the subject («¿Dónde vive ella?»). English keeps: question word + helper + subject + verb.",
+    "es": "En español el verbo puede ir primero o se omite el sujeto («¿Dónde vive ella?»). En inglés: palabra interrogativa + auxiliar + sujeto + verbo."
    },
    "aliases": [
     "question",
@@ -1483,7 +1484,8 @@
     "what",
     "why",
     "who",
-    "orden"
+    "orden",
+    "where do you live"
    ],
    "books": {
     "mode": "none"
@@ -1672,8 +1674,8 @@
    "category": "verbs",
    "level": "A1",
    "title": {
-    "en": "The -s in the present: he works",
-    "es": "La -s del presente: he works"
+    "en": "The -s in the present",
+    "es": "La -s del presente"
    },
    "rule": {
     "en": [
@@ -1708,7 +1710,7 @@
     ]
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish changes the verb for every person (trabajo, trabajas, trabaja). English only adds -s for he, she, it.",
+    "en": "Spanish changes the verb for every person (trabajo, trabajas, trabaja). English only adds -s for he, she, it.",
     "es": "En español el verbo cambia con cada persona (trabajo, trabajas, trabaja). En inglés solo lleva -s con he, she, it."
    },
    "aliases": [
@@ -1886,8 +1888,8 @@
    "category": "sentence",
    "level": "A1",
    "title": {
-    "en": "Adjective and noun order: a red door, a kitchen door",
-    "es": "El orden de adjetivo y sustantivo: a red door, a kitchen door"
+    "en": "Adjective and noun order",
+    "es": "El orden de adjetivo y sustantivo"
    },
    "rule": {
     "en": [
@@ -1928,7 +1930,7 @@
     }
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish puts the adjective after the noun («una puerta roja»). English puts it before: a red door.",
+    "en": "Spanish puts the adjective after the noun («una puerta roja»). English puts it before: a red door.",
     "es": "En español el adjetivo suele ir después («una puerta roja»). En inglés va antes: a red door."
    },
    "aliases": [
@@ -1937,7 +1939,9 @@
     "orden",
     "noun",
     "sustantivo",
-    "word order"
+    "word order",
+    "a red door",
+    "a kitchen door"
    ],
    "books": {
     "mode": "none"
@@ -2110,8 +2114,8 @@
    "category": "prepositions",
    "level": "A1",
    "title": {
-    "en": "In, on, at: time",
-    "es": "In, on, at: fechas y horas"
+    "en": "In, on, at",
+    "es": "In, on, at"
    },
    "rule": {
     "en": [
@@ -2152,7 +2156,7 @@
     "es": "«On Friday night» es esa noche; «at night» es las noches en general. Reino Unido: at the weekend. EE. UU.: on the weekend u on weekends."
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish uses «en», «el» and «a las»: «en julio», «el lunes», «a las siete». English: in July, on Monday, at seven.",
+    "en": "Spanish uses «en», «el» and «a las»: «en julio», «el lunes», «a las siete». English: in July, on Monday, at seven.",
     "es": "En español se dice «en julio», «el lunes», «a las siete». En inglés: in July, on Monday, at seven."
    },
    "aliases": [
@@ -2169,7 +2173,8 @@
     "morning",
     "night",
     "weekend",
-    "preposición"
+    "preposición",
+    "time"
    ],
    "books": {
     "mode": "patterns",
@@ -2402,8 +2407,8 @@
    "category": "prepositions",
    "level": "A1",
    "title": {
-    "en": "In, on, at: places",
-    "es": "In, on, at: lugares"
+    "en": "In, on, at",
+    "es": "In, on, at"
    },
    "rule": {
     "en": [
@@ -2448,7 +2453,7 @@
     "es": "En una calle: EE. UU. on Main Street; Reino Unido también in the High Street."
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish says «en» for all: «en casa», «en la mesa», «en Madrid». English: at home, on the table, in Madrid.",
+    "en": "Spanish says «en» for all: «en casa», «en la mesa», «en Madrid». English: at home, on the table, in Madrid.",
     "es": "En español todo es «en»: «en casa», «en la mesa», «en Madrid». En inglés: at home, on the table, in Madrid."
    },
    "aliases": [
@@ -2461,7 +2466,8 @@
     "where",
     "preposición",
     "home",
-    "school"
+    "school",
+    "places"
    ],
    "books": {
     "mode": "none"
@@ -2636,8 +2642,8 @@
    "category": "sentence",
    "level": "A2",
    "title": {
-    "en": "One negative is enough: nobody, anything",
-    "es": "Basta una negación: nobody, anything"
+    "en": "One negative is enough",
+    "es": "Basta una negación"
    },
    "rule": {
     "en": [
@@ -2678,7 +2684,7 @@
     "es": "Algunos personajes de libros usan dos negaciones. Así hablan; no es inglés estándar."
    },
    "spanish": {
-    "en": "Spanish speakers: «No vino nadie» = Nobody came. «No veo nada» = I don't see anything.",
+    "en": "«No vino nadie» = Nobody came. «No veo nada» = I don't see anything.",
     "es": "En español: «No vino nadie» = Nobody came. «No veo nada» = I don't see anything."
    },
    "aliases": [
@@ -2864,8 +2870,8 @@
    "category": "sentence",
    "level": "B1",
    "title": {
-    "en": "Questions inside a sentence: I don't know where he is",
-    "es": "Preguntas dentro de otra oración: I don't know where he is"
+    "en": "Questions inside a sentence",
+    "es": "Preguntas dentro de otra oración"
    },
    "rule": {
     "en": [
@@ -2904,8 +2910,8 @@
     "es": "«Do you know where he is?» lleva orden normal después de where: solo la primera parte es una pregunta."
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish often puts the verb before the subject («No sé dónde está Ana»). English keeps the subject first, as in a statement: I don't know where Ana is.",
-    "es": "En español el verbo suele ir antes del sujeto («No sé dónde está Ana»). En inglés el sujeto va primero, como en una afirmación: I don't know where Ana is."
+    "en": "Spanish often puts the verb before the subject («No sé dónde está Ana»). English keeps the subject first: I don't know where Ana is.",
+    "es": "En español el verbo suele ir antes del sujeto («No sé dónde está Ana»). En inglés el sujeto va primero: I don't know where Ana is."
    },
    "aliases": [
     "indirect",
@@ -2915,7 +2921,8 @@
     "wonder",
     "asked",
     "preguntó",
-    "sé"
+    "sé",
+    "i don't know where he is"
    ],
    "books": {
     "mode": "none"
@@ -3090,10 +3097,10 @@
   {
    "id": "present-perfect-past",
    "category": "verbs",
-   "level": "A2",
+   "level": "B1",
    "title": {
-    "en": "Present perfect or past simple: I have seen, I saw",
-    "es": "Present perfect o past simple: I have seen, I saw"
+    "en": "Present perfect or past simple",
+    "es": "Present perfect o past simple"
    },
    "rule": {
     "en": [
@@ -3134,8 +3141,8 @@
     }
    },
    "spanish": {
-    "en": "Spanish speakers: many Spanish speakers say «ya lo vi» where English asks for the present perfect: I have already seen it. With a finished time English uses the past simple: I saw it yesterday.",
-    "es": "Muchos hispanohablantes dicen «ya lo vi» donde el inglés pide el present perfect: I have already seen it. Con un tiempo terminado el inglés usa el past simple: I saw it yesterday."
+    "en": "Spanish often uses one tense for both (comí, he comido); English separates a finished time (saw) from a link to now (have seen).",
+    "es": "El español suele usar un solo tiempo para los dos casos (comí, he comido); el inglés separa un tiempo terminado (saw) de un vínculo con el presente (have seen)."
    },
    "aliases": [
     "present perfect",
@@ -3155,7 +3162,9 @@
     "ever",
     "never",
     "already",
-    "yet"
+    "yet",
+    "i have seen",
+    "i saw"
    ],
    "books": {
     "mode": "none"
@@ -3278,12 +3287,12 @@
      "answer": 2,
      "feedback": [
       {
-       "en": "yesterday is a finished time: use lost, not has lost.",
-       "es": "yesterday es un tiempo terminado: usa lost, no has lost."
+       "en": "yesterday is a finished time: use the past simple, lost.",
+       "es": "yesterday es un tiempo terminado: usa el past simple, lost."
       },
       {
-       "en": "My brother is he, so has; but with yesterday use the past simple, lost.",
-       "es": "My brother es he, así que has; pero con yesterday va el past simple, lost."
+       "en": "My brother takes has, and yesterday needs the past simple: lost.",
+       "es": "My brother lleva has, y yesterday pide el past simple: lost."
       },
       {
        "en": "yesterday + past simple: lost.",
@@ -3325,7 +3334,7 @@
      "id": "present-perfect-past-7",
      "level": "A2",
      "kind": "gap",
-     "text": "Have you ___ been to London?",
+     "text": "Have you ___ been to London before?",
      "options": [
       "ever",
       "yet",
@@ -3338,8 +3347,8 @@
        "es": "ever en una pregunta: Have you ever been...?"
       },
       {
-       "en": "yet goes at the end: Have you been to London yet?",
-       "es": "yet va al final: Have you been to London yet?"
+       "en": "yet goes at the end of the question: Have you been to London yet?",
+       "es": "yet va al final de la pregunta: Have you been to London yet?"
       },
       {
        "en": "ago goes with the past simple: two days ago.",
@@ -3360,39 +3369,97 @@
      "answer": 2,
      "feedback": [
       {
-       "en": "ago points to a finished time: use saw.",
-       "es": "ago señala un tiempo terminado: usa saw."
+       "en": "With ago use the past simple: saw.",
+       "es": "Con ago se usa el past simple: saw."
       },
       {
-       "en": "have + saw is wrong; with ago use the past simple: saw.",
-       "es": "have + saw es incorrecto; con ago se usa el past simple: saw."
+       "en": "have + saw doesn't fit here; with ago use the past simple: saw.",
+       "es": "have + saw no va aquí; con ago se usa el past simple: saw."
       },
       {
-       "en": "two days ago + past simple: saw.",
-       "es": "two days ago + past simple: saw."
+       "en": "two days ago is a finished time: saw.",
+       "es": "two days ago es un tiempo terminado: saw."
+      }
+     ]
+    },
+    {
+     "id": "present-perfect-past-9",
+     "level": "A2",
+     "kind": "gap",
+     "text": "She has ___ finished her homework.",
+     "options": [
+      "already",
+      "ago",
+      "yesterday"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "already goes with the present perfect: has already finished.",
+       "es": "already va con el present perfect: has already finished."
+      },
+      {
+       "en": "ago goes with the past simple, not after has.",
+       "es": "ago va con el past simple, no después de has."
+      },
+      {
+       "en": "yesterday goes with the past simple, not with has finished.",
+       "es": "yesterday va con el past simple, no con has finished."
+      }
+     ]
+    },
+    {
+     "id": "present-perfect-past-10",
+     "level": "A2",
+     "kind": "gap",
+     "text": "The bus has ___ left. Run!",
+     "options": [
+      "just",
+      "last week",
+      "in 2019"
+     ],
+     "answer": 0,
+     "feedback": [
+      {
+       "en": "just = a moment ago, and it goes with the present perfect: has just left.",
+       "es": "just = hace un momento, y va con el present perfect: has just left."
+      },
+      {
+       "en": "last week is a finished time: it needs the past simple.",
+       "es": "last week es un tiempo terminado: pide el past simple."
+      },
+      {
+       "en": "in 2019 is a finished time: it needs the past simple.",
+       "es": "in 2019 es un tiempo terminado: pide el past simple."
       }
      ]
     }
-   ]
+   ],
+   "note": {
+    "en": "«Perdí mis llaves» can be I have lost my keys (now) or I lost my keys (finished time). With already, use the present perfect.",
+    "es": "«Perdí mis llaves» puede ser I have lost my keys (ahora) o I lost my keys (tiempo terminado). Con already, usa el present perfect."
+   }
   },
   {
    "id": "age-and-feelings",
    "category": "sentence",
-   "level": "A2",
+   "level": "A1",
    "title": {
-    "en": "Age and feelings: I am 20, I am hungry",
-    "es": "Edad y estados: I am 20, I am hungry"
+    "en": "Age and feelings",
+    "es": "Edad y estados"
    },
    "rule": {
     "en": [
      "Age uses be: I am 20. You can add years old: I am twenty years old.",
-     "Feelings and states use be + adjective: I am hungry, thirsty, cold, hot, afraid, right.",
-     "Ask the age with How old: How old are you?"
+     "Feelings and states use be + adjective: I am hungry, thirsty, cold, hot, afraid.",
+     "Ask the age with How old: How old are you?",
+     "Careful: I am cold is the temperature; I have a cold is an illness."
     ],
     "es": [
      "La edad usa be: I am 20 (tengo 20 años). Puedes agregar years old: I am twenty years old.",
-     "Los estados usan be + adjetivo: I am hungry (tengo hambre), thirsty (sed), cold (frío), hot (calor), afraid (miedo), right (razón).",
-     "La edad se pregunta con How old: How old are you? (¿cuántos años tienes?)"
+     "Los estados usan be + adjetivo: I am hungry (tengo hambre), thirsty (sed), cold (frío), hot (calor), afraid (miedo).",
+     "La edad se pregunta con How old: How old are you? (¿cuántos años tienes?)",
+     "Ojo: I am cold es la temperatura; I have a cold es estar resfriado."
     ]
    },
    "examples": [
@@ -3411,16 +3478,16 @@
    ],
    "contrast": {
     "forms": [
-     "I am hungry.",
-     "I have a sandwich."
+     "I am cold.",
+     "I have a cold."
     ],
     "gloss": {
-     "en": "am hungry = a feeling · have = you own something",
-     "es": "am hungry = un estado · have = posees algo"
+     "en": "am cold = the temperature · have a cold = an illness",
+     "es": "am cold = tengo frío (la temperatura) · have a cold = estoy resfriado (una enfermedad)"
     }
    },
    "spanish": {
-    "en": "Spanish speakers: Spanish uses «tener» for age and feelings («tengo 20 años», «tengo hambre»). English uses be: I am 20, I am hungry.",
+    "en": "Spanish uses «tener» for age and feelings («tengo 20 años», «tengo hambre»). English uses be: I am 20, I am hungry.",
     "es": "En español se usa «tener» para la edad y los estados («tengo 20 años», «tengo hambre»). En inglés se usa be: I am 20, I am hungry."
    },
    "aliases": [
@@ -3439,7 +3506,9 @@
     "tener miedo",
     "tener sed",
     "tener razón",
-    "be or have"
+    "be or have",
+    "i am 20",
+    "i am hungry"
    ],
    "books": {
     "mode": "none"
@@ -3561,7 +3630,7 @@
      "options": [
       "is",
       "has",
-      "have"
+      "does"
      ],
      "answer": 0,
      "feedback": [
@@ -3570,12 +3639,12 @@
        "es": "Los estados llevan be: is afraid."
       },
       {
-       "en": "Afraid is a feeling: use is, not has.",
-       "es": "Afraid es un estado: usa is, no has."
+       "en": "has doesn't go with afraid; use be: is afraid.",
+       "es": "has no va con afraid; usa be: is afraid."
       },
       {
-       "en": "My brother is he: is, and be for feelings.",
-       "es": "My brother es he: is, y be para los estados."
+       "en": "does is a helper, not a state; use is.",
+       "es": "does es un auxiliar, no un estado; usa is."
       }
      ]
     },
@@ -3611,27 +3680,27 @@
     },
     {
      "id": "age-and-feelings-7",
-     "level": "A2",
+     "level": "A1",
      "kind": "gap",
-     "text": "He said the earth is round. He is ___.",
+     "text": "Open the window. We ___ hot.",
      "options": [
-      "right",
-      "wrong",
-      "warm"
+      "are",
+      "have",
+      "do"
      ],
      "answer": 0,
      "feedback": [
       {
-       "en": "To say someone has reason, use be + right: He is right.",
-       "es": "Para tener razón se usa be + right: He is right."
+       "en": "Feelings take be: we are hot.",
+       "es": "Los estados llevan be: we are hot."
       },
       {
-       "en": "wrong = not correct; the earth is round, so he is right.",
-       "es": "wrong = equivocado; la Tierra es redonda, así que tiene razón."
+       "en": "have doesn't go with hot here; use be: we are hot.",
+       "es": "have no va con hot aquí; usa be: we are hot."
       },
       {
-       "en": "warm is a temperature, not a judgement.",
-       "es": "warm es temperatura, no un juicio."
+       "en": "do is a helper, not a state; use are.",
+       "es": "do es un auxiliar, no un estado; usa are."
       }
      ]
     },
@@ -3639,29 +3708,63 @@
      "id": "age-and-feelings-8",
      "level": "A1",
      "kind": "gap",
-     "text": "He ___ ten years old.",
+     "text": "How old is your sister? She ___ fourteen.",
      "options": [
       "has",
       "is",
-      "have"
+      "does"
      ],
      "answer": 1,
      "feedback": [
       {
-       "en": "Age takes be: he is ten years old.",
-       "es": "La edad lleva be: he is ten years old."
+       "en": "has doesn't go with age; age needs be: She is fourteen.",
+       "es": "has no va con la edad; la edad necesita be: She is fourteen."
       },
       {
-       "en": "be for age: He is ten years old.",
-       "es": "be para la edad: He is ten years old."
+       "en": "Age takes be: She is fourteen.",
+       "es": "La edad lleva be: She is fourteen."
       },
       {
-       "en": "He takes is (or has for owning), and age needs be: is.",
-       "es": "He lleva is, y la edad necesita be: is."
+       "en": "does is a helper, not an age; use is.",
+       "es": "does es un auxiliar, no una edad; usa is."
+      }
+     ]
+    },
+    {
+     "id": "age-and-feelings-9",
+     "level": "A1",
+     "kind": "choose",
+     "text": "Estoy resfriado.",
+     "ask": {
+      "en": "Choose the English sentence.",
+      "es": "Elige la frase en inglés."
+     },
+     "options": [
+      "I am cold.",
+      "I have a cold.",
+      "I have cold."
+     ],
+     "answer": 1,
+     "feedback": [
+      {
+       "en": "I am cold is about the temperature (tengo frío), not an illness.",
+       "es": "I am cold es la temperatura (tengo frío), no una enfermedad."
+      },
+      {
+       "en": "For an illness say I have a cold.",
+       "es": "Para la enfermedad se dice I have a cold."
+      },
+      {
+       "en": "For an illness you need the article: a cold.",
+       "es": "Para la enfermedad hace falta el artículo: a cold."
       }
      ]
     }
-   ]
+   ],
+   "note": {
+    "en": "Also with be: I am right, I am wrong (tener razón, estar equivocado).",
+    "es": "También con be: I am right, I am wrong (tener razón, estar equivocado)."
+   }
   }
  ]
 }

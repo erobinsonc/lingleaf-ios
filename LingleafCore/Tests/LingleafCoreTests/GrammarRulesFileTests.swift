@@ -151,22 +151,76 @@ final class GrammarRulesFileTests: XCTestCase {
         XCTAssertEqual(optionOrder("his-her-its-1", seen: 2, count: 3), [1, 2, 0])
         XCTAssertEqual(optionOrder("question-order-1", seen: 0, count: 3), [2, 0, 1])
         XCTAssertEqual(optionOrder("age-and-feelings-1", seen: 5, count: 3), [0, 2, 1])
-        XCTAssertEqual(optionOrder("do-does-did-1", seen: 0, count: 4), [1, 3, 0, 2])
+        XCTAssertEqual(optionOrder("do-does-did-1", seen: 0, count: 3), [2, 0, 1])
         XCTAssertEqual(optionOrder("x", seen: 0, count: 2), [0, 1])
     }
 
-    func testTheRightAnswerIsSpreadOverThePositions() throws {
+    func testTheRightAnswerAsTheLearnerSeesItIsSpreadOverThePositions() throws {
         var counts: [Int: Int] = [:]
         for rule in try rules() {
-            for item in try XCTUnwrap(rule["practice"] as? [[String: Any]]) where (item["options"] as? [String])?.count == 3 {
-                counts[item["answer"] as? Int ?? -1, default: 0] += 1
+            for item in try XCTUnwrap(rule["practice"] as? [[String: Any]]) {
+                let options = try XCTUnwrap(item["options"] as? [String])
+                guard options.count == 3, let answer = item["answer"] as? Int, let id = item["id"] as? String else { continue }
+                for seen in 0..<10 {
+                    let order = item["fixedOrder"] as? Bool == true ? [0, 1, 2] : optionOrder(id, seen: seen, count: 3)
+                    counts[order.firstIndex(of: answer) ?? -1, default: 0] += 1
+                }
             }
         }
         let total = counts.values.reduce(0, +)
-        XCTAssertGreaterThan(total, 30)
+        XCTAssertGreaterThan(total, 300)
         for (position, count) in counts {
             XCTAssertLessThanOrEqual(Double(count) / Double(total), 0.4, "position \(position) holds too many right answers: \(counts)")
         }
+    }
+
+    // MARK: The SPEC's other shared rules, checked against an independent reference
+
+    /// SPEC "Day": whole days between 2001-01-01 and the local date of (instant - 4 hours).
+    private func reviewDay(_ date: Date, calendar: Calendar) -> Int {
+        let start = calendar.date(from: DateComponents(year: 2001, month: 1, day: 1))!
+        let shifted = calendar.startOfDay(for: date.addingTimeInterval(-4 * 3600))
+        return calendar.dateComponents([.day], from: start, to: shifted).day!
+    }
+
+    func testTheDayStartsAtFourInTheLocalTimeZone() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "America/Bogota")!
+        func at(_ day: Int, _ hour: Int, _ minute: Int) -> Date {
+            calendar.date(from: DateComponents(year: 2001, month: 1, day: day, hour: hour, minute: minute))!
+        }
+        XCTAssertEqual(reviewDay(at(2, 3, 59), calendar: calendar), 0)
+        XCTAssertEqual(reviewDay(at(2, 4, 0), calendar: calendar), 1)
+        XCTAssertEqual(reviewDay(at(1, 2, 0), calendar: calendar), -1)
+    }
+
+    /// SPEC "Review selection", placement: rule item j goes after word ceil((j + 1) * W / (m + 1)).
+    private func placements(words: Int, items: Int) -> [Int] {
+        (0..<items).map { j in ((j + 1) * words + items) / (items + 1) }
+    }
+
+    func testRuleItemsAreSpreadAmongTheWordsAndNeverComeFirstWhenAWordIsDue() {
+        XCTAssertEqual(placements(words: 10, items: 6), [2, 3, 5, 6, 8, 9])
+        XCTAssertEqual(placements(words: 3, items: 2), [1, 2])
+        XCTAssertEqual(placements(words: 1, items: 2), [1, 1])
+        XCTAssertEqual(placements(words: 0, items: 4), [0, 0, 0, 0])
+        for words in 1...20 { XCTAssertGreaterThanOrEqual(placements(words: words, items: 6).first ?? 1, 1, "\(words) words") }
+    }
+
+    /// SPEC "Progress", rightDays: a right answer is added when the list is empty or when its day and its item both differ.
+    private func practiced(_ answers: [(day: Int, item: String)]) -> Bool {
+        var entries: [(day: Int, item: String)] = []
+        for answer in answers where entries.count < 2 {
+            if entries.isEmpty || (answer.day != entries[0].day && answer.item != entries[0].item) { entries.append(answer) }
+        }
+        return entries.count == 2
+    }
+
+    func testPracticedNeedsTwoDaysAndTwoItems() {
+        XCTAssertFalse(practiced([(5, "A")]))
+        XCTAssertFalse(practiced([(5, "A"), (5, "B")]))
+        XCTAssertFalse(practiced([(5, "A"), (6, "A")]))
+        XCTAssertTrue(practiced([(5, "A"), (6, "B")]))
     }
 
     func testTheSpecDoesNotWriteTheVerbCount() throws {
