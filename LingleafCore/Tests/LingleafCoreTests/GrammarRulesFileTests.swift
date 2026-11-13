@@ -1,4 +1,6 @@
+#if canImport(CryptoKit)
 import CryptoKit
+#endif
 import XCTest
 
 /// The content gate of `grammar-rules.json` (SPEC.md, Grammar rules data): the file is the one the
@@ -31,8 +33,13 @@ final class GrammarRulesFileTests: XCTestCase {
         let spec = URL(fileURLWithPath: #filePath).deletingLastPathComponent()
             .appending(path: "../../../SPEC.md").standardizedFileURL
         let text = try String(contentsOf: spec, encoding: .utf8)
+        // CryptoKit is Apple-only: on Linux the hash is checked by the CI of the Apple build.
+        #if canImport(CryptoKit)
         let hash = SHA256.hash(data: try data()).map { String(format: "%02x", $0) }.joined()
         XCTAssertTrue(text.contains("`\(hash)`"), "SPEC.md must name the SHA-256 of grammar-rules.json: \(hash)")
+        #else
+        XCTAssertTrue(text.contains("SHA-256"))
+        #endif
         XCTAssertLessThanOrEqual(try data().count, 256 * 1024)
     }
 
@@ -109,6 +116,45 @@ final class GrammarRulesFileTests: XCTestCase {
         }
     }
 
+    func testNoItemIsHarderThanItsRuleAndFixedOrderIsABoolean() throws {
+        let rank = ["A1": 1, "A2": 2, "B1": 3]
+        for rule in try rules() {
+            let ruleRank = try XCTUnwrap(rank[rule["level"] as? String ?? ""])
+            for item in try XCTUnwrap(rule["practice"] as? [[String: Any]]) {
+                let id = item["id"] as? String ?? "?"
+                XCTAssertLessThanOrEqual(try XCTUnwrap(rank[item["level"] as? String ?? ""], id), ruleRank, "\(id): above its rule's level")
+                if let fixed = item["fixedOrder"] { XCTAssertTrue(fixed is Bool, "\(id): fixedOrder is true or false") }
+            }
+        }
+    }
+
+    /// The reference of SPEC.md, "Option order": the same function and vectors are in lingleaf-android.
+    private func optionOrder(_ id: String, seen: Int, count: Int) -> [Int] {
+        var hash: UInt64 = 0xcbf29ce484222325
+        for byte in "\(id)#\(seen)".utf8 { hash = (hash ^ UInt64(byte)) &* 0x100000001b3 }
+        func next() -> UInt64 {
+            hash = hash &+ 0x9E3779B97F4A7C15
+            var z = hash
+            z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
+            z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+            return z ^ (z >> 31)
+        }
+        var order = Array(0..<count)
+        if count > 1 {
+            for i in stride(from: count - 1, through: 1, by: -1) { order.swapAt(i, Int(next() % UInt64(i + 1))) }
+        }
+        return order
+    }
+
+    func testTheOptionOrderMatchesTheSpecsVectors() {
+        XCTAssertEqual(optionOrder("his-her-its-1", seen: 1, count: 3), [2, 0, 1])
+        XCTAssertEqual(optionOrder("his-her-its-1", seen: 2, count: 3), [1, 2, 0])
+        XCTAssertEqual(optionOrder("question-order-1", seen: 0, count: 3), [2, 0, 1])
+        XCTAssertEqual(optionOrder("age-and-feelings-1", seen: 5, count: 3), [0, 2, 1])
+        XCTAssertEqual(optionOrder("do-does-did-1", seen: 0, count: 4), [1, 3, 0, 2])
+        XCTAssertEqual(optionOrder("x", seen: 0, count: 2), [0, 1])
+    }
+
     func testTheRightAnswerIsSpreadOverThePositions() throws {
         var counts: [Int: Int] = [:]
         for rule in try rules() {
@@ -134,7 +180,7 @@ final class GrammarRulesFileTests: XCTestCase {
     func testNoTextIsLongAndRulesNeverShowTheWrongForms() throws {
         for text in texts(try root()) { XCTAssertLessThanOrEqual(text.count, 400) }
         // Rules, examples and contrasts show only correct English; wrong forms live in practice options and feedback.
-        let wrong = ["goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree", "carrys", "telled", "comed", "bigs"]
+        let wrong = ["goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree", "carrys", "telled", "comed", "bigs", "have hunger", "have cold", "have thirsty", "have 20 years", "have saw", "hasn't eaten"]
         for rule in try rules() {
             let shown = texts(rule["rule"]) + texts(rule["examples"]) + texts(rule["contrast"]) + texts(rule["note"]) + texts(rule["spanish"])
             for form in wrong {
