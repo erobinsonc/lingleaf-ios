@@ -32,7 +32,11 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
 
     /// "Carroll, Lewis" → "Lewis Carroll"
     public var authorName: String? {
-        guard let raw = authors.first?.name else { return nil }
+        guard let full = authors.first?.name else { return nil }
+        // The catalog is outside text: cut before any pattern runs. The pattern below backtracks, so a
+        // megabyte of "(" or spaces would hang the main thread. Room for a long real note, and the shown
+        // name is cut to `maxLabel` after.
+        let raw = TextTools.truncated(full, 4 * TextTools.maxLabel)
         // "Baum, L. Frank (Lyman Frank)" → "Baum, L. Frank": drop the catalog's full-name note.
         let name = raw.replacingOccurrences(of: #"\s*\([^)]*\)"#, with: "", options: .regularExpression)
             .trimmingCharacters(in: .whitespaces)
