@@ -10,11 +10,19 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
     public var gutenbergID: Int?
     public let addedAt: Date
     public var lastOpenedAt: Date?
+    /// Where to resume: the paragraph at the top of the screen.
     public var progressParagraph: Int
+    /// The furthest paragraph that has been on screen (SPEC S2), which only grows. Nil in a book saved before it
+    /// existed: its `progressParagraph` stands in.
+    public var furthestParagraph: Int?
 
+    /// How much has been read, 0...1: up to the furthest paragraph seen, so a book whose last paragraph has
+    /// been on screen is at 100%. A one-paragraph book is 0 until opened, then 1.
     public var progress: Double {
-        guard paragraphCount > 1 else { return 0 }
-        return min(1, max(0, Double(progressParagraph) / Double(paragraphCount - 1)))
+        guard paragraphCount > 0 else { return 0 }
+        let reached = max(furthestParagraph ?? 0, progressParagraph)
+        guard paragraphCount > 1 else { return furthestParagraph == nil ? 0 : 1 }
+        return min(1, max(0, Double(reached) / Double(paragraphCount - 1)))
     }
 }
 
@@ -323,6 +331,7 @@ public final class Library {
         loaded.books = (decode([Book].self, "books.json") ?? []).map { book in
             var book = book
             book.progressParagraph = min(max(book.progressParagraph, 0), max(book.paragraphCount - 1, 0))
+            book.furthestParagraph = book.furthestParagraph.map { min(max($0, 0), max(book.paragraphCount - 1, 0)) }
             return book
         }
         // Saved before contexts were capped, or restored from a backup: within bounds, once per id.
@@ -438,11 +447,16 @@ public final class Library {
     /// characters. The place in the book moves back by the paragraphs before it that were made only
     /// of them (a place on one of them goes to the next paragraph, one past the end to the last).
     private func followStrippedText(_ index: Int, stored: String, count: Int) {
-        let place = state.books[index].progressParagraph
-        let before = TextTools.splitParagraphs(stored).prefix(max(place, 0))
-        let removed = before.filter { TextTools.stripFormat($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }.count
+        let all = TextTools.splitParagraphs(stored)
+        func moved(_ place: Int) -> Int {
+            let removed = all.prefix(max(place, 0)).filter {
+                TextTools.stripFormat($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }.count
+            return min(max(place - removed, 0), max(count - 1, 0))
+        }
         state.books[index].paragraphCount = count
-        state.books[index].progressParagraph = min(max(place - removed, 0), max(count - 1, 0))
+        state.books[index].progressParagraph = moved(state.books[index].progressParagraph)
+        state.books[index].furthestParagraph = state.books[index].furthestParagraph.map(moved)
     }
 
     /// Updates progress in memory; call `flush()` to persist (e.g. when leaving the reader).
@@ -450,6 +464,21 @@ public final class Library {
         guard let index = state.books.firstIndex(where: { $0.id == id }),
               state.books[index].progressParagraph != paragraph else { return }
         state.books[index].progressParagraph = paragraph
+        // What has been on screen includes where the reader is.
+        raiseFurthest(index, paragraph)
+    }
+
+    /// A paragraph of the book has been on screen (SPEC S2): the furthest seen only grows, and stays inside
+    /// the book. In memory; `flush()` persists.
+    public func markSeen(_ id: String, paragraph: Int) {
+        guard let index = state.books.firstIndex(where: { $0.id == id }) else { return }
+        raiseFurthest(index, paragraph)
+    }
+
+    private func raiseFurthest(_ index: Int, _ paragraph: Int) {
+        let last = max(state.books[index].paragraphCount - 1, 0)
+        let seen = min(max(paragraph, 0), last)
+        if seen > (state.books[index].furthestParagraph ?? -1) { state.books[index].furthestParagraph = seen }
     }
 
     public func flush() { saveBooks() }

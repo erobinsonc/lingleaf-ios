@@ -54,3 +54,16 @@ Not done: item 15 (the maintainer does not understand "keep before[] of merged c
   a gloss would mislead). Offline their unsure rows show no meaning; the table is identical in both repos.
 - **Also in this round:** Less/Menos toggle with a VoiceOver/TalkBack announcement; the card's fitted height resets for
   each new card; the Fixed tag moves to its own line at accessibility sizes.
+
+## Reading progress reaches 100% (0.4.1)
+- **Bug:** the progress bar stopped near 70% at the end of a book, because it followed the paragraph at the top of the
+  screen, which is never the last one.
+- **Rule (SPEC S2):** keep the resume place as the top paragraph; add a stored `furthestParagraph` (optional in the book
+  record; absent in old data, where the resume place stands in) that only grows. Progress = furthest seen / (paragraphs - 1);
+  a one-paragraph book is 100% once opened. It is clamped to the book on load and moves with the resume place when
+  a stored book loses invisible-only paragraphs (SPEC "Invisible formatting").
+- **Android:** raise it from the last visible item of the list (`LazyListState.layoutInfo.visibleItemsInfo`), not from
+  the first one; keep it out of Compose state that recomposes the list on every scroll step. Core tests to mirror:
+  `testProgressFollowsTheFurthestParagraphSeenAndNeverGoesBack`, `testAOneParagraphBookIsReadOnceItHasBeenOnScreen`,
+  `testABookSavedBeforeFurthestParagraphLoadsWithItsPlaceAndAValueOutsideTheBookIsBroughtIn`,
+  `testOpeningABookWhoseTextLostInvisibleParagraphsMovesTheFurthestParagraphToo`.

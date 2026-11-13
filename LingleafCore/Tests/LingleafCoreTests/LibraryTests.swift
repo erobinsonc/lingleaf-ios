@@ -54,6 +54,75 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(library().state.books.first { $0.id == book.id }?.progressParagraph, 0)
     }
 
+    // MARK: Reading progress (SPEC S2)
+
+    func testProgressFollowsTheFurthestParagraphSeenAndNeverGoesBack() {
+        let library = library()
+        let book = library.addBook(title: "T", author: "A", text: "1.\n\n2.\n\n3.\n\n4.\n\n5.")
+        func progress() -> Double { library.state.books.first { $0.id == book.id }?.progress ?? -1 }
+        XCTAssertEqual(progress(), 0)
+        library.updateProgress(book.id, paragraph: 1)
+        XCTAssertEqual(progress(), 0.25)
+        // The last paragraph on screen while the top one is the second: the whole book has been seen.
+        library.markSeen(book.id, paragraph: 4)
+        XCTAssertEqual(progress(), 1)
+        // Scrolling back up moves the place to resume, not how much has been read.
+        library.updateProgress(book.id, paragraph: 0)
+        XCTAssertEqual(library.state.books.first?.progressParagraph, 0)
+        XCTAssertEqual(progress(), 1, "never goes back")
+        library.markSeen(book.id, paragraph: 2)
+        XCTAssertEqual(library.state.books.first?.furthestParagraph, 4, "a paragraph before the furthest changes nothing")
+        library.markSeen(book.id, paragraph: 99)
+        library.markSeen(book.id, paragraph: -3)
+        library.markSeen("missing", paragraph: 1)
+        XCTAssertEqual(library.state.books.first?.furthestParagraph, 4, "inside the book")
+        library.flush()
+        XCTAssertEqual(self.library().state.books.first?.progress, 1, "kept")
+    }
+
+    func testAOneParagraphBookIsReadOnceItHasBeenOnScreen() {
+        let library = library()
+        let book = library.addBook(title: "T", author: "A", text: "Only.")
+        XCTAssertEqual(library.state.books.first?.progress, 0, "not opened yet")
+        library.markSeen(book.id, paragraph: 0)
+        XCTAssertEqual(library.state.books.first?.progress, 1, "its last paragraph is on screen")
+    }
+
+    func testABookSavedBeforeFurthestParagraphLoadsWithItsPlaceAndAValueOutsideTheBookIsBroughtIn() throws {
+        let book = library().addBook(title: "T", author: "A", text: "1.\n\n2.\n\n3.")
+        func rewrite(_ change: (inout [String: Any]) -> Void) throws {
+            let data = try XCTUnwrap(storage.files["books.json"]?.data(using: .utf8))
+            var books = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [[String: Any]])
+            change(&books[0])
+            storage.files["books.json"] = String(decoding: try JSONSerialization.data(withJSONObject: books), as: UTF8.self)
+        }
+        func loaded() -> Book? { library().state.books.first { $0.id == book.id } }
+        try rewrite { $0["progressParagraph"] = 1; $0["furthestParagraph"] = nil }
+        XCTAssertNil(loaded()?.furthestParagraph, "an old file has none")
+        XCTAssertEqual(loaded()?.progress, 0.5, "the place stands in")
+        try rewrite { $0["furthestParagraph"] = 99 }
+        XCTAssertEqual(loaded()?.furthestParagraph, 2, "inside the book")
+        XCTAssertEqual(loaded()?.progress, 1)
+        try rewrite { $0["furthestParagraph"] = -5 }
+        XCTAssertEqual(loaded()?.furthestParagraph, 0)
+        XCTAssertEqual(loaded()?.progress, 0.5, "the place is still where it was")
+    }
+
+    func testOpeningABookWhoseTextLostInvisibleParagraphsMovesTheFurthestParagraphToo() {
+        let library = library()
+        let book = library.addBook(title: "T", author: "A", text: "One.\n\nTwo.\n\nThree.\n\nFour.")
+        library.updateProgress(book.id, paragraph: 3)
+        library.markSeen(book.id, paragraph: 3)
+        // The text as an older version stored it: a paragraph made only of a zero-width space.
+        storage.files[book.fileName] = "One.\n\n\u{200B}\n\nThree.\n\nFour."
+        XCTAssertEqual(library.openBook(book.id).count, 3)
+        let opened = library.state.books.first
+        XCTAssertEqual(opened?.paragraphCount, 3)
+        XCTAssertEqual(opened?.progressParagraph, 2)
+        XCTAssertEqual(opened?.furthestParagraph, 2)
+        XCTAssertEqual(opened?.progress, 1)
+    }
+
     func testKeepsACopyOfAFileThatCannotBeRead() {
         storage.files["words.json"] = "not json"
         let library = library()
