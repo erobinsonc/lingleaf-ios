@@ -17,11 +17,12 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
     public var furthestParagraph: Int?
 
     /// How much has been read, 0...1: up to the furthest paragraph seen, so a book whose last paragraph has
-    /// been on screen is at 100%. A one-paragraph book is 0 until opened, then 1.
+    /// been on screen is at 100%. A one-paragraph book is 0 until it is opened, then 1 (also one opened by a
+    /// version that did not keep the furthest paragraph: `lastOpenedAt` says so).
     public var progress: Double {
         guard paragraphCount > 0 else { return 0 }
         let reached = max(furthestParagraph ?? 0, progressParagraph)
-        guard paragraphCount > 1 else { return furthestParagraph == nil ? 0 : 1 }
+        guard paragraphCount > 1 else { return furthestParagraph == nil && lastOpenedAt == nil ? 0 : 1 }
         return min(1, max(0, Double(reached) / Double(paragraphCount - 1)))
     }
 }

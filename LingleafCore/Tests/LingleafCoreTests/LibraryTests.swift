@@ -88,6 +88,23 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(library.state.books.first?.progress, 1, "its last paragraph is on screen")
     }
 
+    func testAOneParagraphBookOpenedBeforeFurthestParagraphExistedCountsAsRead() throws {
+        let book = library().addBook(title: "T", author: "A", text: "Only.")
+        _ = library().openBook(book.id)
+        // As an older version saved it: opened, with no furthest paragraph.
+        let data = try XCTUnwrap(storage.files["books.json"]?.data(using: .utf8))
+        var books = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [[String: Any]])
+        books[0]["furthestParagraph"] = nil
+        storage.files["books.json"] = String(decoding: try JSONSerialization.data(withJSONObject: books), as: UTF8.self)
+        let old = try XCTUnwrap(library().state.books.first)
+        XCTAssertNil(old.furthestParagraph)
+        XCTAssertNotNil(old.lastOpenedAt)
+        XCTAssertEqual(old.progress, 1, "opened before: its only paragraph was on screen")
+        books[0]["lastOpenedAt"] = nil
+        storage.files["books.json"] = String(decoding: try JSONSerialization.data(withJSONObject: books), as: UTF8.self)
+        XCTAssertEqual(library().state.books.first?.progress, 0, "never opened")
+    }
+
     func testABookSavedBeforeFurthestParagraphLoadsWithItsPlaceAndAValueOutsideTheBookIsBroughtIn() throws {
         let book = library().addBook(title: "T", author: "A", text: "1.\n\n2.\n\n3.")
         func rewrite(_ change: (inout [String: Any]) -> Void) throws {
@@ -120,6 +137,22 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(opened?.paragraphCount, 3)
         XCTAssertEqual(opened?.progressParagraph, 2)
         XCTAssertEqual(opened?.furthestParagraph, 2)
+        XCTAssertEqual(opened?.progress, 1)
+    }
+
+    func testOpeningAnOldBookWithNoFurthestParagraphKeepsItAbsent() throws {
+        let book = library().addBook(title: "T", author: "A", text: "One.\n\nTwo.\n\nThree.\n\nFour.")
+        let data = try XCTUnwrap(storage.files["books.json"]?.data(using: .utf8))
+        var books = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [[String: Any]])
+        books[0]["progressParagraph"] = 3
+        books[0]["furthestParagraph"] = nil
+        storage.files["books.json"] = String(decoding: try JSONSerialization.data(withJSONObject: books), as: UTF8.self)
+        let library = self.library()
+        storage.files[book.fileName] = "One.\n\n\u{200B}\n\nThree.\n\nFour."
+        XCTAssertEqual(library.openBook(book.id).count, 3)
+        let opened = library.state.books.first
+        XCTAssertEqual(opened?.progressParagraph, 2)
+        XCTAssertNil(opened?.furthestParagraph, "absent stays absent")
         XCTAssertEqual(opened?.progress, 1)
     }
 
