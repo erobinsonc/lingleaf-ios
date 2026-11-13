@@ -1,0 +1,5074 @@
+{
+ "schemaVersion": 1,
+ "story": "the-exit-interview",
+ "senses": {
+  "agenda": {
+   "lemma": "agenda",
+   "pos": "noun",
+   "ipa": "əˈdʒɛndə",
+   "es": "orden del día",
+   "kind": "word"
+  },
+  "all_right": {
+   "lemma": "all right",
+   "pos": "phrase",
+   "ipa": "ɔl raɪt",
+   "es": "bien",
+   "kind": "chunk"
+  },
+  "analyst": {
+   "lemma": "analyst",
+   "pos": "noun",
+   "ipa": "ˈænəlɪst",
+   "es": "analista",
+   "kind": "word"
+  },
+  "analytics": {
+   "lemma": "analytics",
+   "pos": "noun",
+   "ipa": "ˌænəˈlɪtɪks",
+   "es": "análisis de datos",
+   "kind": "word"
+  },
+  "annoyed": {
+   "lemma": "annoyed",
+   "pos": "adjective",
+   "ipa": "əˈnɔɪd",
+   "es": "molesto, enojado",
+   "kind": "word"
+  },
+  "anticipate": {
+   "lemma": "anticipate",
+   "pos": "verb",
+   "ipa": "ænˈtɪsəˌpeɪt",
+   "es": "prever, adelantarse a",
+   "kind": "word"
+  },
+  "appendix": {
+   "lemma": "appendix",
+   "pos": "noun",
+   "ipa": "əˈpɛndɪks",
+   "es": "anexo, apéndice",
+   "kind": "word"
+  },
+  "applause": {
+   "lemma": "applause",
+   "pos": "noun",
+   "ipa": "əˈplɔz",
+   "es": "aplausos",
+   "kind": "word"
+  },
+  "appreciate": {
+   "lemma": "appreciate",
+   "pos": "verb",
+   "ipa": "əˈpriʃiˌeɪt",
+   "es": "agradecer, valorar",
+   "kind": "word"
+  },
+  "approve_ok": {
+   "lemma": "approve",
+   "pos": "verb",
+   "ipa": "əˈpruv",
+   "es": "aprobar, dar el visto bueno",
+   "kind": "word"
+  },
+  "argue": {
+   "lemma": "argue",
+   "pos": "verb",
+   "ipa": "ˈɑrɡju",
+   "es": "discutir",
+   "kind": "word"
+  },
+  "assumption": {
+   "lemma": "assumption",
+   "pos": "noun",
+   "ipa": "əˈsʌmpʃən",
+   "es": "supuesto, hipótesis",
+   "kind": "word"
+  },
+  "at_last": {
+   "lemma": "at last",
+   "pos": "phrase",
+   "ipa": "æt læst",
+   "es": "por fin",
+   "kind": "chunk"
+  },
+  "at_some_point": {
+   "lemma": "at some point",
+   "pos": "phrase",
+   "ipa": "æt sʌm pɔɪnt",
+   "es": "en algún momento",
+   "kind": "chunk"
+  },
+  "auction": {
+   "lemma": "auction",
+   "pos": "noun",
+   "ipa": "ˈɔkʃən",
+   "es": "subasta",
+   "kind": "word"
+  },
+  "awkwardly": {
+   "lemma": "awkwardly",
+   "pos": "adverb",
+   "ipa": "ˈɔkwərdli",
+   "es": "torpemente",
+   "kind": "word"
+  },
+  "bar_sunlight": {
+   "lemma": "bar",
+   "pos": "noun",
+   "ipa": "bɑr",
+   "es": "franja (de luz)",
+   "kind": "word"
+  },
+  "be_sorry": {
+   "lemma": "be sorry",
+   "pos": "phrase",
+   "ipa": "bi ˈsɑri",
+   "es": "disculparse",
+   "kind": "chunk"
+  },
+  "beep": {
+   "lemma": "beep",
+   "pos": "verb",
+   "ipa": "bip",
+   "es": "pitar",
+   "kind": "word"
+  },
+  "bid_for": {
+   "lemma": "bid for",
+   "pos": "phrasal verb",
+   "ipa": "bɪd fɔr",
+   "es": "pujar por, presentarse a",
+   "kind": "chunk"
+  },
+  "blame": {
+   "lemma": "blame",
+   "pos": "verb",
+   "ipa": "bleɪm",
+   "es": "culpar",
+   "kind": "word"
+  },
+  "blind_window": {
+   "lemma": "blind",
+   "pos": "noun",
+   "ipa": "blaɪnd",
+   "es": "persiana, cortina",
+   "kind": "word"
+  },
+  "board_directors": {
+   "lemma": "board",
+   "pos": "noun",
+   "ipa": "bɔrd",
+   "es": "consejo de administración, junta",
+   "kind": "word"
+  },
+  "boardroom": {
+   "lemma": "boardroom",
+   "pos": "noun",
+   "ipa": "ˈbɔrdrum",
+   "es": "sala de juntas",
+   "kind": "word"
+  },
+  "bold_type": {
+   "lemma": "bold",
+   "pos": "noun",
+   "ipa": "boʊld",
+   "es": "negrita",
+   "kind": "word"
+  },
+  "borrowed": {
+   "lemma": "borrowed",
+   "pos": "adjective",
+   "ipa": "ˈbɑroʊd",
+   "es": "prestado",
+   "kind": "word"
+  },
+  "break_up_party": {
+   "lemma": "break up",
+   "pos": "phrasal verb",
+   "ipa": "breɪk ʌp",
+   "es": "terminar, disolverse (una fiesta)",
+   "kind": "chunk"
+  },
+  "briefcase": {
+   "lemma": "briefcase",
+   "pos": "noun",
+   "ipa": "ˈbrifkeɪs",
+   "es": "maletín",
+   "kind": "word"
+  },
+  "broad_build": {
+   "lemma": "broad",
+   "pos": "adjective",
+   "ipa": "brɔd",
+   "es": "corpulento, ancho de espaldas",
+   "kind": "word"
+  },
+  "cafeteria": {
+   "lemma": "cafeteria",
+   "pos": "noun",
+   "ipa": "ˌkæfəˈtɪriə",
+   "es": "comedor, cafetería",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "caution": {
+   "lemma": "caution",
+   "pos": "noun",
+   "ipa": "ˈkɔʃən",
+   "es": "prudencia",
+   "kind": "word"
+  },
+  "chairwoman": {
+   "lemma": "chairwoman",
+   "pos": "noun",
+   "ipa": "ˈtʃɛrˌwʊmən",
+   "es": "presidenta (de una organización)",
+   "kind": "word"
+  },
+  "change_mind2": {
+   "lemma": "change your mind",
+   "pos": "phrase",
+   "ipa": "tʃeɪndʒ jʊr maɪnd",
+   "es": "cambiar de opinión",
+   "kind": "chunk"
+  },
+  "circulate": {
+   "lemma": "circulate",
+   "pos": "verb",
+   "ipa": "ˈsɝkjəˌleɪt",
+   "es": "circular, pasar de mano en mano",
+   "kind": "word"
+  },
+  "cleaner": {
+   "lemma": "cleaner",
+   "pos": "noun",
+   "ipa": "ˈklinər",
+   "es": "limpiadora",
+   "kind": "word"
+  },
+  "clerk": {
+   "lemma": "clerk",
+   "pos": "noun",
+   "ipa": "klɝk",
+   "es": "administrativo, oficinista",
+   "kind": "word"
+  },
+  "collapse": {
+   "lemma": "collapse",
+   "pos": "verb",
+   "ipa": "kəˈlæps",
+   "es": "venirse abajo, fracasar",
+   "kind": "word"
+  },
+  "commit": {
+   "lemma": "commit",
+   "pos": "verb",
+   "ipa": "kəˈmɪt",
+   "es": "comprometerse",
+   "kind": "word"
+  },
+  "composure": {
+   "lemma": "composure",
+   "pos": "noun",
+   "ipa": "kəmˈpoʊʒər",
+   "es": "compostura",
+   "kind": "word"
+  },
+  "conduct_verb": {
+   "lemma": "conduct",
+   "pos": "verb",
+   "ipa": "kənˈdʌkt",
+   "es": "llevar a cabo, realizar",
+   "kind": "word"
+  },
+  "conflict_interest": {
+   "lemma": "conflict of interest",
+   "pos": "noun",
+   "ipa": "ˈkɑnflɪkt əv ˈɪntrəst",
+   "es": "conflicto de intereses",
+   "kind": "chunk"
+  },
+  "contract": {
+   "lemma": "contract",
+   "pos": "noun",
+   "ipa": "ˈkɑntrækt",
+   "es": "contrato",
+   "kind": "word"
+  },
+  "court_case": {
+   "lemma": "court case",
+   "pos": "noun",
+   "ipa": "kɔrt keɪs",
+   "es": "juicio, caso judicial",
+   "kind": "chunk"
+  },
+  "cross_out2": {
+   "lemma": "cross out",
+   "pos": "phrasal verb",
+   "ipa": "krɔs aʊt",
+   "es": "tachar",
+   "kind": "chunk"
+  },
+  "crossword": {
+   "lemma": "crossword",
+   "pos": "noun",
+   "ipa": "ˈkrɔswɝd",
+   "es": "crucigrama",
+   "kind": "word"
+  },
+  "customer": {
+   "lemma": "customer",
+   "pos": "noun",
+   "ipa": "ˈkʌstəmər",
+   "es": "cliente",
+   "kind": "word"
+  },
+  "cut_cake": {
+   "lemma": "cut",
+   "pos": "verb",
+   "ipa": "kʌt",
+   "es": "cortar",
+   "kind": "word"
+  },
+  "deal_agreement": {
+   "lemma": "deal",
+   "pos": "interjection",
+   "ipa": "dil",
+   "es": "¡trato hecho!",
+   "kind": "word"
+  },
+  "deal_with": {
+   "lemma": "deal with",
+   "pos": "phrasal verb",
+   "ipa": "dil wɪð",
+   "es": "encargarse de",
+   "kind": "chunk"
+  },
+  "debt": {
+   "lemma": "debt",
+   "pos": "noun",
+   "ipa": "dɛt",
+   "es": "deuda",
+   "kind": "word"
+  },
+  "delivery": {
+   "lemma": "delivery",
+   "pos": "noun",
+   "ipa": "dɪˈlɪvəri",
+   "es": "entrega, envío",
+   "kind": "word"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "dispatcher": {
+   "lemma": "dispatcher",
+   "pos": "noun",
+   "ipa": "dɪˈspætʃər",
+   "es": "encargado de distribución",
+   "kind": "word"
+  },
+  "dread": {
+   "lemma": "dread",
+   "pos": "verb",
+   "ipa": "drɛd",
+   "es": "temer",
+   "kind": "word"
+  },
+  "elevator": {
+   "lemma": "elevator",
+   "pos": "noun",
+   "ipa": "ˈɛləˌveɪtər",
+   "es": "elevador, ascensor",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "embarrassed": {
+   "lemma": "embarrassed",
+   "pos": "adjective",
+   "ipa": "ɪmˈbɛrəst",
+   "es": "avergonzado (no «embarazada»)",
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
+  },
+  "end_up": {
+   "lemma": "end up",
+   "pos": "phrasal verb",
+   "ipa": "ɛnd ʌp",
+   "es": "acabar (haciendo algo)",
+   "kind": "chunk"
+  },
+  "essay": {
+   "lemma": "essay",
+   "pos": "noun",
+   "ipa": "ˈɛseɪ",
+   "es": "redacción, trabajo",
+   "kind": "word"
+  },
+  "evidence": {
+   "lemma": "evidence",
+   "pos": "noun",
+   "ipa": "ˈɛvədəns",
+   "es": "pruebas",
+   "kind": "word"
+  },
+  "examination": {
+   "lemma": "examination",
+   "pos": "noun",
+   "ipa": "ɪɡˌzæməˈneɪʃən",
+   "es": "examen",
+   "kind": "word"
+  },
+  "exit_interview": {
+   "lemma": "exit interview",
+   "pos": "noun",
+   "ipa": "ˈɛɡzɪt ˈɪntərvju",
+   "es": "entrevista de salida",
+   "kind": "chunk"
+  },
+  "fair_just": {
+   "lemma": "fair",
+   "pos": "adjective",
+   "ipa": "fɛr",
+   "es": "justo, razonable",
+   "kind": "word"
+  },
+  "feel_sorry_for": {
+   "lemma": "feel sorry for",
+   "pos": "phrase",
+   "ipa": "fil ˈsɑri fɔr",
+   "es": "sentir lástima por",
+   "kind": "chunk"
+  },
+  "fill_in": {
+   "lemma": "fill in",
+   "pos": "phrasal verb",
+   "ipa": "fɪl ɪn",
+   "es": "llenar",
+   "kind": "chunk"
+  },
+  "finance": {
+   "lemma": "finance",
+   "pos": "noun",
+   "ipa": "ˈfaɪnæns",
+   "es": "finanzas (departamento)",
+   "kind": "word"
+  },
+  "fine_ok": {
+   "lemma": "fine",
+   "pos": "adjective",
+   "ipa": "faɪn",
+   "es": "bien",
+   "kind": "word"
+  },
+  "firm_company": {
+   "lemma": "firm",
+   "pos": "noun",
+   "ipa": "fɝm",
+   "es": "empresa",
+   "kind": "word"
+  },
+  "flask": {
+   "lemma": "flask",
+   "pos": "noun",
+   "ipa": "flæsk",
+   "es": "termo",
+   "kind": "word"
+  },
+  "flat_home": {
+   "lemma": "flat",
+   "pos": "noun",
+   "ipa": "flæt",
+   "es": "departamento, apartamento",
+   "kind": "word",
+   "variety": "BrE"
+  },
+  "flicker": {
+   "lemma": "flicker",
+   "pos": "verb",
+   "ipa": "ˈflɪkər",
+   "es": "flaquear, titubear",
+   "kind": "word"
+  },
+  "floodlight": {
+   "lemma": "floodlight",
+   "pos": "noun",
+   "ipa": "ˈflʌdlaɪt",
+   "es": "foco",
+   "kind": "word"
+  },
+  "floor_storey": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "piso, planta (de un edificio)",
+   "kind": "word",
+   "en": "a level of a building"
+  },
+  "fold_up": {
+   "lemma": "fold up",
+   "pos": "phrasal verb",
+   "ipa": "foʊld ʌp",
+   "es": "doblar",
+   "kind": "chunk"
+  },
+  "form_paper": {
+   "lemma": "form",
+   "pos": "noun",
+   "ipa": "fɔrm",
+   "es": "formulario",
+   "kind": "word"
+  },
+  "formality": {
+   "lemma": "formality",
+   "pos": "noun",
+   "ipa": "fɔrˈmæləti",
+   "es": "formalidad, trámite",
+   "kind": "word"
+  },
+  "forward_email": {
+   "lemma": "forward",
+   "pos": "verb",
+   "ipa": "ˈfɔrwərd",
+   "es": "reenviar",
+   "kind": "word"
+  },
+  "freight": {
+   "lemma": "freight",
+   "pos": "noun",
+   "ipa": "freɪt",
+   "es": "transporte de mercancías",
+   "kind": "word"
+  },
+  "fuel": {
+   "lemma": "fuel",
+   "pos": "noun",
+   "ipa": "ˈfjuəl",
+   "es": "combustible",
+   "kind": "word"
+  },
+  "gate": {
+   "lemma": "gate",
+   "pos": "noun",
+   "ipa": "ɡeɪt",
+   "es": "puerta (de la verja), portón",
+   "kind": "word"
+  },
+  "gathering": {
+   "lemma": "gathering",
+   "pos": "noun",
+   "ipa": "ˈɡæðərɪŋ",
+   "es": "reunión, encuentro",
+   "kind": "word"
+  },
+  "genuinely": {
+   "lemma": "genuinely",
+   "pos": "adverb",
+   "ipa": "ˈdʒɛnjuɪnli",
+   "es": "de verdad",
+   "kind": "word"
+  },
+  "get_married": {
+   "lemma": "get married",
+   "pos": "phrase",
+   "ipa": "ɡɛt ˈmɛrid",
+   "es": "casarse",
+   "kind": "chunk"
+  },
+  "get_past": {
+   "lemma": "get past",
+   "pos": "phrasal verb",
+   "ipa": "ɡɛt pæst",
+   "es": "pasar de, superar",
+   "kind": "chunk"
+  },
+  "glass_cup": {
+   "lemma": "glass",
+   "pos": "noun",
+   "ipa": "ɡlæs",
+   "es": "vaso",
+   "kind": "word",
+   "en": "a drinking glass"
+  },
+  "glass_material": {
+   "lemma": "glass",
+   "pos": "noun",
+   "ipa": "ɡlæs",
+   "es": "cristal, vidrio (no «vaso»)",
+   "kind": "word",
+   "en": "the hard clear material of windows"
+  },
+  "glasses_eyes": {
+   "lemma": "glasses",
+   "pos": "noun",
+   "ipa": "ˈɡlæsɪz",
+   "es": "lentes, anteojos",
+   "kind": "word"
+  },
+  "go_on": {
+   "lemma": "go on",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɑn",
+   "es": "continuar, seguir (hablando)",
+   "kind": "chunk"
+  },
+  "go_on_speak": {
+   "lemma": "go on",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɑn",
+   "es": "adelante, dime",
+   "kind": "chunk"
+  },
+  "go_quiet2": {
+   "lemma": "go quiet",
+   "pos": "phrase",
+   "ipa": "ɡoʊ ˈkwaɪət",
+   "es": "quedarse en silencio",
+   "kind": "chunk"
+  },
+  "grade": {
+   "lemma": "grade",
+   "pos": "verb",
+   "ipa": "ɡreɪd",
+   "es": "corregir, calificar",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "hand_give": {
+   "lemma": "hand",
+   "pos": "verb",
+   "ipa": "hænd",
+   "es": "dar, pasar (en la mano)",
+   "kind": "word"
+  },
+  "hand_over": {
+   "lemma": "hand over",
+   "pos": "phrasal verb",
+   "ipa": "hænd ˈoʊvər",
+   "es": "traspasar, entregar",
+   "kind": "chunk"
+  },
+  "have_shower": {
+   "lemma": "have a shower",
+   "pos": "phrase",
+   "ipa": "hæv ə ˈʃaʊər",
+   "es": "ducharse",
+   "kind": "chunk"
+  },
+  "haze": {
+   "lemma": "haze",
+   "pos": "noun",
+   "ipa": "heɪz",
+   "es": "neblina, calima",
+   "kind": "word"
+  },
+  "head_dept": {
+   "lemma": "head",
+   "pos": "noun",
+   "ipa": "hɛd",
+   "es": "jefe, jefa (de un departamento)",
+   "kind": "word"
+  },
+  "high_school": {
+   "lemma": "high school",
+   "pos": "noun",
+   "ipa": "haɪ skul",
+   "es": "escuela secundaria",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "hire": {
+   "lemma": "hire",
+   "pos": "verb",
+   "ipa": "ˈhaɪər",
+   "es": "contratar",
+   "kind": "word"
+  },
+  "hold_gaze": {
+   "lemma": "hold someone's gaze",
+   "pos": "phrase",
+   "ipa": "hoʊld ˈsʌmwʌnz ɡeɪz",
+   "es": "sostener la mirada",
+   "kind": "chunk"
+  },
+  "hold_out_hand2": {
+   "lemma": "hold out",
+   "pos": "phrasal verb",
+   "ipa": "hoʊld aʊt",
+   "es": "tender (la mano)",
+   "kind": "chunk"
+  },
+  "hold_up_light": {
+   "lemma": "hold up",
+   "pos": "phrasal verb",
+   "ipa": "hoʊld ʌp",
+   "es": "levantar",
+   "kind": "chunk"
+  },
+  "hr": {
+   "lemma": "Human Resources",
+   "pos": "noun",
+   "ipa": "ˈhjumən ˈrisɔrsɪz",
+   "es": "Recursos Humanos",
+   "kind": "chunk"
+  },
+  "hr_abbr": {
+   "lemma": "HR",
+   "pos": "noun",
+   "ipa": "ˌeɪtʃ ˈɑr",
+   "es": "RR. HH., Recursos Humanos",
+   "kind": "word"
+  },
+  "humming": {
+   "lemma": "humming",
+   "pos": "adjective",
+   "ipa": "ˈhʌmɪŋ",
+   "es": "que zumban",
+   "kind": "word"
+  },
+  "humor": {
+   "lemma": "humor",
+   "pos": "noun",
+   "ipa": "ˈhjumər",
+   "es": "humor",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "icing": {
+   "lemma": "icing",
+   "pos": "noun",
+   "ipa": "ˈaɪsɪŋ",
+   "es": "glaseado",
+   "kind": "word"
+  },
+  "invitation": {
+   "lemma": "invitation",
+   "pos": "noun",
+   "ipa": "ˌɪnvɪˈteɪʃən",
+   "es": "invitación, convocatoria",
+   "kind": "word"
+  },
+  "it_occurred": {
+   "lemma": "occur to",
+   "pos": "phrasal verb",
+   "ipa": "əˈkɝ tu",
+   "es": "ocurrírsele a uno",
+   "kind": "chunk"
+  },
+  "it_team": {
+   "lemma": "IT",
+   "pos": "noun",
+   "ipa": "ˌaɪ ˈti",
+   "es": "informática (departamento)",
+   "kind": "word"
+  },
+  "junior": {
+   "lemma": "junior",
+   "pos": "adjective",
+   "ipa": "ˈdʒunjər",
+   "es": "júnior, de menor categoría",
+   "kind": "word"
+  },
+  "kilima_name": {
+   "lemma": "Kilima Freight",
+   "pos": "proper noun",
+   "ipa": "kiˈlimɑ freɪt",
+   "es": "nombre de la empresa (kilima = colina)",
+   "kind": "name",
+   "variety": "local"
+  },
+  "kind_type": {
+   "lemma": "kind",
+   "pos": "noun",
+   "ipa": "kaɪnd",
+   "es": "tipo, clase",
+   "kind": "word"
+  },
+  "lean_room": {
+   "lemma": "lean",
+   "pos": "verb",
+   "ipa": "lin",
+   "es": "inclinarse (por una opción)",
+   "kind": "word"
+  },
+  "least_deserve": {
+   "lemma": "the least it deserves",
+   "pos": "phrase",
+   "ipa": "ðə list ɪt dɪˈzɝvz",
+   "es": "lo mínimo que merece",
+   "kind": "chunk"
+  },
+  "leave_holiday": {
+   "lemma": "leave",
+   "pos": "noun",
+   "ipa": "liv",
+   "es": "permiso, vacaciones",
+   "kind": "word"
+  },
+  "lie_awake": {
+   "lemma": "lie awake",
+   "pos": "phrase",
+   "ipa": "laɪ əˈweɪk",
+   "es": "quedarse despierto en la cama",
+   "kind": "chunk"
+  },
+  "line_break": {
+   "lemma": "line break",
+   "pos": "noun",
+   "ipa": "laɪn breɪk",
+   "es": "salto de línea",
+   "kind": "chunk"
+  },
+  "line_queue2": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "cola, fila (de gente)",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "a line of people waiting"
+  },
+  "line_text": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "línea (de texto)",
+   "kind": "word",
+   "en": "a line of written text"
+  },
+  "line_up": {
+   "lemma": "line up",
+   "pos": "phrasal verb",
+   "ipa": "laɪn ʌp",
+   "es": "ponerse en fila",
+   "kind": "chunk"
+  },
+  "live_with": {
+   "lemma": "live with",
+   "pos": "phrasal verb",
+   "ipa": "lɪv wɪð",
+   "es": "aceptar, conformarse con",
+   "kind": "chunk"
+  },
+  "load": {
+   "lemma": "load",
+   "pos": "verb",
+   "ipa": "loʊd",
+   "es": "cargar",
+   "kind": "word"
+  },
+  "log": {
+   "lemma": "log",
+   "pos": "noun",
+   "ipa": "lɔɡ",
+   "es": "registro, parte",
+   "kind": "word"
+  },
+  "look_up": {
+   "lemma": "look up",
+   "pos": "phrasal verb",
+   "ipa": "lʊk ʌp",
+   "es": "levantar la vista",
+   "kind": "chunk"
+  },
+  "management": {
+   "lemma": "management",
+   "pos": "noun",
+   "ipa": "ˈmænɪdʒmənt",
+   "es": "dirección (de una empresa)",
+   "kind": "word"
+  },
+  "margin": {
+   "lemma": "margin",
+   "pos": "noun",
+   "ipa": "ˈmɑrdʒɪn",
+   "es": "margen",
+   "kind": "word"
+  },
+  "masters": {
+   "lemma": "master's degree",
+   "pos": "noun",
+   "ipa": "ˈmæstərz dɪˈɡri",
+   "es": "máster",
+   "kind": "chunk"
+  },
+  "mining": {
+   "lemma": "mining",
+   "pos": "adjective",
+   "ipa": "ˈmaɪnɪŋ",
+   "es": "minero",
+   "kind": "word"
+  },
+  "miss_long": {
+   "lemma": "miss",
+   "pos": "verb",
+   "ipa": "mɪs",
+   "es": "echar de menos",
+   "kind": "word"
+  },
+  "model_math": {
+   "lemma": "model",
+   "pos": "noun",
+   "ipa": "ˈmɑdəl",
+   "es": "modelo (matemático)",
+   "kind": "word"
+  },
+  "move_on": {
+   "lemma": "move on",
+   "pos": "phrasal verb",
+   "ipa": "muv ɑn",
+   "es": "seguir adelante, pasar a otra cosa",
+   "kind": "chunk"
+  },
+  "moved_emotion": {
+   "lemma": "moved",
+   "pos": "adjective",
+   "ipa": "muvd",
+   "es": "conmovido",
+   "kind": "word"
+  },
+  "naive": {
+   "lemma": "naive",
+   "pos": "adjective",
+   "ipa": "naɪˈiv",
+   "es": "ingenuo",
+   "kind": "word"
+  },
+  "neutral": {
+   "lemma": "neutral",
+   "pos": "adjective",
+   "ipa": "ˈnutrəl",
+   "es": "neutral, imparcial",
+   "kind": "word"
+  },
+  "nod": {
+   "lemma": "nod",
+   "pos": "verb",
+   "ipa": "nɑd",
+   "es": "asentir con la cabeza",
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
+  },
+  "not_anymore": {
+   "lemma": "anymore",
+   "pos": "adverb",
+   "ipa": "ˌɛniˈmɔr",
+   "es": "ya no",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "nothing_to_do": {
+   "lemma": "have nothing to do with",
+   "pos": "phrase",
+   "ipa": "hæv ˈnʌθɪŋ tu du wɪð",
+   "es": "no tener nada que ver con",
+   "kind": "chunk"
+  },
+  "notice_period": {
+   "lemma": "notice period",
+   "pos": "noun",
+   "ipa": "ˈnoʊtɪs ˈpɪriəd",
+   "es": "preaviso",
+   "kind": "chunk"
+  },
+  "objection": {
+   "lemma": "objection",
+   "pos": "noun",
+   "ipa": "əbˈdʒɛkʃən",
+   "es": "objeción",
+   "kind": "word"
+  },
+  "on_nights": {
+   "lemma": "on nights",
+   "pos": "phrase",
+   "ipa": "ɑn naɪts",
+   "es": "en el turno de noche",
+   "kind": "chunk"
+  },
+  "on_purpose": {
+   "lemma": "on purpose",
+   "pos": "phrase",
+   "ipa": "ɑn ˈpɝpəs",
+   "es": "a propósito",
+   "kind": "chunk"
+  },
+  "on_strength": {
+   "lemma": "on the strength of",
+   "pos": "phrase",
+   "ipa": "ɑn ðə strɛŋθ əv",
+   "es": "basándose en",
+   "kind": "chunk"
+  },
+  "open_plan": {
+   "lemma": "open-plan",
+   "pos": "adjective",
+   "ipa": "ˌoʊpənˈplæn",
+   "es": "de planta abierta",
+   "kind": "word"
+  },
+  "operations_director": {
+   "lemma": "operations director",
+   "pos": "noun",
+   "ipa": "ˌɑpəˈreɪʃənz dəˈrɛktər",
+   "es": "director de operaciones",
+   "kind": "chunk"
+  },
+  "operations_research": {
+   "lemma": "operations research",
+   "pos": "noun",
+   "ipa": "ˌɑpəˈreɪʃənz rɪˈsɝtʃ",
+   "es": "investigación operativa",
+   "kind": "chunk"
+  },
+  "opposite": {
+   "lemma": "opposite",
+   "pos": "preposition",
+   "ipa": "ˈɑpəzɪt",
+   "es": "enfrente de",
+   "kind": "word"
+  },
+  "pack_up": {
+   "lemma": "pack up",
+   "pos": "phrasal verb",
+   "ipa": "pæk ʌp",
+   "es": "recoger (para irse)",
+   "kind": "chunk"
+  },
+  "parking_lot": {
+   "lemma": "parking lot",
+   "pos": "noun",
+   "ipa": "ˈpɑrkɪŋ lɑt",
+   "es": "estacionamiento",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "pass_vote": {
+   "lemma": "pass",
+   "pos": "verb",
+   "ipa": "pæs",
+   "es": "aprobarse",
+   "kind": "word"
+  },
+  "pipe_icing": {
+   "lemma": "pipe",
+   "pos": "verb",
+   "ipa": "paɪp",
+   "es": "escribir con manga pastelera",
+   "kind": "word"
+  },
+  "policy": {
+   "lemma": "policy",
+   "pos": "noun",
+   "ipa": "ˈpɑləsi",
+   "es": "norma, política (de la empresa)",
+   "kind": "word"
+  },
+  "position_job": {
+   "lemma": "position",
+   "pos": "noun",
+   "ipa": "pəˈzɪʃən",
+   "es": "puesto (de trabajo)",
+   "kind": "word",
+   "en": "a job in a company"
+  },
+  "position_view": {
+   "lemma": "position",
+   "pos": "noun",
+   "ipa": "pəˈzɪʃən",
+   "es": "postura, opinión",
+   "kind": "word",
+   "en": "an opinion about something"
+  },
+  "postpone": {
+   "lemma": "postpone",
+   "pos": "verb",
+   "ipa": "poʊstˈpoʊn",
+   "es": "aplazar",
+   "kind": "word"
+  },
+  "properly_talk": {
+   "lemma": "properly",
+   "pos": "adverb",
+   "ipa": "ˈprɑpərli",
+   "es": "de verdad, como es debido",
+   "kind": "word"
+  },
+  "pull_out": {
+   "lemma": "pull out",
+   "pos": "phrasal verb",
+   "ipa": "pʊl aʊt",
+   "es": "salir (un vehículo)",
+   "kind": "chunk"
+  },
+  "push_hard": {
+   "lemma": "push hard",
+   "pos": "phrase",
+   "ipa": "pʊʃ hɑrd",
+   "es": "presionar mucho",
+   "kind": "chunk"
+  },
+  "put_down_object": {
+   "lemma": "put down",
+   "pos": "phrasal verb",
+   "ipa": "pʊt daʊn",
+   "es": "dejar (algo)",
+   "kind": "chunk"
+  },
+  "put_head_around": {
+   "lemma": "put your head around the door",
+   "pos": "phrase",
+   "ipa": "pʊt jʊr hɛd əˈraʊnd ðə dɔr",
+   "es": "asomar la cabeza",
+   "kind": "chunk"
+  },
+  "raise_eyebrows": {
+   "lemma": "raise your eyebrows",
+   "pos": "phrase",
+   "ipa": "reɪz jʊr ˈaɪbraʊz",
+   "es": "arquear las cejas",
+   "kind": "chunk"
+  },
+  "raise_voice": {
+   "lemma": "raise your voice",
+   "pos": "phrase",
+   "ipa": "reɪz jʊr vɔɪs",
+   "es": "levantar la voz",
+   "kind": "chunk"
+  },
+  "reach_across": {
+   "lemma": "reach across",
+   "pos": "phrasal verb",
+   "ipa": "ritʃ əˈkrɔs",
+   "es": "alargar la mano por encima de",
+   "kind": "chunk"
+  },
+  "reach_for": {
+   "lemma": "reach for",
+   "pos": "phrasal verb",
+   "ipa": "ritʃ fɔr",
+   "es": "recurrir a",
+   "kind": "chunk"
+  },
+  "read_past": {
+   "lemma": "read",
+   "pos": "verb",
+   "ipa": "rɛd",
+   "es": "leer (pasado: suena «red»)",
+   "kind": "word"
+  },
+  "reject": {
+   "lemma": "reject",
+   "pos": "verb",
+   "ipa": "rɪˈdʒɛkt",
+   "es": "rechazar",
+   "kind": "word"
+  },
+  "representative": {
+   "lemma": "representative",
+   "pos": "noun",
+   "ipa": "ˌrɛprɪˈzɛntətɪv",
+   "es": "representante",
+   "kind": "word"
+  },
+  "reproach": {
+   "lemma": "reproach",
+   "pos": "noun",
+   "ipa": "rɪˈproʊtʃ",
+   "es": "reproche",
+   "kind": "word"
+  },
+  "resignation": {
+   "lemma": "resignation",
+   "pos": "noun",
+   "ipa": "ˌrɛzɪɡˈneɪʃən",
+   "es": "renuncia",
+   "kind": "word"
+  },
+  "retain": {
+   "lemma": "retain",
+   "pos": "verb",
+   "ipa": "rɪˈteɪn",
+   "es": "retener",
+   "kind": "word"
+  },
+  "retire": {
+   "lemma": "retire",
+   "pos": "verb",
+   "ipa": "rɪˈtaɪər",
+   "es": "jubilarse",
+   "kind": "word"
+  },
+  "reverse_vehicle": {
+   "lemma": "reverse",
+   "pos": "verb",
+   "ipa": "rɪˈvɝs",
+   "es": "dar marcha atrás",
+   "kind": "word"
+  },
+  "right_correct": {
+   "lemma": "be right",
+   "pos": "phrase",
+   "ipa": "bi raɪt",
+   "es": "tener razón (no «derecha»)",
+   "kind": "chunk"
+  },
+  "right_proper": {
+   "lemma": "right",
+   "pos": "adjective",
+   "ipa": "raɪt",
+   "es": "adecuado, correcto",
+   "kind": "word"
+  },
+  "rim": {
+   "lemma": "rim",
+   "pos": "noun",
+   "ipa": "rɪm",
+   "es": "borde (de una taza)",
+   "kind": "word"
+  },
+  "role_job": {
+   "lemma": "role",
+   "pos": "noun",
+   "ipa": "roʊl",
+   "es": "puesto, cargo",
+   "kind": "word"
+  },
+  "room_space": {
+   "lemma": "room",
+   "pos": "noun",
+   "ipa": "rum",
+   "es": "espacio, sitio",
+   "kind": "word"
+  },
+  "route": {
+   "lemma": "route",
+   "pos": "noun",
+   "ipa": "rut",
+   "es": "ruta",
+   "kind": "word"
+  },
+  "routing": {
+   "lemma": "routing",
+   "pos": "noun",
+   "ipa": "ˈrutɪŋ",
+   "es": "planificación de rutas",
+   "kind": "word"
+  },
+  "rub": {
+   "lemma": "rub",
+   "pos": "verb",
+   "ipa": "rʌb",
+   "es": "frotarse",
+   "kind": "word"
+  },
+  "run_company": {
+   "lemma": "run",
+   "pos": "verb",
+   "ipa": "rʌn",
+   "es": "dirigir, llevar (una empresa)",
+   "kind": "word",
+   "en": "to manage a company"
+  },
+  "run_route": {
+   "lemma": "run",
+   "pos": "verb",
+   "ipa": "rʌn",
+   "es": "operar (una ruta)",
+   "kind": "word",
+   "en": "to keep a transport route going"
+  },
+  "run_work": {
+   "lemma": "run",
+   "pos": "verb",
+   "ipa": "rʌn",
+   "es": "funcionar",
+   "kind": "word",
+   "en": "to work, to operate"
+  },
+  "ruthlessly": {
+   "lemma": "ruthlessly",
+   "pos": "adverb",
+   "ipa": "ˈruθləsli",
+   "es": "sin piedad",
+   "kind": "word"
+  },
+  "samosa": {
+   "lemma": "samosa",
+   "pos": "noun",
+   "ipa": "səˈmoʊsə",
+   "es": "samosa (empanada)",
+   "kind": "word"
+  },
+  "say_more": {
+   "lemma": "say a bit more",
+   "pos": "phrase",
+   "ipa": "seɪ ə bɪt mɔr",
+   "es": "explicar un poco más",
+   "kind": "chunk"
+  },
+  "scale_rating": {
+   "lemma": "scale",
+   "pos": "noun",
+   "ipa": "skeɪl",
+   "es": "escala",
+   "kind": "word"
+  },
+  "schedule_rota": {
+   "lemma": "schedule",
+   "pos": "noun",
+   "ipa": "ˈskɛdʒul",
+   "es": "horario, turnos",
+   "kind": "word",
+   "variety": "AmE",
+   "en": "a timetable of working hours"
+  },
+  "schedule_verb": {
+   "lemma": "schedule",
+   "pos": "verb",
+   "ipa": "ˈskɛdʒul",
+   "es": "programar",
+   "kind": "word",
+   "en": "to plan for a certain time"
+  },
+  "screen_display": {
+   "lemma": "screen",
+   "pos": "noun",
+   "ipa": "skrin",
+   "es": "pantalla",
+   "kind": "word"
+  },
+  "see_coming": {
+   "lemma": "see it coming",
+   "pos": "phrase",
+   "ipa": "si ɪt ˈkʌmɪŋ",
+   "es": "verlo venir",
+   "kind": "chunk"
+  },
+  "sell_off": {
+   "lemma": "sell off",
+   "pos": "phrasal verb",
+   "ipa": "sɛl ɔf",
+   "es": "vender, liquidar",
+   "kind": "chunk"
+  },
+  "senior_manager": {
+   "lemma": "senior manager",
+   "pos": "noun",
+   "ipa": "ˈsinjər ˈmænɪdʒər",
+   "es": "directivo",
+   "kind": "chunk"
+  },
+  "serve_well": {
+   "lemma": "serve someone well",
+   "pos": "phrase",
+   "ipa": "sɝv ˈsʌmwʌn wɛl",
+   "es": "resultarle útil a alguien",
+   "kind": "chunk"
+  },
+  "set_up_stall": {
+   "lemma": "set up",
+   "pos": "phrasal verb",
+   "ipa": "sɛt ʌp",
+   "es": "montar (un puesto)",
+   "kind": "chunk"
+  },
+  "shake_hands": {
+   "lemma": "shake hands",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz",
+   "es": "dar la mano",
+   "kind": "chunk"
+  },
+  "shared_drive": {
+   "lemma": "shared drive",
+   "pos": "noun",
+   "ipa": "ʃɛrd draɪv",
+   "es": "unidad compartida",
+   "kind": "chunk"
+  },
+  "shift_work": {
+   "lemma": "shift",
+   "pos": "noun",
+   "ipa": "ʃɪft",
+   "es": "turno",
+   "kind": "word"
+  },
+  "shut_door": {
+   "lemma": "shut",
+   "pos": "verb",
+   "ipa": "ʃʌt",
+   "es": "cerrar",
+   "kind": "word"
+  },
+  "sign_name": {
+   "lemma": "sign",
+   "pos": "verb",
+   "ipa": "saɪn",
+   "es": "firmar",
+   "kind": "word"
+  },
+  "single_handedly": {
+   "lemma": "single-handedly",
+   "pos": "adverb",
+   "ipa": "ˌsɪŋɡəlˈhændɪdli",
+   "es": "sin ayuda, en solitario",
+   "kind": "word"
+  },
+  "smooth_answer": {
+   "lemma": "smooth",
+   "pos": "adjective",
+   "ipa": "smuð",
+   "es": "fácil, convincente",
+   "kind": "word"
+  },
+  "speech": {
+   "lemma": "speech",
+   "pos": "noun",
+   "ipa": "spitʃ",
+   "es": "discurso",
+   "kind": "word"
+  },
+  "spreadsheet": {
+   "lemma": "spreadsheet",
+   "pos": "noun",
+   "ipa": "ˈsprɛdʃit",
+   "es": "hoja de cálculo",
+   "kind": "word"
+  },
+  "stall": {
+   "lemma": "stall",
+   "pos": "noun",
+   "ipa": "stɔl",
+   "es": "puesto (de mercado)",
+   "kind": "word"
+  },
+  "startled": {
+   "lemma": "startled",
+   "pos": "adjective",
+   "ipa": "ˈstɑrtəld",
+   "es": "sobresaltado",
+   "kind": "word"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word",
+   "en": "up to now, even now"
+  },
+  "stir": {
+   "lemma": "stir",
+   "pos": "noun",
+   "ipa": "stɝ",
+   "es": "revuelo",
+   "kind": "word"
+  },
+  "strength": {
+   "lemma": "strength",
+   "pos": "noun",
+   "ipa": "strɛŋθ",
+   "es": "punto fuerte",
+   "kind": "word"
+  },
+  "summary": {
+   "lemma": "summary",
+   "pos": "noun",
+   "ipa": "ˈsʌməri",
+   "es": "resumen",
+   "kind": "word"
+  },
+  "supervisor": {
+   "lemma": "supervisor",
+   "pos": "noun",
+   "ipa": "ˈsupərˌvaɪzər",
+   "es": "supervisor",
+   "kind": "word"
+  },
+  "supposed_to": {
+   "lemma": "be supposed to",
+   "pos": "phrase",
+   "ipa": "bi səˈpoʊzd tu",
+   "es": "se supone que (debe)",
+   "kind": "chunk"
+  },
+  "swallow_hard": {
+   "lemma": "swallow hard",
+   "pos": "phrase",
+   "ipa": "ˈswɑloʊ hɑrd",
+   "es": "tragar saliva",
+   "kind": "chunk"
+  },
+  "take_time": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "tardar (+ tiempo)",
+   "kind": "word",
+   "en": "to need an amount of time"
+  },
+  "think_over": {
+   "lemma": "think over",
+   "pos": "phrasal verb",
+   "ipa": "θɪŋk ˈoʊvər",
+   "es": "pensar bien, meditar",
+   "kind": "chunk"
+  },
+  "timing": {
+   "lemma": "timing",
+   "pos": "noun",
+   "ipa": "ˈtaɪmɪŋ",
+   "es": "momento (oportuno)",
+   "kind": "word"
+  },
+  "title_job": {
+   "lemma": "title",
+   "pos": "noun",
+   "ipa": "ˈtaɪtəl",
+   "es": "cargo, título",
+   "kind": "word"
+  },
+  "told_you_so": {
+   "lemma": "I told you so",
+   "pos": "phrase",
+   "ipa": "aɪ toʊld ju soʊ",
+   "es": "ya te lo dije",
+   "kind": "chunk"
+  },
+  "turn_out": {
+   "lemma": "turn out",
+   "pos": "phrasal verb",
+   "ipa": "tɝn aʊt",
+   "es": "resultar",
+   "kind": "chunk"
+  },
+  "turn_out_badly": {
+   "lemma": "turn out badly",
+   "pos": "phrase",
+   "ipa": "tɝn aʊt ˈbædli",
+   "es": "salir mal",
+   "kind": "chunk"
+  },
+  "type_keyboard": {
+   "lemma": "type",
+   "pos": "verb",
+   "ipa": "taɪp",
+   "es": "escribir (en el teclado)",
+   "kind": "word"
+  },
+  "union_labor": {
+   "lemma": "union",
+   "pos": "noun",
+   "ipa": "ˈjunjən",
+   "es": "sindicato",
+   "kind": "word"
+  },
+  "unreadable": {
+   "lemma": "unreadable",
+   "pos": "adjective",
+   "ipa": "ʌnˈridəbəl",
+   "es": "indescifrable (una expresión)",
+   "kind": "word"
+  },
+  "upstairs_boss": {
+   "lemma": "somebody upstairs",
+   "pos": "phrase",
+   "ipa": "ˈsʌmbɑdi ˌʌpˈstɛrz",
+   "es": "alguien de arriba (los jefes)",
+   "kind": "chunk"
+  },
+  "version": {
+   "lemma": "version",
+   "pos": "noun",
+   "ipa": "ˈvɝʒən",
+   "es": "versión",
+   "kind": "word"
+  },
+  "volume_amount": {
+   "lemma": "volume",
+   "pos": "noun",
+   "ipa": "ˈvɑljum",
+   "es": "volumen",
+   "kind": "word"
+  },
+  "voluntary_departure": {
+   "lemma": "voluntary departure",
+   "pos": "noun",
+   "ipa": "ˈvɑlənˌtɛri dɪˈpɑrtʃər",
+   "es": "renuncia voluntaria",
+   "kind": "chunk"
+  },
+  "vote": {
+   "lemma": "vote",
+   "pos": "verb",
+   "ipa": "voʊt",
+   "es": "votar",
+   "kind": "word"
+  },
+  "warehouse": {
+   "lemma": "warehouse",
+   "pos": "noun",
+   "ipa": "ˈwɛrhaʊs",
+   "es": "almacén",
+   "kind": "word"
+  },
+  "wash_off": {
+   "lemma": "wash off",
+   "pos": "phrasal verb",
+   "ipa": "wɑʃ ɔf",
+   "es": "quitarse lavándose",
+   "kind": "chunk"
+  },
+  "water_tank": {
+   "lemma": "water tank",
+   "pos": "noun",
+   "ipa": "ˈwɔtər tæŋk",
+   "es": "depósito de agua",
+   "kind": "chunk"
+  },
+  "way_out": {
+   "lemma": "way out",
+   "pos": "noun",
+   "ipa": "weɪ aʊt",
+   "es": "salida, escapatoria",
+   "kind": "chunk"
+  },
+  "we_ll_see": {
+   "lemma": "we'll see",
+   "pos": "phrase",
+   "ipa": "wil si",
+   "es": "ya veremos",
+   "kind": "chunk"
+  },
+  "well_question": {
+   "lemma": "well",
+   "pos": "interjection",
+   "ipa": "wɛl",
+   "es": "¿y bien?",
+   "kind": "word"
+  },
+  "word_for_word": {
+   "lemma": "word for word",
+   "pos": "phrase",
+   "ipa": "wɝd fɔr wɝd",
+   "es": "palabra por palabra",
+   "kind": "chunk"
+  },
+  "would_rather": {
+   "lemma": "would rather",
+   "pos": "phrase",
+   "ipa": "wʊd ˈræðər",
+   "es": "preferir",
+   "kind": "chunk"
+  },
+  "write_down": {
+   "lemma": "write down",
+   "pos": "phrasal verb",
+   "ipa": "raɪt daʊn",
+   "es": "apuntar",
+   "kind": "chunk"
+  },
+  "write_out": {
+   "lemma": "write out",
+   "pos": "phrasal verb",
+   "ipa": "raɪt aʊt",
+   "es": "escribir (completo)",
+   "kind": "chunk"
+  },
+  "yard_depot": {
+   "lemma": "yard",
+   "pos": "noun",
+   "ipa": "jɑrd",
+   "es": "patio (de carga), cochera",
+   "kind": "word"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 11,
+   "end": 15,
+   "text": "Form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 1,
+   "start": 4,
+   "end": 8,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 1,
+   "start": 20,
+   "end": 24,
+   "text": "Exit",
+   "sense": "exit_interview",
+   "chunk": {
+    "start": 20,
+    "end": 34,
+    "text": "Exit Interview",
+    "es": "Entrevista de salida"
+   }
+  },
+  {
+   "p": 1,
+   "start": 46,
+   "end": 56,
+   "text": "Departures",
+   "sense": "voluntary_departure",
+   "chunk": {
+    "start": 36,
+    "end": 56,
+    "text": "Voluntary Departures",
+    "es": "Renuncias voluntarias"
+   }
+  },
+  {
+   "p": 2,
+   "start": 14,
+   "end": 18,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 2,
+   "start": 32,
+   "end": 37,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 22,
+    "end": 37,
+    "text": "the sixth floor",
+    "es": "el sexto piso"
+   }
+  },
+  {
+   "p": 2,
+   "start": 45,
+   "end": 51,
+   "text": "Kilima",
+   "sense": "kilima_name"
+  },
+  {
+   "p": 2,
+   "start": 52,
+   "end": 59,
+   "text": "Freight",
+   "sense": "freight"
+  },
+  {
+   "p": 2,
+   "start": 270,
+   "end": 274,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 2,
+   "start": 379,
+   "end": 383,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 2,
+   "start": 416,
+   "end": 420,
+   "text": "haze",
+   "sense": "haze"
+  },
+  {
+   "p": 3,
+   "start": 18,
+   "end": 22,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 3,
+   "start": 83,
+   "end": 93,
+   "text": "management",
+   "sense": "management"
+  },
+  {
+   "p": 3,
+   "start": 168,
+   "end": 172,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 4,
+   "start": 7,
+   "end": 16,
+   "text": "Resources",
+   "sense": "hr",
+   "chunk": {
+    "start": 1,
+    "end": 16,
+    "text": "Human Resources",
+    "es": "Recursos Humanos"
+   }
+  },
+  {
+   "p": 4,
+   "start": 153,
+   "end": 157,
+   "text": "head",
+   "sense": "head_dept"
+  },
+  {
+   "p": 4,
+   "start": 161,
+   "end": 163,
+   "text": "HR",
+   "sense": "hr_abbr"
+  },
+  {
+   "p": 4,
+   "start": 230,
+   "end": 235,
+   "text": "leave",
+   "sense": "leave_holiday"
+  },
+  {
+   "p": 4,
+   "start": 262,
+   "end": 269,
+   "text": "married",
+   "sense": "get_married",
+   "chunk": {
+    "start": 254,
+    "end": 269,
+    "text": "getting married",
+    "es": "se casa"
+   }
+  },
+  {
+   "p": 4,
+   "start": 295,
+   "end": 301,
+   "text": "policy",
+   "sense": "policy"
+  },
+  {
+   "p": 4,
+   "start": 319,
+   "end": 328,
+   "text": "departure",
+   "sense": "voluntary_departure",
+   "chunk": {
+    "start": 309,
+    "end": 328,
+    "text": "voluntary departure",
+    "es": "renuncia voluntaria"
+   }
+  },
+  {
+   "p": 4,
+   "start": 342,
+   "end": 351,
+   "text": "interview",
+   "sense": "exit_interview",
+   "chunk": {
+    "start": 337,
+    "end": 351,
+    "text": "exit interview",
+    "es": "entrevista de salida"
+   }
+  },
+  {
+   "p": 4,
+   "start": 437,
+   "end": 443,
+   "text": "Policy",
+   "sense": "policy"
+  },
+  {
+   "p": 4,
+   "start": 475,
+   "end": 484,
+   "text": "conducted",
+   "sense": "conduct_verb"
+  },
+  {
+   "p": 4,
+   "start": 497,
+   "end": 504,
+   "text": "manager",
+   "sense": "senior_manager",
+   "chunk": {
+    "start": 490,
+    "end": 504,
+    "text": "senior manager",
+    "es": "directivo"
+   }
+  },
+  {
+   "p": 5,
+   "start": 31,
+   "end": 39,
+   "text": "conflict",
+   "sense": "conflict_interest",
+   "chunk": {
+    "start": 31,
+    "end": 51,
+    "text": "conflict of interest",
+    "es": "conflicto de intereses"
+   }
+  },
+  {
+   "p": 6,
+   "start": 41,
+   "end": 45,
+   "text": "case",
+   "sense": "court_case",
+   "chunk": {
+    "start": 35,
+    "end": 45,
+    "text": "court case",
+    "es": "juicio"
+   }
+  },
+  {
+   "p": 6,
+   "start": 143,
+   "end": 151,
+   "text": "managers",
+   "sense": "senior_manager",
+   "chunk": {
+    "start": 136,
+    "end": 151,
+    "text": "senior managers",
+    "es": "directivos"
+   }
+  },
+  {
+   "p": 6,
+   "start": 215,
+   "end": 220,
+   "text": "Write",
+   "sense": "write_down",
+   "chunk": {
+    "start": 215,
+    "end": 225,
+    "text": "Write down",
+    "es": "Apunta"
+   }
+  },
+  {
+   "p": 6,
+   "start": 247,
+   "end": 252,
+   "text": "argue",
+   "sense": "argue"
+  },
+  {
+   "p": 6,
+   "start": 287,
+   "end": 291,
+   "text": "mind",
+   "sense": "change_mind2",
+   "chunk": {
+    "start": 276,
+    "end": 291,
+    "text": "change her mind",
+    "es": "que cambie de opinión"
+   }
+  },
+  {
+   "p": 6,
+   "start": 297,
+   "end": 301,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 6,
+   "start": 341,
+   "end": 348,
+   "text": "neutral",
+   "sense": "neutral"
+  },
+  {
+   "p": 6,
+   "start": 407,
+   "end": 411,
+   "text": "bold",
+   "sense": "bold_type"
+  },
+  {
+   "p": 8,
+   "start": 103,
+   "end": 111,
+   "text": "elevator",
+   "sense": "elevator"
+  },
+  {
+   "p": 9,
+   "start": 17,
+   "end": 21,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 9,
+   "start": 85,
+   "end": 90,
+   "text": "glass",
+   "sense": "glass_material"
+  },
+  {
+   "p": 9,
+   "start": 122,
+   "end": 126,
+   "text": "plan",
+   "sense": "open_plan",
+   "chunk": {
+    "start": 117,
+    "end": 126,
+    "text": "open-plan",
+    "es": "de planta abierta"
+   }
+  },
+  {
+   "p": 9,
+   "start": 127,
+   "end": 132,
+   "text": "floor",
+   "sense": "floor_storey"
+  },
+  {
+   "p": 9,
+   "start": 204,
+   "end": 211,
+   "text": "humming",
+   "sense": "humming"
+  },
+  {
+   "p": 9,
+   "start": 238,
+   "end": 245,
+   "text": "packing",
+   "sense": "pack_up",
+   "chunk": {
+    "start": 238,
+    "end": 248,
+    "text": "packing up",
+    "es": "recogiendo"
+   }
+  },
+  {
+   "p": 10,
+   "start": 108,
+   "end": 115,
+   "text": "screens",
+   "sense": "screen_display"
+  },
+  {
+   "p": 10,
+   "start": 201,
+   "end": 207,
+   "text": "junior",
+   "sense": "junior"
+  },
+  {
+   "p": 10,
+   "start": 208,
+   "end": 215,
+   "text": "analyst",
+   "sense": "analyst"
+  },
+  {
+   "p": 10,
+   "start": 233,
+   "end": 241,
+   "text": "master's",
+   "sense": "masters",
+   "chunk": {
+    "start": 233,
+    "end": 249,
+    "text": "master's program",
+    "es": "máster"
+   }
+  },
+  {
+   "p": 10,
+   "start": 264,
+   "end": 272,
+   "text": "research",
+   "sense": "operations_research",
+   "chunk": {
+    "start": 253,
+    "end": 272,
+    "text": "operations research",
+    "es": "investigación operativa"
+   }
+  },
+  {
+   "p": 10,
+   "start": 334,
+   "end": 340,
+   "text": "Kilima",
+   "sense": "kilima_name"
+  },
+  {
+   "p": 10,
+   "start": 414,
+   "end": 420,
+   "text": "single",
+   "sense": "single_handedly",
+   "chunk": {
+    "start": 414,
+    "end": 429,
+    "text": "single-handedly",
+    "es": "en solitario"
+   }
+  },
+  {
+   "p": 11,
+   "start": 30,
+   "end": 37,
+   "text": "routing",
+   "sense": "routing"
+  },
+  {
+   "p": 12,
+   "start": 44,
+   "end": 53,
+   "text": "scheduled",
+   "sense": "schedule_verb"
+  },
+  {
+   "p": 12,
+   "start": 94,
+   "end": 106,
+   "text": "spreadsheets",
+   "sense": "spreadsheet"
+  },
+  {
+   "p": 12,
+   "start": 127,
+   "end": 137,
+   "text": "dispatcher",
+   "sense": "dispatcher"
+  },
+  {
+   "p": 12,
+   "start": 165,
+   "end": 172,
+   "text": "retired",
+   "sense": "retire"
+  },
+  {
+   "p": 12,
+   "start": 305,
+   "end": 309,
+   "text": "Fuel",
+   "sense": "fuel"
+  },
+  {
+   "p": 12,
+   "start": 328,
+   "end": 338,
+   "text": "Deliveries",
+   "sense": "delivery"
+  },
+  {
+   "p": 12,
+   "start": 352,
+   "end": 361,
+   "text": "Customers",
+   "sense": "customer"
+  },
+  {
+   "p": 13,
+   "start": 29,
+   "end": 34,
+   "text": "hired",
+   "sense": "hire"
+  },
+  {
+   "p": 13,
+   "start": 75,
+   "end": 83,
+   "text": "borrowed",
+   "sense": "borrowed"
+  },
+  {
+   "p": 13,
+   "start": 212,
+   "end": 218,
+   "text": "Kilima",
+   "sense": "kilima_name"
+  },
+  {
+   "p": 13,
+   "start": 229,
+   "end": 237,
+   "text": "delivery",
+   "sense": "delivery"
+  },
+  {
+   "p": 13,
+   "start": 334,
+   "end": 339,
+   "text": "naive",
+   "sense": "naive"
+  },
+  {
+   "p": 13,
+   "start": 373,
+   "end": 378,
+   "text": "right",
+   "sense": "right_proper"
+  },
+  {
+   "p": 13,
+   "start": 408,
+   "end": 419,
+   "text": "embarrassed",
+   "sense": "embarrassed"
+  },
+  {
+   "p": 14,
+   "start": 41,
+   "end": 48,
+   "text": "holding",
+   "sense": "hold_up_light",
+   "chunk": {
+    "start": 41,
+    "end": 62,
+    "text": "holding up the report",
+    "es": "levantando el informe"
+   }
+  },
+  {
+   "p": 15,
+   "start": 93,
+   "end": 97,
+   "text": "hire",
+   "sense": "hire"
+  },
+  {
+   "p": 16,
+   "start": 7,
+   "end": 12,
+   "text": "hired",
+   "sense": "hire"
+  },
+  {
+   "p": 17,
+   "start": 86,
+   "end": 92,
+   "text": "handed",
+   "sense": "hand_give"
+  },
+  {
+   "p": 17,
+   "start": 109,
+   "end": 120,
+   "text": "resignation",
+   "sense": "resignation"
+  },
+  {
+   "p": 20,
+   "start": 30,
+   "end": 34,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 20,
+   "start": 110,
+   "end": 118,
+   "text": "position",
+   "sense": "position_job"
+  },
+  {
+   "p": 20,
+   "start": 170,
+   "end": 176,
+   "text": "notice",
+   "sense": "notice_period",
+   "chunk": {
+    "start": 170,
+    "end": 183,
+    "text": "notice period",
+    "es": "preaviso"
+   }
+  },
+  {
+   "p": 20,
+   "start": 237,
+   "end": 243,
+   "text": "handed",
+   "sense": "hand_over",
+   "chunk": {
+    "start": 237,
+    "end": 248,
+    "text": "handed over",
+    "es": "traspasado"
+   }
+  },
+  {
+   "p": 20,
+   "start": 289,
+   "end": 299,
+   "text": "unreadable",
+   "sense": "unreadable"
+  },
+  {
+   "p": 20,
+   "start": 375,
+   "end": 379,
+   "text": "miss",
+   "sense": "miss_long"
+  },
+  {
+   "p": 22,
+   "start": 80,
+   "end": 86,
+   "text": "served",
+   "sense": "serve_well",
+   "chunk": {
+    "start": 80,
+    "end": 95,
+    "text": "served him well",
+    "es": "le había sido útil"
+   }
+  },
+  {
+   "p": 22,
+   "start": 126,
+   "end": 132,
+   "text": "commit",
+   "sense": "commit"
+  },
+  {
+   "p": 22,
+   "start": 169,
+   "end": 178,
+   "text": "postponed",
+   "sense": "postpone"
+  },
+  {
+   "p": 22,
+   "start": 186,
+   "end": 190,
+   "text": "shut",
+   "sense": "shut_door"
+  },
+  {
+   "p": 23,
+   "start": 23,
+   "end": 31,
+   "text": "director",
+   "sense": "operations_director",
+   "chunk": {
+    "start": 12,
+    "end": 31,
+    "text": "operations director",
+    "es": "director de operaciones"
+   }
+  },
+  {
+   "p": 23,
+   "start": 129,
+   "end": 134,
+   "text": "blame",
+   "sense": "blame"
+  },
+  {
+   "p": 23,
+   "start": 165,
+   "end": 173,
+   "text": "strength",
+   "sense": "strength"
+  },
+  {
+   "p": 24,
+   "start": 3,
+   "end": 12,
+   "text": "scheduled",
+   "sense": "schedule_verb"
+  },
+  {
+   "p": 24,
+   "start": 134,
+   "end": 139,
+   "text": "blind",
+   "sense": "blind_window"
+  },
+  {
+   "p": 24,
+   "start": 166,
+   "end": 170,
+   "text": "tank",
+   "sense": "water_tank",
+   "chunk": {
+    "start": 160,
+    "end": 170,
+    "text": "water tank",
+    "es": "depósito de agua"
+   }
+  },
+  {
+   "p": 24,
+   "start": 197,
+   "end": 207,
+   "text": "invitation",
+   "sense": "invitation"
+  },
+  {
+   "p": 25,
+   "start": 32,
+   "end": 36,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 25,
+   "start": 41,
+   "end": 45,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 25,
+   "start": 98,
+   "end": 104,
+   "text": "graded",
+   "sense": "grade"
+  },
+  {
+   "p": 25,
+   "start": 119,
+   "end": 125,
+   "text": "essays",
+   "sense": "essay"
+  },
+  {
+   "p": 25,
+   "start": 173,
+   "end": 177,
+   "text": "high",
+   "sense": "high_school",
+   "chunk": {
+    "start": 173,
+    "end": 184,
+    "text": "high school",
+    "es": "escuela secundaria"
+   }
+  },
+  {
+   "p": 25,
+   "start": 201,
+   "end": 207,
+   "text": "essays",
+   "sense": "essay"
+  },
+  {
+   "p": 25,
+   "start": 233,
+   "end": 243,
+   "text": "crosswords",
+   "sense": "crossword"
+  },
+  {
+   "p": 25,
+   "start": 251,
+   "end": 261,
+   "text": "ruthlessly",
+   "sense": "ruthlessly"
+  },
+  {
+   "p": 26,
+   "start": 8,
+   "end": 12,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 26,
+   "start": 49,
+   "end": 56,
+   "text": "looking",
+   "sense": "look_up",
+   "chunk": {
+    "start": 49,
+    "end": 59,
+    "text": "looking up",
+    "es": "levantar la vista"
+   }
+  },
+  {
+   "p": 27,
+   "start": 18,
+   "end": 22,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 28,
+   "start": 74,
+   "end": 80,
+   "text": "margin",
+   "sense": "margin"
+  },
+  {
+   "p": 28,
+   "start": 87,
+   "end": 92,
+   "text": "essay",
+   "sense": "essay"
+  },
+  {
+   "p": 29,
+   "start": 74,
+   "end": 84,
+   "text": "management",
+   "sense": "management"
+  },
+  {
+   "p": 30,
+   "start": 8,
+   "end": 14,
+   "text": "looked",
+   "sense": "look_up",
+   "chunk": {
+    "start": 8,
+    "end": 17,
+    "text": "looked up",
+    "es": "levantó la vista"
+   }
+  },
+  {
+   "p": 35,
+   "start": 17,
+   "end": 20,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 17,
+    "end": 33,
+    "text": "put down her pen",
+    "es": "dejó el bolígrafo"
+   }
+  },
+  {
+   "p": 35,
+   "start": 95,
+   "end": 102,
+   "text": "nothing",
+   "sense": "nothing_to_do",
+   "chunk": {
+    "start": 91,
+    "end": 116,
+    "text": "had nothing to do with it",
+    "es": "no tenía nada que ver"
+   }
+  },
+  {
+   "p": 36,
+   "start": 13,
+   "end": 18,
+   "text": "argue",
+   "sense": "argue"
+  },
+  {
+   "p": 37,
+   "start": 79,
+   "end": 83,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 37,
+   "start": 123,
+   "end": 131,
+   "text": "Properly",
+   "sense": "properly_talk"
+  },
+  {
+   "p": 39,
+   "start": 19,
+   "end": 27,
+   "text": "eyebrows",
+   "sense": "raise_eyebrows",
+   "chunk": {
+    "start": 8,
+    "end": 27,
+    "text": "raised her eyebrows",
+    "es": "arqueó las cejas"
+   }
+  },
+  {
+   "p": 39,
+   "start": 48,
+   "end": 54,
+   "text": "essays",
+   "sense": "essay"
+  },
+  {
+   "p": 39,
+   "start": 78,
+   "end": 82,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 41,
+   "start": 103,
+   "end": 106,
+   "text": "lot",
+   "sense": "parking_lot",
+   "chunk": {
+    "start": 95,
+    "end": 106,
+    "text": "parking lot",
+    "es": "estacionamiento"
+   }
+  },
+  {
+   "p": 41,
+   "start": 154,
+   "end": 158,
+   "text": "pull",
+   "sense": "pull_out",
+   "chunk": {
+    "start": 154,
+    "end": 174,
+    "text": "pull out of the gate",
+    "es": "salir por la puerta"
+   }
+  },
+  {
+   "p": 41,
+   "start": 170,
+   "end": 174,
+   "text": "gate",
+   "sense": "gate"
+  },
+  {
+   "p": 41,
+   "start": 195,
+   "end": 199,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 41,
+   "start": 308,
+   "end": 312,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 41,
+   "start": 330,
+   "end": 336,
+   "text": "junior",
+   "sense": "junior"
+  },
+  {
+   "p": 41,
+   "start": 337,
+   "end": 342,
+   "text": "clerk",
+   "sense": "clerk"
+  },
+  {
+   "p": 41,
+   "start": 394,
+   "end": 401,
+   "text": "screens",
+   "sense": "screen_display"
+  },
+  {
+   "p": 42,
+   "start": 118,
+   "end": 122,
+   "text": "over",
+   "sense": "think_over",
+   "chunk": {
+    "start": 106,
+    "end": 122,
+    "text": "thinking it over",
+    "es": "pensarlo bien"
+   }
+  },
+  {
+   "p": 43,
+   "start": 94,
+   "end": 105,
+   "text": "examination",
+   "sense": "examination"
+  },
+  {
+   "p": 43,
+   "start": 173,
+   "end": 180,
+   "text": "grading",
+   "sense": "grade"
+  },
+  {
+   "p": 43,
+   "start": 265,
+   "end": 271,
+   "text": "graded",
+   "sense": "grade"
+  },
+  {
+   "p": 44,
+   "start": 82,
+   "end": 87,
+   "text": "blind",
+   "sense": "blind_window"
+  },
+  {
+   "p": 44,
+   "start": 111,
+   "end": 114,
+   "text": "bar",
+   "sense": "bar_sunlight"
+  },
+  {
+   "p": 44,
+   "start": 181,
+   "end": 185,
+   "text": "line",
+   "sense": "line_text"
+  },
+  {
+   "p": 44,
+   "start": 191,
+   "end": 199,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 44,
+   "start": 211,
+   "end": 219,
+   "text": "opposite",
+   "sense": "opposite"
+  },
+  {
+   "p": 44,
+   "start": 231,
+   "end": 236,
+   "text": "glass",
+   "sense": "glass_cup"
+  },
+  {
+   "p": 44,
+   "start": 382,
+   "end": 386,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 45,
+   "start": 55,
+   "end": 64,
+   "text": "formality",
+   "sense": "formality"
+  },
+  {
+   "p": 46,
+   "start": 6,
+   "end": 10,
+   "text": "fine",
+   "sense": "fine_ok"
+  },
+  {
+   "p": 46,
+   "start": 30,
+   "end": 36,
+   "text": "rather",
+   "sense": "would_rather",
+   "chunk": {
+    "start": 26,
+    "end": 36,
+    "text": "I'd rather",
+    "es": "Prefiero"
+   }
+  },
+  {
+   "p": 47,
+   "start": 17,
+   "end": 21,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 47,
+   "start": 41,
+   "end": 48,
+   "text": "annoyed",
+   "sense": "annoyed"
+  },
+  {
+   "p": 48,
+   "start": 18,
+   "end": 22,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 50,
+   "start": 21,
+   "end": 25,
+   "text": "role",
+   "sense": "role_job"
+  },
+  {
+   "p": 50,
+   "start": 29,
+   "end": 33,
+   "text": "head",
+   "sense": "head_dept"
+  },
+  {
+   "p": 50,
+   "start": 37,
+   "end": 46,
+   "text": "analytics",
+   "sense": "analytics"
+  },
+  {
+   "p": 50,
+   "start": 60,
+   "end": 64,
+   "text": "firm",
+   "sense": "firm_company"
+  },
+  {
+   "p": 50,
+   "start": 148,
+   "end": 153,
+   "text": "title",
+   "sense": "title_job"
+  },
+  {
+   "p": 51,
+   "start": 26,
+   "end": 31,
+   "text": "title",
+   "sense": "title_job"
+  },
+  {
+   "p": 51,
+   "start": 138,
+   "end": 144,
+   "text": "blamed",
+   "sense": "blame"
+  },
+  {
+   "p": 52,
+   "start": 49,
+   "end": 53,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 55,
+   "start": 15,
+   "end": 18,
+   "text": "bar",
+   "sense": "bar_sunlight"
+  },
+  {
+   "p": 55,
+   "start": 107,
+   "end": 116,
+   "text": "reversing",
+   "sense": "reverse_vehicle"
+  },
+  {
+   "p": 55,
+   "start": 118,
+   "end": 125,
+   "text": "beeping",
+   "sense": "beep"
+  },
+  {
+   "p": 58,
+   "start": 19,
+   "end": 23,
+   "text": "more",
+   "sense": "say_more",
+   "chunk": {
+    "start": 9,
+    "end": 23,
+    "text": "say a bit more",
+    "es": "explicar un poco más"
+   }
+  },
+  {
+   "p": 60,
+   "start": 9,
+   "end": 13,
+   "text": "fair",
+   "sense": "fair_just"
+  },
+  {
+   "p": 60,
+   "start": 166,
+   "end": 174,
+   "text": "eyebrows",
+   "sense": "raise_eyebrows",
+   "chunk": {
+    "start": 154,
+    "end": 174,
+    "text": "raising her eyebrows",
+    "es": "arqueando las cejas"
+   }
+  },
+  {
+   "p": 60,
+   "start": 200,
+   "end": 207,
+   "text": "neutral",
+   "sense": "neutral"
+  },
+  {
+   "p": 63,
+   "start": 72,
+   "end": 76,
+   "text": "word",
+   "sense": "word_for_word",
+   "chunk": {
+    "start": 72,
+    "end": 85,
+    "text": "word for word",
+    "es": "palabra por palabra"
+   }
+  },
+  {
+   "p": 64,
+   "start": 22,
+   "end": 27,
+   "text": "voice",
+   "sense": "raise_voice",
+   "chunk": {
+    "start": 12,
+    "end": 27,
+    "text": "raise her voice",
+    "es": "levantó la voz"
+   }
+  },
+  {
+   "p": 64,
+   "start": 130,
+   "end": 138,
+   "text": "evidence",
+   "sense": "evidence"
+  },
+  {
+   "p": 66,
+   "start": 52,
+   "end": 59,
+   "text": "running",
+   "sense": "run_route"
+  },
+  {
+   "p": 66,
+   "start": 72,
+   "end": 77,
+   "text": "route",
+   "sense": "route"
+  },
+  {
+   "p": 66,
+   "start": 216,
+   "end": 221,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 67,
+   "start": 5,
+   "end": 10,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 68,
+   "start": 5,
+   "end": 10,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 68,
+   "start": 73,
+   "end": 79,
+   "text": "agenda",
+   "sense": "agenda"
+  },
+  {
+   "p": 68,
+   "start": 98,
+   "end": 104,
+   "text": "agenda",
+   "sense": "agenda"
+  },
+  {
+   "p": 68,
+   "start": 200,
+   "end": 207,
+   "text": "finance",
+   "sense": "finance"
+  },
+  {
+   "p": 68,
+   "start": 287,
+   "end": 295,
+   "text": "approved",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 70,
+   "start": 17,
+   "end": 21,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 17,
+    "end": 24,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 70,
+   "start": 37,
+   "end": 42,
+   "text": "model",
+   "sense": "model_math"
+  },
+  {
+   "p": 70,
+   "start": 78,
+   "end": 83,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 70,
+   "start": 91,
+   "end": 95,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 70,
+   "start": 107,
+   "end": 118,
+   "text": "supervisors",
+   "sense": "supervisor"
+  },
+  {
+   "p": 70,
+   "start": 235,
+   "end": 242,
+   "text": "version",
+   "sense": "version"
+  },
+  {
+   "p": 70,
+   "start": 259,
+   "end": 270,
+   "text": "assumptions",
+   "sense": "assumption"
+  },
+  {
+   "p": 70,
+   "start": 400,
+   "end": 405,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 70,
+   "start": 420,
+   "end": 425,
+   "text": "drive",
+   "sense": "shared_drive",
+   "chunk": {
+    "start": 413,
+    "end": 425,
+    "text": "shared drive",
+    "es": "unidad compartida"
+   }
+  },
+  {
+   "p": 70,
+   "start": 427,
+   "end": 434,
+   "text": "Version",
+   "sense": "version"
+  },
+  {
+   "p": 71,
+   "start": 31,
+   "end": 39,
+   "text": "versions",
+   "sense": "version"
+  },
+  {
+   "p": 71,
+   "start": 220,
+   "end": 227,
+   "text": "caution",
+   "sense": "caution"
+  },
+  {
+   "p": 72,
+   "start": 31,
+   "end": 36,
+   "text": "union",
+   "sense": "union_labor"
+  },
+  {
+   "p": 73,
+   "start": 49,
+   "end": 54,
+   "text": "union",
+   "sense": "union_labor"
+  },
+  {
+   "p": 73,
+   "start": 55,
+   "end": 69,
+   "text": "representative",
+   "sense": "representative"
+  },
+  {
+   "p": 73,
+   "start": 96,
+   "end": 100,
+   "text": "fine",
+   "sense": "fine_ok"
+  },
+  {
+   "p": 74,
+   "start": 71,
+   "end": 75,
+   "text": "deal",
+   "sense": "deal_with",
+   "chunk": {
+    "start": 71,
+    "end": 85,
+    "text": "deal with that",
+    "es": "me encargaré de eso"
+   }
+  },
+  {
+   "p": 75,
+   "start": 55,
+   "end": 60,
+   "text": "lived",
+   "sense": "live_with",
+   "chunk": {
+    "start": 55,
+    "end": 68,
+    "text": "lived with no",
+    "es": "aceptado un no"
+   }
+  },
+  {
+   "p": 75,
+   "start": 141,
+   "end": 149,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 141,
+    "end": 157,
+    "text": "supposed to work",
+    "es": "debe funcionar"
+   }
+  },
+  {
+   "p": 77,
+   "start": 28,
+   "end": 35,
+   "text": "purpose",
+   "sense": "on_purpose",
+   "chunk": {
+    "start": 25,
+    "end": 35,
+    "text": "on purpose",
+    "es": "a propósito"
+   }
+  },
+  {
+   "p": 77,
+   "start": 301,
+   "end": 310,
+   "text": "composure",
+   "sense": "composure"
+  },
+  {
+   "p": 77,
+   "start": 311,
+   "end": 320,
+   "text": "flickered",
+   "sense": "flicker"
+  },
+  {
+   "p": 78,
+   "start": 25,
+   "end": 29,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 78,
+   "start": 69,
+   "end": 79,
+   "text": "management",
+   "sense": "management"
+  },
+  {
+   "p": 78,
+   "start": 94,
+   "end": 99,
+   "text": "scale",
+   "sense": "scale_rating"
+  },
+  {
+   "p": 79,
+   "start": 46,
+   "end": 50,
+   "text": "room",
+   "sense": "room_space"
+  },
+  {
+   "p": 79,
+   "start": 58,
+   "end": 62,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 82,
+   "start": 28,
+   "end": 32,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 82,
+   "start": 39,
+   "end": 44,
+   "text": "moved",
+   "sense": "move_on",
+   "chunk": {
+    "start": 39,
+    "end": 47,
+    "text": "moved on",
+    "es": "pasado"
+   }
+  },
+  {
+   "p": 82,
+   "start": 78,
+   "end": 81,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 78,
+    "end": 94,
+    "text": "put the pen down",
+    "es": "dejó el bolígrafo"
+   }
+  },
+  {
+   "p": 83,
+   "start": 55,
+   "end": 59,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 84,
+   "start": 23,
+   "end": 25,
+   "text": "Go",
+   "sense": "go_on_speak",
+   "chunk": {
+    "start": 23,
+    "end": 28,
+    "text": "Go on",
+    "es": "Adelante"
+   }
+  },
+  {
+   "p": 85,
+   "start": 29,
+   "end": 37,
+   "text": "director",
+   "sense": "operations_director",
+   "chunk": {
+    "start": 29,
+    "end": 37,
+    "text": "director",
+    "es": "director"
+   }
+  },
+  {
+   "p": 85,
+   "start": 82,
+   "end": 86,
+   "text": "tank",
+   "sense": "water_tank",
+   "chunk": {
+    "start": 76,
+    "end": 86,
+    "text": "water tank",
+    "es": "depósito de agua"
+   }
+  },
+  {
+   "p": 85,
+   "start": 106,
+   "end": 111,
+   "text": "blind",
+   "sense": "blind_window"
+  },
+  {
+   "p": 85,
+   "start": 146,
+   "end": 149,
+   "text": "bid",
+   "sense": "bid_for",
+   "chunk": {
+    "start": 146,
+    "end": 164,
+    "text": "bid for a contract",
+    "es": "presentarse a un contrato"
+   }
+  },
+  {
+   "p": 85,
+   "start": 156,
+   "end": 164,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 85,
+   "start": 172,
+   "end": 178,
+   "text": "mining",
+   "sense": "mining"
+  },
+  {
+   "p": 85,
+   "start": 206,
+   "end": 213,
+   "text": "volumes",
+   "sense": "volume_amount"
+  },
+  {
+   "p": 85,
+   "start": 217,
+   "end": 223,
+   "text": "pushed",
+   "sense": "push_hard",
+   "chunk": {
+    "start": 217,
+    "end": 228,
+    "text": "pushed hard",
+    "es": "presioné mucho"
+   }
+  },
+  {
+   "p": 85,
+   "start": 253,
+   "end": 258,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 85,
+   "start": 294,
+   "end": 302,
+   "text": "strength",
+   "sense": "on_strength",
+   "chunk": {
+    "start": 287,
+    "end": 308,
+    "text": "on the strength of it",
+    "es": "basándonos en eso"
+   }
+  },
+  {
+   "p": 85,
+   "start": 378,
+   "end": 384,
+   "text": "coming",
+   "sense": "see_coming",
+   "chunk": {
+    "start": 370,
+    "end": 384,
+    "text": "seen it coming",
+    "es": "lo había visto venir"
+   }
+  },
+  {
+   "p": 85,
+   "start": 389,
+   "end": 394,
+   "text": "ended",
+   "sense": "end_up",
+   "chunk": {
+    "start": 389,
+    "end": 402,
+    "text": "ended up with",
+    "es": "acabamos con"
+   }
+  },
+  {
+   "p": 85,
+   "start": 426,
+   "end": 430,
+   "text": "debt",
+   "sense": "debt"
+  },
+  {
+   "p": 85,
+   "start": 438,
+   "end": 446,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 87,
+   "start": 230,
+   "end": 235,
+   "text": "humor",
+   "sense": "humor"
+  },
+  {
+   "p": 87,
+   "start": 248,
+   "end": 253,
+   "text": "turns",
+   "sense": "turn_out",
+   "chunk": {
+    "start": 245,
+    "end": 257,
+    "text": "it turns out",
+    "es": "resulta"
+   }
+  },
+  {
+   "p": 89,
+   "start": 6,
+   "end": 10,
+   "text": "fine",
+   "sense": "fine_ok"
+  },
+  {
+   "p": 89,
+   "start": 37,
+   "end": 41,
+   "text": "runs",
+   "sense": "run_company"
+  },
+  {
+   "p": 89,
+   "start": 127,
+   "end": 131,
+   "text": "sold",
+   "sense": "sell_off",
+   "chunk": {
+    "start": 127,
+    "end": 135,
+    "text": "sold off",
+    "es": "vendimos"
+   }
+  },
+  {
+   "p": 89,
+   "start": 146,
+   "end": 154,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 89,
+   "start": 155,
+   "end": 164,
+   "text": "collapsed",
+   "sense": "collapse"
+  },
+  {
+   "p": 89,
+   "start": 208,
+   "end": 215,
+   "text": "auction",
+   "sense": "auction"
+  },
+  {
+   "p": 89,
+   "start": 337,
+   "end": 345,
+   "text": "reproach",
+   "sense": "reproach"
+  },
+  {
+   "p": 91,
+   "start": 56,
+   "end": 59,
+   "text": "bid",
+   "sense": "bid_for",
+   "chunk": {
+    "start": 56,
+    "end": 76,
+    "text": "bid for the contract",
+    "es": "presentarse al contrato"
+   }
+  },
+  {
+   "p": 91,
+   "start": 68,
+   "end": 76,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 91,
+   "start": 141,
+   "end": 146,
+   "text": "badly",
+   "sense": "turn_out_badly",
+   "chunk": {
+    "start": 130,
+    "end": 146,
+    "text": "turned out badly",
+    "es": "salió mal"
+   }
+  },
+  {
+   "p": 93,
+   "start": 152,
+   "end": 157,
+   "text": "sorry",
+   "sense": "feel_sorry_for",
+   "chunk": {
+    "start": 147,
+    "end": 164,
+    "text": "feel sorry for me",
+    "es": "sientas lástima por mí"
+   }
+  },
+  {
+   "p": 93,
+   "start": 199,
+   "end": 204,
+   "text": "right",
+   "sense": "right_correct",
+   "chunk": {
+    "start": 190,
+    "end": 204,
+    "text": "you were right",
+    "es": "tenías razón"
+   }
+  },
+  {
+   "p": 93,
+   "start": 214,
+   "end": 220,
+   "text": "rather",
+   "sense": "would_rather",
+   "chunk": {
+    "start": 210,
+    "end": 220,
+    "text": "I'd rather",
+    "es": "prefiero"
+   }
+  },
+  {
+   "p": 94,
+   "start": 90,
+   "end": 94,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 94,
+   "start": 104,
+   "end": 109,
+   "text": "quiet",
+   "sense": "go_quiet2",
+   "chunk": {
+    "start": 95,
+    "end": 109,
+    "text": "had gone quiet",
+    "es": "se había quedado en silencio"
+   }
+  },
+  {
+   "p": 94,
+   "start": 178,
+   "end": 183,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 94,
+   "start": 221,
+   "end": 226,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 95,
+   "start": 31,
+   "end": 35,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 28,
+    "end": 35,
+    "text": "at last",
+    "es": "por fin"
+   }
+  },
+  {
+   "p": 95,
+   "start": 109,
+   "end": 115,
+   "text": "retain",
+   "sense": "retain"
+  },
+  {
+   "p": 96,
+   "start": 20,
+   "end": 24,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 97,
+   "start": 84,
+   "end": 89,
+   "text": "route",
+   "sense": "route"
+  },
+  {
+   "p": 97,
+   "start": 158,
+   "end": 163,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 97,
+   "start": 231,
+   "end": 236,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 99,
+   "start": 63,
+   "end": 67,
+   "text": "mind",
+   "sense": "change_mind2",
+   "chunk": {
+    "start": 51,
+    "end": 67,
+    "text": "change your mind",
+    "es": "hacerte cambiar de opinión"
+   }
+  },
+  {
+   "p": 100,
+   "start": 29,
+   "end": 33,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 100,
+   "start": 57,
+   "end": 65,
+   "text": "approved",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 101,
+   "start": 66,
+   "end": 74,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 101,
+   "start": 89,
+   "end": 93,
+   "text": "flat",
+   "sense": "flat_home"
+  },
+  {
+   "p": 101,
+   "start": 173,
+   "end": 177,
+   "text": "head",
+   "sense": "head_dept"
+  },
+  {
+   "p": 102,
+   "start": 28,
+   "end": 35,
+   "text": "Version",
+   "sense": "version"
+  },
+  {
+   "p": 104,
+   "start": 7,
+   "end": 12,
+   "text": "awake",
+   "sense": "lie_awake",
+   "chunk": {
+    "start": 3,
+    "end": 12,
+    "text": "lay awake",
+    "es": "estaba despierto en la cama"
+   }
+  },
+  {
+   "p": 104,
+   "start": 284,
+   "end": 289,
+   "text": "model",
+   "sense": "model_math"
+  },
+  {
+   "p": 104,
+   "start": 304,
+   "end": 309,
+   "text": "drive",
+   "sense": "shared_drive",
+   "chunk": {
+    "start": 297,
+    "end": 309,
+    "text": "shared drive",
+    "es": "unidad compartida"
+   }
+  },
+  {
+   "p": 104,
+   "start": 311,
+   "end": 318,
+   "text": "Version",
+   "sense": "version"
+  },
+  {
+   "p": 104,
+   "start": 375,
+   "end": 382,
+   "text": "summary",
+   "sense": "summary"
+  },
+  {
+   "p": 104,
+   "start": 464,
+   "end": 472,
+   "text": "appendix",
+   "sense": "appendix"
+  },
+  {
+   "p": 104,
+   "start": 508,
+   "end": 513,
+   "text": "union",
+   "sense": "union_labor"
+  },
+  {
+   "p": 104,
+   "start": 514,
+   "end": 528,
+   "text": "representative",
+   "sense": "representative"
+  },
+  {
+   "p": 105,
+   "start": 3,
+   "end": 7,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 105,
+   "start": 34,
+   "end": 38,
+   "text": "took",
+   "sense": "take_time",
+   "chunk": {
+    "start": 31,
+    "end": 53,
+    "text": "It took him until dawn",
+    "es": "Le llevó hasta el amanecer"
+   }
+  },
+  {
+   "p": 106,
+   "start": 69,
+   "end": 80,
+   "text": "anticipated",
+   "sense": "anticipate"
+  },
+  {
+   "p": 106,
+   "start": 87,
+   "end": 96,
+   "text": "objection",
+   "sense": "objection"
+  },
+  {
+   "p": 106,
+   "start": 175,
+   "end": 180,
+   "text": "drive",
+   "sense": "shared_drive",
+   "chunk": {
+    "start": 168,
+    "end": 180,
+    "text": "shared drive",
+    "es": "unidad compartida"
+   }
+  },
+  {
+   "p": 106,
+   "start": 341,
+   "end": 350,
+   "text": "approving",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 107,
+   "start": 133,
+   "end": 137,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 108,
+   "start": 10,
+   "end": 15,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 108,
+   "start": 52,
+   "end": 63,
+   "text": "floodlights",
+   "sense": "floodlight"
+  },
+  {
+   "p": 108,
+   "start": 161,
+   "end": 167,
+   "text": "loaded",
+   "sense": "load"
+  },
+  {
+   "p": 108,
+   "start": 208,
+   "end": 212,
+   "text": "gate",
+   "sense": "gate"
+  },
+  {
+   "p": 108,
+   "start": 231,
+   "end": 241,
+   "text": "supervisor",
+   "sense": "supervisor"
+  },
+  {
+   "p": 108,
+   "start": 245,
+   "end": 250,
+   "text": "broad",
+   "sense": "broad_build"
+  },
+  {
+   "p": 108,
+   "start": 312,
+   "end": 317,
+   "text": "flask",
+   "sense": "flask"
+  },
+  {
+   "p": 108,
+   "start": 322,
+   "end": 329,
+   "text": "filling",
+   "sense": "fill_in",
+   "chunk": {
+    "start": 322,
+    "end": 346,
+    "text": "filling in the shift log",
+    "es": "llenando el parte del turno"
+   }
+  },
+  {
+   "p": 108,
+   "start": 343,
+   "end": 346,
+   "text": "log",
+   "sense": "log"
+  },
+  {
+   "p": 108,
+   "start": 360,
+   "end": 366,
+   "text": "looked",
+   "sense": "look_up",
+   "chunk": {
+    "start": 360,
+    "end": 369,
+    "text": "looked up",
+    "es": "levantó la vista"
+   }
+  },
+  {
+   "p": 108,
+   "start": 406,
+   "end": 414,
+   "text": "director",
+   "sense": "operations_director",
+   "chunk": {
+    "start": 395,
+    "end": 414,
+    "text": "operations director",
+    "es": "director de operaciones"
+   }
+  },
+  {
+   "p": 110,
+   "start": 66,
+   "end": 71,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 110,
+   "start": 96,
+   "end": 99,
+   "text": "run",
+   "sense": "run_work"
+  },
+  {
+   "p": 110,
+   "start": 109,
+   "end": 120,
+   "text": "supervisors",
+   "sense": "supervisor"
+  },
+  {
+   "p": 111,
+   "start": 34,
+   "end": 37,
+   "text": "rim",
+   "sense": "rim"
+  },
+  {
+   "p": 112,
+   "start": 45,
+   "end": 52,
+   "text": "analyst",
+   "sense": "analyst"
+  },
+  {
+   "p": 114,
+   "start": 13,
+   "end": 19,
+   "text": "nights",
+   "sense": "on_nights",
+   "chunk": {
+    "start": 10,
+    "end": 19,
+    "text": "on nights",
+    "es": "en el turno de noche"
+   }
+  },
+  {
+   "p": 114,
+   "start": 190,
+   "end": 195,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 114,
+   "start": 238,
+   "end": 241,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 238,
+    "end": 254,
+    "text": "put her cup down",
+    "es": "dejó la taza"
+   }
+  },
+  {
+   "p": 114,
+   "start": 271,
+   "end": 274,
+   "text": "run",
+   "sense": "run_work"
+  },
+  {
+   "p": 114,
+   "start": 362,
+   "end": 365,
+   "text": "run",
+   "sense": "run_work"
+  },
+  {
+   "p": 114,
+   "start": 420,
+   "end": 425,
+   "text": "union",
+   "sense": "union_labor"
+  },
+  {
+   "p": 114,
+   "start": 470,
+   "end": 478,
+   "text": "upstairs",
+   "sense": "upstairs_boss",
+   "chunk": {
+    "start": 461,
+    "end": 478,
+    "text": "somebody upstairs",
+    "es": "alguien de arriba"
+   }
+  },
+  {
+   "p": 115,
+   "start": 5,
+   "end": 10,
+   "text": "sorry",
+   "sense": "be_sorry",
+   "chunk": {
+    "start": 1,
+    "end": 10,
+    "text": "I'm sorry",
+    "es": "Lo siento"
+   }
+  },
+  {
+   "p": 116,
+   "start": 90,
+   "end": 93,
+   "text": "log",
+   "sense": "log"
+  },
+  {
+   "p": 117,
+   "start": 50,
+   "end": 57,
+   "text": "setting",
+   "sense": "set_up_stall",
+   "chunk": {
+    "start": 50,
+    "end": 73,
+    "text": "setting up fruit stalls",
+    "es": "montando puestos de fruta"
+   }
+  },
+  {
+   "p": 117,
+   "start": 67,
+   "end": 73,
+   "text": "stalls",
+   "sense": "stall"
+  },
+  {
+   "p": 117,
+   "start": 99,
+   "end": 104,
+   "text": "lines",
+   "sense": "line_queue2"
+  },
+  {
+   "p": 117,
+   "start": 176,
+   "end": 184,
+   "text": "upstairs",
+   "sense": "upstairs_boss",
+   "chunk": {
+    "start": 167,
+    "end": 184,
+    "text": "somebody upstairs",
+    "es": "alguien de arriba"
+   }
+  },
+  {
+   "p": 117,
+   "start": 272,
+   "end": 280,
+   "text": "occurred",
+   "sense": "it_occurred",
+   "chunk": {
+    "start": 261,
+    "end": 287,
+    "text": "It had not occurred to him",
+    "es": "No se le había ocurrido"
+   }
+  },
+  {
+   "p": 117,
+   "start": 339,
+   "end": 347,
+   "text": "upstairs",
+   "sense": "upstairs_boss",
+   "chunk": {
+    "start": 328,
+    "end": 347,
+    "text": "the person upstairs",
+    "es": "la persona de arriba"
+   }
+  },
+  {
+   "p": 118,
+   "start": 86,
+   "end": 91,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 119,
+   "start": 1,
+   "end": 5,
+   "text": "Well",
+   "sense": "well_question"
+  },
+  {
+   "p": 120,
+   "start": 9,
+   "end": 14,
+   "text": "right",
+   "sense": "right_correct",
+   "chunk": {
+    "start": 1,
+    "end": 14,
+    "text": "She was right",
+    "es": "Tenía razón"
+   }
+  },
+  {
+   "p": 121,
+   "start": 17,
+   "end": 25,
+   "text": "opposite",
+   "sense": "opposite"
+  },
+  {
+   "p": 121,
+   "start": 59,
+   "end": 61,
+   "text": "so",
+   "sense": "told_you_so",
+   "chunk": {
+    "start": 48,
+    "end": 61,
+    "text": "I told you so",
+    "es": "ya te lo dije"
+   }
+  },
+  {
+   "p": 121,
+   "start": 73,
+   "end": 84,
+   "text": "appreciated",
+   "sense": "appreciate"
+  },
+  {
+   "p": 123,
+   "start": 97,
+   "end": 103,
+   "text": "rubbed",
+   "sense": "rub"
+  },
+  {
+   "p": 125,
+   "start": 168,
+   "end": 171,
+   "text": "out",
+   "sense": "way_out",
+   "chunk": {
+    "start": 162,
+    "end": 171,
+    "text": "a way out",
+    "es": "una escapatoria"
+   }
+  },
+  {
+   "p": 126,
+   "start": 29,
+   "end": 34,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 126,
+   "start": 51,
+   "end": 56,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 126,
+   "start": 79,
+   "end": 86,
+   "text": "Version",
+   "sense": "version"
+  },
+  {
+   "p": 126,
+   "start": 159,
+   "end": 166,
+   "text": "approve",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 128,
+   "start": 85,
+   "end": 91,
+   "text": "reject",
+   "sense": "reject"
+  },
+  {
+   "p": 129,
+   "start": 50,
+   "end": 57,
+   "text": "reached",
+   "sense": "reach_across",
+   "chunk": {
+    "start": 50,
+    "end": 74,
+    "text": "reached across the table",
+    "es": "alargó la mano por encima de la mesa"
+   }
+  },
+  {
+   "p": 130,
+   "start": 15,
+   "end": 21,
+   "text": "shower",
+   "sense": "have_shower",
+   "chunk": {
+    "start": 8,
+    "end": 21,
+    "text": "have a shower",
+    "es": "date una ducha"
+   }
+  },
+  {
+   "p": 130,
+   "start": 90,
+   "end": 98,
+   "text": "appendix",
+   "sense": "appendix"
+  },
+  {
+   "p": 132,
+   "start": 13,
+   "end": 17,
+   "text": "wash",
+   "sense": "wash_off",
+   "chunk": {
+    "start": 13,
+    "end": 24,
+    "text": "wash it off",
+    "es": "quítatelo con la ducha"
+   }
+  },
+  {
+   "p": 133,
+   "start": 93,
+   "end": 98,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 136,
+   "start": 18,
+   "end": 27,
+   "text": "gathering",
+   "sense": "gathering"
+  },
+  {
+   "p": 136,
+   "start": 61,
+   "end": 66,
+   "text": "floor",
+   "sense": "floor_storey"
+  },
+  {
+   "p": 136,
+   "start": 73,
+   "end": 80,
+   "text": "samosas",
+   "sense": "samosa"
+  },
+  {
+   "p": 136,
+   "start": 90,
+   "end": 99,
+   "text": "cafeteria",
+   "sense": "cafeteria"
+  },
+  {
+   "p": 136,
+   "start": 122,
+   "end": 127,
+   "text": "piped",
+   "sense": "pipe_icing"
+  },
+  {
+   "p": 136,
+   "start": 143,
+   "end": 148,
+   "text": "icing",
+   "sense": "icing"
+  },
+  {
+   "p": 136,
+   "start": 174,
+   "end": 185,
+   "text": "circulating",
+   "sense": "circulate"
+  },
+  {
+   "p": 136,
+   "start": 232,
+   "end": 238,
+   "text": "signed",
+   "sense": "sign_name"
+  },
+  {
+   "p": 136,
+   "start": 352,
+   "end": 358,
+   "text": "routes",
+   "sense": "route"
+  },
+  {
+   "p": 136,
+   "start": 392,
+   "end": 396,
+   "text": "read",
+   "sense": "read_past"
+  },
+  {
+   "p": 136,
+   "start": 506,
+   "end": 513,
+   "text": "swallow",
+   "sense": "swallow_hard",
+   "chunk": {
+    "start": 506,
+    "end": 518,
+    "text": "swallow hard",
+    "es": "tragar saliva"
+   }
+  },
+  {
+   "p": 137,
+   "start": 18,
+   "end": 24,
+   "text": "speech",
+   "sense": "speech"
+  },
+  {
+   "p": 137,
+   "start": 44,
+   "end": 47,
+   "text": "out",
+   "sense": "write_out",
+   "chunk": {
+    "start": 33,
+    "end": 47,
+    "text": "written it out",
+    "es": "lo había escrito"
+   }
+  },
+  {
+   "p": 137,
+   "start": 70,
+   "end": 78,
+   "text": "delivery",
+   "sense": "delivery"
+  },
+  {
+   "p": 137,
+   "start": 79,
+   "end": 87,
+   "text": "schedule",
+   "sense": "schedule_rota"
+  },
+  {
+   "p": 137,
+   "start": 145,
+   "end": 151,
+   "text": "folded",
+   "sense": "fold_up",
+   "chunk": {
+    "start": 145,
+    "end": 157,
+    "text": "folded it up",
+    "es": "lo dobló"
+   }
+  },
+  {
+   "p": 138,
+   "start": 5,
+   "end": 13,
+   "text": "supposed",
+   "sense": "supposed_to",
+   "chunk": {
+    "start": 1,
+    "end": 32,
+    "text": "I'm supposed to say a few words",
+    "es": "Se supone que tengo que decir unas palabras"
+   }
+  },
+  {
+   "p": 138,
+   "start": 106,
+   "end": 113,
+   "text": "routing",
+   "sense": "routing"
+  },
+  {
+   "p": 138,
+   "start": 202,
+   "end": 206,
+   "text": "past",
+   "sense": "get_past",
+   "chunk": {
+    "start": 198,
+    "end": 214,
+    "text": "got past my desk",
+    "es": "pasaron de mi mesa"
+   }
+  },
+  {
+   "p": 138,
+   "start": 210,
+   "end": 214,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 139,
+   "start": 19,
+   "end": 23,
+   "text": "stir",
+   "sense": "stir"
+  },
+  {
+   "p": 139,
+   "start": 161,
+   "end": 167,
+   "text": "Kilima",
+   "sense": "kilima_name"
+  },
+  {
+   "p": 140,
+   "start": 19,
+   "end": 23,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 19,
+    "end": 26,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 140,
+   "start": 63,
+   "end": 68,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 140,
+   "start": 95,
+   "end": 100,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 140,
+   "start": 108,
+   "end": 112,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 140,
+   "start": 234,
+   "end": 242,
+   "text": "approved",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 140,
+   "start": 360,
+   "end": 362,
+   "text": "IT",
+   "sense": "it_team"
+  },
+  {
+   "p": 140,
+   "start": 382,
+   "end": 389,
+   "text": "routing",
+   "sense": "routing"
+  },
+  {
+   "p": 140,
+   "start": 426,
+   "end": 431,
+   "text": "Model",
+   "sense": "model_math"
+  },
+  {
+   "p": 140,
+   "start": 486,
+   "end": 491,
+   "text": "least",
+   "sense": "least_deserve",
+   "chunk": {
+    "start": 482,
+    "end": 503,
+    "text": "the least it deserves",
+    "es": "lo mínimo que merece"
+   }
+  },
+  {
+   "p": 141,
+   "start": 50,
+   "end": 59,
+   "text": "awkwardly",
+   "sense": "awkwardly"
+  },
+  {
+   "p": 142,
+   "start": 41,
+   "end": 49,
+   "text": "applause",
+   "sense": "applause"
+  },
+  {
+   "p": 142,
+   "start": 131,
+   "end": 134,
+   "text": "cut",
+   "sense": "cut_cake"
+  },
+  {
+   "p": 143,
+   "start": 24,
+   "end": 32,
+   "text": "breaking",
+   "sense": "break_up_party",
+   "chunk": {
+    "start": 24,
+    "end": 35,
+    "text": "breaking up",
+    "es": "terminando"
+   }
+  },
+  {
+   "p": 143,
+   "start": 88,
+   "end": 92,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 143,
+   "start": 112,
+   "end": 117,
+   "text": "shift",
+   "sense": "shift_work"
+  },
+  {
+   "p": 143,
+   "start": 157,
+   "end": 163,
+   "text": "lining",
+   "sense": "line_up",
+   "chunk": {
+    "start": 157,
+    "end": 166,
+    "text": "lining up",
+    "es": "poniéndose en fila"
+   }
+  },
+  {
+   "p": 143,
+   "start": 174,
+   "end": 178,
+   "text": "gate",
+   "sense": "gate"
+  },
+  {
+   "p": 147,
+   "start": 11,
+   "end": 16,
+   "text": "Model",
+   "sense": "model_math"
+  },
+  {
+   "p": 147,
+   "start": 77,
+   "end": 82,
+   "text": "moved",
+   "sense": "moved_emotion"
+  },
+  {
+   "p": 148,
+   "start": 104,
+   "end": 111,
+   "text": "analyst",
+   "sense": "analyst"
+  },
+  {
+   "p": 148,
+   "start": 112,
+   "end": 119,
+   "text": "anymore",
+   "sense": "not_anymore",
+   "chunk": {
+    "start": 92,
+    "end": 119,
+    "text": "won't be my analyst anymore",
+    "es": "ya no serás mi analista"
+   }
+  },
+  {
+   "p": 150,
+   "start": 176,
+   "end": 182,
+   "text": "rather",
+   "sense": "would_rather",
+   "chunk": {
+    "start": 172,
+    "end": 182,
+    "text": "I'd rather",
+    "es": "Prefiero"
+   }
+  },
+  {
+   "p": 151,
+   "start": 46,
+   "end": 50,
+   "text": "held",
+   "sense": "hold_out_hand2",
+   "chunk": {
+    "start": 46,
+    "end": 63,
+    "text": "held out her hand",
+    "es": "le tendió la mano"
+   }
+  },
+  {
+   "p": 151,
+   "start": 72,
+   "end": 77,
+   "text": "shook",
+   "sense": "shake_hands",
+   "chunk": {
+    "start": 69,
+    "end": 80,
+    "text": "he shook it",
+    "es": "él se la estrechó"
+   }
+  },
+  {
+   "p": 152,
+   "start": 1,
+   "end": 5,
+   "text": "Deal",
+   "sense": "deal_agreement"
+  },
+  {
+   "p": 154,
+   "start": 7,
+   "end": 10,
+   "text": "see",
+   "sense": "we_ll_see",
+   "chunk": {
+    "start": 1,
+    "end": 10,
+    "text": "We'll see",
+    "es": "Ya veremos"
+   }
+  },
+  {
+   "p": 155,
+   "start": 51,
+   "end": 56,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 155,
+   "start": 162,
+   "end": 171,
+   "text": "boardroom",
+   "sense": "boardroom"
+  },
+  {
+   "p": 155,
+   "start": 192,
+   "end": 201,
+   "text": "positions",
+   "sense": "position_view"
+  },
+  {
+   "p": 155,
+   "start": 279,
+   "end": 286,
+   "text": "leaning",
+   "sense": "lean_room"
+  },
+  {
+   "p": 156,
+   "start": 4,
+   "end": 14,
+   "text": "chairwoman",
+   "sense": "chairwoman"
+  },
+  {
+   "p": 156,
+   "start": 92,
+   "end": 101,
+   "text": "warehouse",
+   "sense": "warehouse"
+  },
+  {
+   "p": 156,
+   "start": 234,
+   "end": 241,
+   "text": "glasses",
+   "sense": "glasses_eyes"
+  },
+  {
+   "p": 160,
+   "start": 39,
+   "end": 47,
+   "text": "dreading",
+   "sense": "dread"
+  },
+  {
+   "p": 160,
+   "start": 114,
+   "end": 119,
+   "text": "union",
+   "sense": "union_labor"
+  },
+  {
+   "p": 160,
+   "start": 149,
+   "end": 155,
+   "text": "timing",
+   "sense": "timing"
+  },
+  {
+   "p": 160,
+   "start": 169,
+   "end": 174,
+   "text": "right",
+   "sense": "right_proper"
+  },
+  {
+   "p": 160,
+   "start": 187,
+   "end": 192,
+   "text": "reach",
+   "sense": "reach_for",
+   "chunk": {
+    "start": 187,
+    "end": 208,
+    "text": "reach for one of them",
+    "es": "recurrir a una de ellas"
+   }
+  },
+  {
+   "p": 160,
+   "start": 269,
+   "end": 275,
+   "text": "smooth",
+   "sense": "smooth_answer"
+  },
+  {
+   "p": 160,
+   "start": 354,
+   "end": 359,
+   "text": "point",
+   "sense": "at_some_point",
+   "chunk": {
+    "start": 346,
+    "end": 359,
+    "text": "at some point",
+    "es": "en algún momento"
+   }
+  },
+  {
+   "p": 162,
+   "start": 23,
+   "end": 27,
+   "text": "gaze",
+   "sense": "hold_gaze",
+   "chunk": {
+    "start": 14,
+    "end": 27,
+    "text": "held his gaze",
+    "es": "le sostuvo la mirada"
+   }
+  },
+  {
+   "p": 162,
+   "start": 58,
+   "end": 64,
+   "text": "nodded",
+   "sense": "nod"
+  },
+  {
+   "p": 163,
+   "start": 5,
+   "end": 11,
+   "text": "argued",
+   "sense": "argue"
+  },
+  {
+   "p": 163,
+   "start": 53,
+   "end": 60,
+   "text": "finance",
+   "sense": "finance"
+  },
+  {
+   "p": 163,
+   "start": 294,
+   "end": 302,
+   "text": "startled",
+   "sense": "startled"
+  },
+  {
+   "p": 163,
+   "start": 321,
+   "end": 331,
+   "text": "chairwoman",
+   "sense": "chairwoman"
+  },
+  {
+   "p": 163,
+   "start": 351,
+   "end": 356,
+   "text": "board",
+   "sense": "board_directors"
+  },
+  {
+   "p": 163,
+   "start": 357,
+   "end": 361,
+   "text": "vote",
+   "sense": "vote"
+  },
+  {
+   "p": 164,
+   "start": 3,
+   "end": 9,
+   "text": "passed",
+   "sense": "pass_vote"
+  },
+  {
+   "p": 165,
+   "start": 103,
+   "end": 111,
+   "text": "Approved",
+   "sense": "approve_ok"
+  },
+  {
+   "p": 167,
+   "start": 50,
+   "end": 55,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 167,
+   "start": 71,
+   "end": 75,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 167,
+   "start": 89,
+   "end": 93,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 168,
+   "start": 12,
+   "end": 21,
+   "text": "Genuinely",
+   "sense": "genuinely"
+  },
+  {
+   "p": 168,
+   "start": 28,
+   "end": 37,
+   "text": "forwarded",
+   "sense": "forward_email"
+  },
+  {
+   "p": 168,
+   "start": 178,
+   "end": 183,
+   "text": "break",
+   "sense": "line_break",
+   "chunk": {
+    "start": 173,
+    "end": 183,
+    "text": "line break",
+    "es": "salto de línea"
+   }
+  },
+  {
+   "p": 168,
+   "start": 258,
+   "end": 262,
+   "text": "yard",
+   "sense": "yard_depot"
+  },
+  {
+   "p": 168,
+   "start": 341,
+   "end": 346,
+   "text": "flask",
+   "sense": "flask"
+  },
+  {
+   "p": 169,
+   "start": 49,
+   "end": 54,
+   "text": "typed",
+   "sense": "type_keyboard"
+  },
+  {
+   "p": 171,
+   "start": 62,
+   "end": 69,
+   "text": "cleaner",
+   "sense": "cleaner"
+  },
+  {
+   "p": 171,
+   "start": 94,
+   "end": 98,
+   "text": "head",
+   "sense": "put_head_around",
+   "chunk": {
+    "start": 86,
+    "end": 114,
+    "text": "put her head around the door",
+    "es": "asomó la cabeza por la puerta"
+   }
+  },
+  {
+   "p": 171,
+   "start": 141,
+   "end": 146,
+   "text": "right",
+   "sense": "all_right",
+   "chunk": {
+    "start": 137,
+    "end": 146,
+    "text": "all right",
+    "es": "bien"
+   }
+  },
+  {
+   "p": 171,
+   "start": 161,
+   "end": 165,
+   "text": "Form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 171,
+   "start": 182,
+   "end": 191,
+   "text": "briefcase",
+   "sense": "briefcase"
+  },
+  {
+   "p": 172,
+   "start": 104,
+   "end": 108,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 172,
+   "start": 200,
+   "end": 207,
+   "text": "crossed",
+   "sense": "cross_out2",
+   "chunk": {
+    "start": 200,
+    "end": 214,
+    "text": "crossed it out",
+    "es": "lo había tachado"
+   }
+  },
+  {
+   "p": 173,
+   "start": 21,
+   "end": 28,
+   "text": "neutral",
+   "sense": "neutral"
+  },
+  {
+   "p": 173,
+   "start": 108,
+   "end": 115,
+   "text": "neutral",
+   "sense": "neutral"
+  }
+ ]
+}

@@ -67,6 +67,12 @@ struct DiscoverView: View {
                 Section {
                     levelFilter
                     ForEach(stories, id: \.resource) { storyRow($0) }
+                    // A row, not a footer (footers fail the Dynamic Type audit).
+                    if !stories.isEmpty {
+                        Text(Credits.storiesNotice)
+                            .font(.footnote)
+                            .foregroundStyle(Brand.secondaryText)
+                    }
                     if recommended.isEmpty && stories.isEmpty {
                         Text("No recommended books at this level.")
                     } else {
@@ -261,9 +267,11 @@ struct DiscoverView: View {
                 Text(story.title).font(.headline)
                 HStack(spacing: 6) {
                     LevelBadge(level: story.level)
-                    Text("Original story").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                    Text(Credits.storyRowLabel).font(.subheadline).foregroundStyle(Brand.secondaryText)
                 }
             }
+            // The title, level and kind of story read as one element; the button stays its own.
+            .accessibilityElement(children: .combine)
             Spacer(minLength: 8)
             if let saved = BundledStory.libraryCopy(of: story.title, in: model.state.books) {
                 readButton(bookID: saved.id, title: story.title)

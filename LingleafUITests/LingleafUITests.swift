@@ -3,7 +3,7 @@ import XCTest
 /// Runs the real app in `-ui-testing` mode: fresh storage, canned dictionary
 /// answers and fake translations, so results don't depend on the network.
 final class LingleafUITests: XCTestCase {
-    private var app: XCUIApplication!
+    var app: XCUIApplication!
 
     override func setUp() {
         continueAfterFailure = false
@@ -45,7 +45,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["ES: Can we fix"].exists, "the verb group is translated, not the word alone")
         XCTAssertTrue(app.staticTexts["“can” + verb: be able to, or be allowed to."].exists)
         let card = XCTAttachment(screenshot: app.screenshot())
-        card.name = "en-light-13-modal-verb-card"
+        card.name = "en-light-82-modal-verb-card"
         card.lifetime = .keepAlways
         add(card)
 
@@ -66,7 +66,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["have"].exists, "the base form")
         XCTAssertTrue(app.staticTexts["had kept"].exists, "the verb group up to the participle")
         XCTAssertTrue(app.staticTexts["“had” + past participle: it happened before another past moment: “had left”."].exists)
-        attachScreenshot("en-light-14-perfect-card")
+        attachScreenshot("en-light-83-perfect-card")
     }
 
     func testAContractionSaysWhatItStandsFor() {
@@ -78,7 +78,7 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["that is"].waitForExistence(timeout: 10), "the contraction's expansion is its base form")
         XCTAssertTrue(app.staticTexts["“that's” = “that is”."].exists)
         XCTAssertFalse(app.staticTexts["Helper verb"].exists, "a plain contraction has no label")
-        attachScreenshot("en-light-15-contraction-card")
+        attachScreenshot("en-light-84-contraction-card")
     }
 
     private func attachScreenshot(_ name: String) {
@@ -106,6 +106,7 @@ final class LingleafUITests: XCTestCase {
         app.buttons["I remembered"].tap()
         XCTAssertTrue(app.staticTexts["Done for today."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["1 word tomorrow."].exists, "the word is due again tomorrow")
+        XCTAssertTrue(app.buttons["Back to Words"].exists, "the way out says where it goes")
     }
 
     /// S3: unsure, the guide says where the answer is, or asks when the sentence has no
@@ -138,11 +139,35 @@ final class LingleafUITests: XCTestCase {
         app.tabBars.buttons["Words"].tap()
         let undo = app.buttons["Undo"].firstMatch
         XCTAssertTrue(undo.waitForExistence(timeout: 10), "the corrections card")
+        let fixedRow = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label BEGINSWITH %@ AND label CONTAINS %@", "the left", "Fixed")).firstMatch
+        XCTAssertTrue(fixedRow.exists, "the corrected word's row is tagged while the card is open")
         undo.tap()
         XCTAssertTrue(app.staticTexts["Words put back as before"].waitForExistence(timeout: 5))
     }
 
-    private func relaunch(_ arguments: String...) {
+    /// About says the recommended books are public domain worldwide; the US-only notice is for search results.
+    func testAboutSaysTheRecommendedBooksArePublicDomainWorldwide() {
+        app.tabBars.buttons["Settings"].tap()
+        let worldwide = app.staticTexts["Recommended books are public domain worldwide."]
+        for _ in 0..<8 where !worldwide.exists { app.swipeUp() }
+        XCTAssertTrue(worldwide.exists)
+        XCTAssertFalse(app.staticTexts["Project Gutenberg books are public domain in the US. Elsewhere, check your country's laws."].exists)
+    }
+
+    /// A fast flick in the reader must leave the app idle: it used to stay busy for minutes (every
+    /// visibility change re-ran the whole reader while `scrollPosition(id:)` followed the scroll).
+    func testAFlickInTheReaderLeavesTheAppIdle() {
+        button(startingWith: "A Day at the Market").tap()
+        XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10))
+        RunLoop.current.run(until: Date().addingTimeInterval(2))
+        let start = Date()
+        app.swipeUp()
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        XCTAssertLessThan(Date().timeIntervalSince(start), 30, "the app was busy after the flick")
+    }
+
+    func relaunch(_ arguments: String...) {
         app.terminate()
         app.launchArguments = arguments + ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
         app.launch()
@@ -165,6 +190,69 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(story.waitForExistence(timeout: 5))
         story.tap()
         XCTAssertTrue(app.links.firstMatch.waitForExistence(timeout: 10), "Read opens the story in the reader")
+    }
+
+    /// S19: the app's own stories say so in the Library, and Discover lists all three of a level.
+    func testTheOriginalStoriesAreMarkedAndListedByLevel() {
+        XCTAssertTrue(button(startingWith: "The Red Boat").label.contains("Our story"), "the Library row says it is one of the app's stories")
+        app.tabBars.buttons["Discover"].tap()
+        let a1 = app.buttons["level-filter-A1"]
+        XCTAssertTrue(a1.waitForExistence(timeout: 10))
+        a1.tap()
+        for title in ["A Shoe in the Fridge", "An Empty Apartment", "Nour's Long Race"] {
+            XCTAssertTrue(app.buttons["Read \(title)"].waitForExistence(timeout: 5), "\(title) is in the A1 stories")
+        }
+        XCTAssertTrue(app.staticTexts[Self.storiesNoticeText].waitForExistence(timeout: 5), "the AI-help note shows with the stories")
+        app.buttons["level-filter-C2"].tap()
+        XCTAssertTrue(app.buttons["Read The Second Violin"].waitForExistence(timeout: 5), "the C2 stories are there too")
+    }
+
+    /// S19: a word the story has an entry for shows the story's sense, not the general translation.
+    func testAStoryWordShowsItsSenseAndSavesIt() {
+        app.tabBars.buttons["Discover"].tap()
+        let a1 = app.buttons["level-filter-A1"]
+        XCTAssertTrue(a1.waitForExistence(timeout: 10))
+        a1.tap()
+        let read = app.buttons["Read A Shoe in the Fridge"]
+        XCTAssertTrue(read.waitForExistence(timeout: 5))
+        read.tap()
+        let word = app.links["mom"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10), "the story opens offline")
+        word.tap()
+
+        XCTAssertTrue(app.staticTexts["mamá"].waitForExistence(timeout: 10), "the story's own meaning")
+        XCTAssertFalse(app.staticTexts["ES: mom"].exists, "not the general translation")
+        XCTAssertTrue(app.staticTexts["US English"].exists, "a US word says so")
+        let definition = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of mom")).firstMatch
+        XCTAssertTrue(definition.waitForExistence(timeout: 10), "the dictionary has a noun for it")
+        attachScreenshot("en-light-16-story-word-card")
+        app.buttons["Save word"].tap()
+        XCTAssertTrue(app.staticTexts["“mom” saved to Words"].waitForExistence(timeout: 5))
+        app.navigationBars.buttons.element(boundBy: 0).tap()
+        app.tabBars.buttons["Words"].tap()
+        XCTAssertTrue(element(labelled: "mom").waitForExistence(timeout: 5), "the word was saved")
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "mamá")).firstMatch.exists,
+                      "with the story's meaning")
+    }
+
+    /// S19: a name that is also a word is a name, with no translation.
+    func testAStoryNameIsLabelledAsAName() {
+        app.tabBars.buttons["Discover"].tap()
+        let a2 = app.buttons["level-filter-A2"]
+        XCTAssertTrue(a2.waitForExistence(timeout: 10))
+        a2.tap()
+        let read = app.buttons["Read The Oven Next Door"]
+        XCTAssertTrue(read.waitForExistence(timeout: 5))
+        read.tap()
+        let word = app.links["Blue"].firstMatch
+        XCTAssertTrue(word.waitForExistence(timeout: 10))
+        word.tap()
+        XCTAssertTrue(app.staticTexts["Proper name"].waitForExistence(timeout: 10), "the card says it is a name")
+        XCTAssertFalse(app.buttons["Save word"].exists, "a name is not offered to save")
+        XCTAssertEqual(app.staticTexts.matching(identifier: "The Blue Table").count, 1, "the headword is not repeated")
+        XCTAssertTrue(app.staticTexts["The Blue Table"].firstMatch.exists, "the whole name is the headword")
+        XCTAssertFalse(app.staticTexts["ES: Blue"].exists, "a name is not translated")
+        attachScreenshot("en-light-17-story-name-card")
     }
 
     /// S6 Listen. XCUITest can't hear the speaker, so in -ui-testing mode the app records
@@ -194,7 +282,7 @@ final class LingleafUITests: XCTestCase {
         assertSpoken(["Tom lives in a small house by the sea.", "He is ten years old."], "Read aloud starts at the top of the screen and goes on")
         XCTAssertTrue(app.buttons["Pause"].exists, "while reading, the bar pauses")
         let reading = XCTAttachment(screenshot: app.screenshot())
-        reading.name = "en-light-16-reading-aloud"
+        reading.name = "en-light-85-reading-aloud"
         reading.lifetime = .keepAlways
         add(reading)
         // Tapping a word pauses: nothing more is read while its card is open or after.
@@ -225,7 +313,7 @@ final class LingleafUITests: XCTestCase {
             return log[last - 1] != looped && log[last + 1] == log[last - 1]
         }
         let repeating = XCTAttachment(screenshot: app.screenshot())
-        repeating.name = "en-light-17-repeating"
+        repeating.name = "en-light-86-repeating"
         repeating.lifetime = .keepAlways
         add(repeating)
         element(labelled: "Repeat sentence").tap()
@@ -251,7 +339,7 @@ final class LingleafUITests: XCTestCase {
 
     /// Evidence when an element is missing: the screen and its accessibility hierarchy,
     /// kept with the test results.
-    private func attachEvidence(_ name: String) {
+    func attachEvidence(_ name: String) {
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = "evidence-\(name)"
         shot.lifetime = .keepAlways
@@ -447,169 +535,13 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.buttons["Translation language: Español"].exists, "a button to change the language replaces it")
     }
 
-    /// Apple's automated accessibility audit (contrast, Dynamic Type, labels,
-    /// hit areas…) on every main screen, empty and with a word being learned
-    /// (marked word in the reader, a Words row, Review before and after the
-    /// meaning). Collects every issue before failing, so one CI run shows the whole list.
-    func testAccessibilityAudit() throws {
-        var issues: [String] = []
-        func audit(_ screen: String) throws {
-            // Tab switches cross-fade; auditing mid-animation measures half-faded
-            // text and reports contrast failures that are not there.
-            RunLoop.current.run(until: Date().addingTimeInterval(1.5))
-            // The reader hides the tab bar; then nothing can sit under it.
-            let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
-            let before = issues.count
-            // A row half under the glass tab bar is measured against the bar's blur too, but
-            // XCTest can't always resolve its elements, and then the exemption below can't
-            // see where they are. Such unresolved contrast findings are accepted only up to the
-            // number of elements under the bar right now; any more still fail, with a screenshot.
-            let underBar = Self.elementsUnder(tabBar, in: app)
-            var unresolved: [String] = []
-            // The audit itself can time out (the first one after a cold simulator boot): that is
-            // no result, so it runs again; the findings of an audit that completes always count.
-            for attempt in 1...3 {
-                issues.removeSubrange(before...)
-                unresolved = []
-                do {
-                    try app.performAccessibilityAudit { issue in
-                        // Rows scrolled under the translucent tab bar are measured against
-                        // the bar's blur; scrolled into view they read normally. The tab
-                        // bar's own buttons are not exempt: their contrast is still checked.
-                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
-                           !Self.isTabBarButton(flagged, in: tabBar) { return true }
-                        // The search field is UIKit's own (from `.searchable`); its clipping
-                        // at large text sizes is iOS's to handle, not something the app can change.
-                        if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                        if Self.knownFalsePositive(issue, on: screen) { return true }
-                        if issue.auditType == .contrast, issue.element == nil {
-                            unresolved.append(
-                                "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
-                            return true
-                        }
-                        let element = issue.element.map {
-                            "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
-                        } ?? "screen"
-                        issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
-                        return true
-                    }
-                    break
-                } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
-                    && error.code == -56 && attempt < 3 {
-                    RunLoop.current.run(until: Date().addingTimeInterval(2))
-                }
-            }
-            if unresolved.count > underBar {
-                issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
-                issues += unresolved
-            }
-            // Evidence for any finding: the screen as audited, kept with the test results, so a
-            // finding without a resolvable element (a view that changed mid-audit) can be traced.
-            if issues.count > before {
-                let shot = XCTAttachment(screenshot: app.screenshot())
-                // Named like the tour's shots, so CI exports and publishes it with them.
-                let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
-                shot.name = "en-light-99-audit-\(slug)"
-                shot.lifetime = .keepAlways
-                add(shot)
-            }
-        }
-        for tab in ["Library", "Discover", "Words", "Settings"] {
-            app.tabBars.buttons[tab].tap()
-            try audit(tab)
-        }
-        app.tabBars.buttons["Library"].tap()
-        button(startingWith: "The Red Boat").tap()
-        XCTAssertTrue(app.links["beach"].firstMatch.waitForExistence(timeout: 10))
-        try audit("Reader")
-        app.links["beach"].firstMatch.tap()
-        XCTAssertTrue(app.buttons["Save word"].waitForExistence(timeout: 10))
-        // The card as learners first see it: half height, on iOS 26 a glass sheet over the book.
-        try audit("Word card (half height)")
-        // Then at full height, where text clipping is checked too.
-        // A slow drag, not a swipe: the card's ScrollView takes a swipe as a scroll and bounces back.
-        let phonetic = app.staticTexts["/test/"]
-        phonetic.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
-            .press(forDuration: 0.2, thenDragTo: app.windows.firstMatch.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.02)))
-        Thread.sleep(forTimeInterval: 1)
-        XCTAssertLessThan(phonetic.frame.minY, 300, "The word card should be at full height before the audit")
-        // Evidence for the audit result: the full-height card exactly as audited (exported with the tour).
-        let fullHeight = XCTAttachment(screenshot: app.screenshot())
-        fullHeight.name = "en-light-12-word-card-full-height"
-        fullHeight.lifetime = .keepAlways
-        add(fullHeight)
-        try audit("Word card")
-
-        // Populated states: save the word, then audit every screen that shows it.
-        app.buttons["Save word"].tap()
-        XCTAssertTrue(app.buttons["Save word"].waitForNonExistence(timeout: 10), "the card closes after Save word")
-        XCTAssertTrue(app.buttons["Undo"].waitForExistence(timeout: 5))
-        try audit("Reader with a learning word and the Undo message")
-        app.navigationBars.buttons.element(boundBy: 0).tap()
-        app.tabBars.buttons["Words"].tap()
-        XCTAssertTrue(element(labelled: "beach").waitForExistence(timeout: 5))
-        try audit("Words with a word")
-        // New words are first due tomorrow: a word due now comes from the test launch argument.
-        relaunch("-ui-testing", "-ui-testing-due")
-        app.tabBars.buttons["Words"].tap()
-        button(startingWith: "Review now").tap()
-        XCTAssertTrue(app.buttons["Show meaning"].waitForExistence(timeout: 5))
-        try audit("Review")
-        app.buttons["Show meaning"].tap()
-        XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
-        try audit("Review with the meaning")
-        XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
-    }
-
     /// How VoiceOver reads the fake dictionary's definition of "beach" on the word card.
-    private static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
-
-    /// Audit findings checked by hand and found not to be real problems. Each
-    /// one names the screen and the reason; anything else still fails the test.
-    private static func knownFalsePositive(_ issue: XCUIAccessibilityAuditIssue, on screen: String) -> Bool {
-        // The DEBUG-only element that exposes the last spoken text to UI tests
-        // (1×1 pt, nearly transparent); users never see it and live builds don't have it.
-        if [lastSpokenID, spokenLogID].contains(issue.element?.identifier ?? "") { return true }
-        switch (screen, issue.auditType) {
-        case ("Word card (half height)", .textClipped):
-            // At half height the card's text continues in its ScrollView; iOS 26 draws the
-            // medium sheet slightly scaled and reports all of it as clipped. The test drags
-            // the card to full height and audits it again, where clipping still fails.
-            return true
-        case ("Settings", .contrast) where issue.element?.label.uppercased() == "VOICE":
-            // The four section headers share one style and colour. Measured on the
-            // screenshot tour all four are 7.58:1 (#4D4D4D on #F2F2F7), yet only
-            // "Voice" is reported, run after run; the others pass. Only this header
-            // is exempt, so a real regression in the shared style still fails.
-            return true
-        case ("Settings", .contrast):
-            // On iOS 26 the audit reports contrast failures inside Form controls
-            // without naming any element. Measured on the screenshot tour, every
-            // text and icon there is ≥ 6:1 (headers 6.0, slider icons 6.7,
-            // accent 6.2, stepper 18.1), above WCAG AA's 4.5:1. A failure that
-            // names an element is still reported.
-            return issue.element == nil
-        case (_, .hitRegion):
-            // Progress bars (reader, review) are read-only indicators, not touch
-            // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
-            return issue.element?.elementType == .progressIndicator
-        case ("Word card", .contrast) where issue.element?.label == Self.beachDefinitionLabel:
-            // Measured on the screenshot taken right before this audit (en-light-12-word-card-full-height):
-            // #4D4D4D on the card's opaque #F1F1F6 panel, 7.5:1. The same line in the same colours
-            // passes at half height; only this line is exempt, so a real regression in the card still fails.
-            return true
-        case ("Word card", .elementDetection), ("Word card (half height)", .elementDetection):
-            // The card is a sheet over the reader: the book's text shows behind
-            // it, dimmed and correctly hidden from VoiceOver while the card is open.
-            return issue.element == nil
-        default:
-            return false
-        }
-    }
+    static let beachDefinitionLabel = "noun: Definition of beach. Source: Wiktionary."
+    static let storiesNoticeText = "Our stories were written with AI help. Anyone can use them freely."
 
     /// Identifier of `LastSpokenProbe` in the app.
-    private static let lastSpokenID = "ui-test-last-spoken"
-    private static let spokenLogID = "ui-test-spoken-log"
+    static let lastSpokenID = "ui-test-last-spoken"
+    static let spokenLogID = "ui-test-spoken-log"
 
     /// Waits until `texts` were spoken one after another (reading aloud moves on every 1.5 s,
     /// so checking only the last one would miss some).
@@ -634,30 +566,17 @@ final class LingleafUITests: XCTestCase {
         XCTAssertTrue(app.buttons["I know it"].waitForNonExistence(timeout: 10), "the card closes")
     }
 
-    /// A tab bar button sits entirely inside the bar; rows scrolled under the bar only overlap it.
-    /// Labelled elements of the screen (not the tab bar's own) that reach under the tab bar.
-    private static func elementsUnder(_ tabBar: CGRect, in app: XCUIApplication) -> Int {
-        guard !tabBar.isNull, let root = try? app.snapshot() else { return 0 }
-        func count(_ node: XCUIElementSnapshot) -> Int {
-            if node.elementType == .tabBar { return 0 }
-            if node.children.isEmpty { return !node.label.isEmpty && node.frame.intersects(tabBar) ? 1 : 0 }
-            return node.children.reduce(0) { $0 + count($1) }
-        }
-        return count(root)
-    }
-
-    private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
-        element.elementType == .button && tabBar.contains(element.frame)
-    }
-
     /// A word row in Words reads as one element whose label starts with the word.
-    private func element(labelled prefix: String) -> XCUIElement {
+    func element(labelled prefix: String) -> XCUIElement {
         app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
     }
 
     /// Rows combine their texts into one label ("The Red Boat, Level A1, …").
-    private func button(startingWith prefix: String) -> XCUIElement {
+    /// The Library lists 21 stories, A1 to C2: a row further down is found by scrolling.
+    func button(startingWith prefix: String) -> XCUIElement {
         let element = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", prefix)).firstMatch
+        _ = element.waitForExistence(timeout: 10)
+        for _ in 0..<8 where !element.exists || !element.isHittable { app.swipeUp() }
         XCTAssertTrue(element.waitForExistence(timeout: 10), "button starting with \(prefix)")
         return element
     }

@@ -15,6 +15,12 @@ struct WordSelection: Identifiable {
     /// The paragraph and range the word came from, to mark it in the reader.
     var paragraph = 0
     var range = WordRange(0, 0)
+    /// The story's own sense for the word, when the book is a bundled story that has one (SPEC S19).
+    var story: StorySenseHit?
+    /// The story sense's group of words, where it is in `sentence`.
+    var groupInSentence: WordRange?
+    /// The id of the story the word is in, for a word saved from its own sense.
+    var storyID: String?
 
     /// The verb group of a helper or modal verb ("did not go"), if there is one.
     var chunk: String? {
@@ -65,8 +71,13 @@ struct ReaderView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     /// The word card's height, so the card drops its half-height panel when full height.
     @State private var cardDetent: PresentationDetent = .medium
+    /// The height that fits a word card whose sentence doesn't tell (its content and buttons); the
+    /// card tells it as it measures itself, and its sheet opens at it.
+    @State private var fittedHeight: CGFloat = ReaderView.defaultFittedHeight
     @State private var paragraphs: [String]?
     @State private var words: [[WordRange]] = []
+    /// The senses of the story, when the book is a bundled story that has them (SPEC S19).
+    @State private var storySenses: StorySenses?
     /// Each paragraph's words being learned, kept while the paragraph and the learning words stay
     /// the same: the body runs again on every step of reading aloud.
     @State private var learningCache = LearningCache()
@@ -81,7 +92,7 @@ struct ReaderView: View {
     /// Reading aloud sentence by sentence (SPEC S6); made when the reader appears.
     @State private var reading: ReadAloudController?
     /// Paragraphs on screen, to start reading at the top of the screen and to follow the reading.
-    @State private var visible: Set<Int> = []
+    @State private var visible = VisibleParagraphs()
     /// Whether the reader scrolls to follow the sentence being read; scrolling by hand stops it
     /// until that sentence is back on screen.
     @State private var following = true
@@ -132,14 +143,24 @@ struct ReaderView: View {
         .sheet(item: $selection) { selection in
             WordCardView(
                 selection: selection, source: book?.title ?? "", fullHeight: cardDetent == .large,
-                onReadFromHere: { readFrom(paragraph: selection.paragraph, offset: selection.range.start) }
-            ) { message in
-                undo = message
+                onReadFromHere: { readFrom(paragraph: selection.paragraph, offset: selection.range.start) },
+                onFittedHeight: { height in
+                    if abs(height - fittedHeight) > 1 { fittedHeight = height }
+                },
+                onAction: { message in undo = message }
+            )
+            // With accessibility text sizes a half-height card shows almost nothing: full height. A word whose
+            // sentence doesn't tell opens at the card's own height, its readings in view (SPEC S3).
+            .presentationDetents(cardDetents(selection), selection: $cardDetent)
+            // Each card starts from the default: the height measured for the last one may not fit this one.
+            .onAppear {
+                fittedHeight = Self.defaultFittedHeight
+                cardDetent = openingDetent(selection, fitted: Self.defaultFittedHeight)
             }
-            // With accessibility text sizes a half-height card shows almost nothing, and a word whose
-            // sentence doesn't tell needs its readings in view (SPEC S3): open it full height.
-            .presentationDetents(fullHeightCard(selection) ? [.large] : [.medium, .large], selection: $cardDetent)
-            .onAppear { cardDetent = fullHeightCard(selection) ? .large : .medium }
+            // The card measured itself again (a translation arrived): the sheet follows, unless it was dragged.
+            .onChange(of: fittedHeight) { old, new in
+                if cardDetent == .height(old) { cardDetent = .height(new) }
+            }
             .presentationDragIndicator(.visible)
         }
         .environment(\.openURL, OpenURLAction { url in
@@ -151,6 +172,7 @@ struct ReaderView: View {
             words = loaded.map(TextTools.wordRanges)
             learningCache.clear()
             paragraphs = loaded
+            storySenses = book.flatMap { model.storySenses(for: $0, paragraphs: loaded) }
         }
         .onAppear {
             startTimer()
@@ -226,11 +248,14 @@ struct ReaderView: View {
                                 }
                             }
                             .id(index)
-                            .onScrollVisibilityChange(threshold: 0.01) { shown in
-                                if shown { visible.insert(index) } else { visible.remove(index) }
+                            // On screen as the lazy stack shows it (not `onScrollVisibilityChange`, which with
+                            // `scrollPosition(id:)` kept the app busy after a flick).
+                            .onAppear {
+                                visible.indices.insert(index)
                                 // The sentence being read is back on screen: follow it again.
-                                if shown, reading?.current?.paragraph == index { following = true }
+                                if reading?.current?.paragraph == index { following = true }
                             }
+                            .onDisappear { visible.indices.remove(index) }
                     }
                 }
                 .scrollTargetLayout()
@@ -246,7 +271,7 @@ struct ReaderView: View {
             }
             // The next sentence is in a paragraph off screen: bring it into view.
             .onChange(of: reading?.current?.paragraph) { _, paragraph in
-                guard let paragraph, following, !visible.contains(paragraph) else { return }
+                guard let paragraph, following, !visible.indices.contains(paragraph) else { return }
                 withAnimation(reduceMotion ? nil : .default) { proxy.scrollTo(paragraph, anchor: UnitPoint(x: 0, y: 0.1)) }
             }
             .coordinateSpace(.named(Self.readerSpace))
@@ -362,8 +387,13 @@ struct ReaderView: View {
     private func marked(_ index: Int, _ text: String) -> MarkedParagraph {
         var attributed = AttributedString(text)
         var learning: [LearningWord] = []
-        let learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
+        var learningRanges = learningCache.ranges(index, text, model.state.learningIndex) {
             model.learningRanges(text, words[index])
+        }
+        // A word saved from a story's own sense marks, in that story, only the places with the same sense (S19).
+        if let storySenses {
+            learningRanges = storySenses.underlines(
+                paragraph: index, generic: learningRanges, words: words[index], saved: model.state.words)
         }
         for range in words[index] {
             guard let stringRange = Range(range.nsRange, in: text),
@@ -460,20 +490,41 @@ struct ReaderView: View {
         let sentence = TextTools.substring(paragraph, sentenceRange)
         let inSentence = WordRange(start - sentenceRange.start, end - sentenceRange.start)
         let valid = sentenceRange.start <= start && end <= sentenceRange.end
+        // The story's own sense, if it has one for this word, comes before every general rule.
+        let story = storySenses?.hit(paragraph: index, range: WordRange(start, end))
+        let group = story?.group?.range
         selection = WordSelection(
             word: TextTools.substring(paragraph, WordRange(start, end)),
             sentence: sentence,
             rangeInSentence: valid ? inSentence : nil,
-            function: valid ? FunctionWords.analyze(sentence, inSentence) : nil,
+            function: valid && story == nil ? FunctionWords.analyze(sentence, inSentence) : nil,
             paragraph: index,
-            range: WordRange(start, end)
+            range: WordRange(start, end),
+            story: story,
+            groupInSentence: group.flatMap { span -> WordRange? in
+                sentenceRange.start <= span.start && span.end <= sentenceRange.end
+                    ? WordRange(span.start - sentenceRange.start, span.end - sentenceRange.start) : nil
+            },
+            storyID: story == nil ? nil : storySenses?.story
         )
     }
 
-    private func fullHeightCard(_ selection: WordSelection) -> Bool {
-        if dynamicTypeSize.isAccessibilitySize { return true }
-        guard selection.function == nil, let range = selection.rangeInSentence else { return false }
+    /// The sentence doesn't tell which of two readings the word is (SPEC S3).
+    private func isUnsureCard(_ selection: WordSelection) -> Bool {
+        guard selection.function == nil, selection.story == nil, let range = selection.rangeInSentence else { return false }
         return IrregularVerbs.shared.choices(in: selection.sentence, at: range).count == 2
+    }
+
+    private func cardDetents(_ selection: WordSelection) -> Set<PresentationDetent> {
+        if dynamicTypeSize.isAccessibilitySize { return [.large] }
+        return isUnsureCard(selection) ? [.height(fittedHeight), .large] : [.medium, .large]
+    }
+
+    static let defaultFittedHeight: CGFloat = 480
+
+    private func openingDetent(_ selection: WordSelection, fitted: CGFloat) -> PresentationDetent {
+        if dynamicTypeSize.isAccessibilitySize { return .large }
+        return isUnsureCard(selection) ? .height(fitted) : .medium
     }
 
     private func startTimer() {
@@ -496,4 +547,12 @@ private struct BarBackground: ViewModifier {
             content.background(.bar)
         }
     }
+}
+
+/// The paragraphs on screen, read only when reading aloud has to bring the next sentence into view.
+/// A class on purpose: as `@State` every visibility change during a scroll re-ran the whole reader, and with
+/// `scrollPosition(id:)` a fast flick left the app busy for minutes (XCUITest never saw it idle; found by
+/// switching each scroll feature off in turn on CI).
+final class VisibleParagraphs {
+    var indices: Set<Int> = []
 }

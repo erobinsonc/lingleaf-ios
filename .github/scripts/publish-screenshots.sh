@@ -9,6 +9,11 @@ branch="${2//\//-}"
 commit="$3"
 src="$PWD/screenshots"
 [ -d "$src" ] && [ -n "$(ls -A "$src")" ] || { echo "No screenshots to publish"; exit 0; }
+# Defence in depth (the workflow verifies first): only plain files, never a link that
+# could point at the runner (/proc/self/environ would leak the write token).
+for f in "$src"/*; do
+  { [ -f "$f" ] && [ ! -L "$f" ]; } || { echo "::error::Refusing a non-regular file in screenshots"; exit 1; }
+done
 
 work="$(mktemp -d)"
 cd "$work"
@@ -24,7 +29,7 @@ for attempt in 1 2 3 4; do
   if git fetch -q --depth 1 origin screenshots; then git reset -q --hard FETCH_HEAD; fi
   rm -rf "${platform:?}/$branch"
   mkdir -p "$platform/$branch"
-  cp "$src"/*.png "$platform/$branch/"
+  cp --no-dereference "$src"/*.png "$platform/$branch/"
   printf 'commit %s\nrun %s/%s/actions/runs/%s\n' "$commit" "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_RUN_ID" > "$platform/$branch/SOURCE.txt"
   git add -A
   git commit -qm "Screenshots: $platform $branch @ ${commit:0:7}" || { echo "Nothing changed"; exit 0; }

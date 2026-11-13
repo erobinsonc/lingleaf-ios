@@ -30,13 +30,11 @@ final class CorrectionsTests: XCTestCase {
         let corrections = library.correctWordsIfNeeded()
         XCTAssertEqual(Set(corrections), [Correction(from: "leave", to: "left"), Correction(from: "life", to: "live")])
         let left = try XCTUnwrap(library.state.word("left", sense: Sense.noun))
-        XCTAssertEqual(left.translation, "", "translated again")
+        XCTAssertEqual(left.translation, "izquierda", "translated again: the table has the noun's meaning in Spanish")
         XCTAssertEqual(left.nextReview, now, "due now")
         XCTAssertEqual(left.box, 0, "it starts its review again")
-        XCTAssertEqual(left.waitsForMeaning, true)
-        XCTAssertFalse(library.dueWords().contains { $0.id == left.id }, "not due until it has a meaning")
-        library.setTranslation("left", "izquierda", language: "es", sense: Sense.noun)
-        XCTAssertTrue(library.dueWords().contains { $0.id == left.id }, "due once its meaning arrives")
+        XCTAssertNil(left.waitsForMeaning, "it has its meaning")
+        XCTAssertTrue(library.dueWords().contains { $0.id == left.id }, "due now")
         XCTAssertEqual(left.formRange, WordRange(5, 9))
         XCTAssertEqual(library.state.word("live", sense: Sense.verb)?.form, "lives", "Tom lives: now a certain verb")
         XCTAssertEqual(library.state.word("feel")?.translation, "sentir", "read the same in its sentence: unchanged")
@@ -65,9 +63,41 @@ final class CorrectionsTests: XCTestCase {
         let left = try XCTUnwrap(library.state.word("left", sense: nil))
         XCTAssertEqual(left.meanings?.map(\.label), ["to leave", "the left"])
         XCTAssertEqual(left.meanings?.first?.text, "irse, salir", "the table's meaning in Spanish")
-        XCTAssertEqual(left.meanings?.last?.text, "", "translated later")
+        XCTAssertEqual(left.meanings?.last?.text, "izquierda", "the table's meaning of the noun too")
         XCTAssertEqual(Set(library.state.corrections), [Correction(from: "leave", to: "left"), Correction(from: "think", to: "thought")])
         XCTAssertEqual(library.state.word("thought", sense: Sense.noun)?.form, "thought")
+    }
+
+    func testACorrectedNounWithoutATableMeaningWaitsForItsTranslation() throws {
+        storage.files["settings.json"] = #"{"targetLanguage": "pt"}"#
+        let library = library()
+        library.saveWord("leave", learned: false, context: "Turn left at the bank.")
+        library.correctWordsIfNeeded()
+        let left = try XCTUnwrap(library.state.word("left", sense: Sense.noun))
+        XCTAssertEqual(left.translation, "", "not Spanish: translated later")
+        XCTAssertEqual(left.waitsForMeaning, true)
+        XCTAssertFalse(library.dueWords().contains { $0.id == left.id }, "not due until it has a meaning")
+        library.setTranslation("left", "esquerda", language: "pt", sense: Sense.noun)
+        XCTAssertTrue(library.dueWords().contains { $0.id == left.id }, "due once its meaning arrives")
+    }
+
+    func testOnlyTheWordsTheOpenCardChangedAreTaggedFixed() throws {
+        let library = library()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "no card")
+        library.saveWord("leave", learned: false, context: "Turn left at the bank.")
+        library.saveWord("left", learned: false, translation: "izquierda", context: "", sense: Sense.verb)
+        library.correctWordsIfNeeded()
+        XCTAssertEqual(library.correctedWordIDs(), ["left#noun"], "the changed word, not the one with the same spelling")
+        library.closeCorrections()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "closed")
+    }
+
+    func testAWordCorrectedIntoOneAlreadySavedIsNotTagged() {
+        let library = library()
+        library.saveWord("left", learned: false, translation: "izquierda", sense: Sense.noun)
+        library.saveWord("leave", learned: false, translation: "irse", context: "Turn left now.")
+        library.correctWordsIfNeeded()
+        XCTAssertTrue(library.correctedWordIDs().isEmpty, "it merged into a word saved before")
     }
 
     func testCorrectingIntoAWordAlreadySavedMergesIntoIt() throws {

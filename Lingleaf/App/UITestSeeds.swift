@@ -21,6 +21,12 @@ extension Library {
             saveWord("wind", learned: false, translation: spanish("enrollar, dar cuerda"), translationLanguage: "es",
                      context: "She wound the clock.", sense: Sense.verb)
         }
+        if arguments.contains("-ui-testing-long-titles") {
+            // Titles that wrap over several lines in the Library and at large text sizes.
+            addBook(title: "The Extraordinary and Entirely True Adventures of a Very Patient Lighthouse Keeper and His Cat",
+                    author: "Lingleaf", text: Self.testStory, level: "B1")
+            addBook(title: "A Remarkably Long Title That Goes On and On", author: "Lingleaf", text: Self.testStory, level: "A2")
+        }
         if arguments.contains("-ui-testing-due-lie") {
             // A verb with a regular twin: Review's prompt shows its sentence (S7).
             saveWord("lie", learned: false, translation: "estar acostado, tumbarse", translationLanguage: "es",

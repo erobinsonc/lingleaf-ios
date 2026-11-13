@@ -88,7 +88,9 @@ public enum JSONGuard {
             case 0x5B, 0x7B:
                 depth += 1
                 if depth > maxDepth { return false }
-            case 0x5D, 0x7D: depth -= 1
+            case 0x5D, 0x7D:
+                depth -= 1
+                if depth < 0 { return false }
             default: break
             }
         }
@@ -109,6 +111,12 @@ public enum Hosts {
               url.port == nil || url.port == 443 else { return false }
         return allowed.contains(host)
     }
+}
+
+extension CharacterSet {
+    /// ASCII letters and digits: what stays as it is in a word put in a URL. (`.alphanumerics` also
+    /// keeps letters of every script, which would leave "café" as it is in the address.)
+    static let asciiAlphanumerics = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 }
 
 /// HTTPS-only fetcher for the allowed hosts. Anything else is refused before any connection is made,

@@ -1,0 +1,3780 @@
+{
+ "schemaVersion": 1,
+ "story": "a-number-in-osaka",
+ "senses": {
+  "a_great_deal": {
+   "lemma": "a great deal",
+   "pos": "phrase",
+   "ipa": "ə ɡreɪt dil",
+   "es": "mucho",
+   "kind": "chunk"
+  },
+  "above_all": {
+   "lemma": "above all",
+   "pos": "phrase",
+   "ipa": "əˈbʌv ɔl",
+   "es": "sobre todo",
+   "kind": "chunk"
+  },
+  "across_street": {
+   "lemma": "across the street",
+   "pos": "phrase",
+   "ipa": "əˈkrɔs ðə strit",
+   "es": "enfrente, al otro lado de la calle",
+   "kind": "chunk"
+  },
+  "actually_really": {
+   "lemma": "actually",
+   "pos": "adverb",
+   "ipa": "ˈæktʃuəli",
+   "es": "de verdad, realmente (no «actualmente»)",
+   "kind": "word",
+   "en": "really, truly"
+  },
+  "afford": {
+   "lemma": "afford",
+   "pos": "verb",
+   "ipa": "əˈfɔrd",
+   "es": "permitirse (pagar)",
+   "kind": "word"
+  },
+  "anxious": {
+   "lemma": "anxious",
+   "pos": "adjective",
+   "ipa": "ˈæŋkʃəs",
+   "es": "inquieto, preocupado",
+   "kind": "word"
+  },
+  "appreciate_value": {
+   "lemma": "appreciate",
+   "pos": "verb",
+   "ipa": "əˈpriʃiˌeɪt",
+   "es": "valorar",
+   "kind": "word"
+  },
+  "argue": {
+   "lemma": "argue",
+   "pos": "verb",
+   "ipa": "ˈɑrɡju",
+   "es": "discutir",
+   "kind": "word"
+  },
+  "argument_quarrel": {
+   "lemma": "argument",
+   "pos": "noun",
+   "ipa": "ˈɑrɡjəmənt",
+   "es": "discusión (no «argumento»)",
+   "kind": "word",
+   "en": "a quarrel, a heated discussion"
+  },
+  "at_last": {
+   "lemma": "at last",
+   "pos": "phrase",
+   "ipa": "æt læst",
+   "es": "por fin",
+   "kind": "chunk"
+  },
+  "at_once": {
+   "lemma": "at once",
+   "pos": "phrase",
+   "ipa": "æt wʌns",
+   "es": "enseguida, de inmediato",
+   "kind": "chunk"
+  },
+  "at_random": {
+   "lemma": "at random",
+   "pos": "phrase",
+   "ipa": "æt ˈrændəm",
+   "es": "al azar",
+   "kind": "chunk"
+  },
+  "at_same_time": {
+   "lemma": "at the same time",
+   "pos": "phrase",
+   "ipa": "æt ðə seɪm taɪm",
+   "es": "a la vez",
+   "kind": "chunk"
+  },
+  "available": {
+   "lemma": "available",
+   "pos": "adjective",
+   "ipa": "əˈveɪləbəl",
+   "es": "disponible",
+   "kind": "word"
+  },
+  "bank_finance": {
+   "lemma": "bank",
+   "pos": "noun",
+   "ipa": "bæŋk",
+   "es": "banco (entidad financiera)",
+   "kind": "word"
+  },
+  "battered": {
+   "lemma": "battered",
+   "pos": "adjective",
+   "ipa": "ˈbætərd",
+   "es": "gastado, maltrecho",
+   "kind": "word"
+  },
+  "board_white": {
+   "lemma": "board",
+   "pos": "noun",
+   "ipa": "bɔrd",
+   "es": "pizarra",
+   "kind": "word"
+  },
+  "boss": {
+   "lemma": "boss",
+   "pos": "noun",
+   "ipa": "bɔs",
+   "es": "jefe, jefa",
+   "kind": "word"
+  },
+  "bow_head": {
+   "lemma": "bow",
+   "pos": "verb",
+   "ipa": "baʊ",
+   "es": "hacer una reverencia (/baʊ/)",
+   "kind": "word",
+   "en": "to bend forward as a greeting"
+  },
+  "bow_noun": {
+   "lemma": "bow",
+   "pos": "noun",
+   "ipa": "baʊ",
+   "es": "reverencia (/baʊ/)",
+   "kind": "word",
+   "en": "a bend forward as a greeting"
+  },
+  "break_pause": {
+   "lemma": "break",
+   "pos": "noun",
+   "ipa": "breɪk",
+   "es": "pausa, descanso",
+   "kind": "word"
+  },
+  "brief_task": {
+   "lemma": "brief",
+   "pos": "noun",
+   "ipa": "brif",
+   "es": "encargo, instrucciones (de un trabajo)",
+   "kind": "word"
+  },
+  "briefcase": {
+   "lemma": "briefcase",
+   "pos": "noun",
+   "ipa": "ˈbrifkeɪs",
+   "es": "maletín",
+   "kind": "word"
+  },
+  "brighten": {
+   "lemma": "brighten",
+   "pos": "verb",
+   "ipa": "ˈbraɪtən",
+   "es": "iluminarse (la cara)",
+   "kind": "word"
+  },
+  "broad_build": {
+   "lemma": "broad",
+   "pos": "adjective",
+   "ipa": "brɔd",
+   "es": "corpulento, ancho de espaldas",
+   "kind": "word"
+  },
+  "businesslike": {
+   "lemma": "businesslike",
+   "pos": "adjective",
+   "ipa": "ˈbɪznəsˌlaɪk",
+   "es": "formal, profesional",
+   "kind": "word"
+  },
+  "by_standards": {
+   "lemma": "by Japanese standards",
+   "pos": "phrase",
+   "ipa": "baɪ ˌdʒæpəˈniz ˈstændərdz",
+   "es": "para lo que es normal en Japón",
+   "kind": "chunk"
+  },
+  "carry_across": {
+   "lemma": "carry",
+   "pos": "verb",
+   "ipa": "ˈkɛri",
+   "es": "transmitir, trasladar",
+   "kind": "word"
+  },
+  "carry_head": {
+   "lemma": "carry in your head",
+   "pos": "phrase",
+   "ipa": "ˈkɛri ɪn jʊr hɛd",
+   "es": "llevar de memoria",
+   "kind": "chunk"
+  },
+  "check_details": {
+   "lemma": "check",
+   "pos": "verb",
+   "ipa": "tʃɛk",
+   "es": "revisar",
+   "kind": "word",
+   "en": "to look at something carefully"
+  },
+  "client": {
+   "lemma": "client",
+   "pos": "noun",
+   "ipa": "ˈklaɪənt",
+   "es": "cliente",
+   "kind": "word"
+  },
+  "collapse": {
+   "lemma": "collapse",
+   "pos": "verb",
+   "ipa": "kəˈlæps",
+   "es": "venirse abajo, fracasar",
+   "kind": "word"
+  },
+  "colleague": {
+   "lemma": "colleague",
+   "pos": "noun",
+   "ipa": "ˈkɑliɡ",
+   "es": "compañero, compañera de trabajo",
+   "kind": "word"
+  },
+  "come_out_wrong": {
+   "lemma": "come out wrong",
+   "pos": "phrase",
+   "ipa": "kʌm aʊt rɔŋ",
+   "es": "salir mal",
+   "kind": "chunk"
+  },
+  "come_up": {
+   "lemma": "come up",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ʌp",
+   "es": "surgir, salir (en una conversación)",
+   "kind": "chunk"
+  },
+  "come_up_with": {
+   "lemma": "come up with",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ʌp wɪð",
+   "es": "ocurrírsele (una idea)",
+   "kind": "chunk"
+  },
+  "conductor_music": {
+   "lemma": "conductor",
+   "pos": "noun",
+   "ipa": "kənˈdʌktər",
+   "es": "director de orquesta (no «conductor»)",
+   "kind": "word",
+   "en": "the leader of an orchestra"
+  },
+  "content_noun": {
+   "lemma": "content",
+   "pos": "noun",
+   "ipa": "ˈkɑntɛnt",
+   "es": "contenido (/ˈkɑntɛnt/)",
+   "kind": "word"
+  },
+  "contract": {
+   "lemma": "contract",
+   "pos": "noun",
+   "ipa": "ˈkɑntrækt",
+   "es": "contrato",
+   "kind": "word"
+  },
+  "cover_book": {
+   "lemma": "cover",
+   "pos": "noun",
+   "ipa": "ˈkʌvər",
+   "es": "tapa, cubierta",
+   "kind": "word"
+  },
+  "cross_out": {
+   "lemma": "cross out",
+   "pos": "phrasal verb",
+   "ipa": "krɔs aʊt",
+   "es": "tachar",
+   "kind": "chunk"
+  },
+  "deliver_goods": {
+   "lemma": "deliver",
+   "pos": "verb",
+   "ipa": "dɪˈlɪvər",
+   "es": "entregar, suministrar",
+   "kind": "word"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "disappointed": {
+   "lemma": "disappointed",
+   "pos": "adjective",
+   "ipa": "ˌdɪsəˈpɔɪntɪd",
+   "es": "decepcionado",
+   "kind": "word"
+  },
+  "draft_agreement": {
+   "lemma": "draft agreement",
+   "pos": "noun",
+   "ipa": "dræft əˈɡrimənt",
+   "es": "borrador de acuerdo",
+   "kind": "chunk"
+  },
+  "drop_bit": {
+   "lemma": "a drop",
+   "pos": "noun",
+   "ipa": "drɑp",
+   "es": "una gota",
+   "kind": "word"
+  },
+  "easily_done": {
+   "lemma": "be easily done",
+   "pos": "phrase",
+   "ipa": "bi ˈizəli dʌn",
+   "es": "ser un error fácil de cometer",
+   "kind": "chunk"
+  },
+  "either_neither": {
+   "lemma": "either",
+   "pos": "adverb",
+   "ipa": "ˈiðər",
+   "es": "tampoco (en frase negativa)",
+   "kind": "word"
+  },
+  "either_way": {
+   "lemma": "either way",
+   "pos": "phrase",
+   "ipa": "ˈiðər weɪ",
+   "es": "en cualquier caso",
+   "kind": "chunk"
+  },
+  "elevator": {
+   "lemma": "elevator",
+   "pos": "noun",
+   "ipa": "ˈɛləˌveɪtər",
+   "es": "elevador, ascensor",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "embarrassed": {
+   "lemma": "embarrassed",
+   "pos": "adjective",
+   "ipa": "ɪmˈbɛrəst",
+   "es": "avergonzado (no «embarazada»)",
+   "kind": "word",
+   "en": "feeling ashamed in front of others"
+  },
+  "embarrassment": {
+   "lemma": "embarrassment",
+   "pos": "noun",
+   "ipa": "ɪmˈbɛrəsmənt",
+   "es": "vergüenza, apuro (no «embarazo»)",
+   "kind": "word",
+   "en": "a feeling of shame"
+  },
+  "fail_to": {
+   "lemma": "fail to",
+   "pos": "phrase",
+   "ipa": "feɪl tu",
+   "es": "no lograr",
+   "kind": "chunk"
+  },
+  "fall_autumn": {
+   "lemma": "fall",
+   "pos": "noun",
+   "ipa": "fɔl",
+   "es": "otoño",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "familiar_as": {
+   "lemma": "familiar",
+   "pos": "adjective",
+   "ipa": "fəˈmɪljər",
+   "es": "conocido (no «familiar»)",
+   "kind": "word",
+   "en": "known from before"
+  },
+  "figure_number": {
+   "lemma": "figure",
+   "pos": "noun",
+   "ipa": "ˈfɪɡjər",
+   "es": "cifra (no «figura»)",
+   "kind": "word",
+   "en": "a number"
+  },
+  "fishing_rights": {
+   "lemma": "fishing rights",
+   "pos": "noun",
+   "ipa": "ˈfɪʃɪŋ raɪts",
+   "es": "derechos de pesca",
+   "kind": "chunk"
+  },
+  "floor_storey": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "piso, planta (de un edificio)",
+   "kind": "word",
+   "en": "a level of a building"
+  },
+  "folder": {
+   "lemma": "folder",
+   "pos": "noun",
+   "ipa": "ˈfoʊldər",
+   "es": "carpeta",
+   "kind": "word"
+  },
+  "for_once": {
+   "lemma": "for once",
+   "pos": "phrase",
+   "ipa": "fɔr wʌns",
+   "es": "por una vez",
+   "kind": "chunk"
+  },
+  "form_paper": {
+   "lemma": "form",
+   "pos": "noun",
+   "ipa": "fɔrm",
+   "es": "formulario",
+   "kind": "word"
+  },
+  "fresh_cup": {
+   "lemma": "fresh",
+   "pos": "adjective",
+   "ipa": "frɛʃ",
+   "es": "otro, recién hecho (té, café)",
+   "kind": "word"
+  },
+  "frost": {
+   "lemma": "frost",
+   "pos": "noun",
+   "ipa": "frɔst",
+   "es": "helada",
+   "kind": "word"
+  },
+  "get_to_know": {
+   "lemma": "get to know",
+   "pos": "phrase",
+   "ipa": "ɡɛt tu noʊ",
+   "es": "conocerse",
+   "kind": "chunk"
+  },
+  "go_on": {
+   "lemma": "go on",
+   "pos": "phrasal verb",
+   "ipa": "ɡoʊ ɑn",
+   "es": "continuar, seguir (hablando)",
+   "kind": "chunk"
+  },
+  "grateful": {
+   "lemma": "grateful",
+   "pos": "adjective",
+   "ipa": "ˈɡreɪtfəl",
+   "es": "agradecido",
+   "kind": "word"
+  },
+  "grow_up": {
+   "lemma": "grow up",
+   "pos": "phrasal verb",
+   "ipa": "ɡroʊ ʌp",
+   "es": "crecer, criarse",
+   "kind": "chunk"
+  },
+  "hand_give": {
+   "lemma": "hand",
+   "pos": "verb",
+   "ipa": "hænd",
+   "es": "dar, pasar (en la mano)",
+   "kind": "word"
+  },
+  "handle_accounts": {
+   "lemma": "handle the accounts",
+   "pos": "phrase",
+   "ipa": "ˈhændəl ði əˈkaʊnts",
+   "es": "llevar las cuentas",
+   "kind": "chunk"
+  },
+  "harvest": {
+   "lemma": "harvest",
+   "pos": "noun",
+   "ipa": "ˈhɑrvəst",
+   "es": "cosecha",
+   "kind": "word"
+  },
+  "head_table": {
+   "lemma": "at the head of the table",
+   "pos": "phrase",
+   "ipa": "æt ðə hɛd əv ðə ˈteɪbəl",
+   "es": "presidiendo la mesa",
+   "kind": "chunk"
+  },
+  "heading": {
+   "lemma": "heading",
+   "pos": "noun",
+   "ipa": "ˈhɛdɪŋ",
+   "es": "encabezado",
+   "kind": "word"
+  },
+  "hearing": {
+   "lemma": "hearing",
+   "pos": "noun",
+   "ipa": "ˈhɪrɪŋ",
+   "es": "oído",
+   "kind": "word"
+  },
+  "hearing_aid": {
+   "lemma": "hearing aid",
+   "pos": "noun",
+   "ipa": "ˈhɪrɪŋ eɪd",
+   "es": "audífono",
+   "kind": "chunk"
+  },
+  "hire": {
+   "lemma": "hire",
+   "pos": "verb",
+   "ipa": "ˈhaɪər",
+   "es": "contratar",
+   "kind": "word"
+  },
+  "hold_breath": {
+   "lemma": "hold your breath",
+   "pos": "phrase",
+   "ipa": "hoʊld jʊr brɛθ",
+   "es": "contener la respiración",
+   "kind": "chunk"
+  },
+  "hold_meeting": {
+   "lemma": "hold",
+   "pos": "verb",
+   "ipa": "hoʊld",
+   "es": "celebrar (una reunión)",
+   "kind": "word"
+  },
+  "hurt_feelings": {
+   "lemma": "hurt feelings",
+   "pos": "phrase",
+   "ipa": "hɝt ˈfilɪŋz",
+   "es": "herir los sentimientos",
+   "kind": "chunk"
+  },
+  "in_reply": {
+   "lemma": "in reply",
+   "pos": "phrase",
+   "ipa": "ɪn rɪˈplaɪ",
+   "es": "como respuesta",
+   "kind": "chunk"
+  },
+  "in_return": {
+   "lemma": "in return",
+   "pos": "phrase",
+   "ipa": "ɪn rɪˈtɝn",
+   "es": "a cambio",
+   "kind": "chunk"
+  },
+  "in_that_case": {
+   "lemma": "in that case",
+   "pos": "phrase",
+   "ipa": "ɪn ðæt keɪs",
+   "es": "en ese caso",
+   "kind": "chunk"
+  },
+  "in_writing": {
+   "lemma": "in writing",
+   "pos": "phrase",
+   "ipa": "ɪn ˈraɪtɪŋ",
+   "es": "por escrito",
+   "kind": "chunk"
+  },
+  "informed": {
+   "lemma": "informed",
+   "pos": "adjective",
+   "ipa": "ɪnˈfɔrmd",
+   "es": "bien fundado, documentado",
+   "kind": "word"
+  },
+  "interpreter": {
+   "lemma": "interpreter",
+   "pos": "noun",
+   "ipa": "ɪnˈtɝprətər",
+   "es": "intérprete",
+   "kind": "word"
+  },
+  "introduce_people": {
+   "lemma": "introduce",
+   "pos": "verb",
+   "ipa": "ˌɪntrəˈdus",
+   "es": "presentar (a personas)",
+   "kind": "word"
+  },
+  "japanese_numbers": {
+   "lemma": "ichiman hassen rittoru",
+   "pos": "phrase",
+   "ipa": "itɕimaɴ hasːeɴ ɾitːoɾɯ",
+   "es": "«dieciocho mil litros» en japonés",
+   "kind": "foreign",
+   "variety": "local"
+  },
+  "keep_word": {
+   "lemma": "keep your word",
+   "pos": "phrase",
+   "ipa": "kip jʊr wɝd",
+   "es": "cumplir tu palabra",
+   "kind": "chunk"
+  },
+  "key_main": {
+   "lemma": "key",
+   "pos": "adjective",
+   "ipa": "ki",
+   "es": "clave",
+   "kind": "word"
+  },
+  "kind_type": {
+   "lemma": "kind",
+   "pos": "noun",
+   "ipa": "kaɪnd",
+   "es": "tipo, clase",
+   "kind": "word"
+  },
+  "land_plane": {
+   "lemma": "land",
+   "pos": "verb",
+   "ipa": "lænd",
+   "es": "aterrizar",
+   "kind": "word"
+  },
+  "late_fifties": {
+   "lemma": "in her late fifties",
+   "pos": "phrase",
+   "ipa": "ɪn hɝr leɪt ˈfɪftiz",
+   "es": "rondando los sesenta",
+   "kind": "chunk"
+  },
+  "late_spring": {
+   "lemma": "late spring",
+   "pos": "phrase",
+   "ipa": "leɪt sprɪŋ",
+   "es": "finales de primavera",
+   "kind": "chunk"
+  },
+  "lawyer": {
+   "lemma": "lawyer",
+   "pos": "noun",
+   "ipa": "ˈlɔjər",
+   "es": "abogado",
+   "kind": "word"
+  },
+  "line_text": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "línea (de texto)",
+   "kind": "word",
+   "en": "a line of written text"
+  },
+  "liter_abbr": {
+   "lemma": "L",
+   "pos": "noun",
+   "ipa": "ˈlitər",
+   "es": "litros (abreviatura)",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "lobby": {
+   "lemma": "lobby",
+   "pos": "noun",
+   "ipa": "ˈlɑbi",
+   "es": "vestíbulo",
+   "kind": "word"
+  },
+  "look_back": {
+   "lemma": "look back at",
+   "pos": "phrasal verb",
+   "ipa": "lʊk bæk æt",
+   "es": "volver la vista a",
+   "kind": "chunk"
+  },
+  "look_out_onto": {
+   "lemma": "look out onto",
+   "pos": "phrasal verb",
+   "ipa": "lʊk aʊt ˈɑntu",
+   "es": "dar a (una ventana)",
+   "kind": "chunk"
+  },
+  "low_voice": {
+   "lemma": "in a low voice",
+   "pos": "phrase",
+   "ipa": "ɪn ə loʊ vɔɪs",
+   "es": "en voz baja",
+   "kind": "chunk"
+  },
+  "marker": {
+   "lemma": "marker",
+   "pos": "noun",
+   "ipa": "ˈmɑrkər",
+   "es": "marcador",
+   "kind": "word"
+  },
+  "mexico_city": {
+   "lemma": "Mexico City",
+   "pos": "proper noun",
+   "ipa": "ˈmɛksɪkoʊ ˈsɪti",
+   "es": "Ciudad de México",
+   "kind": "name"
+  },
+  "mishear": {
+   "lemma": "mishear",
+   "pos": "verb",
+   "ipa": "mɪsˈhɪr",
+   "es": "oír mal",
+   "kind": "word"
+  },
+  "move_on": {
+   "lemma": "move on",
+   "pos": "phrasal verb",
+   "ipa": "muv ɑn",
+   "es": "seguir adelante, pasar a otra cosa",
+   "kind": "chunk"
+  },
+  "name_reputation": {
+   "lemma": "name",
+   "pos": "noun",
+   "ipa": "neɪm",
+   "es": "buen nombre, reputación",
+   "kind": "word"
+  },
+  "neat_writing": {
+   "lemma": "neat",
+   "pos": "adjective",
+   "ipa": "nit",
+   "es": "pulcro, ordenado (letra)",
+   "kind": "word"
+  },
+  "needn_t": {
+   "lemma": "needn't",
+   "pos": "modal",
+   "ipa": "ˈnidənt",
+   "es": "no hace falta que",
+   "kind": "word"
+  },
+  "net_fishing": {
+   "lemma": "net",
+   "pos": "noun",
+   "ipa": "nɛt",
+   "es": "red (de pesca)",
+   "kind": "word"
+  },
+  "network_tel": {
+   "lemma": "network",
+   "pos": "noun",
+   "ipa": "ˈnɛtwɝk",
+   "es": "red (de comunicaciones)",
+   "kind": "word"
+  },
+  "next_door": {
+   "lemma": "next door",
+   "pos": "adverb",
+   "ipa": "nɛkst dɔr",
+   "es": "al lado, en la casa de al lado",
+   "kind": "chunk"
+  },
+  "nod": {
+   "lemma": "nod",
+   "pos": "verb",
+   "ipa": "nɑd",
+   "es": "asentir con la cabeza",
+   "kind": "word",
+   "en": "to move the head down and up to say yes"
+  },
+  "note_paper": {
+   "lemma": "note",
+   "pos": "noun",
+   "ipa": "noʊt",
+   "es": "nota",
+   "kind": "word",
+   "en": "a short written message"
+  },
+  "notes_sticky": {
+   "lemma": "notes",
+   "pos": "noun",
+   "ipa": "noʊts",
+   "es": "notas (adhesivas)",
+   "kind": "word",
+   "en": "small pieces of paper with messages"
+  },
+  "notes_study": {
+   "lemma": "notes",
+   "pos": "noun",
+   "ipa": "noʊts",
+   "es": "apuntes, notas",
+   "kind": "word",
+   "en": "written notes from a lesson"
+  },
+  "olive_growers": {
+   "lemma": "olive grower",
+   "pos": "noun",
+   "ipa": "ˈɑlɪv ˈɡroʊər",
+   "es": "productor de aceitunas",
+   "kind": "chunk"
+  },
+  "order_food": {
+   "lemma": "order",
+   "pos": "verb",
+   "ipa": "ˈɔrdər",
+   "es": "pedir (comida)",
+   "kind": "word"
+  },
+  "party_side": {
+   "lemma": "party",
+   "pos": "noun",
+   "ipa": "ˈpɑrti",
+   "es": "parte (en un acuerdo; no «fiesta»)",
+   "kind": "word",
+   "en": "one of the sides in an agreement"
+  },
+  "passive_voice": {
+   "lemma": "passive voice",
+   "pos": "noun",
+   "ipa": "ˈpæsɪv vɔɪs",
+   "es": "voz pasiva",
+   "kind": "chunk"
+  },
+  "pay_attention": {
+   "lemma": "pay attention",
+   "pos": "phrase",
+   "ipa": "peɪ əˈtɛnʃən",
+   "es": "prestar atención",
+   "kind": "chunk"
+  },
+  "phrase_verb": {
+   "lemma": "phrase",
+   "pos": "verb",
+   "ipa": "freɪz",
+   "es": "formular, expresar",
+   "kind": "word"
+  },
+  "pick_up_habit": {
+   "lemma": "pick up",
+   "pos": "phrasal verb",
+   "ipa": "pɪk ʌp",
+   "es": "adquirir, tomar (una costumbre)",
+   "kind": "chunk"
+  },
+  "piece_music": {
+   "lemma": "piece",
+   "pos": "noun",
+   "ipa": "pis",
+   "es": "pieza, obra (musical)",
+   "kind": "word"
+  },
+  "play_music_tocar": {
+   "lemma": "play",
+   "pos": "verb",
+   "ipa": "pleɪ",
+   "es": "tocar (música)",
+   "kind": "word",
+   "en": "to make music with an instrument"
+  },
+  "posture": {
+   "lemma": "posture",
+   "pos": "noun",
+   "ipa": "ˈpɑstʃər",
+   "es": "postura",
+   "kind": "word"
+  },
+  "pull_back": {
+   "lemma": "pull back",
+   "pos": "phrasal verb",
+   "ipa": "pʊl bæk",
+   "es": "recoger (el pelo)",
+   "kind": "chunk"
+  },
+  "put_down_object": {
+   "lemma": "put down",
+   "pos": "phrasal verb",
+   "ipa": "pʊt daʊn",
+   "es": "dejar (algo)",
+   "kind": "chunk"
+  },
+  "put_on_clothes": {
+   "lemma": "put on",
+   "pos": "phrasal verb",
+   "ipa": "pʊt ɑn",
+   "es": "ponerse (ropa)",
+   "kind": "chunk"
+  },
+  "quality_control": {
+   "lemma": "quality control",
+   "pos": "noun",
+   "ipa": "ˈkwɑləti kənˈtroʊl",
+   "es": "control de calidad",
+   "kind": "chunk"
+  },
+  "rare_uncommon": {
+   "lemma": "rare",
+   "pos": "adjective",
+   "ipa": "rɛr",
+   "es": "poco común",
+   "kind": "word"
+  },
+  "read_as": {
+   "lemma": "read as",
+   "pos": "phrasal verb",
+   "ipa": "rid æz",
+   "es": "interpretarse como",
+   "kind": "chunk"
+  },
+  "reading_glasses": {
+   "lemma": "reading glasses",
+   "pos": "noun",
+   "ipa": "ˈridɪŋ ˈɡlæsɪz",
+   "es": "lentes de lectura",
+   "kind": "chunk"
+  },
+  "regards": {
+   "lemma": "send regards",
+   "pos": "phrase",
+   "ipa": "sɛnd rɪˈɡɑrdz",
+   "es": "mandar saludos",
+   "kind": "chunk"
+  },
+  "render": {
+   "lemma": "render",
+   "pos": "verb",
+   "ipa": "ˈrɛndər",
+   "es": "traducir, verter",
+   "kind": "word"
+  },
+  "retire_fig": {
+   "lemma": "retire",
+   "pos": "verb",
+   "ipa": "rɪˈtaɪər",
+   "es": "jubilarse",
+   "kind": "word"
+  },
+  "retirement": {
+   "lemma": "retirement",
+   "pos": "noun",
+   "ipa": "rɪˈtaɪərmənt",
+   "es": "jubilación",
+   "kind": "word"
+  },
+  "right_correct": {
+   "lemma": "be right",
+   "pos": "phrase",
+   "ipa": "bi raɪt",
+   "es": "tener razón (no «derecha»)",
+   "kind": "chunk"
+  },
+  "right_proper": {
+   "lemma": "right",
+   "pos": "adjective",
+   "ipa": "raɪt",
+   "es": "adecuado, correcto",
+   "kind": "word"
+  },
+  "sales_manager": {
+   "lemma": "sales manager",
+   "pos": "noun",
+   "ipa": "seɪlz ˈmænɪdʒər",
+   "es": "jefe de ventas",
+   "kind": "chunk"
+  },
+  "sample_test": {
+   "lemma": "sample",
+   "pos": "noun",
+   "ipa": "ˈsæmpəl",
+   "es": "muestra",
+   "kind": "word"
+  },
+  "san_honorific": {
+   "lemma": "san",
+   "pos": "suffix",
+   "ipa": "sɑn",
+   "es": "tratamiento japonés de respeto",
+   "kind": "foreign",
+   "variety": "local"
+  },
+  "second_thought": {
+   "lemma": "without a second thought",
+   "pos": "phrase",
+   "ipa": "wɪˈθaʊt ə ˈsɛkənd θɔt",
+   "es": "sin pensarlo dos veces",
+   "kind": "chunk"
+  },
+  "set_cups": {
+   "lemma": "set",
+   "pos": "noun",
+   "ipa": "sɛt",
+   "es": "juego (de tazas)",
+   "kind": "word"
+  },
+  "shake_hands": {
+   "lemma": "shake hands",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz",
+   "es": "dar la mano",
+   "kind": "chunk"
+  },
+  "shake_head": {
+   "lemma": "shake your head",
+   "pos": "phrase",
+   "ipa": "ʃeɪk jʊr hɛd",
+   "es": "negar con la cabeza",
+   "kind": "chunk"
+  },
+  "shake_smile": {
+   "lemma": "shake your head",
+   "pos": "phrase",
+   "ipa": "ʃeɪk jʊr hɛd",
+   "es": "sacudir la cabeza (con una sonrisa)",
+   "kind": "chunk"
+  },
+  "sharp_clever": {
+   "lemma": "sharp",
+   "pos": "adjective",
+   "ipa": "ʃɑrp",
+   "es": "agudo, perspicaz",
+   "kind": "word"
+  },
+  "sheet_paper": {
+   "lemma": "sheet",
+   "pos": "noun",
+   "ipa": "ʃit",
+   "es": "hoja (de papel)",
+   "kind": "word"
+  },
+  "shelf": {
+   "lemma": "shelf",
+   "pos": "noun",
+   "ipa": "ʃɛlf",
+   "es": "estante",
+   "kind": "word"
+  },
+  "shipment": {
+   "lemma": "shipment",
+   "pos": "noun",
+   "ipa": "ˈʃɪpmənt",
+   "es": "envío, cargamento",
+   "kind": "word"
+  },
+  "shrug": {
+   "lemma": "shrug",
+   "pos": "verb",
+   "ipa": "ʃrʌɡ",
+   "es": "encogerse de hombros",
+   "kind": "word"
+  },
+  "side_party": {
+   "lemma": "side",
+   "pos": "noun",
+   "ipa": "saɪd",
+   "es": "parte (en una negociación)",
+   "kind": "word"
+  },
+  "silver_hair": {
+   "lemma": "silver",
+   "pos": "adjective",
+   "ipa": "ˈsɪlvər",
+   "es": "canoso, plateado",
+   "kind": "word"
+  },
+  "sit_down": {
+   "lemma": "sit down",
+   "pos": "phrasal verb",
+   "ipa": "sɪt daʊn",
+   "es": "sentarse",
+   "kind": "chunk"
+  },
+  "sit_up_little": {
+   "lemma": "sit up",
+   "pos": "phrasal verb",
+   "ipa": "sɪt ʌp",
+   "es": "erguirse",
+   "kind": "chunk"
+  },
+  "slide_push": {
+   "lemma": "slide",
+   "pos": "verb",
+   "ipa": "slaɪd",
+   "es": "deslizar",
+   "kind": "word"
+  },
+  "smooth_fluent": {
+   "lemma": "smooth",
+   "pos": "adjective",
+   "ipa": "smuð",
+   "es": "fluido",
+   "kind": "word"
+  },
+  "something_of": {
+   "lemma": "something of a",
+   "pos": "phrase",
+   "ipa": "ˈsʌmθɪŋ əv ə",
+   "es": "algo así como",
+   "kind": "chunk"
+  },
+  "speaker_person": {
+   "lemma": "speaker",
+   "pos": "noun",
+   "ipa": "ˈspikər",
+   "es": "la persona que habla (no «parlante»)",
+   "kind": "word",
+   "en": "a person who is speaking"
+  },
+  "speech": {
+   "lemma": "speech",
+   "pos": "noun",
+   "ipa": "spitʃ",
+   "es": "discurso",
+   "kind": "word"
+  },
+  "stand_easel": {
+   "lemma": "stand",
+   "pos": "noun",
+   "ipa": "stænd",
+   "es": "soporte, caballete",
+   "kind": "word"
+  },
+  "steadily": {
+   "lemma": "steadily",
+   "pos": "adverb",
+   "ipa": "ˈstɛdəli",
+   "es": "fijamente",
+   "kind": "word"
+  },
+  "step_out_into": {
+   "lemma": "step out into",
+   "pos": "phrasal verb",
+   "ipa": "stɛp aʊt ˈɪntu",
+   "es": "salir a",
+   "kind": "chunk"
+  },
+  "still_hands": {
+   "lemma": "still",
+   "pos": "adjective",
+   "ipa": "stɪl",
+   "es": "quieto",
+   "kind": "word",
+   "en": "not moving"
+  },
+  "still_however": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "aun así",
+   "kind": "word",
+   "en": "even so, however"
+  },
+  "still_room": {
+   "lemma": "still",
+   "pos": "adjective",
+   "ipa": "stɪl",
+   "es": "en silencio, inmóvil",
+   "kind": "word",
+   "en": "quiet and calm"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word",
+   "en": "up to now, even now"
+  },
+  "storage": {
+   "lemma": "storage",
+   "pos": "noun",
+   "ipa": "ˈstɔrɪdʒ",
+   "es": "almacenamiento",
+   "kind": "word"
+  },
+  "suit_clothes": {
+   "lemma": "suit",
+   "pos": "noun",
+   "ipa": "sut",
+   "es": "traje",
+   "kind": "word"
+  },
+  "supplier": {
+   "lemma": "supplier",
+   "pos": "noun",
+   "ipa": "səˈplaɪər",
+   "es": "proveedor",
+   "kind": "word"
+  },
+  "supply": {
+   "lemma": "supply",
+   "pos": "verb",
+   "ipa": "səˈplaɪ",
+   "es": "suministrar",
+   "kind": "word"
+  },
+  "sweets": {
+   "lemma": "sweets",
+   "pos": "noun",
+   "ipa": "swits",
+   "es": "dulces",
+   "kind": "word"
+  },
+  "take_arm": {
+   "lemma": "take someone's arm",
+   "pos": "phrase",
+   "ipa": "teɪk ˈsʌmwʌnz ɑrm",
+   "es": "tomar del brazo",
+   "kind": "chunk"
+  },
+  "take_out_nb": {
+   "lemma": "take out",
+   "pos": "phrasal verb",
+   "ipa": "teɪk aʊt",
+   "es": "sacar",
+   "kind": "chunk"
+  },
+  "take_over": {
+   "lemma": "take over",
+   "pos": "phrasal verb",
+   "ipa": "teɪk ˈoʊvər",
+   "es": "tomar las riendas de, hacerse cargo de",
+   "kind": "chunk"
+  },
+  "think_anything": {
+   "lemma": "think anything of it",
+   "pos": "phrase",
+   "ipa": "θɪŋk ˈɛniθɪŋ əv ɪt",
+   "es": "darle importancia",
+   "kind": "chunk"
+  },
+  "throw_away": {
+   "lemma": "throw away",
+   "pos": "phrasal verb",
+   "ipa": "θroʊ əˈweɪ",
+   "es": "tirar (a la basura)",
+   "kind": "chunk"
+  },
+  "toast_drink": {
+   "lemma": "toast",
+   "pos": "noun",
+   "ipa": "toʊst",
+   "es": "brindis",
+   "kind": "word"
+  },
+  "trade_sector": {
+   "lemma": "trade",
+   "pos": "noun",
+   "ipa": "treɪd",
+   "es": "sector, comercio",
+   "kind": "word"
+  },
+  "trading_name": {
+   "lemma": "Kanemori Trading",
+   "pos": "proper noun",
+   "ipa": "kɑnɛmoɾi ˈtreɪdɪŋ",
+   "es": "nombre de empresa (trading = comercio)",
+   "kind": "name"
+  },
+  "tray": {
+   "lemma": "tray",
+   "pos": "noun",
+   "ipa": "treɪ",
+   "es": "bandeja",
+   "kind": "word"
+  },
+  "treasure_verb": {
+   "lemma": "treasure",
+   "pos": "verb",
+   "ipa": "ˈtrɛʒər",
+   "es": "apreciar, valorar mucho",
+   "kind": "word"
+  },
+  "turn_back": {
+   "lemma": "turn back to",
+   "pos": "phrasal verb",
+   "ipa": "tɝn bæk tu",
+   "es": "volverse otra vez hacia",
+   "kind": "chunk"
+  },
+  "up_and_down": {
+   "lemma": "up and down",
+   "pos": "phrase",
+   "ipa": "ʌp ənd daʊn",
+   "es": "de un lado a otro",
+   "kind": "chunk"
+  },
+  "whiteboard": {
+   "lemma": "whiteboard",
+   "pos": "noun",
+   "ipa": "ˈwaɪtbɔrd",
+   "es": "pizarra blanca",
+   "kind": "word"
+  },
+  "whole_point": {
+   "lemma": "the whole point",
+   "pos": "phrase",
+   "ipa": "ðə hoʊl pɔɪnt",
+   "es": "lo esencial, el objetivo",
+   "kind": "chunk"
+  },
+  "would_rather": {
+   "lemma": "would rather",
+   "pos": "phrase",
+   "ipa": "wʊd ˈræðər",
+   "es": "preferir",
+   "kind": "chunk"
+  },
+  "write_back": {
+   "lemma": "write back",
+   "pos": "phrasal verb",
+   "ipa": "raɪt bæk",
+   "es": "contestar (por escrito)",
+   "kind": "chunk"
+  },
+  "write_down": {
+   "lemma": "write down",
+   "pos": "phrasal verb",
+   "ipa": "raɪt daʊn",
+   "es": "apuntar",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 15,
+   "end": 20,
+   "text": "Brief",
+   "sense": "brief_task"
+  },
+  {
+   "p": 1,
+   "start": 24,
+   "end": 35,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 1,
+   "start": 205,
+   "end": 209,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 1,
+   "start": 257,
+   "end": 262,
+   "text": "notes",
+   "sense": "notes_study"
+  },
+  {
+   "p": 2,
+   "start": 33,
+   "end": 38,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 21,
+    "end": 38,
+    "text": "the twelfth floor",
+    "es": "el piso doce"
+   }
+  },
+  {
+   "p": 2,
+   "start": 195,
+   "end": 202,
+   "text": "growers",
+   "sense": "olive_growers",
+   "chunk": {
+    "start": 189,
+    "end": 202,
+    "text": "olive growers",
+    "es": "productores de aceitunas"
+   }
+  },
+  {
+   "p": 2,
+   "start": 300,
+   "end": 305,
+   "text": "hired",
+   "sense": "hire"
+  },
+  {
+   "p": 2,
+   "start": 342,
+   "end": 354,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 3,
+   "start": 253,
+   "end": 258,
+   "text": "grown",
+   "sense": "grow_up",
+   "chunk": {
+    "start": 253,
+    "end": 270,
+    "text": "grown up speaking",
+    "es": "crecido hablando"
+   }
+  },
+  {
+   "p": 3,
+   "start": 367,
+   "end": 371,
+   "text": "next",
+   "sense": "next_door",
+   "chunk": {
+    "start": 367,
+    "end": 376,
+    "text": "next door",
+    "es": "de al lado"
+   }
+  },
+  {
+   "p": 3,
+   "start": 439,
+   "end": 448,
+   "text": "arguments",
+   "sense": "argument_quarrel"
+  },
+  {
+   "p": 4,
+   "start": 4,
+   "end": 9,
+   "text": "brief",
+   "sense": "brief_task"
+  },
+  {
+   "p": 4,
+   "start": 170,
+   "end": 178,
+   "text": "accounts",
+   "sense": "handle_accounts",
+   "chunk": {
+    "start": 158,
+    "end": 178,
+    "text": "handled the accounts",
+    "es": "llevaba las cuentas"
+   }
+  },
+  {
+   "p": 4,
+   "start": 245,
+   "end": 252,
+   "text": "control",
+   "sense": "quality_control",
+   "chunk": {
+    "start": 237,
+    "end": 252,
+    "text": "quality control",
+    "es": "control de calidad"
+   }
+  },
+  {
+   "p": 5,
+   "start": 50,
+   "end": 57,
+   "text": "Trading",
+   "sense": "trading_name",
+   "chunk": {
+    "start": 41,
+    "end": 57,
+    "text": "Kanemori Trading",
+    "es": "Kanemori Trading (nombre)"
+   }
+  },
+  {
+   "p": 5,
+   "start": 84,
+   "end": 93,
+   "text": "standards",
+   "sense": "by_standards",
+   "chunk": {
+    "start": 72,
+    "end": 93,
+    "text": "by Japanese standards",
+    "es": "para lo que es normal en Japón"
+   }
+  },
+  {
+   "p": 5,
+   "start": 140,
+   "end": 149,
+   "text": "supplying",
+   "sense": "supply"
+  },
+  {
+   "p": 6,
+   "start": 33,
+   "end": 38,
+   "text": "above",
+   "sense": "above_all",
+   "chunk": {
+    "start": 33,
+    "end": 42,
+    "text": "above all",
+    "es": "sobre todo"
+   }
+  },
+  {
+   "p": 6,
+   "start": 46,
+   "end": 54,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 6,
+   "start": 90,
+   "end": 98,
+   "text": "actually",
+   "sense": "actually_really"
+  },
+  {
+   "p": 6,
+   "start": 99,
+   "end": 106,
+   "text": "deliver",
+   "sense": "deliver_goods"
+  },
+  {
+   "p": 6,
+   "start": 114,
+   "end": 121,
+   "text": "harvest",
+   "sense": "harvest"
+  },
+  {
+   "p": 6,
+   "start": 149,
+   "end": 154,
+   "text": "frost",
+   "sense": "frost"
+  },
+  {
+   "p": 6,
+   "start": 239,
+   "end": 243,
+   "text": "drop",
+   "sense": "drop_bit"
+  },
+  {
+   "p": 6,
+   "start": 260,
+   "end": 266,
+   "text": "rather",
+   "sense": "would_rather",
+   "chunk": {
+    "start": 254,
+    "end": 266,
+    "text": "would rather",
+    "es": "preferimos"
+   }
+  },
+  {
+   "p": 6,
+   "start": 294,
+   "end": 298,
+   "text": "word",
+   "sense": "keep_word",
+   "chunk": {
+    "start": 285,
+    "end": 298,
+    "text": "keep our word",
+    "es": "cumplir nuestra palabra"
+   }
+  },
+  {
+   "p": 6,
+   "start": 346,
+   "end": 350,
+   "text": "name",
+   "sense": "name_reputation"
+  },
+  {
+   "p": 7,
+   "start": 49,
+   "end": 55,
+   "text": "client",
+   "sense": "client"
+  },
+  {
+   "p": 7,
+   "start": 116,
+   "end": 124,
+   "text": "treasure",
+   "sense": "treasure_verb"
+  },
+  {
+   "p": 8,
+   "start": 86,
+   "end": 91,
+   "text": "broad",
+   "sense": "broad_build"
+  },
+  {
+   "p": 8,
+   "start": 116,
+   "end": 123,
+   "text": "fifties",
+   "sense": "late_fifties",
+   "chunk": {
+    "start": 104,
+    "end": 123,
+    "text": "in her late fifties",
+    "es": "rondando los sesenta"
+   }
+  },
+  {
+   "p": 8,
+   "start": 140,
+   "end": 146,
+   "text": "pulled",
+   "sense": "pull_back",
+   "chunk": {
+    "start": 140,
+    "end": 159,
+    "text": "pulled back tightly",
+    "es": "recogido con fuerza"
+   }
+  },
+  {
+   "p": 8,
+   "start": 172,
+   "end": 179,
+   "text": "glasses",
+   "sense": "reading_glasses",
+   "chunk": {
+    "start": 164,
+    "end": 179,
+    "text": "reading glasses",
+    "es": "lentes de lectura"
+   }
+  },
+  {
+   "p": 8,
+   "start": 248,
+   "end": 250,
+   "text": "up",
+   "sense": "up_and_down",
+   "chunk": {
+    "start": 248,
+    "end": 259,
+    "text": "up and down",
+    "es": "de un lado a otro"
+   }
+  },
+  {
+   "p": 9,
+   "start": 21,
+   "end": 25,
+   "text": "bank",
+   "sense": "bank_finance"
+  },
+  {
+   "p": 9,
+   "start": 89,
+   "end": 93,
+   "text": "bank",
+   "sense": "bank_finance"
+  },
+  {
+   "p": 9,
+   "start": 103,
+   "end": 109,
+   "text": "landed",
+   "sense": "land_plane"
+  },
+  {
+   "p": 11,
+   "start": 161,
+   "end": 166,
+   "text": "frost",
+   "sense": "frost"
+  },
+  {
+   "p": 11,
+   "start": 253,
+   "end": 261,
+   "text": "shrugged",
+   "sense": "shrug"
+  },
+  {
+   "p": 13,
+   "start": 76,
+   "end": 82,
+   "text": "afford",
+   "sense": "afford"
+  },
+  {
+   "p": 14,
+   "start": 42,
+   "end": 47,
+   "text": "notes",
+   "sense": "notes_study"
+  },
+  {
+   "p": 14,
+   "start": 74,
+   "end": 80,
+   "text": "figure",
+   "sense": "figure_number"
+  },
+  {
+   "p": 14,
+   "start": 97,
+   "end": 99,
+   "text": "up",
+   "sense": "come_up",
+   "chunk": {
+    "start": 92,
+    "end": 99,
+    "text": "come up",
+    "es": "surgir"
+   }
+  },
+  {
+   "p": 14,
+   "start": 262,
+   "end": 270,
+   "text": "familiar",
+   "sense": "familiar_as"
+  },
+  {
+   "p": 14,
+   "start": 311,
+   "end": 317,
+   "text": "picked",
+   "sense": "pick_up_habit",
+   "chunk": {
+    "start": 311,
+    "end": 320,
+    "text": "picked up",
+    "es": "adquirido"
+   }
+  },
+  {
+   "p": 16,
+   "start": 16,
+   "end": 20,
+   "text": "held",
+   "sense": "hold_meeting"
+  },
+  {
+   "p": 16,
+   "start": 62,
+   "end": 67,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 51,
+    "end": 67,
+    "text": "the fourth floor",
+    "es": "el cuarto piso"
+   }
+  },
+  {
+   "p": 16,
+   "start": 163,
+   "end": 169,
+   "text": "looked",
+   "sense": "look_out_onto",
+   "chunk": {
+    "start": 163,
+    "end": 178,
+    "text": "looked out onto",
+    "es": "daba a"
+   }
+  },
+  {
+   "p": 16,
+   "start": 216,
+   "end": 220,
+   "text": "tray",
+   "sense": "tray"
+  },
+  {
+   "p": 16,
+   "start": 244,
+   "end": 250,
+   "text": "sweets",
+   "sense": "sweets"
+  },
+  {
+   "p": 17,
+   "start": 13,
+   "end": 17,
+   "text": "side",
+   "sense": "side_party"
+  },
+  {
+   "p": 17,
+   "start": 78,
+   "end": 82,
+   "text": "head",
+   "sense": "head_table",
+   "chunk": {
+    "start": 71,
+    "end": 95,
+    "text": "At the head of the table",
+    "es": "Presidiendo la mesa"
+   }
+  },
+  {
+   "p": 17,
+   "start": 167,
+   "end": 173,
+   "text": "silver",
+   "sense": "silver_hair"
+  },
+  {
+   "p": 17,
+   "start": 197,
+   "end": 204,
+   "text": "posture",
+   "sense": "posture"
+  },
+  {
+   "p": 17,
+   "start": 275,
+   "end": 279,
+   "text": "take",
+   "sense": "take_over",
+   "chunk": {
+    "start": 275,
+    "end": 297,
+    "text": "take over the business",
+    "es": "tomar las riendas del negocio"
+   }
+  },
+  {
+   "p": 17,
+   "start": 311,
+   "end": 318,
+   "text": "manager",
+   "sense": "sales_manager",
+   "chunk": {
+    "start": 305,
+    "end": 318,
+    "text": "sales manager",
+    "es": "jefe de ventas"
+   }
+  },
+  {
+   "p": 18,
+   "start": 22,
+   "end": 26,
+   "text": "once",
+   "sense": "at_once",
+   "chunk": {
+    "start": 19,
+    "end": 26,
+    "text": "at once",
+    "es": "enseguida"
+   }
+  },
+  {
+   "p": 18,
+   "start": 73,
+   "end": 82,
+   "text": "something",
+   "sense": "something_of",
+   "chunk": {
+    "start": 73,
+    "end": 94,
+    "text": "something of a legend",
+    "es": "algo así como una leyenda"
+   }
+  },
+  {
+   "p": 18,
+   "start": 110,
+   "end": 122,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 18,
+   "start": 188,
+   "end": 192,
+   "text": "City",
+   "sense": "mexico_city",
+   "chunk": {
+    "start": 181,
+    "end": 192,
+    "text": "Mexico City",
+    "es": "Ciudad de México"
+   }
+  },
+  {
+   "p": 18,
+   "start": 270,
+   "end": 279,
+   "text": "conductor",
+   "sense": "conductor_music"
+  },
+  {
+   "p": 18,
+   "start": 366,
+   "end": 371,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 19,
+   "start": 20,
+   "end": 30,
+   "text": "introduced",
+   "sense": "introduce_people"
+  },
+  {
+   "p": 19,
+   "start": 149,
+   "end": 153,
+   "text": "suit",
+   "sense": "suit_clothes"
+  },
+  {
+   "p": 19,
+   "start": 203,
+   "end": 208,
+   "text": "bowed",
+   "sense": "bow_head"
+  },
+  {
+   "p": 19,
+   "start": 263,
+   "end": 267,
+   "text": "deal",
+   "sense": "a_great_deal",
+   "chunk": {
+    "start": 255,
+    "end": 267,
+    "text": "a great deal",
+    "es": "mucho"
+   }
+  },
+  {
+   "p": 21,
+   "start": 50,
+   "end": 54,
+   "text": "side",
+   "sense": "side_party"
+  },
+  {
+   "p": 21,
+   "start": 72,
+   "end": 83,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 21,
+   "start": 90,
+   "end": 101,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 21,
+   "start": 128,
+   "end": 134,
+   "text": "side's",
+   "sense": "side_party"
+  },
+  {
+   "p": 21,
+   "start": 217,
+   "end": 222,
+   "text": "party",
+   "sense": "party_side"
+  },
+  {
+   "p": 21,
+   "start": 268,
+   "end": 275,
+   "text": "carried",
+   "sense": "carry_across"
+  },
+  {
+   "p": 21,
+   "start": 475,
+   "end": 479,
+   "text": "play",
+   "sense": "play_music_tocar"
+  },
+  {
+   "p": 21,
+   "start": 489,
+   "end": 494,
+   "text": "piece",
+   "sense": "piece_music"
+  },
+  {
+   "p": 22,
+   "start": 53,
+   "end": 59,
+   "text": "speech",
+   "sense": "speech"
+  },
+  {
+   "p": 22,
+   "start": 88,
+   "end": 96,
+   "text": "rendered",
+   "sense": "render"
+  },
+  {
+   "p": 22,
+   "start": 185,
+   "end": 193,
+   "text": "rendered",
+   "sense": "render"
+  },
+  {
+   "p": 22,
+   "start": 307,
+   "end": 310,
+   "text": "set",
+   "sense": "set_cups"
+  },
+  {
+   "p": 22,
+   "start": 349,
+   "end": 355,
+   "text": "return",
+   "sense": "in_return",
+   "chunk": {
+    "start": 346,
+    "end": 355,
+    "text": "in return",
+    "es": "a cambio"
+   }
+  },
+  {
+   "p": 22,
+   "start": 371,
+   "end": 374,
+   "text": "sat",
+   "sense": "sit_down",
+   "chunk": {
+    "start": 371,
+    "end": 379,
+    "text": "sat down",
+    "es": "se sentaron"
+   }
+  },
+  {
+   "p": 23,
+   "start": 173,
+   "end": 184,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 23,
+   "start": 200,
+   "end": 204,
+   "text": "side",
+   "sense": "side_party"
+  },
+  {
+   "p": 25,
+   "start": 176,
+   "end": 182,
+   "text": "folder",
+   "sense": "folder"
+  },
+  {
+   "p": 25,
+   "start": 199,
+   "end": 204,
+   "text": "still",
+   "sense": "still_hands"
+  },
+  {
+   "p": 27,
+   "start": 203,
+   "end": 210,
+   "text": "content",
+   "sense": "content_noun"
+  },
+  {
+   "p": 27,
+   "start": 247,
+   "end": 252,
+   "text": "sharp",
+   "sense": "sharp_clever"
+  },
+  {
+   "p": 27,
+   "start": 254,
+   "end": 262,
+   "text": "informed",
+   "sense": "informed"
+  },
+  {
+   "p": 27,
+   "start": 291,
+   "end": 298,
+   "text": "storage",
+   "sense": "storage"
+  },
+  {
+   "p": 27,
+   "start": 379,
+   "end": 387,
+   "text": "supplier",
+   "sense": "supplier"
+  },
+  {
+   "p": 27,
+   "start": 456,
+   "end": 460,
+   "text": "know",
+   "sense": "get_to_know",
+   "chunk": {
+    "start": 445,
+    "end": 471,
+    "text": "getting to know each other",
+    "es": "conociéndose"
+   }
+  },
+  {
+   "p": 29,
+   "start": 90,
+   "end": 98,
+   "text": "anything",
+   "sense": "think_anything",
+   "chunk": {
+    "start": 84,
+    "end": 104,
+    "text": "think anything of it",
+    "es": "darle importancia"
+   }
+  },
+  {
+   "p": 29,
+   "start": 219,
+   "end": 228,
+   "text": "attention",
+   "sense": "pay_attention",
+   "chunk": {
+    "start": 209,
+    "end": 234,
+    "text": "paid more attention to it",
+    "es": "prestado más atención"
+   }
+  },
+  {
+   "p": 31,
+   "start": 74,
+   "end": 80,
+   "text": "supply",
+   "sense": "supply"
+  },
+  {
+   "p": 31,
+   "start": 145,
+   "end": 148,
+   "text": "sat",
+   "sense": "sit_up_little",
+   "chunk": {
+    "start": 145,
+    "end": 151,
+    "text": "sat up",
+    "es": "se irguió"
+   }
+  },
+  {
+   "p": 31,
+   "start": 237,
+   "end": 249,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 32,
+   "start": 58,
+   "end": 63,
+   "text": "frost",
+   "sense": "frost"
+  },
+  {
+   "p": 32,
+   "start": 138,
+   "end": 145,
+   "text": "harvest",
+   "sense": "harvest"
+  },
+  {
+   "p": 33,
+   "start": 63,
+   "end": 69,
+   "text": "smooth",
+   "sense": "smooth_fluent"
+  },
+  {
+   "p": 33,
+   "start": 177,
+   "end": 184,
+   "text": "ichiman",
+   "sense": "japanese_numbers",
+   "chunk": {
+    "start": 177,
+    "end": 199,
+    "text": "ichiman hassen rittoru",
+    "es": "dieciocho mil litros"
+   }
+  },
+  {
+   "p": 33,
+   "start": 185,
+   "end": 191,
+   "text": "hassen",
+   "sense": "japanese_numbers",
+   "chunk": {
+    "start": 177,
+    "end": 199,
+    "text": "ichiman hassen rittoru",
+    "es": "dieciocho mil litros"
+   }
+  },
+  {
+   "p": 33,
+   "start": 192,
+   "end": 199,
+   "text": "rittoru",
+   "sense": "japanese_numbers",
+   "chunk": {
+    "start": 177,
+    "end": 199,
+    "text": "ichiman hassen rittoru",
+    "es": "dieciocho mil litros"
+   }
+  },
+  {
+   "p": 34,
+   "start": 30,
+   "end": 35,
+   "text": "still",
+   "sense": "still_room"
+  },
+  {
+   "p": 34,
+   "start": 115,
+   "end": 121,
+   "text": "nodded",
+   "sense": "nod"
+  },
+  {
+   "p": 34,
+   "start": 182,
+   "end": 192,
+   "text": "brightened",
+   "sense": "brighten"
+  },
+  {
+   "p": 34,
+   "start": 219,
+   "end": 223,
+   "text": "boss",
+   "sense": "boss"
+  },
+  {
+   "p": 35,
+   "start": 54,
+   "end": 62,
+   "text": "misheard",
+   "sense": "mishear"
+  },
+  {
+   "p": 35,
+   "start": 372,
+   "end": 379,
+   "text": "deliver",
+   "sense": "deliver_goods"
+  },
+  {
+   "p": 35,
+   "start": 414,
+   "end": 422,
+   "text": "actually",
+   "sense": "actually_really"
+  },
+  {
+   "p": 36,
+   "start": 94,
+   "end": 100,
+   "text": "figure",
+   "sense": "figure_number"
+  },
+  {
+   "p": 36,
+   "start": 117,
+   "end": 122,
+   "text": "moved",
+   "sense": "move_on",
+   "chunk": {
+    "start": 117,
+    "end": 125,
+    "text": "moved on",
+    "es": "seguido adelante"
+   }
+  },
+  {
+   "p": 36,
+   "start": 220,
+   "end": 231,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 36,
+   "start": 325,
+   "end": 329,
+   "text": "read",
+   "sense": "read_as",
+   "chunk": {
+    "start": 325,
+    "end": 346,
+    "text": "read as an accusation",
+    "es": "interpretarse como una acusación"
+   }
+  },
+  {
+   "p": 36,
+   "start": 404,
+   "end": 417,
+   "text": "embarrassment",
+   "sense": "embarrassment"
+  },
+  {
+   "p": 37,
+   "start": 33,
+   "end": 41,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 37,
+   "start": 127,
+   "end": 131,
+   "text": "fail",
+   "sense": "fail_to",
+   "chunk": {
+    "start": 127,
+    "end": 142,
+    "text": "fail to deliver",
+    "es": "no lograr entregar"
+   }
+  },
+  {
+   "p": 37,
+   "start": 135,
+   "end": 142,
+   "text": "deliver",
+   "sense": "deliver_goods"
+  },
+  {
+   "p": 37,
+   "start": 156,
+   "end": 160,
+   "text": "name",
+   "sense": "name_reputation"
+  },
+  {
+   "p": 37,
+   "start": 206,
+   "end": 213,
+   "text": "growers",
+   "sense": "olive_growers",
+   "chunk": {
+    "start": 206,
+    "end": 213,
+    "text": "growers",
+    "es": "productores"
+   }
+  },
+  {
+   "p": 37,
+   "start": 241,
+   "end": 244,
+   "text": "way",
+   "sense": "either_way",
+   "chunk": {
+    "start": 234,
+    "end": 244,
+    "text": "Either way",
+    "es": "En cualquier caso"
+   }
+  },
+  {
+   "p": 38,
+   "start": 145,
+   "end": 151,
+   "text": "figure",
+   "sense": "figure_number"
+  },
+  {
+   "p": 39,
+   "start": 260,
+   "end": 265,
+   "text": "shook",
+   "sense": "shake_head",
+   "chunk": {
+    "start": 260,
+    "end": 274,
+    "text": "shook his head",
+    "es": "negó con la cabeza"
+   }
+  },
+  {
+   "p": 40,
+   "start": 77,
+   "end": 82,
+   "text": "argue",
+   "sense": "argue"
+  },
+  {
+   "p": 40,
+   "start": 150,
+   "end": 158,
+   "text": "steadily",
+   "sense": "steadily"
+  },
+  {
+   "p": 41,
+   "start": 15,
+   "end": 20,
+   "text": "Break",
+   "sense": "break_pause"
+  },
+  {
+   "p": 43,
+   "start": 72,
+   "end": 75,
+   "text": "bow",
+   "sense": "bow_noun"
+  },
+  {
+   "p": 43,
+   "start": 181,
+   "end": 188,
+   "text": "figures",
+   "sense": "figure_number"
+  },
+  {
+   "p": 43,
+   "start": 214,
+   "end": 219,
+   "text": "break",
+   "sense": "break_pause"
+  },
+  {
+   "p": 43,
+   "start": 248,
+   "end": 260,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 43,
+   "start": 299,
+   "end": 306,
+   "text": "writing",
+   "sense": "in_writing",
+   "chunk": {
+    "start": 296,
+    "end": 306,
+    "text": "in writing",
+    "es": "por escrito"
+   }
+  },
+  {
+   "p": 44,
+   "start": 7,
+   "end": 14,
+   "text": "phrased",
+   "sense": "phrase_verb"
+  },
+  {
+   "p": 44,
+   "start": 137,
+   "end": 149,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 44,
+   "start": 167,
+   "end": 178,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 45,
+   "start": 94,
+   "end": 101,
+   "text": "stepped",
+   "sense": "step_out_into",
+   "chunk": {
+    "start": 94,
+    "end": 123,
+    "text": "stepped out into the corridor",
+    "es": "salieron al pasillo"
+   }
+  },
+  {
+   "p": 46,
+   "start": 45,
+   "end": 50,
+   "text": "voice",
+   "sense": "low_voice",
+   "chunk": {
+    "start": 36,
+    "end": 50,
+    "text": "in a low voice",
+    "es": "en voz baja"
+   }
+  },
+  {
+   "p": 48,
+   "start": 75,
+   "end": 82,
+   "text": "anxious",
+   "sense": "anxious"
+  },
+  {
+   "p": 48,
+   "start": 103,
+   "end": 108,
+   "text": "point",
+   "sense": "whole_point",
+   "chunk": {
+    "start": 93,
+    "end": 108,
+    "text": "the whole point",
+    "es": "lo esencial"
+   }
+  },
+  {
+   "p": 48,
+   "start": 140,
+   "end": 148,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 49,
+   "start": 51,
+   "end": 56,
+   "text": "break",
+   "sense": "break_pause"
+  },
+  {
+   "p": 50,
+   "start": 108,
+   "end": 119,
+   "text": "embarrassed",
+   "sense": "embarrassed"
+  },
+  {
+   "p": 50,
+   "start": 198,
+   "end": 209,
+   "text": "embarrassed",
+   "sense": "embarrassed"
+  },
+  {
+   "p": 50,
+   "start": 304,
+   "end": 309,
+   "text": "right",
+   "sense": "right_correct",
+   "chunk": {
+    "start": 296,
+    "end": 309,
+    "text": "Is that right",
+    "es": "¿Es así?"
+   }
+  },
+  {
+   "p": 52,
+   "start": 326,
+   "end": 331,
+   "text": "wrong",
+   "sense": "come_out_wrong",
+   "chunk": {
+    "start": 317,
+    "end": 331,
+    "text": "come out wrong",
+    "es": "salido mal"
+   }
+  },
+  {
+   "p": 52,
+   "start": 400,
+   "end": 406,
+   "text": "either",
+   "sense": "either_neither"
+  },
+  {
+   "p": 53,
+   "start": 109,
+   "end": 115,
+   "text": "sample",
+   "sense": "sample_test"
+  },
+  {
+   "p": 53,
+   "start": 167,
+   "end": 171,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 53,
+   "start": 182,
+   "end": 190,
+   "text": "feelings",
+   "sense": "hurt_feelings",
+   "chunk": {
+    "start": 173,
+    "end": 199,
+    "text": "Nobody's feelings are hurt",
+    "es": "No se hieren los sentimientos de nadie"
+   }
+  },
+  {
+   "p": 53,
+   "start": 208,
+   "end": 214,
+   "text": "sample",
+   "sense": "sample_test"
+  },
+  {
+   "p": 54,
+   "start": 16,
+   "end": 22,
+   "text": "sample",
+   "sense": "sample_test"
+  },
+  {
+   "p": 54,
+   "start": 56,
+   "end": 60,
+   "text": "form",
+   "sense": "form_paper"
+  },
+  {
+   "p": 56,
+   "start": 120,
+   "end": 124,
+   "text": "come",
+   "sense": "come_up_with",
+   "chunk": {
+    "start": 120,
+    "end": 132,
+    "text": "come up with",
+    "es": "ocurrido"
+   }
+  },
+  {
+   "p": 56,
+   "start": 266,
+   "end": 273,
+   "text": "thought",
+   "sense": "second_thought",
+   "chunk": {
+    "start": 249,
+    "end": 273,
+    "text": "without a second thought",
+    "es": "sin pensarlo dos veces"
+   }
+  },
+  {
+   "p": 58,
+   "start": 49,
+   "end": 59,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 59,
+   "start": 11,
+   "end": 16,
+   "text": "Paper",
+   "sense": "sheet_paper"
+  },
+  {
+   "p": 60,
+   "start": 44,
+   "end": 54,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 60,
+   "start": 60,
+   "end": 65,
+   "text": "stand",
+   "sense": "stand_easel"
+  },
+  {
+   "p": 60,
+   "start": 165,
+   "end": 172,
+   "text": "figures",
+   "sense": "figure_number"
+  },
+  {
+   "p": 60,
+   "start": 245,
+   "end": 250,
+   "text": "argue",
+   "sense": "argue"
+  },
+  {
+   "p": 61,
+   "start": 62,
+   "end": 65,
+   "text": "key",
+   "sense": "key_main"
+  },
+  {
+   "p": 61,
+   "start": 66,
+   "end": 73,
+   "text": "figures",
+   "sense": "figure_number"
+  },
+  {
+   "p": 61,
+   "start": 96,
+   "end": 101,
+   "text": "sides",
+   "sense": "side_party"
+  },
+  {
+   "p": 61,
+   "start": 137,
+   "end": 148,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 61,
+   "start": 176,
+   "end": 181,
+   "text": "heads",
+   "sense": "carry_head",
+   "chunk": {
+    "start": 158,
+    "end": 181,
+    "text": "carry them in our heads",
+    "es": "llevarlas de memoria"
+   }
+  },
+  {
+   "p": 62,
+   "start": 28,
+   "end": 34,
+   "text": "marker",
+   "sense": "marker"
+  },
+  {
+   "p": 62,
+   "start": 55,
+   "end": 59,
+   "text": "neat",
+   "sense": "neat_writing"
+  },
+  {
+   "p": 63,
+   "start": 18,
+   "end": 19,
+   "text": "L",
+   "sense": "liter_abbr"
+  },
+  {
+   "p": 63,
+   "start": 40,
+   "end": 41,
+   "text": "L",
+   "sense": "liter_abbr"
+  },
+  {
+   "p": 65,
+   "start": 55,
+   "end": 65,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 65,
+   "start": 113,
+   "end": 118,
+   "text": "cross",
+   "sense": "cross_out",
+   "chunk": {
+    "start": 113,
+    "end": 132,
+    "text": "cross something out",
+    "es": "tachar algo"
+   }
+  },
+  {
+   "p": 65,
+   "start": 158,
+   "end": 170,
+   "text": "disappointed",
+   "sense": "disappointed"
+  },
+  {
+   "p": 66,
+   "start": 13,
+   "end": 19,
+   "text": "breath",
+   "sense": "hold_breath",
+   "chunk": {
+    "start": 4,
+    "end": 19,
+    "text": "held her breath",
+    "es": "contuvo la respiración"
+   }
+  },
+  {
+   "p": 67,
+   "start": 29,
+   "end": 34,
+   "text": "board",
+   "sense": "board_white"
+  },
+  {
+   "p": 67,
+   "start": 130,
+   "end": 135,
+   "text": "bowed",
+   "sense": "bow_head"
+  },
+  {
+   "p": 68,
+   "start": 62,
+   "end": 68,
+   "text": "figure",
+   "sense": "figure_number"
+  },
+  {
+   "p": 69,
+   "start": 132,
+   "end": 135,
+   "text": "bow",
+   "sense": "bow_noun"
+  },
+  {
+   "p": 69,
+   "start": 173,
+   "end": 183,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 69,
+   "start": 215,
+   "end": 222,
+   "text": "speaker",
+   "sense": "speaker_person"
+  },
+  {
+   "p": 69,
+   "start": 286,
+   "end": 292,
+   "text": "handed",
+   "sense": "hand_give"
+  },
+  {
+   "p": 70,
+   "start": 45,
+   "end": 51,
+   "text": "nodded",
+   "sense": "nod"
+  },
+  {
+   "p": 70,
+   "start": 87,
+   "end": 91,
+   "text": "done",
+   "sense": "easily_done",
+   "chunk": {
+    "start": 73,
+    "end": 91,
+    "text": "it was easily done",
+    "es": "era un error fácil de cometer"
+   }
+  },
+  {
+   "p": 70,
+   "start": 161,
+   "end": 165,
+   "text": "down",
+   "sense": "write_down",
+   "chunk": {
+    "start": 148,
+    "end": 165,
+    "text": "wrote things down",
+    "es": "ponían las cosas por escrito"
+   }
+  },
+  {
+   "p": 71,
+   "start": 9,
+   "end": 13,
+   "text": "case",
+   "sense": "in_that_case",
+   "chunk": {
+    "start": 1,
+    "end": 13,
+    "text": "In that case",
+    "es": "En ese caso"
+   }
+  },
+  {
+   "p": 71,
+   "start": 29,
+   "end": 33,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 29,
+    "end": 36,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 71,
+   "start": 38,
+   "end": 45,
+   "text": "turning",
+   "sense": "turn_back",
+   "chunk": {
+    "start": 38,
+    "end": 58,
+    "text": "turning back to Inés",
+    "es": "volviéndose otra vez hacia Inés"
+   }
+  },
+  {
+   "p": 72,
+   "start": 125,
+   "end": 133,
+   "text": "collapse",
+   "sense": "collapse"
+  },
+  {
+   "p": 72,
+   "start": 176,
+   "end": 186,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 72,
+   "start": 240,
+   "end": 246,
+   "text": "figure",
+   "sense": "figure_number"
+  },
+  {
+   "p": 72,
+   "start": 299,
+   "end": 304,
+   "text": "board",
+   "sense": "board_white"
+  },
+  {
+   "p": 72,
+   "start": 339,
+   "end": 349,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 72,
+   "start": 385,
+   "end": 390,
+   "text": "draft",
+   "sense": "draft_agreement",
+   "chunk": {
+    "start": 385,
+    "end": 400,
+    "text": "draft agreement",
+    "es": "borrador de acuerdo"
+   }
+  },
+  {
+   "p": 72,
+   "start": 429,
+   "end": 437,
+   "text": "contract",
+   "sense": "contract"
+  },
+  {
+   "p": 72,
+   "start": 474,
+   "end": 481,
+   "text": "lawyers",
+   "sense": "lawyer"
+  },
+  {
+   "p": 72,
+   "start": 486,
+   "end": 493,
+   "text": "checked",
+   "sense": "check_details"
+  },
+  {
+   "p": 73,
+   "start": 46,
+   "end": 51,
+   "text": "bowed",
+   "sense": "bow_head"
+  },
+  {
+   "p": 73,
+   "start": 70,
+   "end": 75,
+   "text": "shook",
+   "sense": "shake_hands",
+   "chunk": {
+    "start": 70,
+    "end": 81,
+    "text": "shook hands",
+    "es": "se dieron la mano"
+   }
+  },
+  {
+   "p": 73,
+   "start": 205,
+   "end": 216,
+   "text": "appreciated",
+   "sense": "appreciate_value"
+  },
+  {
+   "p": 73,
+   "start": 239,
+   "end": 244,
+   "text": "frost",
+   "sense": "frost"
+  },
+  {
+   "p": 74,
+   "start": 58,
+   "end": 70,
+   "text": "disappointed",
+   "sense": "disappointed"
+  },
+  {
+   "p": 77,
+   "start": 30,
+   "end": 35,
+   "text": "break",
+   "sense": "break_pause"
+  },
+  {
+   "p": 78,
+   "start": 5,
+   "end": 12,
+   "text": "needn't",
+   "sense": "needn_t"
+  },
+  {
+   "p": 78,
+   "start": 63,
+   "end": 68,
+   "text": "right",
+   "sense": "right_proper"
+  },
+  {
+   "p": 79,
+   "start": 25,
+   "end": 29,
+   "text": "bank",
+   "sense": "bank_finance"
+  },
+  {
+   "p": 79,
+   "start": 94,
+   "end": 99,
+   "text": "right",
+   "sense": "right_proper"
+  },
+  {
+   "p": 79,
+   "start": 111,
+   "end": 117,
+   "text": "looked",
+   "sense": "look_back",
+   "chunk": {
+    "start": 111,
+    "end": 138,
+    "text": "looked back at the building",
+    "es": "volvió la vista al edificio"
+   }
+  },
+  {
+   "p": 79,
+   "start": 199,
+   "end": 204,
+   "text": "still",
+   "sense": "still_however"
+  },
+  {
+   "p": 80,
+   "start": 127,
+   "end": 131,
+   "text": "kind",
+   "sense": "kind_type"
+  },
+  {
+   "p": 82,
+   "start": 60,
+   "end": 70,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 82,
+   "start": 91,
+   "end": 102,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 83,
+   "start": 20,
+   "end": 23,
+   "text": "arm",
+   "sense": "take_arm",
+   "chunk": {
+    "start": 5,
+    "end": 23,
+    "text": "took her son's arm",
+    "es": "tomó a su hijo del brazo"
+   }
+  },
+  {
+   "p": 83,
+   "start": 115,
+   "end": 120,
+   "text": "order",
+   "sense": "order_food"
+  },
+  {
+   "p": 85,
+   "start": 8,
+   "end": 15,
+   "text": "putting",
+   "sense": "put_on_clothes",
+   "chunk": {
+    "start": 8,
+    "end": 27,
+    "text": "putting on her coat",
+    "es": "poniéndose el abrigo"
+   }
+  },
+  {
+   "p": 85,
+   "start": 35,
+   "end": 40,
+   "text": "lobby",
+   "sense": "lobby"
+  },
+  {
+   "p": 85,
+   "start": 108,
+   "end": 117,
+   "text": "elevators",
+   "sense": "elevator"
+  },
+  {
+   "p": 85,
+   "start": 131,
+   "end": 140,
+   "text": "briefcase",
+   "sense": "briefcase"
+  },
+  {
+   "p": 86,
+   "start": 9,
+   "end": 12,
+   "text": "san",
+   "sense": "san_honorific"
+  },
+  {
+   "p": 86,
+   "start": 75,
+   "end": 81,
+   "text": "across",
+   "sense": "across_street",
+   "chunk": {
+    "start": 75,
+    "end": 92,
+    "text": "across the street",
+    "es": "enfrente"
+   }
+  },
+  {
+   "p": 87,
+   "start": 254,
+   "end": 259,
+   "text": "voice",
+   "sense": "passive_voice",
+   "chunk": {
+    "start": 246,
+    "end": 259,
+    "text": "passive voice",
+    "es": "voz pasiva"
+   }
+  },
+  {
+   "p": 88,
+   "start": 3,
+   "end": 7,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 0,
+    "end": 7,
+    "text": "At last",
+    "es": "Por fin"
+   }
+  },
+  {
+   "p": 88,
+   "start": 11,
+   "end": 14,
+   "text": "put",
+   "sense": "put_down_object",
+   "chunk": {
+    "start": 11,
+    "end": 27,
+    "text": "put down his cup",
+    "es": "dejó la taza"
+   }
+  },
+  {
+   "p": 89,
+   "start": 62,
+   "end": 69,
+   "text": "needn't",
+   "sense": "needn_t"
+  },
+  {
+   "p": 89,
+   "start": 109,
+   "end": 117,
+   "text": "grateful",
+   "sense": "grateful"
+  },
+  {
+   "p": 91,
+   "start": 121,
+   "end": 125,
+   "text": "rare",
+   "sense": "rare_uncommon"
+  },
+  {
+   "p": 91,
+   "start": 144,
+   "end": 156,
+   "text": "interpreters",
+   "sense": "interpreter"
+  },
+  {
+   "p": 93,
+   "start": 90,
+   "end": 94,
+   "text": "City",
+   "sense": "mexico_city",
+   "chunk": {
+    "start": 83,
+    "end": 94,
+    "text": "Mexico City",
+    "es": "Ciudad de México"
+   }
+  },
+  {
+   "p": 93,
+   "start": 123,
+   "end": 129,
+   "text": "rights",
+   "sense": "fishing_rights",
+   "chunk": {
+    "start": 115,
+    "end": 129,
+    "text": "fishing rights",
+    "es": "derechos de pesca"
+   }
+  },
+  {
+   "p": 93,
+   "start": 145,
+   "end": 149,
+   "text": "nets",
+   "sense": "net_fishing"
+  },
+  {
+   "p": 93,
+   "start": 155,
+   "end": 163,
+   "text": "networks",
+   "sense": "network_tel"
+  },
+  {
+   "p": 93,
+   "start": 211,
+   "end": 217,
+   "text": "speech",
+   "sense": "speech"
+  },
+  {
+   "p": 93,
+   "start": 245,
+   "end": 250,
+   "text": "reply",
+   "sense": "in_reply",
+   "chunk": {
+    "start": 242,
+    "end": 250,
+    "text": "in reply",
+    "es": "como respuesta"
+   }
+  },
+  {
+   "p": 93,
+   "start": 256,
+   "end": 261,
+   "text": "shook",
+   "sense": "shake_smile",
+   "chunk": {
+    "start": 256,
+    "end": 279,
+    "text": "shook his head, smiling",
+    "es": "sacudió la cabeza, sonriendo"
+   }
+  },
+  {
+   "p": 95,
+   "start": 11,
+   "end": 16,
+   "text": "hired",
+   "sense": "hire"
+  },
+  {
+   "p": 95,
+   "start": 104,
+   "end": 113,
+   "text": "colleague",
+   "sense": "colleague"
+  },
+  {
+   "p": 95,
+   "start": 231,
+   "end": 236,
+   "text": "toast",
+   "sense": "toast_drink"
+  },
+  {
+   "p": 96,
+   "start": 34,
+   "end": 38,
+   "text": "went",
+   "sense": "go_on",
+   "chunk": {
+    "start": 34,
+    "end": 41,
+    "text": "went on",
+    "es": "continuó"
+   }
+  },
+  {
+   "p": 96,
+   "start": 82,
+   "end": 89,
+   "text": "hearing",
+   "sense": "hearing"
+  },
+  {
+   "p": 97,
+   "start": 54,
+   "end": 58,
+   "text": "last",
+   "sense": "at_last",
+   "chunk": {
+    "start": 51,
+    "end": 58,
+    "text": "at last",
+    "es": "por fin"
+   }
+  },
+  {
+   "p": 98,
+   "start": 67,
+   "end": 74,
+   "text": "retired",
+   "sense": "retire_fig"
+  },
+  {
+   "p": 99,
+   "start": 33,
+   "end": 37,
+   "text": "took",
+   "sense": "take_out_nb",
+   "chunk": {
+    "start": 33,
+    "end": 68,
+    "text": "took out a thick, battered notebook",
+    "es": "sacó una libreta gruesa y gastada"
+   }
+  },
+  {
+   "p": 99,
+   "start": 51,
+   "end": 59,
+   "text": "battered",
+   "sense": "battered"
+  },
+  {
+   "p": 99,
+   "start": 86,
+   "end": 91,
+   "text": "cover",
+   "sense": "cover_book"
+  },
+  {
+   "p": 100,
+   "start": 50,
+   "end": 55,
+   "text": "trade",
+   "sense": "trade_sector"
+  },
+  {
+   "p": 100,
+   "start": 172,
+   "end": 176,
+   "text": "slid",
+   "sense": "slide_push"
+  },
+  {
+   "p": 100,
+   "start": 208,
+   "end": 211,
+   "text": "san",
+   "sense": "san_honorific"
+  },
+  {
+   "p": 100,
+   "start": 228,
+   "end": 239,
+   "text": "interpreter",
+   "sense": "interpreter"
+  },
+  {
+   "p": 100,
+   "start": 265,
+   "end": 274,
+   "text": "suppliers",
+   "sense": "supplier"
+  },
+  {
+   "p": 102,
+   "start": 69,
+   "end": 74,
+   "text": "shelf",
+   "sense": "shelf"
+  },
+  {
+   "p": 102,
+   "start": 114,
+   "end": 119,
+   "text": "throw",
+   "sense": "throw_away",
+   "chunk": {
+    "start": 114,
+    "end": 127,
+    "text": "throw it away",
+    "es": "la tiren"
+   }
+  },
+  {
+   "p": 102,
+   "start": 178,
+   "end": 183,
+   "text": "point",
+   "sense": "whole_point",
+   "chunk": {
+    "start": 168,
+    "end": 183,
+    "text": "the whole point",
+    "es": "lo esencial"
+   }
+  },
+  {
+   "p": 104,
+   "start": 32,
+   "end": 37,
+   "text": "floor",
+   "sense": "floor_storey",
+   "chunk": {
+    "start": 20,
+    "end": 37,
+    "text": "the twelfth floor",
+    "es": "el piso doce"
+   }
+  },
+  {
+   "p": 104,
+   "start": 67,
+   "end": 71,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 104,
+   "start": 79,
+   "end": 84,
+   "text": "fresh",
+   "sense": "fresh_cup"
+  },
+  {
+   "p": 104,
+   "start": 123,
+   "end": 129,
+   "text": "random",
+   "sense": "at_random",
+   "chunk": {
+    "start": 120,
+    "end": 129,
+    "text": "at random",
+    "es": "al azar"
+   }
+  },
+  {
+   "p": 104,
+   "start": 154,
+   "end": 161,
+   "text": "heading",
+   "sense": "heading"
+  },
+  {
+   "p": 104,
+   "start": 235,
+   "end": 242,
+   "text": "figures",
+   "sense": "figure_number"
+  },
+  {
+   "p": 105,
+   "start": 51,
+   "end": 55,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 105,
+   "start": 100,
+   "end": 104,
+   "text": "once",
+   "sense": "for_once",
+   "chunk": {
+    "start": 96,
+    "end": 104,
+    "text": "for once",
+    "es": "por una vez"
+   }
+  },
+  {
+   "p": 106,
+   "start": 67,
+   "end": 70,
+   "text": "bow",
+   "sense": "bow_noun"
+  },
+  {
+   "p": 106,
+   "start": 199,
+   "end": 203,
+   "text": "time",
+   "sense": "at_same_time",
+   "chunk": {
+    "start": 187,
+    "end": 203,
+    "text": "at the same time",
+    "es": "a la vez"
+   }
+  },
+  {
+   "p": 106,
+   "start": 214,
+   "end": 218,
+   "text": "took",
+   "sense": "take_out_nb",
+   "chunk": {
+    "start": 214,
+    "end": 234,
+    "text": "took out her own pen",
+    "es": "sacó su propio bolígrafo"
+   }
+  },
+  {
+   "p": 106,
+   "start": 268,
+   "end": 272,
+   "text": "note",
+   "sense": "note_paper"
+  },
+  {
+   "p": 106,
+   "start": 286,
+   "end": 290,
+   "text": "line",
+   "sense": "line_text"
+  },
+  {
+   "p": 107,
+   "start": 30,
+   "end": 40,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  },
+  {
+   "p": 108,
+   "start": 28,
+   "end": 34,
+   "text": "spring",
+   "sense": "late_spring",
+   "chunk": {
+    "start": 23,
+    "end": 34,
+    "text": "late spring",
+    "es": "finales de primavera"
+   }
+  },
+  {
+   "p": 108,
+   "start": 94,
+   "end": 106,
+   "text": "businesslike",
+   "sense": "businesslike"
+  },
+  {
+   "p": 108,
+   "start": 147,
+   "end": 155,
+   "text": "shipment",
+   "sense": "shipment"
+  },
+  {
+   "p": 108,
+   "start": 367,
+   "end": 376,
+   "text": "available",
+   "sense": "available"
+  },
+  {
+   "p": 108,
+   "start": 418,
+   "end": 422,
+   "text": "fall",
+   "sense": "fall_autumn"
+  },
+  {
+   "p": 109,
+   "start": 73,
+   "end": 80,
+   "text": "regards",
+   "sense": "regards",
+   "chunk": {
+    "start": 63,
+    "end": 80,
+    "text": "sends his regards",
+    "es": "te manda saludos"
+   }
+  },
+  {
+   "p": 109,
+   "start": 109,
+   "end": 119,
+   "text": "retirement",
+   "sense": "retirement"
+  },
+  {
+   "p": 109,
+   "start": 227,
+   "end": 230,
+   "text": "aid",
+   "sense": "hearing_aid",
+   "chunk": {
+    "start": 219,
+    "end": 230,
+    "text": "hearing aid",
+    "es": "audífono"
+   }
+  },
+  {
+   "p": 110,
+   "start": 33,
+   "end": 37,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 110,
+   "start": 113,
+   "end": 118,
+   "text": "notes",
+   "sense": "notes_sticky"
+  },
+  {
+   "p": 110,
+   "start": 163,
+   "end": 168,
+   "text": "wrote",
+   "sense": "write_back",
+   "chunk": {
+    "start": 163,
+    "end": 173,
+    "text": "wrote back",
+    "es": "contestó"
+   }
+  },
+  {
+   "p": 110,
+   "start": 199,
+   "end": 208,
+   "text": "available",
+   "sense": "available"
+  },
+  {
+   "p": 110,
+   "start": 216,
+   "end": 220,
+   "text": "fall",
+   "sense": "fall_autumn"
+  },
+  {
+   "p": 110,
+   "start": 328,
+   "end": 338,
+   "text": "whiteboard",
+   "sense": "whiteboard"
+  }
+ ]
+}

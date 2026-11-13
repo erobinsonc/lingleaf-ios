@@ -56,7 +56,7 @@ extension Library {
     static let correctionsDone = "corrections-v2"
     static let correctionsAfter = "after:"
     /// A saved word's id: `VocabWord.maxWord` and its longest "#sense" (same limit as lingleaf-android).
-    static let maxCursorID = VocabWord.maxWord + "#homonym".utf16.count
+    static let maxCursorID = VocabWord.maxWord + "#s:".utf16.count + 40
     /// Most corrections kept (what Undo can hold: a run stops there), and most words read again in
     /// one run (same limits as lingleaf-android).
     static let maxCorrections = 1000
@@ -295,6 +295,13 @@ extension Library {
     private static func sameProgress(_ a: VocabWord, _ b: VocabWord) -> Bool {
         a.box == b.box && a.learned == b.learned && a.sense == b.sense
             && floor(a.nextReview.timeIntervalSince1970) == floor(b.nextReview.timeIntervalSince1970)
+    }
+
+    /// The ids of the words the open corrections card changed, for the "Fixed" tag in Words: not a word
+    /// the correction merged into (it was saved before), nor one with the same spelling saved since.
+    public func correctedWordIDs() -> Set<String> {
+        guard !state.corrections.isEmpty else { return [] }
+        return Set(loadCorrections()?.changes.compactMap { $0.after?.id } ?? [])
     }
 
     /// Close on the card: the corrections stay.
