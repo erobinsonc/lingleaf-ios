@@ -194,19 +194,6 @@ final class GrammarRulesFileTests: XCTestCase {
         XCTAssertEqual(reviewDay(at(1, 2, 0), calendar: calendar), -1)
     }
 
-    /// SPEC "Review selection", placement: rule item j goes after word ceil((j + 1) * W / (m + 1)).
-    private func placements(words: Int, items: Int) -> [Int] {
-        (0..<items).map { j in ((j + 1) * words + items) / (items + 1) }
-    }
-
-    func testRuleItemsAreSpreadAmongTheWordsAndNeverComeFirstWhenAWordIsDue() {
-        XCTAssertEqual(placements(words: 10, items: 6), [2, 3, 5, 6, 8, 9])
-        XCTAssertEqual(placements(words: 3, items: 2), [1, 2])
-        XCTAssertEqual(placements(words: 1, items: 2), [1, 1])
-        XCTAssertEqual(placements(words: 0, items: 4), [0, 0, 0, 0])
-        for words in 1...20 { XCTAssertGreaterThanOrEqual(placements(words: words, items: 6).first ?? 1, 1, "\(words) words") }
-    }
-
     /// SPEC "Progress", rightDays: a right answer is added when the list is empty or when its day and its item both differ.
     private func practiced(_ answers: [(day: Int, item: String)]) -> Bool {
         var entries: [(day: Int, item: String)] = []
@@ -222,13 +209,10 @@ final class GrammarRulesFileTests: XCTestCase {
         let id: String; let due: Int; let position: Int; let tryMiss: Int?; var spanishOnly = false
     }
 
-    private func slots(words: Int) -> Int { max(0, min(20 - words, 6)) }
-
-    private func chooseRules(_ rules: [RuleCandidate], slots: Int) -> [String] {
+    private func chooseRules(_ rules: [RuleCandidate]) -> [String] {
         var chosen: [String] = []
         var newTaken = false
-        let limit = slots == 1 ? 1 : min(3, slots / 2)
-        for rule in rules.sorted(by: { ($0.due, $0.position) < ($1.due, $1.position) }) where chosen.count < limit {
+        for rule in rules.sorted(by: { ($0.due, $0.position) < ($1.due, $1.position) }) where chosen.count < 5 {
             if rule.isNew { if newTaken { continue }; newTaken = true }
             chosen.append(rule.id)
         }
@@ -241,11 +225,11 @@ final class GrammarRulesFileTests: XCTestCase {
 
     private func chooseItems(_ items: [ItemCandidate], today: Int, lastPair: Set<String>?, spanish: Bool = false) -> [String] {
         func flagged(_ item: ItemCandidate) -> Bool { item.tryMiss.map { $0 < today } ?? false }
+        func day(_ item: ItemCandidate) -> Int { flagged(item) ? min(item.due, item.tryMiss!) : item.due }
         let candidates = self.candidates(items, today: today, spanish: spanish).sorted {
-            let a = flagged($0), b = flagged($1)
-            if a != b { return a }
-            let dueA = a ? $0.tryMiss! : $0.due, dueB = b ? $1.tryMiss! : $1.due
-            return (dueA, $0.due, $0.position) < (dueB, $1.due, $1.position)
+            if day($0) != day($1) { return day($0) < day($1) }
+            if flagged($0) != flagged($1) { return flagged($0) }
+            return $0.position < $1.position
         }
         var taken = Array(candidates.prefix(2))
         if taken.count == 2, candidates.count > 2, Set(taken.map(\.id)) == lastPair { taken = [candidates[0], candidates[2]] }
@@ -254,29 +238,24 @@ final class GrammarRulesFileTests: XCTestCase {
 
     func testTheReviewSelectionMatchesTheSpecsVectors() {
         let rules = [RuleCandidate(id: "R1", due: 8, position: 3, isNew: true), RuleCandidate(id: "R2", due: 9, position: 1, isNew: true),
-                     RuleCandidate(id: "R3", due: 10, position: 0, isNew: false), RuleCandidate(id: "R4", due: 11, position: 2, isNew: false)]
-        XCTAssertEqual(chooseRules(rules, slots: 6), ["R1", "R3", "R4"], "a second new rule is skipped")
-        XCTAssertEqual(chooseRules([RuleCandidate(id: "R2", due: 10, position: 5, isNew: false), RuleCandidate(id: "R3", due: 10, position: 0, isNew: false)], slots: 6), ["R3", "R2"])
-        XCTAssertEqual(chooseRules(rules, slots: 1), ["R1"])
+                     RuleCandidate(id: "R3", due: 10, position: 0, isNew: false), RuleCandidate(id: "R4", due: 11, position: 2, isNew: false),
+                     RuleCandidate(id: "R5", due: 12, position: 4, isNew: false), RuleCandidate(id: "R6", due: 13, position: 5, isNew: false),
+                     RuleCandidate(id: "R7", due: 14, position: 6, isNew: false)]
+        XCTAssertEqual(chooseRules(rules), ["R1", "R3", "R4", "R5", "R6"], "a second new rule is skipped, R7 does not fit")
+        XCTAssertEqual(chooseRules([RuleCandidate(id: "R2", due: 10, position: 5, isNew: false), RuleCandidate(id: "R3", due: 10, position: 0, isNew: false)]), ["R3", "R2"])
+        // A flagged item counts as due on the smaller of its miss day and its due day.
+        func key(due: Int, tryMiss: Int?) -> Int { min(due, tryMiss ?? Int.max) }
+        XCTAssertLessThan(key(due: 10, tryMiss: 3), key(due: 5, tryMiss: nil))
         let a = ItemCandidate(id: "a", due: 5, position: 2, tryMiss: nil), b = ItemCandidate(id: "b", due: 5, position: 1, tryMiss: nil)
         let c = ItemCandidate(id: "c", due: 9, position: 3, tryMiss: 4)
         XCTAssertEqual(chooseItems([a, b, c], today: 6, lastPair: nil), ["c", "b"])
         XCTAssertEqual(chooseItems([a, b, c], today: 6, lastPair: ["c", "b"]), ["c", "a"])
         let sameDay = ItemCandidate(id: "c", due: 9, position: 3, tryMiss: 6)
         XCTAssertEqual(chooseItems([a, b, sameDay], today: 6, lastPair: nil), ["b", "a"])
-        // The Spanish filter: d needs Spanish; N counts the candidates left out.
+        // The Spanish filter: d needs Spanish.
         let d = ItemCandidate(id: "d", due: 4, position: 0, tryMiss: nil, spanishOnly: true)
         XCTAssertEqual(chooseItems([a, b, c, d], today: 6, lastPair: nil), ["c", "b"])
-        XCTAssertEqual(candidates([a, b, c, d], today: 6, spanish: false).count - 2, 1, "N: a is left out")
-        XCTAssertEqual(chooseItems([a, b, c, d], today: 6, lastPair: nil, spanish: true), ["c", "d"])
-        XCTAssertEqual(candidates([a, b, c, d], today: 6, spanish: true).count - 2, 2, "N: a and b are left out")
-    }
-
-    func testTheSlotsForRuleItemsAndTheKeyOfAFlaggedRule() {
-        XCTAssertEqual([10, 14, 15, 19, 20, 25].map { slots(words: $0) }, [6, 6, 5, 1, 0, 0])
-        // A flagged item counts as due on the smaller of its miss day and its due day.
-        func key(due: Int, tryMiss: Int?) -> Int { min(due, tryMiss ?? Int.max) }
-        XCTAssertLessThan(key(due: 10, tryMiss: 3), key(due: 5, tryMiss: nil))
+        XCTAssertEqual(chooseItems([a, b, c, d], today: 6, lastPair: nil, spanish: true), ["c", "d"], "c and d share day 4: the flagged one first")
     }
 
     func testASpanishStimulusIsOnlyOnAChooseItemAndEveryRuleKeepsThreeOthers() throws {
