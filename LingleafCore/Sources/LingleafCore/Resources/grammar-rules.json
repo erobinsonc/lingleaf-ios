@@ -30,7 +30,7 @@
    "level": "A1",
    "title": {
     "en": "His, her, its",
-    "es": "His, her, its"
+    "es": "His, her, its (posesivos)"
    },
    "rule": {
     "en": [
@@ -551,8 +551,8 @@
        "es": "live es verbo: la pregunta usa do."
       },
       {
-       "en": "English questions need a helper verb here: do.",
-       "es": "Las preguntas en inglés necesitan auxiliar: do."
+       "en": "English questions need do here: Where do you live?",
+       "es": "Las preguntas en inglés necesitan do aquí: Where do you live?"
       }
      ]
     },
@@ -1518,8 +1518,8 @@
        "es": "La pregunta necesita does antes del sujeto."
       },
       {
-       "en": "The helper goes before the subject and the verb after it.",
-       "es": "El auxiliar va antes del sujeto y el verbo después."
+       "en": "does goes before the subject and the other verb after it: Where does she live?",
+       "es": "does va antes del sujeto y el otro verbo después: Where does she live?"
       }
      ]
     },
@@ -1630,8 +1630,8 @@
        "es": "Palabra interrogativa + does + sujeto + verbo: What time does the film start?"
       },
       {
-       "en": "A question needs the helper does before the subject.",
-       "es": "Una pregunta necesita el auxiliar does antes del sujeto."
+       "en": "A question needs does before the subject: What time does the film start?",
+       "es": "Una pregunta necesita does antes del sujeto: What time does the film start?"
       },
       {
        "en": "English does not put the verb before the subject: use does.",
@@ -1660,8 +1660,8 @@
        "es": "La pregunta necesita does antes del sujeto."
       },
       {
-       "en": "The helper goes before the subject.",
-       "es": "El auxiliar va antes del sujeto."
+       "en": "does goes before the subject: When does the train arrive?",
+       "es": "does va antes del sujeto: When does the train arrive?"
       },
       {
        "en": "Question word + does + subject + verb.",
@@ -3223,8 +3223,8 @@
        "es": "Un tiempo terminado (last night) lleva past simple: saw."
       },
       {
-       "en": "have + past participle is seen, not saw; and here the time is finished anyway.",
-       "es": "have + participio es seen, no saw; y aquí el tiempo ya terminó."
+       "en": "After have comes seen, not saw; and here the time is finished anyway.",
+       "es": "Después de have va seen, no saw; y aquí el tiempo ya terminó."
       }
      ]
     },
@@ -3241,16 +3241,16 @@
      "answer": 1,
      "feedback": [
       {
-       "en": "After have, use the participle: seen.",
-       "es": "Después de have va el participio: seen."
+       "en": "After have, use seen.",
+       "es": "Después de have va seen."
       },
       {
-       "en": "have + seen: the participle of see.",
-       "es": "have + seen: el participio de see."
+       "en": "have + seen: the form of see after have.",
+       "es": "have + seen: la forma de see después de have."
       },
       {
-       "en": "After have, the verb needs the participle: seen, not see.",
-       "es": "Después de have el verbo va en participio: seen, no see."
+       "en": "After have the verb needs seen, not see.",
+       "es": "Después de have va seen, no see."
       }
      ]
     },
@@ -3323,12 +3323,12 @@
      "answer": 0,
      "feedback": [
       {
-       "en": "haven't + participle + yet: We haven't finished yet.",
-       "es": "haven't + participio + yet: We haven't finished yet."
+       "en": "haven't + finished + yet: We haven't finished yet.",
+       "es": "haven't + finished + yet: We haven't finished yet."
       },
       {
-       "en": "We takes have, not has: haven't.",
-       "es": "We lleva have, no has: haven't."
+       "en": "With We, use have, not has: haven't.",
+       "es": "Con We va have, no has: haven't."
       },
       {
        "en": "The negative is haven't, placed after the subject.",
@@ -3466,7 +3466,7 @@
      "La edad usa be: I am 20 (tengo 20 años). Puedes agregar years old: I am twenty years old.",
      "Los estados usan be + adjetivo: I am hungry (tengo hambre), thirsty (sed), cold (frío), hot (calor), afraid (miedo).",
      "La edad se pregunta con How old: How old are you? (¿cuántos años tienes?)",
-     "Ojo: I am cold es «tienes frío»; I have a cold es «estás resfriado»."
+     "Ojo: I am cold es «tengo frío»; I have a cold es «estoy resfriado»."
     ]
    },
    "examples": [
@@ -3490,7 +3490,7 @@
     ],
     "gloss": {
      "en": "am cold = you feel cold · have a cold = you are ill",
-     "es": "am cold = tienes frío · have a cold = estás resfriado"
+     "es": "am cold = tengo frío · have a cold = estoy resfriado"
     }
    },
    "spanish": {
@@ -3542,8 +3542,8 @@
        "es": "En inglés la edad lleva be, no have."
       },
       {
-       "en": "do is a helper; age needs be: I am.",
-       "es": "do es un auxiliar; la edad necesita be: I am."
+       "en": "do doesn't give an age; use be: I am.",
+       "es": "do no sirve para la edad; usa be: I am."
       }
      ]
     },
@@ -3568,8 +3568,8 @@
        "es": "be + adjetivo: She is hungry."
       },
       {
-       "en": "does is a helper; use is.",
-       "es": "does es un auxiliar; usa is."
+       "en": "does doesn't describe a feeling; use is.",
+       "es": "does no describe un estado; usa is."
       }
      ]
     },
@@ -3651,8 +3651,8 @@
        "es": "has no va con afraid; usa be: is afraid."
       },
       {
-       "en": "does is a helper, not a state; use is.",
-       "es": "does es un auxiliar, no un estado; usa is."
+       "en": "does doesn't describe a feeling; use is.",
+       "es": "does no describe un estado; usa is."
       }
      ]
     },
@@ -3708,8 +3708,8 @@
        "es": "have no va con hot aquí; usa be: we are hot."
       },
       {
-       "en": "do is a helper, not a state; use are.",
-       "es": "do es un auxiliar, no un estado; usa are."
+       "en": "do doesn't describe a feeling; use are.",
+       "es": "do no describe un estado; usa are."
       }
      ]
     },
@@ -3734,8 +3734,8 @@
        "es": "La edad lleva be: She is fourteen."
       },
       {
-       "en": "does is a helper, not an age; use is.",
-       "es": "does es un auxiliar, no una edad; usa is."
+       "en": "does doesn't give an age; use is.",
+       "es": "does no da una edad; usa is."
       }
      ]
     },
