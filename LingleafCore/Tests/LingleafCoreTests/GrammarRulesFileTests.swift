@@ -204,48 +204,61 @@ final class GrammarRulesFileTests: XCTestCase {
     }
 
     /// SPEC "Review selection": the rules, then the items of a rule (references for the shared vectors).
-    private struct RuleCandidate { let id: String; let due: Int; let position: Int; let isNew: Bool }
     private struct ItemCandidate {
-        let id: String; let due: Int; let position: Int; let tryMiss: Int?; var spanishOnly = false
+        let id: String; let due: Int?; let position: Int; let tryMiss: Int?; var spanishOnly = false
+    }
+    private struct RuleCandidate { let id: String; let position: Int; let isNew: Bool; let items: [ItemCandidate] }
+
+    private func flagged(_ item: ItemCandidate, today: Int) -> Bool { item.tryMiss.map { $0 < today } ?? false }
+
+    /// The candidate filter of the SPEC: due, or flagged by an earlier Try it miss; Spanish only with Spanish.
+    private func candidates(_ items: [ItemCandidate], today: Int, spanish: Bool) -> [ItemCandidate] {
+        items.filter { (spanish || !$0.spanishOnly) && (($0.due ?? Int.max) <= today || flagged($0, today: today)) }
     }
 
-    private func chooseRules(_ rules: [RuleCandidate]) -> [String] {
+    private func day(_ item: ItemCandidate, today: Int) -> Int {
+        flagged(item, today: today) ? min(item.due ?? Int.max, item.tryMiss!) : item.due!
+    }
+
+    private func chooseRules(_ rules: [RuleCandidate], today: Int, spanish: Bool = false) -> [String] {
         var chosen: [String] = []
         var newTaken = false
-        for rule in rules.sorted(by: { ($0.due, $0.position) < ($1.due, $1.position) }) where chosen.count < 5 {
+        let keyed = rules.compactMap { rule -> (RuleCandidate, Int)? in
+            let items = candidates(rule.items, today: today, spanish: spanish)
+            return items.map { day($0, today: today) }.min().map { (rule, $0) }
+        }.sorted { ($0.1, $0.0.position) < ($1.1, $1.0.position) }
+        for (rule, _) in keyed where chosen.count < 5 {
             if rule.isNew { if newTaken { continue }; newTaken = true }
             chosen.append(rule.id)
         }
         return chosen
     }
 
-    private func candidates(_ items: [ItemCandidate], today: Int, spanish: Bool) -> [ItemCandidate] {
-        items.filter { (spanish || !$0.spanishOnly) && ($0.due <= today || ($0.tryMiss.map { $0 < today } ?? false)) }
-    }
-
     private func chooseItems(_ items: [ItemCandidate], today: Int, lastPair: Set<String>?, spanish: Bool = false) -> [String] {
-        func flagged(_ item: ItemCandidate) -> Bool { item.tryMiss.map { $0 < today } ?? false }
-        func day(_ item: ItemCandidate) -> Int { flagged(item) ? min(item.due, item.tryMiss!) : item.due }
-        let candidates = self.candidates(items, today: today, spanish: spanish).sorted {
-            if day($0) != day($1) { return day($0) < day($1) }
-            if flagged($0) != flagged($1) { return flagged($0) }
+        let list = candidates(items, today: today, spanish: spanish).sorted {
+            if day($0, today: today) != day($1, today: today) { return day($0, today: today) < day($1, today: today) }
+            if flagged($0, today: today) != flagged($1, today: today) { return flagged($0, today: today) }
             return $0.position < $1.position
         }
-        var taken = Array(candidates.prefix(2))
-        if taken.count == 2, candidates.count > 2, Set(taken.map(\.id)) == lastPair { taken = [candidates[0], candidates[2]] }
+        var taken = Array(list.prefix(2))
+        if taken.count == 2, list.count > 2, Set(taken.map(\.id)) == lastPair { taken = [list[0], list[2]] }
         return taken.map(\.id)
     }
 
-    func testTheReviewSelectionMatchesTheSpecsVectors() {
-        let rules = [RuleCandidate(id: "R1", due: 8, position: 3, isNew: true), RuleCandidate(id: "R2", due: 9, position: 1, isNew: true),
-                     RuleCandidate(id: "R3", due: 10, position: 0, isNew: false), RuleCandidate(id: "R4", due: 11, position: 2, isNew: false),
-                     RuleCandidate(id: "R5", due: 12, position: 4, isNew: false), RuleCandidate(id: "R6", due: 13, position: 5, isNew: false),
-                     RuleCandidate(id: "R7", due: 14, position: 6, isNew: false)]
-        XCTAssertEqual(chooseRules(rules), ["R1", "R3", "R4", "R5", "R6"], "a second new rule is skipped, R7 does not fit")
-        XCTAssertEqual(chooseRules([RuleCandidate(id: "R2", due: 10, position: 5, isNew: false), RuleCandidate(id: "R3", due: 10, position: 0, isNew: false)]), ["R3", "R2"])
-        // A flagged item counts as due on the smaller of its miss day and its due day.
-        func key(due: Int, tryMiss: Int?) -> Int { min(due, tryMiss ?? Int.max) }
-        XCTAssertLessThan(key(due: 10, tryMiss: 3), key(due: 5, tryMiss: nil))
+    func testTheRuleSelectionMatchesTheSpecsVectorsThroughTheCandidateFilter() {
+        func rule(_ id: String, _ position: Int, due: Int?, isNew: Bool = false, tryMiss: Int? = nil) -> RuleCandidate {
+            RuleCandidate(id: id, position: position, isNew: isNew, items: [ItemCandidate(id: id + "-1", due: due, position: 0, tryMiss: tryMiss)])
+        }
+        let rules = [rule("R1", 3, due: 8, isNew: true), rule("R2", 1, due: 9, isNew: true), rule("R3", 0, due: 10), rule("R4", 2, due: 11),
+                     rule("R5", 4, due: 12), rule("R6", 5, due: 13), rule("R7", 6, due: 14), rule("R8", 7, due: 25)]
+        XCTAssertEqual(chooseRules(rules, today: 20), ["R1", "R3", "R4", "R5", "R6"], "R2 skipped, R7 does not fit, R8 is not due")
+        XCTAssertEqual(chooseRules(rules, today: 7), [], "nothing is due yet: the filter leaves no rule")
+        XCTAssertEqual(chooseRules([rule("R2", 5, due: 10), rule("R3", 0, due: 10)], today: 20), ["R3", "R2"], "file position breaks the tie")
+        XCTAssertEqual(chooseRules([rule("late", 0, due: 5), rule("flag", 1, due: 10, tryMiss: 3)], today: 20), ["flag", "late"], "key 3")
+        XCTAssertEqual(chooseRules([rule("late", 0, due: 5), rule("flag", 1, due: nil, tryMiss: 3)], today: 20), ["flag", "late"], "box 5: the miss day alone")
+    }
+
+    func testTheItemSelectionMatchesTheSpecsVectors() {
         let a = ItemCandidate(id: "a", due: 5, position: 2, tryMiss: nil), b = ItemCandidate(id: "b", due: 5, position: 1, tryMiss: nil)
         let c = ItemCandidate(id: "c", due: 9, position: 3, tryMiss: 4)
         XCTAssertEqual(chooseItems([a, b, c], today: 6, lastPair: nil), ["c", "b"])
