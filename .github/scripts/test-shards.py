@@ -15,19 +15,18 @@ import sys
 from pathlib import Path
 
 T = "LingleafUITests"  # the UI test target
+# Balanced from measured times (seconds, macos-15): tours EnglishLight 403, EnglishDark 465,
+# SpanishLight 396, EnglishLargestText 251, SpanishLargestText 243; accessibility audit 198,
+# listen 92; the other UI tests 20-55 each. Each shard targets ~11 minutes of tests.
 SHARDS = [
-    {"name": "tour-1", "only": ["ScreenTour/testTourEnglishLight", "ScreenTour/testTourSpanishLargestText"]},
-    {"name": "tour-2", "only": ["ScreenTour/testTourEnglishDark", "ScreenTour/testTourEnglishLargestText"]},
-    {"name": "tour-3-ui-1", "only": [
+    {"name": "tours-1", "only": ["ScreenTour/testTourEnglishDark", "ScreenTour/testTourSpanishLargestText"]},
+    {"name": "tours-2", "only": ["ScreenTour/testTourEnglishLight", "ScreenTour/testTourEnglishLargestText"]},
+    {"name": "tour-3-audit", "only": [
         "ScreenTour/testTourSpanishLight",
-        "LingleafUITests/testTapAWordSeeItsCardAndSaveIt",
-        "LingleafUITests/testAModalVerbShowsItsVerbGroupAndWhatItDoes",
-        "LingleafUITests/testAPerfectSaysWhatItDoes",
-        "LingleafUITests/testAContractionSaysWhatItStandsFor",
-        "LingleafUITests/testReviewAWord",
-        "LingleafUITests/testTheUnsureCardsGuideFollowsTheSentencesTranslation",
+        "LingleafUITests/testAccessibilityAudit",
+        "LingleafUITests/testListenReadsTheWordTheSentenceAndTheParagraph",
     ]},
-    {"name": "ui-2", "rest": True},
+    {"name": "ui-rest", "rest": True},
 ]
 
 
