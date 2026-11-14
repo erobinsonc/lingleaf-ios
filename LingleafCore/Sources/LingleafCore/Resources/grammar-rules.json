@@ -115,7 +115,7 @@
      "id": "his-her-its-2",
      "level": "A1",
      "kind": "gap",
-     "text": "Peter called ___ mother.",
+     "text": "Peter called ___ mother, and she came to dinner.",
      "options": [
       "her",
       "his",
@@ -933,7 +933,8 @@
        "en": "it is points to a cat we know; for hay use there is.",
        "es": "it is señala un gato ya conocido; para «hay», there is."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -1194,7 +1195,8 @@
        "en": "the means one specific teacher, not her job.",
        "es": "the es una profesora concreta, no su profesión."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -1665,7 +1667,8 @@
        "en": "Question word + does + subject + verb.",
        "es": "Palabra interrogativa + does + sujeto + verbo."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -2105,7 +2108,8 @@
        "en": "Adjective first: a big house.",
        "es": "Primero el adjetivo: a big house."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -2114,8 +2118,8 @@
    "category": "prepositions",
    "level": "A1",
    "title": {
-    "en": "In, on, at",
-    "es": "In, on, at"
+    "en": "In, on, at: time",
+    "es": "In, on, at: tiempo"
    },
    "rule": {
     "en": [
@@ -2407,8 +2411,8 @@
    "category": "prepositions",
    "level": "A1",
    "title": {
-    "en": "In, on, at",
-    "es": "In, on, at"
+    "en": "In, on, at: places",
+    "es": "In, on, at: lugares"
    },
    "rule": {
     "en": [
@@ -2861,7 +2865,8 @@
        "en": "One negative is enough: Nobody came.",
        "es": "Basta una negación: Nobody came."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -3090,7 +3095,8 @@
        "en": "Normal order after where: Ana is.",
        "es": "Orden normal después de where: Ana is."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ]
   },
@@ -3141,8 +3147,8 @@
     }
    },
    "spanish": {
-    "en": "Spanish often uses one tense for both (comí, he comido); English separates a finished time (saw) from a link to now (have seen).",
-    "es": "El español suele usar un solo tiempo para los dos casos (comí, he comido); el inglés separa un tiempo terminado (saw) de un vínculo con el presente (have seen)."
+    "en": "In Latin America you often say «perdí» where English needs have lost (the result matters now).",
+    "es": "En Latinoamérica se dice a menudo «perdí» donde el inglés pide have lost (importa el resultado ahora)."
    },
    "aliases": [
     "present perfect",
@@ -3172,7 +3178,7 @@
    "practice": [
     {
      "id": "present-perfect-past-1",
-     "level": "A2",
+     "level": "B1",
      "kind": "gap",
      "text": "She ___ in Lima since 2019.",
      "options": [
@@ -3250,7 +3256,7 @@
     },
     {
      "id": "present-perfect-past-4",
-     "level": "A2",
+     "level": "B1",
      "kind": "gap",
      "text": "They ___ here for two years.",
      "options": [
@@ -3304,21 +3310,21 @@
      "id": "present-perfect-past-6",
      "level": "A2",
      "kind": "choose",
-     "text": "Todavía no hemos comido.",
+     "text": "Todavía no hemos terminado.",
      "ask": {
       "en": "Choose the English sentence.",
       "es": "Elige la frase en inglés."
      },
      "options": [
-      "We haven't eaten yet.",
-      "We hasn't eaten yet.",
-      "We not have eaten yet."
+      "We haven't finished yet.",
+      "We hasn't finished yet.",
+      "We not have finished yet."
      ],
      "answer": 0,
      "feedback": [
       {
-       "en": "haven't + participle + yet: We haven't eaten yet.",
-       "es": "haven't + participio + yet: We haven't eaten yet."
+       "en": "haven't + participle + yet: We haven't finished yet.",
+       "es": "haven't + participio + yet: We haven't finished yet."
       },
       {
        "en": "We takes have, not has: haven't.",
@@ -3328,7 +3334,8 @@
        "en": "The negative is haven't, placed after the subject.",
        "es": "La negación es haven't, después del sujeto."
       }
-     ]
+     ],
+     "textLang": "es"
     },
     {
      "id": "present-perfect-past-7",
@@ -3436,8 +3443,8 @@
     }
    ],
    "note": {
-    "en": "«Perdí mis llaves» can be I have lost my keys (now) or I lost my keys (finished time). With already, use the present perfect.",
-    "es": "«Perdí mis llaves» puede ser I have lost my keys (ahora) o I lost my keys (tiempo terminado). Con already, usa el present perfect."
+    "en": "«Perdí mis llaves» can be I have lost my keys (now) or I lost my keys (finished time). With already, the present perfect is the safest choice.",
+    "es": "«Perdí mis llaves» puede ser I have lost my keys (ahora) o I lost my keys (tiempo terminado). Con already, lo más seguro es el present perfect."
    }
   },
   {
@@ -3446,20 +3453,20 @@
    "level": "A1",
    "title": {
     "en": "Age and feelings",
-    "es": "Edad y estados"
+    "es": "Edad y sensaciones"
    },
    "rule": {
     "en": [
      "Age uses be: I am 20. You can add years old: I am twenty years old.",
      "Feelings and states use be + adjective: I am hungry, thirsty, cold, hot, afraid.",
      "Ask the age with How old: How old are you?",
-     "Careful: I am cold is the temperature; I have a cold is an illness."
+     "Careful: I am cold means you feel cold; I have a cold means you are ill."
     ],
     "es": [
      "La edad usa be: I am 20 (tengo 20 años). Puedes agregar years old: I am twenty years old.",
      "Los estados usan be + adjetivo: I am hungry (tengo hambre), thirsty (sed), cold (frío), hot (calor), afraid (miedo).",
      "La edad se pregunta con How old: How old are you? (¿cuántos años tienes?)",
-     "Ojo: I am cold es la temperatura; I have a cold es estar resfriado."
+     "Ojo: I am cold es «tienes frío»; I have a cold es «estás resfriado»."
     ]
    },
    "examples": [
@@ -3482,8 +3489,8 @@
      "I have a cold."
     ],
     "gloss": {
-     "en": "am cold = the temperature · have a cold = an illness",
-     "es": "am cold = tengo frío (la temperatura) · have a cold = estoy resfriado (una enfermedad)"
+     "en": "am cold = you feel cold · have a cold = you are ill",
+     "es": "am cold = tienes frío · have a cold = estás resfriado"
     }
    },
    "spanish": {
@@ -3594,7 +3601,8 @@
        "en": "be + adjective: I am cold.",
        "es": "be + adjetivo: I am cold."
       }
-     ]
+     ],
+     "textLang": "es"
     },
     {
      "id": "age-and-feelings-4",
@@ -3669,14 +3677,15 @@
        "es": "be + adjetivo: I am thirsty."
       },
       {
-       "en": "thirsty is an adjective; use be: I am thirsty.",
-       "es": "thirsty es un adjetivo; usa be: I am thirsty."
+       "en": "have doesn't go with thirsty: I am thirsty.",
+       "es": "have no va con thirsty: I am thirsty."
       },
       {
-       "en": "English says I am thirsty, not a noun with have.",
-       "es": "El inglés dice I am thirsty, no un sustantivo con have."
+       "en": "English says I am thirsty, not I have thirst.",
+       "es": "El inglés dice I am thirsty, no I have thirst."
       }
-     ]
+     ],
+     "textLang": "es"
     },
     {
      "id": "age-and-feelings-7",
@@ -3747,18 +3756,19 @@
      "answer": 1,
      "feedback": [
       {
-       "en": "I am cold is about the temperature (tengo frío), not an illness.",
-       "es": "I am cold es la temperatura (tengo frío), no una enfermedad."
+       "en": "I am cold means you feel cold, not that you are ill.",
+       "es": "I am cold es tener frío, no estar enfermo."
       },
       {
-       "en": "For an illness say I have a cold.",
-       "es": "Para la enfermedad se dice I have a cold."
+       "en": "Being ill needs a: I have a cold.",
+       "es": "Estar resfriado necesita a: I have a cold."
       },
       {
-       "en": "For an illness you need the article: a cold.",
-       "es": "Para la enfermedad hace falta el artículo: a cold."
+       "en": "An illness needs a: a cold.",
+       "es": "Una enfermedad necesita a: a cold."
       }
-     ]
+     ],
+     "textLang": "es"
     }
    ],
    "note": {

@@ -216,6 +216,64 @@ final class GrammarRulesFileTests: XCTestCase {
         return entries.count == 2
     }
 
+    /// SPEC "Review selection": the rules, then the items of a rule (references for the shared vectors).
+    private struct RuleCandidate { let id: String; let due: Int; let position: Int; let isNew: Bool }
+    private struct ItemCandidate { let id: String; let due: Int; let position: Int; let tryMiss: Int? }
+
+    private func chooseRules(_ rules: [RuleCandidate], slots: Int) -> [String] {
+        var chosen: [String] = []
+        var newTaken = false
+        let limit = slots == 1 ? 1 : min(3, slots / 2)
+        for rule in rules.sorted(by: { ($0.due, $0.position) < ($1.due, $1.position) }) where chosen.count < limit {
+            if rule.isNew { if newTaken { continue }; newTaken = true }
+            chosen.append(rule.id)
+        }
+        return chosen
+    }
+
+    private func chooseItems(_ items: [ItemCandidate], today: Int, lastPair: Set<String>?) -> [String] {
+        func flagged(_ item: ItemCandidate) -> Bool { item.tryMiss.map { $0 < today } ?? false }
+        let candidates = items.filter { $0.due <= today || flagged($0) }.sorted {
+            let a = flagged($0), b = flagged($1)
+            if a != b { return a }
+            let dueA = a ? $0.tryMiss! : $0.due, dueB = b ? $1.tryMiss! : $1.due
+            return (dueA, $0.due, $0.position) < (dueB, $1.due, $1.position)
+        }
+        var taken = Array(candidates.prefix(2))
+        if taken.count == 2, candidates.count > 2, Set(taken.map(\.id)) == lastPair { taken = [candidates[0], candidates[2]] }
+        return taken.map(\.id)
+    }
+
+    func testTheReviewSelectionMatchesTheSpecsVectors() {
+        let rules = [RuleCandidate(id: "R1", due: 8, position: 3, isNew: true), RuleCandidate(id: "R2", due: 9, position: 1, isNew: true),
+                     RuleCandidate(id: "R3", due: 10, position: 0, isNew: false), RuleCandidate(id: "R4", due: 11, position: 2, isNew: false)]
+        XCTAssertEqual(chooseRules(rules, slots: 6), ["R1", "R3", "R4"], "a second new rule is skipped")
+        XCTAssertEqual(chooseRules([RuleCandidate(id: "R2", due: 10, position: 5, isNew: false), RuleCandidate(id: "R3", due: 10, position: 0, isNew: false)], slots: 6), ["R3", "R2"])
+        XCTAssertEqual(chooseRules(rules, slots: 1), ["R1"])
+        let a = ItemCandidate(id: "a", due: 5, position: 2, tryMiss: nil), b = ItemCandidate(id: "b", due: 5, position: 1, tryMiss: nil)
+        let c = ItemCandidate(id: "c", due: 9, position: 3, tryMiss: 4)
+        XCTAssertEqual(chooseItems([a, b, c], today: 6, lastPair: nil), ["c", "b"])
+        XCTAssertEqual(chooseItems([a, b, c], today: 6, lastPair: ["c", "b"]), ["c", "a"])
+        let sameDay = ItemCandidate(id: "c", due: 9, position: 3, tryMiss: 6)
+        XCTAssertEqual(chooseItems([a, b, sameDay], today: 6, lastPair: nil), ["b", "a"])
+    }
+
+    func testASpanishStimulusIsOnlyOnAChooseItemAndEveryRuleKeepsThreeOthers() throws {
+        for rule in try rules() {
+            let items = try XCTUnwrap(rule["practice"] as? [[String: Any]])
+            var drawable = 0
+            for item in items {
+                if let language = item["textLang"] {
+                    XCTAssertEqual(language as? String, "es", "\(item["id"] ?? "?"): textLang is es")
+                    XCTAssertEqual(item["kind"] as? String, "choose", "\(item["id"] ?? "?"): only a choose item has a Spanish stimulus")
+                } else {
+                    drawable += 1
+                }
+            }
+            XCTAssertGreaterThanOrEqual(drawable, 3, "\(rule["id"] ?? "?"): at least 3 items need no Spanish")
+        }
+    }
+
     func testPracticedNeedsTwoDaysAndTwoItems() {
         XCTAssertFalse(practiced([(5, "A")]))
         XCTAssertFalse(practiced([(5, "A"), (5, "B")]))
