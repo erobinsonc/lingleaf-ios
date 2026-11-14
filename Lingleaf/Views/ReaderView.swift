@@ -252,6 +252,9 @@ struct ReaderView: View {
                             // `scrollPosition(id:)` kept the app busy after a flick).
                             .onAppear {
                                 visible.indices.insert(index)
+                                // How much has been read follows the furthest paragraph seen, the last one included
+                                // (the resume place is the top one, which is never the last).
+                                model.library.markSeen(bookID, paragraph: index)
                                 // The sentence being read is back on screen: follow it again.
                                 if reading?.current?.paragraph == index { following = true }
                             }

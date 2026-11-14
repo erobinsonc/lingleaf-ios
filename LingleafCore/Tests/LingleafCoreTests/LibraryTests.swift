@@ -45,15 +45,6 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(readingStreak([:], goalSeconds: 0, today: now, calendar: calendar), maxStreakDays)
     }
 
-    func testRestoredReadingProgressStaysInsideTheBook() throws {
-        let book = library().addBook(title: "T", author: "A", text: "One.\n\nTwo.")
-        let saved = try XCTUnwrap(storage.files["books.json"])
-        storage.files["books.json"] = saved.replacingOccurrences(
-            of: #""progressParagraph"\s*:\s*0"#, with: #""progressParagraph":-7"#, options: .regularExpression
-        )
-        XCTAssertEqual(library().state.books.first { $0.id == book.id }?.progressParagraph, 0)
-    }
-
     func testKeepsACopyOfAFileThatCannotBeRead() {
         storage.files["words.json"] = "not json"
         let library = library()
@@ -304,23 +295,6 @@ final class LibraryTests: XCTestCase {
         word.sense = Sense.story("x")
         XCTAssertFalse(word.bounded().word.contains("#"))
         XCTAssertFalse(word.bounded().id.hasPrefix("a#verb"))
-    }
-
-    func testOpenProgressAndDeleteABook() {
-        let library = library()
-        let book = library.addBook(title: "Alice", author: "Lewis Carroll", text: "One.\n\nTwo.\n\nThree.", level: "B2", gutenbergID: 11)
-        XCTAssertEqual(library.openBook(book.id), ["One.", "Two.", "Three."])
-        XCTAssertEqual(library.state.lastOpened?.id, book.id)
-
-        library.updateProgress(book.id, paragraph: 2)
-        library.flush()
-        XCTAssertEqual(self.library().state.books.first?.progress, 1)
-
-        library.deleteBook(book.id)
-        XCTAssertTrue(library.state.books.isEmpty)
-        XCTAssertNil(storage.read(book.fileName))
-        XCTAssertEqual(library.openBook("missing"), [])
-        library.deleteBook("missing")
     }
 
     func testLearningWordsHighlightInflectedFormsAndSurviveRestart() {

@@ -54,3 +54,21 @@ Not done: item 15 (the maintainer does not understand "keep before[] of merged c
   a gloss would mislead). Offline their unsure rows show no meaning; the table is identical in both repos.
 - **Also in this round:** Less/Menos toggle with a VoiceOver/TalkBack announcement; the card's fitted height resets for
   each new card; the Fixed tag moves to its own line at accessibility sizes.
+
+## Reading progress reaches 100% (0.4.1)
+- **Bug:** the progress bar stopped near 70% at the end of a book, because it followed the paragraph at the top of the
+  screen, which is never the last one.
+- **Rule (SPEC S2):** keep the resume place as the top paragraph; add a stored `furthestParagraph`: optional Int in the
+  book record, the key may be absent in old data (nil stays nil on load; the resume place stands in), a present value is
+  clamped to `[0, paragraphCount - 1]` on load and on every write, and it only grows.
+- **Formula:** `progress = max(furthestParagraph ?? 0, progressParagraph) / (paragraphCount - 1)`, clamped to 0...1.
+  With one paragraph there is no division: 0 until the book is opened, 1 once `furthestParagraph != nil` or
+  `lastOpenedAt != nil` (a book opened by an older version counts too). `updateProgress` (the resume place) also raises
+  the furthest, only when the resume place changes.
+- **Stripped text:** when a stored book loses invisible-only paragraphs, the resume place and the furthest each move back by
+  the number of such paragraphs before them, counted for each alone (nil stays nil).
+- **Android:** call `raise` for every visible index of the list (`LazyListState.layoutInfo.visibleItemsInfo`), including the
+  last one, not only the first; clamp to the book; in memory, persisted by `flush()`; keep it out of Compose state that recomposes the list on every scroll step. Core tests to mirror:
+  `testProgressFollowsTheFurthestParagraphSeenAndNeverGoesBack`, `testAOneParagraphBookIsReadOnceItHasBeenOnScreen`,
+  `testABookSavedBeforeFurthestParagraphLoadsWithItsPlaceAndAValueOutsideTheBookIsBroughtIn`,
+  `testOpeningABookWhoseTextLostInvisibleParagraphsMovesTheFurthestParagraphToo`.

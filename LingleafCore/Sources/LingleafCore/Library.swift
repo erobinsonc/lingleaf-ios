@@ -10,12 +10,11 @@ public struct Book: Codable, Identifiable, Hashable, Sendable {
     public var gutenbergID: Int?
     public let addedAt: Date
     public var lastOpenedAt: Date?
+    /// Where to resume: the paragraph at the top of the screen.
     public var progressParagraph: Int
-
-    public var progress: Double {
-        guard paragraphCount > 1 else { return 0 }
-        return min(1, max(0, Double(progressParagraph) / Double(paragraphCount - 1)))
-    }
+    /// The furthest paragraph that has been on screen (SPEC S2), which only grows. Nil in a book saved before it
+    /// existed: its `progressParagraph` stands in.
+    public var furthestParagraph: Int?
 }
 
 /// A word the user chose to learn or marked as known. `word` is the lowercased base form.
@@ -323,6 +322,7 @@ public final class Library {
         loaded.books = (decode([Book].self, "books.json") ?? []).map { book in
             var book = book
             book.progressParagraph = min(max(book.progressParagraph, 0), max(book.paragraphCount - 1, 0))
+            book.furthestParagraph = book.furthestParagraph.map { min(max($0, 0), max(book.paragraphCount - 1, 0)) }
             return book
         }
         // Saved before contexts were capped, or restored from a backup: within bounds, once per id.
@@ -432,24 +432,6 @@ public final class Library {
         }
         saveBooks()
         return paragraphs
-    }
-
-    /// The book at `index` now has `count` paragraphs because its stored text lost invisible
-    /// characters. The place in the book moves back by the paragraphs before it that were made only
-    /// of them (a place on one of them goes to the next paragraph, one past the end to the last).
-    private func followStrippedText(_ index: Int, stored: String, count: Int) {
-        let place = state.books[index].progressParagraph
-        let before = TextTools.splitParagraphs(stored).prefix(max(place, 0))
-        let removed = before.filter { TextTools.stripFormat($0).trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }.count
-        state.books[index].paragraphCount = count
-        state.books[index].progressParagraph = min(max(place - removed, 0), max(count - 1, 0))
-    }
-
-    /// Updates progress in memory; call `flush()` to persist (e.g. when leaving the reader).
-    public func updateProgress(_ id: String, paragraph: Int) {
-        guard let index = state.books.firstIndex(where: { $0.id == id }),
-              state.books[index].progressParagraph != paragraph else { return }
-        state.books[index].progressParagraph = paragraph
     }
 
     public func flush() { saveBooks() }
