@@ -8,9 +8,19 @@ on:
 permissions:
   contents: read
 
+# A newer push to a pull request cancels the superseded run, except on a release (base main).
+# Every push to main/develop gets its own group: it is never cancelled and never replaced by a
+# newer pending run (the release shortcut needs the push run of an exact commit).
 concurrency:
-  group: ios-${{ github.ref }}
-  cancel-in-progress: true
+  group: ios-${{ github.ref }}-${{ github.event_name == 'push' && github.sha || 'pr' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && github.base_ref != 'main' }}
+
+# Shape of this workflow:
+#   plan ─┬─ core-tests ──────────▶ "Core logic" (gate, required)
+#         ├─ app-build ─▶ app-tests (shards: .github/scripts/test-shards.py) ─▶ "App" (gate, required)
+#         └─ release-verify (release PRs only) ─▶ both gates
+# The required checks are the two gate jobs, which run on a cheap runner and decide from the
+# exact result of the jobs they need (.github/scripts/ci-gate.py); the macOS work has other names.
 
 jobs:
   scripts:
@@ -22,12 +32,60 @@ jobs:
         with:
           persist-credentials: false
       - run: .github/scripts/test-screenshot-scripts.sh
+      - run: .github/scripts/test-ci-scripts.sh
 
-  core:
-    name: Core logic (tests, coverage ≥90%)
+  # Decides how much CI this run needs: full | same-tree | release (.github/scripts/ci-plan.sh).
+  plan:
+    name: Plan CI
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      mode: ${{ steps.plan.outputs.mode }}
+      shards: ${{ steps.shards.outputs.shards }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - id: plan
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+          HEAD_REF: ${{ github.head_ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+        run: .github/scripts/ci-plan.sh
+      - id: shards
+        run: echo "shards=$(python3 -I .github/scripts/test-shards.py --matrix)" >> "$GITHUB_OUTPUT"
+
+  # Release PR (develop -> main) only: the head commit already ran the full CI as a push on develop.
+  release-verify:
+    name: Verify the develop CI run
+    needs: plan
+    if: needs.plan.outputs.mode == 'release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 -I .github/scripts/verify-prior-ci.py "$HEAD_SHA"
+
+  core-tests:
+    name: Core tests (macOS)
+    needs: plan
+    if: needs.plan.outputs.mode == 'full'
     runs-on: macos-15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - name: Test
         run: swift test --package-path LingleafCore --enable-code-coverage
       - name: Coverage gate (Sources only, ≥90% of lines)
@@ -45,11 +103,30 @@ jobs:
           sys.exit(0 if percent >= 90 else f"Coverage {percent:.1f}% is below 90%")
           PY
 
-  app:
-    name: App (SwiftLint, build, UI + accessibility tests)
+  core:
+    name: Core logic (tests, coverage ≥90%)
+    needs: [plan, core-tests, release-verify]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          NEEDS: ${{ toJSON(needs) }}
+        run: python3 -I .github/scripts/ci-gate.py --heavy core-tests --verify release-verify
+
+  app-build:
+    name: Lint and build for testing (macOS)
+    needs: plan
+    if: needs.plan.outputs.mode == 'full'
     runs-on: macos-15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - uses: ./.github/actions/use-xcode-26
       - name: Install tools
         run: brew install xcodegen swiftlint
@@ -59,7 +136,54 @@ jobs:
         run: python3 .github/scripts/check-localized-keys.py
       - name: Generate project
         run: xcodegen generate
-      - name: Build and test
+      - name: Build for testing
+        run: |
+          set -o pipefail
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import json, sys
+          devices = json.load(sys.stdin)['devices']
+          print(next(d['udid'] for runtime, ds in sorted(devices.items(), reverse=True) if 'iOS' in runtime for d in ds if d['name'].startswith('iPhone')))")
+          echo "Simulator: $UDID"
+          xcodebuild build-for-testing \
+            -project Lingleaf.xcodeproj \
+            -scheme Lingleaf \
+            -destination "id=$UDID" \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+      # A tar keeps the executable bits that an artifact zip would drop.
+      - name: Pack the build products
+        run: tar -cf build-products.tar -C build Build/Products
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: build-products
+          path: build-products.tar
+          retention-days: 1
+          if-no-files-found: error
+
+  app-tests:
+    name: Tests ${{ matrix.name }} (macOS)
+    needs: [plan, app-build]
+    if: needs.plan.outputs.mode == 'full'
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.shards) }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/use-xcode-26
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: build-products
+      - name: Unpack the build products
+        run: |
+          mkdir build && tar -xf build-products.tar -C build
+          ls build/Build/Products/*.xctestrun
+      - name: Test
+        env:
+          TEST_ARGS: ${{ matrix.args }}
+          SHARD: ${{ matrix.name }}
         run: |
           set -o pipefail
           UDID=$(xcrun simctl list devices available -j | python3 -c "
@@ -71,27 +195,49 @@ jobs:
           # exceed XCTest's launch timeout and fail whichever test runs first.
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
-          xcodebuild test \
-            -project Lingleaf.xcodeproj \
-            -scheme Lingleaf \
+          read -ra ARGS <<< "$TEST_ARGS"
+          xcodebuild test-without-building \
+            -xctestrun build/Build/Products/*.xctestrun \
             -destination "id=$UDID" \
-            -resultBundlePath TestResults.xcresult \
-            CODE_SIGNING_ALLOWED=NO
+            -resultBundlePath "TestResults-$SHARD.xcresult" \
+            "${ARGS[@]}" 2>&1 | tee xcodebuild.log
+          # A shard that selected no test must not pass silently.
+          grep -Eq 'Executed [1-9][0-9]* tests?' xcodebuild.log || { echo "::error::Shard $SHARD ran no tests"; exit 1; }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: test-results
-          path: TestResults.xcresult
+          name: test-results-${{ matrix.name }}
+          path: TestResults-${{ matrix.name }}.xcresult
+          if-no-files-found: ignore
       # ScreenTour attaches a screenshot of every screen (EN/ES, light/dark).
       - name: Export screenshots
         if: always()
-        run: python3 .github/scripts/export-screenshots.py TestResults.xcresult
+        env:
+          SHARD: ${{ matrix.name }}
+        run: |
+          [ -d "TestResults-$SHARD.xcresult" ] || { echo "No result bundle"; exit 0; }
+          python3 .github/scripts/export-screenshots.py "TestResults-$SHARD.xcresult"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: ios-screenshots
+          name: ios-screenshots-shard-${{ matrix.name }}
           path: screenshots
           if-no-files-found: ignore
+
+  app:
+    name: App (SwiftLint, build, UI + accessibility tests)
+    needs: [plan, app-build, app-tests, release-verify]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - env:
+          MODE: ${{ needs.plan.outputs.mode }}
+          NEEDS: ${{ toJSON(needs) }}
+        run: python3 -I .github/scripts/ci-gate.py --heavy app-build,app-tests --verify release-verify
 
   # Two jobs on purpose. The first runs the bumped actions with a read-only token and
   # hands over only files that passed a strict check. The second holds the write token
@@ -111,10 +257,12 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           persist-credentials: false
+      # Every shard exported its own screenshots; their names never collide.
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         continue-on-error: true
         with:
-          name: ios-screenshots
+          pattern: ios-screenshots-shard-*
+          merge-multiple: true
           path: screenshots
       - id: verify
         run: ./.github/scripts/verify-screenshots.sh screenshots
