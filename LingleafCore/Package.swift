@@ -9,8 +9,8 @@ let package = Package(
     platforms: [.iOS(.v18), .macOS(.v14)],
     products: [.library(name: "LingleafCore", targets: ["LingleafCore"])],
     targets: [
-        // The irregular-verb table, shared with lingleaf-android (core/src/main/resources): identical file.
-        .target(name: "LingleafCore", resources: [.copy("Resources/irregular-verbs.json")]),
+        // The irregular-verb table and the Grammar rules, shared with lingleaf-android (core/src/main/resources): identical files.
+        .target(name: "LingleafCore", resources: [.copy("Resources/irregular-verbs.json"), .copy("Resources/grammar-rules.json")]),
         .testTarget(
             name: "LingleafCoreTests",
             dependencies: ["LingleafCore"],
