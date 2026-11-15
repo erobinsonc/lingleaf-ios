@@ -306,7 +306,11 @@ final class GrammarRulesFileTests: XCTestCase {
     func testNoTextIsLongAndRulesNeverShowTheWrongForms() throws {
         for text in texts(try root()) { XCTAssertLessThanOrEqual(text.count, 400) }
         // Rules, examples and contrasts show only correct English; wrong forms live in practice options and feedback.
-        let wrong = ["goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree", "carrys", "telled", "comed", "bigs", "have hunger", "have cold", "have thirsty", "have 20 years", "have saw", "hasn't eaten"]
+        let wrong = [
+            "goed", "taked", "seed ", "in Monday", "it's tail", "I have 25 years", "depend of", "am agree",
+            "carrys", "telled", "comed", "bigs", "have hunger", "have cold", "have thirsty", "have 20 years",
+            "have saw", "hasn't eaten"
+        ]
         for rule in try rules() {
             let shown = texts(rule["rule"]) + texts(rule["examples"]) + texts(rule["contrast"]) + texts(rule["note"]) + texts(rule["spanish"])
             for form in wrong {
