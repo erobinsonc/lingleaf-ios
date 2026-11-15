@@ -1,0 +1,2 @@
+# JSON is shared byte for byte with lingleaf-android: no line-ending conversion, so a file hash never changes.
+*.json -text
