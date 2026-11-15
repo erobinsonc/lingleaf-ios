@@ -187,6 +187,28 @@ extension LingleafUITests {
         }
     }
 
+    func testDiagRepeatFullAudit() throws {
+        app.tabBars.buttons["Library"].tap()
+        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
+        waitUntilSettled()
+        let bar = app.tabBars.firstMatch.frame
+        for i in 1...6 {
+            var lines: [String] = []
+            let start = Date()
+            var error = ""
+            do {
+                try app.performAccessibilityAudit { issue in
+                    let e = issue.element
+                    let hits = e.map { $0.frame.intersects(bar) } ?? false
+                    lines.append("type=\(issue.auditType.rawValue) label=\(e?.label ?? "NIL") frame=\(e.map { "\($0.frame)" } ?? "-") underBar=\(hits) kind=\(e.map { "\($0.elementType.rawValue)" } ?? "-")")
+                    return true
+                }
+            } catch { error = "ERROR \(error)" }
+            let wouldFail = lines.contains { $0.contains("type=") && $0.contains("label=A Day at the Market") && $0.contains("underBar=false") }
+            note("DIAGFULL run=\(i) took=\(Int(Date().timeIntervalSince(start)))s n=\(lines.count) wouldFail=\(wouldFail) \(error) :: \(lines.joined(separator: " || "))")
+        }
+    }
+
     func testDiagRepeatLibraryContrast() throws {
         func contrastRun(_ tag: String) {
             var found: [String] = []
