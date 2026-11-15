@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+# Python never reads or writes bytecode in CI: a swapped .pyc must not run instead of its source.
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
 # A newer push to a pull request cancels the superseded run, except on a release (base main).
 # Every push to main/develop gets its own group: it is never cancelled and never replaced by a
 # newer pending run (the release shortcut needs the push run of an exact commit).

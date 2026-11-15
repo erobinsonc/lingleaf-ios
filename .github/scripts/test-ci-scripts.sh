@@ -2,11 +2,20 @@
 # Local tests for ci-plan.sh, ci-gate.py, verify-prior-ci.py and test-shards.py.
 # Usage: .github/scripts/test-ci-scripts.sh
 set -uo pipefail
+# No bytecode is read or written: a swapped .pyc (unchecked hash) would run instead of its source.
+export PYTHONDONTWRITEBYTECODE=1
 here="$(cd "$(dirname "$0")" && pwd)"
 fail=0
 ok() { echo "ok   $1"; }
 bad() { echo "FAIL $1"; fail=1; }
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
+
+# --- no Python bytecode in the repository, tracked or lying around ---
+root="$(cd "$here/../.." && pwd)"
+if tracked="$(git -C "$root" ls-files 2>/dev/null | grep -E '(^|/)__pycache__/|\.pyc$')" && [ -n "$tracked" ]; then bad "bytecode is tracked: $tracked"; else ok "no tracked .pyc or __pycache__"; fi
+lying="$(find "$root" -path "$root/.git" -prune -o \( -name __pycache__ -o -name '*.pyc' \) -print 2>/dev/null)"
+[ -z "$lying" ] && ok "no .pyc or __pycache__ on disk" || bad "bytecode on disk: $lying"
+grep -qE '^(__pycache__/|\*\.pyc)$' "$root/.gitignore" && ok ".gitignore keeps bytecode out" || bad ".gitignore lacks __pycache__/ or *.pyc"
 
 # --- shards: sources and shard lists agree ---
 python3 -I "$here/test-shards.py" --check >/dev/null && ok "shards: every test runs in exactly one shard" || bad "shards: check"
@@ -114,7 +123,7 @@ FAKE_CASE=good PATH="$t/bin:$PATH" python3 -I "$here/verify-prior-ci.py" "$sha_r
 cd "$t" || exit 1
 
 # --- merge-screenshots ---
-png() { printf '\x89PNG\r\n\x1a\nxx' > "$1"; }
+png() { printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01xx' > "$1"; }
 mk() { rm -rf "$t/parts" "$t/merged"; mkdir -p "$t/parts/a" "$t/parts/b"; png "$t/parts/a/en-light-01-x.png"; png "$t/parts/b/es-light-01-x.png"; }
 mk; "$here/merge-screenshots.sh" "$t/parts" "$t/merged" >/dev/null 2>&1 && [ "$(ls "$t/merged" | wc -l)" = 2 ] && ok "merge: two shards flatten" || bad "merge: good"
 mk; png "$t/parts/b/en-light-01-x.png"; "$here/merge-screenshots.sh" "$t/parts" "$t/merged" >/dev/null 2>&1 && bad "merge: duplicate accepted" || ok "merge: a name from two shards fails"
@@ -126,6 +135,10 @@ rm -rf "$t/parts"; "$here/merge-screenshots.sh" "$t/parts" "$t/merged" >/dev/nul
 # --- pick-simulator ---
 sim='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-18-6":[{"name":"iPhone 16","udid":"A"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPad Air","udid":"B"},{"name":"iPhone 17","udid":"C"}],"com.apple.CoreSimulator.SimRuntime.watchOS-26-0":[{"name":"iPhone-like","udid":"D"}]}}'
 [ "$(printf '%s' "$sim" | python3 -I "$here/pick-simulator.py")" = "C com.apple.CoreSimulator.SimRuntime.iOS-26-0" ] && ok "simulator: newest iOS runtime, first iPhone" || bad "simulator pick"
+sim2='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-9-3":[{"name":"iPhone 6","udid":"E"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17","udid":"F"}],"com.apple.CoreSimulator.SimRuntime.iOS-100-0":[{"name":"iPhone 99","udid":"G"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-4":[{"name":"iPhone 17e","udid":"H"}]}}'
+[ "$(printf '%s' "$sim2" | python3 -I "$here/pick-simulator.py" | cut -d' ' -f1)" = G ] && ok "simulator: iOS-100-0 beats iOS-26-4 beats iOS-9-3 (numeric, not string order)" || bad "simulator: version order"
+sim3='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17","udid":"F"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-4":[{"name":"iPhone 17e","udid":"H"}]}}'
+[ "$(printf '%s' "$sim3" | python3 -I "$here/pick-simulator.py" | cut -d' ' -f1)" = H ] && ok "simulator: iOS-26-4 beats iOS-26-0" || bad "simulator: minor version"
 printf '{"devices":{}}' | python3 -I "$here/pick-simulator.py" >/dev/null 2>&1 && bad "simulator: none accepted" || ok "simulator: none fails"
 
 # --- shards: modifiers and attributes on classes and tests, and the per-shard count ---
