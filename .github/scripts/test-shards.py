@@ -19,10 +19,10 @@ T = "LingleafUITests"  # the UI test target
 # SpanishLight 396, EnglishLargestText 251, SpanishLargestText 243; accessibility audit 198,
 # listen 92; the other UI tests 20-55 each. Each shard targets ~11 minutes of tests.
 SHARDS = [
-    {"name": "d1-alone", "only": ["LingleafUITests/testAccessibilityAudit"]},
-    {"name": "d2-alone-again", "only": ["LingleafUITests/testAccessibilityAudit", "LingleafUITests/testAContractionSaysWhatItStandsFor"]},
-    {"name": "d3-modal", "only": ["LingleafUITests/testAModalVerbShowsItsVerbGroupAndWhatItDoes", "LingleafUITests/testAccessibilityAudit"]},
-    {"name": "d4-perfect-about", "only": ["LingleafUITests/testAPerfectSaysWhatItDoes", "LingleafUITests/testAboutSaysTheRecommendedBooksArePublicDomainWorldwide", "LingleafUITests/testAccessibilityAudit"]},
+    {"name": "x1", "only": ["LingleafUITests/testDiagRepeatLibraryContrast"]},
+    {"name": "x2", "only": ["LingleafUITests/testDiagRepeatLibraryContrast"]},
+    {"name": "x3", "only": ["LingleafUITests/testDiagRepeatLibraryContrast"]},
+    {"name": "x4", "only": ["LingleafUITests/testDiagRepeatLibraryContrast"]},
 ]
 
 

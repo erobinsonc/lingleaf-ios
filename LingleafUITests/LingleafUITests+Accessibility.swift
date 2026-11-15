@@ -187,6 +187,35 @@ extension LingleafUITests {
         }
     }
 
+    func testDiagRepeatLibraryContrast() throws {
+        func contrastRun(_ tag: String) {
+            var found: [String] = []
+            let start = Date()
+            do {
+                try app.performAccessibilityAudit(for: .contrast) { issue in
+                    found.append("\(issue.element?.label ?? "nil")@\(issue.element.map { "\($0.frame)" } ?? "-")")
+                    return true
+                }
+            } catch { found.append("ERROR \(error)") }
+            note("DIAGRUN \(tag) took=\(Int(Date().timeIntervalSince(start)))s issues=\(found.count) \(found.joined(separator: " | "))")
+        }
+        app.tabBars.buttons["Library"].tap()
+        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
+        waitUntilSettled()
+        for i in 1...6 { contrastRun("same-state-\(i)") }
+        app.swipeUp(); waitUntilSettled()
+        note("DIAG scrolledDown row=\(app.staticTexts["A Day at the Market"].firstMatch.frame)")
+        for i in 1...2 { contrastRun("scrolled-down-\(i)") }
+        app.swipeDown(); waitUntilSettled()
+        contrastRun("scrolled-back-to-top")
+        app.tabBars.buttons["Discover"].tap()
+        _ = app.navigationBars["Discover"].waitForExistence(timeout: 10)
+        waitUntilSettled()
+        app.tabBars.buttons["Library"].tap()
+        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
+        waitUntilSettled()
+        for i in 1...2 { contrastRun("revisit-\(i)") }
+    }
     // swiftlint:enable all
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
