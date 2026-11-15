@@ -286,9 +286,11 @@ jobs:
 
   screenshots:
     name: Publish screenshots
-    needs: screenshots-prepare
-    # Only when the prepare job itself succeeded: no always() on an output.
-    if: needs.screenshots-prepare.result == 'success' && needs.screenshots-prepare.outputs.ready == 'true'
+    needs: [app, screenshots-prepare]
+    # Only when the App gate and the prepare job themselves succeeded. always() is needed because
+    # the heavy jobs upstream are skipped in the shortcut modes, and a skipped ancestor would skip
+    # this job through the implicit success(); every condition is an explicit result, never an output alone.
+    if: always() && needs.app.result == 'success' && needs.screenshots-prepare.result == 'success' && needs.screenshots-prepare.outputs.ready == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
