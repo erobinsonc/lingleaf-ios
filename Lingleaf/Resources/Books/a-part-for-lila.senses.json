@@ -1,0 +1,482 @@
+{
+ "schemaVersion": 1,
+ "story": "a-part-for-lila",
+ "senses": {
+  "across_city": {
+   "lemma": "across",
+   "pos": "preposition",
+   "ipa": "əˈkrɔs",
+   "es": "al otro lado de",
+   "kind": "word"
+  },
+  "all_the_time": {
+   "lemma": "all the time",
+   "pos": "phrase",
+   "ipa": "ɔl ðə taɪm",
+   "es": "siempre, constantemente",
+   "kind": "chunk"
+  },
+  "back_rear": {
+   "lemma": "back",
+   "pos": "adjective",
+   "ipa": "bæk",
+   "es": "trasero",
+   "kind": "word"
+  },
+  "be_age": {
+   "lemma": "be",
+   "pos": "verb",
+   "ipa": "bi",
+   "es": "cumplir (años)",
+   "kind": "chunk"
+  },
+  "call_back": {
+   "lemma": "call back",
+   "pos": "phrasal verb",
+   "ipa": "kɔl bæk",
+   "es": "devolver la llamada",
+   "kind": "chunk"
+  },
+  "check_inspect": {
+   "lemma": "check",
+   "pos": "verb",
+   "ipa": "tʃɛk",
+   "es": "revisar, comprobar",
+   "kind": "word"
+  },
+  "come_back": {
+   "lemma": "come back",
+   "pos": "phrasal verb",
+   "ipa": "kʌm bæk",
+   "es": "volver",
+   "kind": "chunk"
+  },
+  "come_in_enter": {
+   "lemma": "come in",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɪn",
+   "es": "entrar",
+   "kind": "chunk"
+  },
+  "come_off": {
+   "lemma": "come off",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ɔf",
+   "es": "despegarse, desprenderse",
+   "kind": "chunk"
+  },
+  "flat_tire": {
+   "lemma": "flat tire",
+   "pos": "noun",
+   "ipa": "flæt ˈtaɪər",
+   "es": "llanta pinchada",
+   "kind": "chunk",
+   "variety": "AmE"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word",
+   "en": "the lower surface of a room or a pool"
+  },
+  "front_teeth": {
+   "lemma": "front teeth",
+   "pos": "noun",
+   "ipa": "frʌnt tiθ",
+   "es": "dientes de delante, paletas",
+   "kind": "chunk"
+  },
+  "get_on": {
+   "lemma": "get on",
+   "pos": "phrasal verb",
+   "ipa": "ɡɛt ɑn",
+   "es": "subir (a un autobús, tren)",
+   "kind": "chunk"
+  },
+  "keep_store": {
+   "lemma": "keep",
+   "pos": "verb",
+   "ipa": "kip",
+   "es": "guardar",
+   "kind": "word",
+   "en": "to put something away safely"
+  },
+  "mall": {
+   "lemma": "mall",
+   "pos": "noun",
+   "ipa": "mɔl",
+   "es": "centro comercial",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "part_section": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "parte (de la historia)",
+   "kind": "word",
+   "en": "a section of a story"
+  },
+  "part_spare": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "pieza, repuesto",
+   "kind": "word",
+   "en": "a piece of a machine"
+  },
+  "put_on_fit": {
+   "lemma": "put on",
+   "pos": "phrasal verb",
+   "ipa": "pʊt ɑn",
+   "es": "colocar (una pieza)",
+   "kind": "chunk"
+  },
+  "red_face": {
+   "lemma": "red",
+   "pos": "adjective",
+   "ipa": "rɛd",
+   "es": "colorado, rojo (de la cara)",
+   "kind": "word"
+  },
+  "ride_bike": {
+   "lemma": "ride",
+   "pos": "verb",
+   "ipa": "raɪd",
+   "es": "ir en bici, montar",
+   "kind": "word"
+  },
+  "shake_hands": {
+   "lemma": "shake hands",
+   "pos": "phrase",
+   "ipa": "ʃeɪk hændz",
+   "es": "dar la mano",
+   "kind": "chunk"
+  },
+  "take_transport": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "tomar (un transporte)",
+   "kind": "word"
+  },
+  "tire": {
+   "lemma": "tire",
+   "pos": "noun",
+   "ipa": "ˈtaɪər",
+   "es": "llanta, rueda",
+   "kind": "word",
+   "variety": "AmE"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 1,
+   "start": 159,
+   "end": 163,
+   "text": "mall",
+   "sense": "mall"
+  },
+  {
+   "p": 3,
+   "start": 15,
+   "end": 19,
+   "text": "flat",
+   "sense": "flat_tire",
+   "chunk": {
+    "start": 15,
+    "end": 24,
+    "text": "flat tire",
+    "es": "llanta pinchada"
+   }
+  },
+  {
+   "p": 4,
+   "start": 45,
+   "end": 49,
+   "text": "time",
+   "sense": "all_the_time",
+   "chunk": {
+    "start": 37,
+    "end": 49,
+    "text": "all the time",
+    "es": "siempre"
+   }
+  },
+  {
+   "p": 6,
+   "start": 59,
+   "end": 64,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 6,
+   "start": 97,
+   "end": 102,
+   "text": "tires",
+   "sense": "tire"
+  },
+  {
+   "p": 6,
+   "start": 107,
+   "end": 114,
+   "text": "checked",
+   "sense": "check_inspect",
+   "chunk": {
+    "start": 107,
+    "end": 121,
+    "text": "checked brakes",
+    "es": "revisó frenos"
+   }
+  },
+  {
+   "p": 7,
+   "start": 24,
+   "end": 28,
+   "text": "came",
+   "sense": "come_in_enter",
+   "chunk": {
+    "start": 24,
+    "end": 31,
+    "text": "came in",
+    "es": "entró"
+   }
+  },
+  {
+   "p": 7,
+   "start": 91,
+   "end": 97,
+   "text": "coming",
+   "sense": "come_off",
+   "chunk": {
+    "start": 91,
+    "end": 101,
+    "text": "coming off",
+    "es": "se estaba despegando"
+   }
+  },
+  {
+   "p": 8,
+   "start": 74,
+   "end": 79,
+   "text": "seven",
+   "sense": "be_age",
+   "chunk": {
+    "start": 71,
+    "end": 91,
+    "text": "is seven on Saturday",
+    "es": "cumple siete años el sábado"
+   }
+  },
+  {
+   "p": 11,
+   "start": 69,
+   "end": 72,
+   "text": "put",
+   "sense": "put_on_fit",
+   "chunk": {
+    "start": 69,
+    "end": 85,
+    "text": "put on new tires",
+    "es": "le puso ruedas nuevas"
+   }
+  },
+  {
+   "p": 12,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 13,
+   "start": 37,
+   "end": 41,
+   "text": "part",
+   "sense": "part_spare"
+  },
+  {
+   "p": 13,
+   "start": 49,
+   "end": 53,
+   "text": "back",
+   "sense": "back_rear",
+   "chunk": {
+    "start": 49,
+    "end": 59,
+    "text": "back wheel",
+    "es": "rueda trasera"
+   }
+  },
+  {
+   "p": 14,
+   "start": 20,
+   "end": 24,
+   "text": "part",
+   "sense": "part_spare"
+  },
+  {
+   "p": 16,
+   "start": 21,
+   "end": 27,
+   "text": "across",
+   "sense": "across_city",
+   "chunk": {
+    "start": 21,
+    "end": 36,
+    "text": "across the city",
+    "es": "al otro lado de la ciudad"
+   }
+  },
+  {
+   "p": 16,
+   "start": 52,
+   "end": 57,
+   "text": "keeps",
+   "sense": "keep_store"
+  },
+  {
+   "p": 16,
+   "start": 58,
+   "end": 63,
+   "text": "parts",
+   "sense": "part_spare"
+  },
+  {
+   "p": 17,
+   "start": 111,
+   "end": 117,
+   "text": "called",
+   "sense": "call_back",
+   "chunk": {
+    "start": 111,
+    "end": 122,
+    "text": "called back",
+    "es": "le devolvió la llamada"
+   }
+  },
+  {
+   "p": 19,
+   "start": 99,
+   "end": 103,
+   "text": "took",
+   "sense": "take_transport"
+  },
+  {
+   "p": 19,
+   "start": 121,
+   "end": 125,
+   "text": "rode",
+   "sense": "ride_bike"
+  },
+  {
+   "p": 19,
+   "start": 146,
+   "end": 150,
+   "text": "rode",
+   "sense": "ride_bike"
+  },
+  {
+   "p": 19,
+   "start": 193,
+   "end": 196,
+   "text": "red",
+   "sense": "red_face",
+   "chunk": {
+    "start": 193,
+    "end": 206,
+    "text": "red and tired",
+    "es": "colorado y cansado"
+   }
+  },
+  {
+   "p": 20,
+   "start": 94,
+   "end": 98,
+   "text": "part",
+   "sense": "part_spare"
+  },
+  {
+   "p": 21,
+   "start": 5,
+   "end": 9,
+   "text": "rode",
+   "sense": "ride_bike",
+   "chunk": {
+    "start": 5,
+    "end": 14,
+    "text": "rode back",
+    "es": "volvió en bici"
+   }
+  },
+  {
+   "p": 21,
+   "start": 136,
+   "end": 140,
+   "text": "part",
+   "sense": "part_spare"
+  },
+  {
+   "p": 22,
+   "start": 33,
+   "end": 37,
+   "text": "came",
+   "sense": "come_back",
+   "chunk": {
+    "start": 33,
+    "end": 42,
+    "text": "came back",
+    "es": "volvió"
+   }
+  },
+  {
+   "p": 22,
+   "start": 96,
+   "end": 101,
+   "text": "teeth",
+   "sense": "front_teeth",
+   "chunk": {
+    "start": 90,
+    "end": 101,
+    "text": "front teeth",
+    "es": "dientes de delante"
+   }
+  },
+  {
+   "p": 24,
+   "start": 5,
+   "end": 8,
+   "text": "got",
+   "sense": "get_on",
+   "chunk": {
+    "start": 5,
+    "end": 20,
+    "text": "got on the bike",
+    "es": "se subió a la bici"
+   }
+  },
+  {
+   "p": 25,
+   "start": 33,
+   "end": 38,
+   "text": "shook",
+   "sense": "shake_hands",
+   "chunk": {
+    "start": 33,
+    "end": 50,
+    "text": "shook Amir's hand",
+    "es": "le dio la mano a Amir"
+   }
+  }
+ ]
+}

@@ -40,6 +40,19 @@ final class GutenbergTests: XCTestCase {
         XCTAssertEqual(book("x", "Aesop").authorName, "Aesop")
     }
 
+    func testAHostileAuthorNameCannotHangTheListBecauseItIsCutBeforeAnyPatternRuns() {
+        func author(_ name: String) -> GutenbergBook { GutenbergBook(id: 1, title: "x", authors: [.init(name: name)]) }
+        XCTAssertEqual(author("Austen, Jane (1775-1817)").authorName, "Jane Austen", "a normal name is unchanged")
+        XCTAssertEqual(author("Baum, L. Frank (Lyman Frank) (pseud.)").authorName, "L. Frank Baum")
+        for hostile in [String(repeating: "( ", count: 100_000), String(repeating: " ", count: 200_000) + "(",
+                        "Name, A " + String(repeating: "(", count: 200_000)] {
+            let start = Date()
+            let shown = author(hostile).authorName
+            XCTAssertLessThan(Date().timeIntervalSince(start), 3, "a quadratic pattern over 200 000 units would take minutes")
+            XCTAssertLessThanOrEqual((shown ?? "").utf16.count, TextTools.maxLabel)
+        }
+    }
+
     func testRecommendedBooksShipWithTheAppWithDirectLinks() {
         let books = GutenbergClient.recommendedBooks
         XCTAssertEqual(books.map(\.id), GutenbergClient.recommended.map(\.id), "same books, same order as the levels")

@@ -32,7 +32,11 @@ public struct GutenbergBook: Decodable, Identifiable, Hashable, Sendable {
 
     /// "Carroll, Lewis" → "Lewis Carroll"
     public var authorName: String? {
-        guard let raw = authors.first?.name else { return nil }
+        guard let full = authors.first?.name else { return nil }
+        // The catalog is outside text: cut before any pattern runs. The pattern below backtracks, so a
+        // megabyte of "(" or spaces would hang the main thread. Room for a long real note, and the shown
+        // name is cut to `maxLabel` after.
+        let raw = TextTools.truncated(full, 4 * TextTools.maxLabel)
         // "Baum, L. Frank (Lyman Frank)" → "Baum, L. Frank": drop the catalog's full-name note.
         let name = raw.replacingOccurrences(of: #"\s*\([^)]*\)"#, with: "", options: .regularExpression)
             .trimmingCharacters(in: .whitespaces)
@@ -192,9 +196,12 @@ public struct GutenbergClient: Sendable {
         return books.filter { Self.level(for: $0.id) == level }
     }
 
+    /// Longest search text sent, in UTF-16 units.
+    public static let maxQuery = 200
+
     /// Searches the catalog by title or author. Throws `GutenbergError`; cancelling the task cancels the request.
     public func search(_ query: String) async throws -> [GutenbergBook] {
-        let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? ""
+        let encoded = TextTools.truncated(query, Self.maxQuery).addingPercentEncoding(withAllowedCharacters: .asciiAlphanumerics) ?? ""
         let response = try await call { try await http.get("\(Self.base)?languages=en&search=\(encoded)") }
         guard response.status == 200 else { throw GutenbergError(status: response.status) }
         guard JSONGuard.isShallow(response.body) else { throw GutenbergError.failed }

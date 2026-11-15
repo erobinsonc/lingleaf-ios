@@ -215,6 +215,11 @@ public struct IrregularVerbs: Sendable {
                 try check(h.form == verb.base || verb.forms.contains(h.form), "homograph \(h.form): not a form of \(h.verb)")
             }
             try check(!h.rules.contains(.imperative) || h.baseVerb != nil, "homograph \(h.form): imperative without baseVerb")
+            // The noun's meanings need a noun, and the forms of one noun ("lead", "leads") agree on them.
+            try check(h.nounEs == nil || h.noun != nil, "homograph \(h.form): meanings without a noun")
+            try check(h.nounEs.map(Self.isSpanishMeanings) ?? true, "homograph \(h.form): noun meanings")
+            try check(homographList.allSatisfy { $0.noun == nil || $0.noun != h.noun || $0.nounEs == h.nounEs },
+                      "homograph \(h.form): its noun has other meanings elsewhere")
             for phrase in h.nounPhrases {
                 try check((2...4).contains(phrase.count) && phrase.contains(h.form) && phrase.allSatisfy(Self.isForm),
                           "homograph \(h.form): noun phrase")
@@ -417,6 +422,9 @@ struct Homograph: Sendable {
     let form: String
     /// The noun's base ("leaf" for "leaves"); nil when the form is not a noun ("found").
     let noun: String?
+    /// The noun's Spanish meanings ("left": "izquierda"), for the unsure card offline; nil when the
+    /// table has none (a noun whose sense depends on its sound: "lead", "tear").
+    let nounEs: [String]?
     /// The base of the verb the form is a form of ("leave").
     let verb: String
     /// The form as a verb of its own ("to saw", "to found").
@@ -644,12 +652,13 @@ extension Homograph: Decodable {
             ["form", "noun", "verb", "rules"],
             optional: [
                 "baseVerb", "nounAfter", "nounBefore", "verbAfter", "nounPair", "noTo", "nounPhrases", "subjectNounNext",
-                "nounIpa", "expressions",
+                "nounIpa", "expressions", "nounEs",
             ]
         )
         form = try c.value("form")
         // Required, but null when the form is not a noun.
         noun = try c.optional("noun")
+        nounEs = try c.optional("nounEs")
         verb = try c.value("verb")
         baseVerb = try c.optional("baseVerb")
         let names: [String] = try c.value("rules")

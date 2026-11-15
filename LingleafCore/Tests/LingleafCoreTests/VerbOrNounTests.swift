@@ -29,7 +29,7 @@ final class VerbOrNounTests: XCTestCase {
             .appending(path: "../../../Lingleaf/Resources/Books").standardizedFileURL
         let books = try FileManager.default.contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
             .filter { $0.pathExtension == "txt" }
-        XCTAssertEqual(books.count, 3, "the bundled stories")
+        XCTAssertEqual(books.count, BundledStory.shelf.count, "the bundled stories")
         var unsure: [String] = []
         var lights = 0
         for book in books {

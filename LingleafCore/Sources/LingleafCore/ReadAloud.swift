@@ -31,9 +31,8 @@ public enum ReadAloud {
             var end = start + TextTools.maxSentence
             while end > start, !TextTools.isSpace(ns.character(at: end)) { end -= 1 }
             if end == start {
-                end = start + TextTools.maxSentence
-                // No space to cut at: keep a surrogate pair (an emoji) whole.
-                if UTF16.isTrailSurrogate(ns.character(at: end)) { end -= 1 }
+                // No space to cut at: keep a letter with its accents, or a surrogate pair (an emoji), whole.
+                end = TextTools.clusterSafeCut(ns, start + TextTools.maxSentence, floor: start)
             }
             out.append(WordRange(start, end))
             start = end

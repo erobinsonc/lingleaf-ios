@@ -69,7 +69,7 @@ extension IrregularVerbs {
         guard let tableForm = tableForms[form] else { return nil }
         // The steps for other forms look only at the words around; they need no homograph entry.
         let around = Homograph(
-            form: form, noun: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
+            form: form, noun: nil, nounEs: nil, verb: tableForm.base, baseVerb: nil, rules: [], nounAfter: [], nounBefore: [], verbAfter: [],
             nounPair: nil, noTo: false, nounPhrases: [], subjectNounNext: nil, nounIpa: [], expressions: []
         )
         return Resolver(table: self, h: around, form: form, words: words, i: i).tableFormReading(tableForm)
@@ -79,13 +79,14 @@ extension IrregularVerbs {
     func isName(_ text: String, _ range: WordRange) -> Bool {
         let ns = text as NSString
         // Most words aren't capitalised: no need to find the words around them.
-        guard range.start >= 0, range.start < ns.length, (0x41...0x5A).contains(ns.character(at: range.start)) else { return false }
+        guard range.start >= 0, range.start < ns.length,
+              Unicode.Scalar(ns.character(at: range.start))?.properties.isUppercase == true else { return false }
         let words = Words(ns)
         return words.index(of: range).map { isName(words, $0) } ?? false
     }
 
     func isName(_ words: Words, _ i: Int) -> Bool {
-        !words.startsSentence(i) && words.titlecase(i) && words.surface(i).contains(where: \.isLowercase)
+        !words.startsSentence(i) && words.titlecase(i) && words.surface(i).unicodeScalars.contains { $0.properties.isLowercase }
     }
 
     /// What the voice says for the word at `range` of `text`: the table's respelling of its slot
@@ -180,8 +181,11 @@ struct Words {
     /// Capitalised like a name or a sentence start ("Rose", "Tom's"; not "NASA").
     func titlecase(_ k: Int) -> Bool {
         let s = surface(k)
-        guard let first = s.first, first.isUppercase else { return false }
-        return s.count == 1 || s.contains("'") || s.contains("’") || !s.dropFirst().contains(where: \.isUppercase)
+        // The Unicode Uppercase property of the first code point (not Character.isUppercase, which is
+        // also true of titlecase letters such as "ǅ"): the same on every platform.
+        guard let first = s.unicodeScalars.first, first.properties.isUppercase else { return false }
+        return s.unicodeScalars.count == 1 || s.contains("'") || s.contains("’")
+            || !s.unicodeScalars.dropFirst().contains { $0.properties.isUppercase }
     }
 
     /// A listed adverb, or a lower-case word in -ly ("slowly"; not "Polly").

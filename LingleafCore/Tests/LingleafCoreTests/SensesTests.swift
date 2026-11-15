@@ -298,12 +298,19 @@ final class SensesTests: XCTestCase {
         ]
         library.saveWord("left", learned: false, context: "Left is it.", meanings: meanings)
         library.saveWord("steal", learned: false, sense: Sense.verb)
+        // A noun whose sense depends on its sound has no meaning in the table: it is translated.
+        let tears = [
+            SavedMeaning(label: "to tear", sense: Sense.verb, base: "tear", text: "", language: nil),
+            SavedMeaning(label: "the tear", sense: Sense.noun, base: "tear", text: "", language: nil),
+        ]
+        library.saveWord("tear", learned: false, context: "A tear.", meanings: tears)
         library.fillTableTranslations("pt")
-        XCTAssertEqual(library.meaningsNeedingTranslation("pt").count, 2, "not Spanish: both to translate")
+        XCTAssertEqual(library.meaningsNeedingTranslation("pt").count, 4, "not Spanish: all to translate")
         library.fillTableTranslations("es")
         XCTAssertEqual(library.state.word("steal", sense: Sense.verb)?.translation, "robar")
+        XCTAssertEqual(library.state.word("left")?.translation, "irse, salir · izquierda", "the table has both")
         let pending = library.meaningsNeedingTranslation("es")
-        XCTAssertEqual(pending, [MeaningRequest(id: "left", index: 1, label: "the left")])
+        XCTAssertEqual(pending, [MeaningRequest(id: "tear", index: 1, label: "the tear")])
         XCTAssertFalse(library.wordsNeedingTranslation("es").contains { $0.word == "left" }, "translated by its readings")
         library.setMeaning("left", index: 1, text: "la izquierda", language: "es")
         library.setMeaning("left", index: 7, text: "x", language: "es")
@@ -311,6 +318,8 @@ final class SensesTests: XCTestCase {
         library.setMeaning("left", index: 0, text: " ", language: "es")
         let left = try XCTUnwrap(library.state.word("left"))
         XCTAssertEqual(left.translation, "irse, salir · izquierda")
+        library.setMeaning("tear", index: 1, text: "la lágrima", language: "es")
+        XCTAssertEqual(library.state.word("tear")?.translation, "romper, rasgar · lágrima")
         XCTAssertTrue(library.meaningsNeedingTranslation("es").isEmpty)
     }
 

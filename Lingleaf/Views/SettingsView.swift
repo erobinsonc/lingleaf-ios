@@ -3,6 +3,7 @@ import LingleafCore
 
 struct SettingsView: View {
     @Environment(AppModel.self) private var model
+    @State private var showsPrivacyPolicy = false
 
     private static let repositoryURL = URL(string: "https://github.com/erobinsonc/lingleaf-ios")!
 
@@ -70,15 +71,21 @@ struct SettingsView: View {
                 }
 
                 Section(header: SectionHeader("About")) {
-                    Link(destination: Credits.privacyPolicyURL) {
+                    // In the app's own browser view, at the Spanish summary when the app is in Spanish.
+                    Button {
+                        showsPrivacyPolicy = true
+                    } label: {
                         Label("Privacy policy", systemImage: "hand.raised")
                     }
+                    .accessibilityAddTraits(.isLink)
                     Link(destination: Self.repositoryURL) {
                         Label("Source code (open source, MIT)", systemImage: "chevron.left.forwardslash.chevron.right")
                     }
                     VStack(alignment: .leading, spacing: 6) {
                         Text("No accounts, no ads, no tracking.")
-                        Text(Credits.publicDomainNotice)
+                        // The US-specific notice is under Discover's search results only.
+                        Text(Credits.recommendedPublicDomain)
+                        Text(Credits.storiesNotice)
                         Text(Credits.definitionsCredit)
                             .accessibilityHint(Text("Contains links"))
                     }
@@ -87,6 +94,9 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .sheet(isPresented: $showsPrivacyPolicy) {
+                SafariView(url: Credits.privacyPolicyForApp).ignoresSafeArea()
+            }
         }
     }
 

@@ -1,0 +1,191 @@
+Chapter 1: The Station on the Roof
+
+The weather station had been installed on the roof of the school in September, and for six weeks nobody had paid much attention to it. It was a white plastic box on a metal pole, with a small wind meter that spun like a toy. It measured the temperature, the humidity, the speed of the wind and the air pressure every ten minutes. All the data was sent to a website, where anyone in Kraków could see it.
+
+Hanna Kowalczyk was the only person who checked it every day. She was fifteen, and she wanted to study climate science one day. She liked numbers more than most people, and she especially liked numbers that told a story.
+
+So on a cold Monday in November, when she opened the website during lunch, she frowned at her phone for a long time.
+
+"Rohan," she said. "Look at this."
+
+Rohan Mehta was sitting opposite her in the school cafeteria, trying to finish his chemistry homework before the bell. He had moved to Kraków from Pune when he was nine, and he spoke Polish faster than she did. He was also the only other member of the school science club who actually came to the meetings.
+
+He looked at her screen. It showed a graph of the temperature on the roof over the past week. Most of the line went up gently during the day and down gently at night, the way it should. But every night, at almost exactly three o'clock in the morning, there was a sharp spike. The temperature jumped by six or seven degrees, stayed high for about an hour, and then dropped again.
+
+"That's weird," said Rohan.
+
+"It's more than weird," said Hanna. "It's impossible. Air temperature doesn't do that. Not at three in the morning, in November, in Poland."
+
+Chapter 2: Theories
+
+That afternoon, they took the graph to Ms. Sikora, the physics teacher who ran the science club. She was a tall woman with short silver hair, and she had a habit of answering every question with another question.
+
+"Interesting," she said, looking at the graph on her laptop. "What do you think could cause it?"
+
+"The sensor might be broken," said Rohan.
+
+"Possibly," said Ms. Sikora. "But if it were broken, would it break at the same time every night?"
+
+Rohan thought about it. "Probably not."
+
+"Someone might have hacked the website," said Hanna. "As a joke."
+
+Ms. Sikora raised an eyebrow. "That's a lot of work for a very boring joke. And look." She pointed at another line on the graph. "The humidity changes too, at exactly the same time. If someone had wanted to fake the data, they would have had to fake both. Whatever is happening, it's real. Something is warming the air around that sensor."
+
+"So what is it?" asked Hanna.
+
+Ms. Sikora smiled and closed her laptop. "That," she said, "is a very good question for a science club."
+
+Chapter 3: The List
+
+On Tuesday, they met in the empty physics lab after school and made a list. Hanna wrote it on the whiteboard in blue marker.
+
+"Possible causes," she said. "Number one: the sensor is faulty."
+
+"Number two," said Rohan. "Something hot is placed near it every night."
+
+"Number three: hot air is coming from somewhere nearby."
+
+"Number four: aliens," said Rohan.
+
+Hanna wrote "aliens" very small in the corner and drew a line through it.
+
+They started with number one. Ms. Sikora contacted the company that had sold the station. The company replied the next day. They said that the sensor had been tested before it was delivered and that no faults had been reported by any other school. They also said that it could be checked if it was sent back, but that this would take about a month.
+
+"A month is too long," said Hanna. "Besides, I don't think it's the sensor. Look at Saturday." She pulled up the graph. "On Saturday night, there was no spike at all. Sunday too. It only happens on weekdays."
+
+Rohan stared at the screen. "So it can't have been the sensor," he said slowly. "A broken sensor doesn't know what day of the week it is."
+
+"Exactly," said Hanna. "Something is happening at three in the morning, Monday to Friday. Someone must be doing it. Or something must be switched on."
+
+Chapter 4: The Roof
+
+The next problem was that students were not allowed on the roof. The door at the top of the stairs was locked, and only the custodian, Mr. Zieliński, had the key.
+
+Mr. Zieliński had worked at the school for twenty-eight years. He was a quiet man with a gray mustache, and most students were slightly afraid of him. But when Ms. Sikora explained the mystery, he became interested immediately.
+
+"Three in the morning?" he said. "I've been here for almost thirty years. Nothing happens at this school at three in the morning. Believe me, I would know."
+
+Still, he agreed to take them up. On Thursday after school, they climbed the narrow stairs behind him and stepped out onto the flat roof. The wind was cold and wet. From up there, they could see the old town, the river and the castle on its hill.
+
+The weather station stood near the edge of the roof, on the side facing the street. Hanna walked around it carefully. There was nothing unusual about it. No wires had been touched. Nothing hot had been left near the pole. The plastic box was clean, except for a few leaves that had been blown against its base.
+
+"Nobody could have come up here at night," said Mr. Zieliński. "The door is locked, and the alarm is on from ten until six. If anyone had opened that door, the alarm would have gone off."
+
+Rohan went to the edge of the roof and looked down. Below them was the street. On the other side of it stood a row of old buildings with shops at street level. There was a pharmacy, a flower shop, a small bakery with a green sign and a phone repair place.
+
+"What's that?" he asked, pointing.
+
+On the roof of the building directly across the street, there was a metal chimney. It was short and wide, and it was pointing almost straight at the school.
+
+Chapter 5: An Experiment
+
+"It might be nothing," said Hanna, on the way home. "It's just a chimney."
+
+"It might be," said Rohan. "But you said it yourself. Hot air from somewhere nearby. That chimney is about fifteen meters from the sensor."
+
+"But what's under it?"
+
+They had both passed the row of shops a thousand times. Neither of them could remember exactly which shop was under the chimney.
+
+They decided that they needed more evidence before they told anyone. If they were wrong, they would look silly. And if they accused somebody of something without proof, that would be worse.
+
+First, they checked their idea against other data. The city had several official weather stations, and their measurements were published online every hour. Hanna downloaded the numbers for the past month from the three stations closest to the school. None of them showed a spike at three in the morning. On the nights when the school sensor had jumped by seven degrees, the official stations had recorded a cool, steady fall in temperature.
+
+"So it isn't the weather," said Rohan. "It's something local. Something that only affects our roof."
+
+"Or something that only affects our sensor," said Hanna. "We still haven't proved anything. We've only shown what it isn't."
+
+Rohan said that this was how real scientists worked most of the time. His aunt, who was a chemist in Hyderabad, had once told him that she spent most of her life proving what things weren't. She only found out what they were once in a while.
+
+So they designed an experiment. Hanna found an old digital thermometer at home that her father had once used for his fish tank. Rohan borrowed his older brother's cheap camera, the kind that people use to watch their pets while they're at work. On Friday, with Mr. Zieliński's help and Ms. Sikora's permission, the two devices were attached to the railing next to the weather station. The camera was pointed at the chimney across the street.
+
+"If something comes out of that chimney at three in the morning," said Rohan, "we'll see it."
+
+"Unless it's invisible," said Hanna.
+
+"Hot air is invisible," said Rohan. "But in the cold, it might look like steam. Let's hope it's cold on Monday night."
+
+Chapter 6: The Video
+
+It was very cold on Monday night. On Tuesday morning, Hanna arrived at school forty minutes early, and Rohan was already waiting at the gate with his phone in his hand.
+
+"Have you watched it?" she asked.
+
+"I waited for you," he said. "It felt wrong to watch it alone."
+
+They sat on the stairs inside the main entrance and opened the video. Rohan moved quickly through the night. Midnight: nothing, just the dark roof across the street and a streetlight. One o'clock: nothing. Two o'clock: a cat walked along the edge of the roof and disappeared.
+
+At 2:58, a light came on in a window under the chimney.
+
+At 3:04, a thick white cloud began to pour out of the chimney. It moved across the street in the wind, slowly, like a ghost. The camera was pointing straight at it, so they saw it come closer and closer until the whole picture turned white.
+
+Hanna checked the thermometer data on her own phone. At 3:06, the temperature next to the weather station had risen by seven degrees.
+
+They looked at each other.
+
+"Which shop is it?" said Hanna. "Which window?"
+
+Rohan zoomed in on the screen. Above the window, just visible in the light from the street, was the edge of a green sign.
+
+"The bakery," they said at the same time.
+
+Chapter 7: The Bakery
+
+After school that day, they walked across the street to the bakery with the green sign. It was small and warm inside, and it smelled so wonderful that Rohan forgot for a moment why they had come. A woman in a white apron was standing behind the counter. A sign on the wall said that the bakery had been run by the same family since 1961.
+
+Hanna had prepared a short speech. She had practiced it twice on the way over. But when she started speaking, it came out too fast and in the wrong order.
+
+"Hello, we're from the school across the street. We have a weather station on the roof. Every night at three o'clock the temperature goes up. And we think it might be your chimney."
+
+The woman looked at them in surprise. Then she laughed and called over her shoulder. "Bartek! Come here. There are two scientists who want to talk to you about the oven."
+
+A young man came out of the back room, with flour on his arms and on one side of his face. He was the owner's son, and he had been in charge of the baking since his father retired the year before. He listened to their story, watched the video on Rohan's phone and shook his head in amazement.
+
+"That's the big bread oven," he said. "I turn it on at three every morning, Monday to Friday. The first bread has to be ready by six, for the shops and the hotels. On weekends, we sell less, so I bake later, in the small oven." He frowned. "But that chimney isn't new. Why didn't this happen before?"
+
+Hanna had thought about that question too. "When was the chimney last changed?" she asked.
+
+Bartek thought. "In the summer, actually. The old one was damaged in a storm in July. It was replaced in August. The new one is a little shorter."
+
+"And the weather station was put on our roof in September," said Rohan.
+
+"So the hot air must have always gone somewhere," said Hanna slowly. "With the old chimney, it probably went higher, over our roof. With the new one, it goes straight into our sensor."
+
+Bartek laughed. "So I've been ruining your science for two months," he said. "I'm very sorry. I had no idea."
+
+"It's not your fault," said Hanna. "You couldn't have known. Nobody knew."
+
+Chapter 8: Results
+
+In the end, the problem was solved in a very simple way. Mr. Zieliński and Ms. Sikora found a better place for the weather station, on the other side of the roof, behind a small wall. It was moved there the following week. The three o'clock spike disappeared from the graph immediately.
+
+But the story didn't end there. Ms. Sikora suggested that Hanna and Rohan write up their investigation for a regional science competition for high school students. They described the problem, their theories, the experiment and the solution. They included the graph, the thermometer data and three photos from the video, including the moment when the white cloud filled the screen.
+
+At the competition in March, the judges asked them many questions. Some of the questions were difficult. One judge asked whether the chimney could have affected the sensor in other ways, not only through temperature. Rohan explained that the humidity had also changed, and that the steam from the oven must have made the air wetter for a short time.
+
+A second judge wanted to know whether the thermometer from the fish tank had been checked for accuracy. Hanna admitted that it hadn't been checked properly, and she said that they should have tested it against a better instrument first. The judge nodded and wrote something down. She seemed to like the honest answer more than a perfect one.
+
+Another judge, an older professor of meteorology, asked why they had not simply assumed the sensor was broken.
+
+"We almost did," Rohan admitted. "But it didn't happen on weekends. If it had happened every night, we might have sent the sensor back and never found the answer."
+
+"And the answer was bread," said the professor, smiling.
+
+"The answer was bread," said Hanna.
+
+They won second prize. The winners were a team from Gdańsk who had built a robot that could sort plastic waste. Hanna had to admit that the robot was very impressive.
+
+On the Monday after the competition, they walked across the street to the bakery again. Bartek had heard the news from Ms. Sikora. He had baked a special loaf for them, round and golden, with a small cloud drawn on top in flour.
+
+"For the scientists," he said. "Baked at three in the morning, of course."
+
+Hanna took a photo of it before they ate it. Then, out of habit, she checked the weather station on her phone. The line on the graph was smooth and calm. It was exactly what it should be, and somehow that made her a little sad.
+
+"What's wrong?" asked Rohan, with his mouth full of bread.
+
+"Nothing," she said. "I just miss having a mystery."
+
+Rohan thought about it for a moment. Then he pointed at the window, toward the castle on the hill. "Have you ever noticed," he said, "that the river looks a different color every Thursday?"
+
+Hanna put down her bread and took out her notebook.
