@@ -93,7 +93,12 @@ extension LingleafUITests {
             let pixels = tabBar.isNull ? nil : Pixels(app: app)
             do {
                 try app.performAccessibilityAudit { issue in
-                    XCTContext.runActivity(named: "DIAGRES type=\(issue.auditType.rawValue) resolved=\(issue.element != nil) label=\(issue.element?.label ?? "-") kind=\(issue.element.map { "\($0.elementType.rawValue)" } ?? "-") frame=\(issue.element.map { "\($0.frame)" } ?? "-") measured=\(issue.element.flatMap { e in pixels?.textContrast(in: e.frame) }.map { String(format: "%.2f", $0) } ?? "-")") { _ in }
+                    let resolved = issue.element
+                    let measured = resolved.flatMap { e in pixels?.textContrast(in: e.frame) }
+                    let ratio = measured.map { String(format: "%.2f", $0) } ?? "-"
+                    let where_ = resolved.map { "\($0.elementType.rawValue) \($0.frame)" } ?? "-"
+                    let who = resolved?.label ?? "-"
+                    XCTContext.runActivity(named: "DIAGRES resolved=\(resolved != nil) label=\(who) at=\(where_) measured=\(ratio)") { _ in }
                     // Rows scrolled under the translucent tab bar are measured against
                     // the bar's blur; scrolled into view they read normally. The tab
                     // bar's own buttons are not exempt: their contrast is still checked.
