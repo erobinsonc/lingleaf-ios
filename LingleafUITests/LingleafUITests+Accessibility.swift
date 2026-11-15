@@ -211,14 +211,88 @@ extension LingleafUITests {
 
     /// A tab bar button sits entirely inside the bar; rows scrolled under the bar only overlap it.
     /// Labelled elements of the screen (not the tab bar's own) that reach under the tab bar.
-    private static func elementsUnder(_ tabBar: CGRect, in app: XCUIApplication) -> Int {
+    private static func elementsUnder(_ tabBar: CGRect, glass: CGRect, pixels: Pixels?, in app: XCUIApplication) -> Int {
         guard !tabBar.isNull, let root = try? app.snapshot() else { return 0 }
         func count(_ node: XCUIElementSnapshot) -> Int {
             if node.elementType == .tabBar { return 0 }
-            if node.children.isEmpty { return !node.label.isEmpty && node.frame.intersects(tabBar) ? 1 : 0 }
+            if node.children.isEmpty {
+                guard !node.label.isEmpty else { return 0 }
+                return node.frame.intersects(tabBar) || legibleInGlass(node.frame, glass: glass, pixels: pixels) ? 1 : 0
+            }
             return node.children.reduce(0) { $0 + count($1) }
         }
         return count(root)
+    }
+
+    /// How far above the tab bar's frame the glass backdrop and the scroll-edge blur reach, in points. Measured
+    /// on the Library screen (CI simulator, iOS 26, run 43677625249): a row's background starts to change
+    /// 23 pt above the bar (white 1.00 at 765 pt, 0.98 at 771, 0.96 at 777, 0.92 at 789; the bar starts at 791).
+    private static let glassReach: CGFloat = 24
+    private static let minimumContrast = 4.5
+
+    /// The strip above the tab bar that the bar's blur reaches.
+    private static func glassZone(above tabBar: CGRect) -> CGRect {
+        tabBar.isNull ? .null : CGRect(x: tabBar.minX, y: tabBar.minY - glassReach, width: tabBar.width, height: glassReach)
+    }
+
+    /// True for an element that reaches into the blur strip AND whose own pixels in the screenshot contrast at
+    /// WCAG AA or better. The audit flags such rows on some runs (and only when it resolves their element) although
+    /// the text measures 19:1 (black on white); a row whose pixels really are low-contrast is not accepted.
+    private static func legibleInGlass(_ frame: CGRect, glass: CGRect, pixels: Pixels?) -> Bool {
+        guard !glass.isNull, frame.intersects(glass), let ratio = pixels?.contrast(of: frame) else { return false }
+        return ratio >= minimumContrast
+    }
+
+    /// The pixels of one screenshot, to measure what is really on screen.
+    private struct Pixels {
+        private let rgba: [UInt8]
+        private let width: Int
+        private let height: Int
+        private let scale: CGFloat
+
+        init?(app: XCUIApplication) {
+            let window = app.windows.firstMatch.frame
+            guard window.width > 0, let image = app.screenshot().image.cgImage else { return nil }
+            var buffer = [UInt8](repeating: 0, count: image.width * image.height * 4)
+            let drawn = buffer.withUnsafeMutableBytes { raw -> Bool in
+                guard let context = CGContext(
+                    data: raw.baseAddress, width: image.width, height: image.height, bitsPerComponent: 8,
+                    bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+                context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+                return true
+            }
+            guard drawn else { return nil }
+            rgba = buffer
+            width = image.width
+            height = image.height
+            scale = CGFloat(image.width) / window.width
+        }
+
+        /// WCAG contrast ratio of the darkest against the lightest pixel inside `frame` (points).
+        func contrast(of frame: CGRect) -> Double? {
+            let x0 = max(0, Int(frame.minX * scale)), x1 = min(width, Int(frame.maxX * scale))
+            let y0 = max(0, Int(frame.minY * scale)), y1 = min(height, Int(frame.maxY * scale))
+            guard x0 < x1, y0 < y1 else { return nil }
+            var lowest = 1.0, highest = 0.0
+            for y in y0..<y1 {
+                for x in stride(from: x0, to: x1, by: 2) {
+                    let value = luminance(x, y)
+                    lowest = min(lowest, value)
+                    highest = max(highest, value)
+                }
+            }
+            return (highest + 0.05) / (lowest + 0.05)
+        }
+
+        private func luminance(_ x: Int, _ y: Int) -> Double {
+            func channel(_ byte: UInt8) -> Double {
+                let value = Double(byte) / 255
+                return value <= 0.03928 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
+            }
+            let index = (y * width + x) * 4
+            return 0.2126 * channel(rgba[index]) + 0.7152 * channel(rgba[index + 1]) + 0.0722 * channel(rgba[index + 2])
+        }
     }
 
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
