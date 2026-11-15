@@ -22,7 +22,7 @@ SHARDS = [
     {"name": "x1", "only": ["LingleafUITests/testDiagFixedLibraryAudit"]},
     {"name": "x2", "only": ["LingleafUITests/testDiagFixedLibraryAudit"]},
     {"name": "x3", "only": ["LingleafUITests/testAccessibilityAudit"]},
-    {"name": "x4", "only": ["LingleafUITests/testAccessibilityAudit"]},
+    {"name": "x4", "only": ["GlassContrastTests"]},
 ]
 
 
