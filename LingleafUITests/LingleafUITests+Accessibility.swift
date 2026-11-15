@@ -195,7 +195,7 @@ extension LingleafUITests {
         for i in 1...6 {
             var lines: [String] = []
             let start = Date()
-            var error = ""
+            var failure = ""
             do {
                 try app.performAccessibilityAudit { issue in
                     let e = issue.element
@@ -203,9 +203,9 @@ extension LingleafUITests {
                     lines.append("type=\(issue.auditType.rawValue) label=\(e?.label ?? "NIL") frame=\(e.map { "\($0.frame)" } ?? "-") underBar=\(hits) kind=\(e.map { "\($0.elementType.rawValue)" } ?? "-")")
                     return true
                 }
-            } catch { error = "ERROR \(error)" }
+            } catch let e { failure = "ERROR \(e)" }
             let wouldFail = lines.contains { $0.contains("type=") && $0.contains("label=A Day at the Market") && $0.contains("underBar=false") }
-            note("DIAGFULL run=\(i) took=\(Int(Date().timeIntervalSince(start)))s n=\(lines.count) wouldFail=\(wouldFail) \(error) :: \(lines.joined(separator: " || "))")
+            note("DIAGFULL run=\(i) took=\(Int(Date().timeIntervalSince(start)))s n=\(lines.count) wouldFail=\(wouldFail) \(failure) :: \(lines.joined(separator: " || "))")
         }
     }
 
