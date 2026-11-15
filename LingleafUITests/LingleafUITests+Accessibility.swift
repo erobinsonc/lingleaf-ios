@@ -75,31 +75,33 @@ extension LingleafUITests {
         // The reader hides the tab bar; then nothing can sit under it.
         let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
         let before = issues.count
-        // The bar's blur starts above its frame (glassReach). What the audit flags in that strip is
-        // accepted only when the screenshot itself shows the text at 4.5:1 or better.
-        let glass = Self.glassZone(above: tabBar)
-        let pixels = Pixels(app: app)
         // A row half under the glass tab bar is measured against the bar's blur too, but
-        // XCTest can't always resolve the element of a finding, and then the exemption below can't
-        // see where it is. Such unresolved contrast findings are accepted only up to the number of
-        // elements the exemption would accept right now (the same rule, applied to the tree);
-        // any more still fail, with a screenshot. Resolved or not, the same elements pass.
-        let underBar = Self.elementsUnder(tabBar, glass: glass, pixels: pixels, in: app)
+        // XCTest can't always resolve the element of a finding (in the same unchanged state it
+        // does on some audits and not on others), and then the exemption below can't see where
+        // it is. Such unresolved contrast findings are accepted only up to the number of elements
+        // under the bar right now; any more still fail, with a screenshot. That allowance is not
+        // raised by anything in the blur strip: resolved findings there are judged by the pixel rule.
+        let underBar = Self.elementsUnder(tabBar, in: app)
+        let strip = Glass.zone(above: tabBar)
         var unresolved: [String] = []
         // The audit itself can time out (the first one after a cold simulator boot): that is
         // no result, so it runs again; the findings of an audit that completes always count.
         for attempt in 1...3 {
             issues.removeSubrange(before...)
             unresolved = []
+            // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
+            let pixels = tabBar.isNull ? nil : Pixels(app: app)
             do {
                 try app.performAccessibilityAudit { issue in
-                    XCTContext.runActivity(named: "DIAGRES type=\(issue.auditType.rawValue) resolved=\(issue.element != nil) label=\(issue.element?.label ?? "-")") { _ in }
+                    XCTContext.runActivity(named: "DIAGRES type=\(issue.auditType.rawValue) resolved=\(issue.element != nil) label=\(issue.element?.label ?? "-") kind=\(issue.element.map { "\($0.elementType.rawValue)" } ?? "-") frame=\(issue.element.map { "\($0.frame)" } ?? "-") measured=\(issue.element.flatMap { e in pixels?.textContrast(in: e.frame) }.map { String(format: "%.2f", $0) } ?? "-")") { _ in }
                     // Rows scrolled under the translucent tab bar are measured against
                     // the bar's blur; scrolled into view they read normally. The tab
                     // bar's own buttons are not exempt: their contrast is still checked.
                     if issue.auditType == .contrast, let flagged = issue.element, !Self.isTabBarButton(flagged, in: tabBar) {
                         if flagged.frame.intersects(tabBar) { return true }
-                        if Self.legibleInGlass(flagged.frame, glass: glass, pixels: pixels) { return true }
+                        // The blur above the bar: accepted only for a line of text whose own pixels measure
+                        // at WCAG AA against its local background (Glass.isLegible; a row measures 19:1).
+                        if Glass.isLegible(flagged.elementType, flagged.frame, strip: strip, pixels: pixels) { return true }
                     }
                     // The search field is UIKit's own (from `.searchable`); its clipping
                     // at large text sizes is iOS's to handle, not something the app can change.
@@ -122,8 +124,9 @@ extension LingleafUITests {
                 RunLoop.current.run(until: Date().addingTimeInterval(2))
             }
         }
+        XCTContext.runActivity(named: "DIAGBUDGET screen=\(screen) unresolved=\(unresolved.count) allowance=\(underBar)") { _ in }
         if unresolved.count > underBar {
-            issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
+            issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, allowance \(underBar) (elements under the tab bar)")
             issues += unresolved
         }
         // Evidence for any finding: the screen as audited, kept with the test results, so a
@@ -208,88 +211,14 @@ extension LingleafUITests {
 
     /// A tab bar button sits entirely inside the bar; rows scrolled under the bar only overlap it.
     /// Labelled elements of the screen (not the tab bar's own) that reach under the tab bar.
-    private static func elementsUnder(_ tabBar: CGRect, glass: CGRect, pixels: Pixels?, in app: XCUIApplication) -> Int {
+    private static func elementsUnder(_ tabBar: CGRect, in app: XCUIApplication) -> Int {
         guard !tabBar.isNull, let root = try? app.snapshot() else { return 0 }
         func count(_ node: XCUIElementSnapshot) -> Int {
             if node.elementType == .tabBar { return 0 }
-            if node.children.isEmpty {
-                guard !node.label.isEmpty else { return 0 }
-                return node.frame.intersects(tabBar) || legibleInGlass(node.frame, glass: glass, pixels: pixels) ? 1 : 0
-            }
+            if node.children.isEmpty { return !node.label.isEmpty && node.frame.intersects(tabBar) ? 1 : 0 }
             return node.children.reduce(0) { $0 + count($1) }
         }
         return count(root)
-    }
-
-    /// How far above the tab bar's frame the glass backdrop and the scroll-edge blur reach, in points. Measured
-    /// on the Library screen (CI simulator, iOS 26, run 43677625249): a row's background starts to change
-    /// 23 pt above the bar (white 1.00 at 765 pt, 0.98 at 771, 0.96 at 777, 0.92 at 789; the bar starts at 791).
-    private static let glassReach: CGFloat = 24
-    private static let minimumContrast = 4.5
-
-    /// The strip above the tab bar that the bar's blur reaches.
-    private static func glassZone(above tabBar: CGRect) -> CGRect {
-        tabBar.isNull ? .null : CGRect(x: tabBar.minX, y: tabBar.minY - glassReach, width: tabBar.width, height: glassReach)
-    }
-
-    /// True for an element that reaches into the blur strip AND whose own pixels in the screenshot contrast at
-    /// WCAG AA or better. The audit flags such rows on some runs (and only when it resolves their element) although
-    /// the text measures 19:1 (black on white); a row whose pixels really are low-contrast is not accepted.
-    private static func legibleInGlass(_ frame: CGRect, glass: CGRect, pixels: Pixels?) -> Bool {
-        guard !glass.isNull, frame.intersects(glass), let ratio = pixels?.contrast(of: frame) else { return false }
-        return ratio >= minimumContrast
-    }
-
-    /// The pixels of one screenshot, to measure what is really on screen.
-    private struct Pixels {
-        private let rgba: [UInt8]
-        private let width: Int
-        private let height: Int
-        private let scale: CGFloat
-
-        init?(app: XCUIApplication) {
-            let window = app.windows.firstMatch.frame
-            guard window.width > 0, let image = app.screenshot().image.cgImage else { return nil }
-            var buffer = [UInt8](repeating: 0, count: image.width * image.height * 4)
-            let drawn = buffer.withUnsafeMutableBytes { raw -> Bool in
-                guard let context = CGContext(
-                    data: raw.baseAddress, width: image.width, height: image.height, bitsPerComponent: 8,
-                    bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(),
-                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
-                context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
-                return true
-            }
-            guard drawn else { return nil }
-            rgba = buffer
-            width = image.width
-            height = image.height
-            scale = CGFloat(image.width) / window.width
-        }
-
-        /// WCAG contrast ratio of the darkest against the lightest pixel inside `frame` (points).
-        func contrast(of frame: CGRect) -> Double? {
-            let x0 = max(0, Int(frame.minX * scale)), x1 = min(width, Int(frame.maxX * scale))
-            let y0 = max(0, Int(frame.minY * scale)), y1 = min(height, Int(frame.maxY * scale))
-            guard x0 < x1, y0 < y1 else { return nil }
-            var lowest = 1.0, highest = 0.0
-            for y in y0..<y1 {
-                for x in stride(from: x0, to: x1, by: 2) {
-                    let value = luminance(x, y)
-                    lowest = min(lowest, value)
-                    highest = max(highest, value)
-                }
-            }
-            return (highest + 0.05) / (lowest + 0.05)
-        }
-
-        private func luminance(_ x: Int, _ y: Int) -> Double {
-            func channel(_ byte: UInt8) -> Double {
-                let value = Double(byte) / 255
-                return value <= 0.03928 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
-            }
-            let index = (y * width + x) * 4
-            return 0.2126 * channel(rgba[index]) + 0.7152 * channel(rgba[index + 1]) + 0.0722 * channel(rgba[index + 2])
-        }
     }
 
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
@@ -301,7 +230,7 @@ extension LingleafUITests {
         app.tabBars.buttons["Library"].tap()
         _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
         var failures = 0
-        for i in 1...6 {
+        for i in 1...8 {
             let found = try auditScreen("Library")
             if !found.isEmpty { failures += 1 }
             XCTContext.runActivity(named: "DIAGFIX run=\(i) findings=\(found.count) \(found.joined(separator: " || "))") { _ in }
