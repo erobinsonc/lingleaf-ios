@@ -132,6 +132,7 @@ extension LingleafUITests {
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
     }
 
+    // swiftlint:disable all
     private func note(_ text: String) { XCTContext.runActivity(named: text) { _ in } }
 
     /// DIAGNOSTIC (throwaway): frames and a contrast profile of the Library rows near the tab bar.
@@ -185,6 +186,8 @@ extension LingleafUITests {
             note("DIAG \(tag) row-element contrast \(String(format: "%.2f", (hi + 0.05) / (lo + 0.05))) lo=\(lo) hi=\(hi)")
         }
     }
+
+    // swiftlint:enable all
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
     /// bar (the clock changes by itself), are the same. False when it never does within `timeout`.
