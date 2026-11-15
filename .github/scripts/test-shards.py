@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """The UI test shards of the App job: one source of truth for the workflow and for its check.
 
-  test-shards.py --matrix   prints the GitHub matrix JSON ({"include":[{name, args}]})
+  test-shards.py --matrix   prints the GitHub matrix JSON ({"include":[{name, args, count}]}); `count` is
+                            the number of tests the shard must execute (the workflow compares it)
   test-shards.py --check    checks the shards against LingleafUITests/*.swift: every name exists,
                             no test is listed twice and every test runs in exactly one shard.
 
@@ -36,6 +37,11 @@ SHARDS = [
 ]
 
 
+# Attributes (@MainActor, @available(...)) and modifiers (private final, override...) before a declaration.
+MODIFIERS = (r"\s*(?:@\w+(?:\([^)]*\))?\s+)*"
+             r"(?:(?:public|internal|private|fileprivate|open|final|override|nonisolated)\s+)*")
+
+
 def explicit():
     return [f"{T}/{n}" for s in SHARDS for n in s.get("only", [])]
 
@@ -46,12 +52,14 @@ def selectors(shard):
     return [f"{T}/{n}" for n in shard["only"]], []
 
 
-def matrix():
+def matrix(root):
+    tests = tests_in_sources(root)
     include = []
     for s in SHARDS:
         only, skip = selectors(s)
         args = [f"-only-testing:{x}" for x in only] + [f"-skip-testing:{x}" for x in skip]
-        include.append({"name": s["name"], "args": " ".join(args)})
+        include.append({"name": s["name"], "args": " ".join(args),
+                        "count": sum(1 for t in tests if selected(s, t))})
     return {"include": include}
 
 
@@ -60,10 +68,10 @@ def tests_in_sources(root):
     for path in sorted(Path(root, T).glob("*.swift")):
         current = None
         for line in path.read_text().splitlines():
-            m = re.match(r"\s*(?:final\s+)?(?:class|extension)\s+(\w+)", line)
+            m = re.match(MODIFIERS + r"(?:class|extension)\s+(\w+)", line)
             if m:
                 current = m.group(1)
-            m = re.match(r"\s*func\s+(test\w*)\s*\(", line)
+            m = re.match(MODIFIERS + r"func\s+(test\w*)\s*\(", line)
             if m and current:
                 found.append(f"{T}/{current}/{m.group(1)}")
     return found
@@ -101,7 +109,7 @@ def check(root):
 if __name__ == "__main__":
     root = Path(__file__).resolve().parents[2]
     if "--matrix" in sys.argv:
-        print(json.dumps(matrix(), separators=(",", ":")))
+        print(json.dumps(matrix(root), separators=(",", ":")))
     elif "--check" in sys.argv:
         sys.exit(check(root))
     else:

@@ -3,10 +3,12 @@
 # to $GITHUB_OUTPUT. Run from a checkout with full history of the pull request merge commit.
 #   full       everything runs (pushes, any real change, hotfixes, a release whose base moved)
 #   same-tree  the pull request head has exactly the tree of the base branch tip: nothing new to
-#              test (a sync of main into develop). The base tip already passed its own push CI.
+#              test (a sync of main into develop), AND the base tip's own push CI is verified green
+#              through the API (verify-prior-ci.py); otherwise full.
 #   release    develop -> main from this repository where main is an ancestor of the head, so
 #              merging yields the head tree. That head commit already ran the full CI as a push
-#              on develop; the release-verify job checks that run instead of repeating it.
+#              on develop; the release-verify job checks that run instead of repeating it (and
+#              re-checks the ancestry when it runs).
 # Inputs come from the environment (branch names are untrusted, never interpolated into code):
 #   EVENT_NAME BASE_REF HEAD_REF HEAD_SHA SAME_REPO(true|false)
 set -euo pipefail
@@ -30,6 +32,11 @@ if [ "$base" = "main" ] && [ "$head_ref" = "develop" ] && [ "${SAME_REPO:-false}
 fi
 
 if [ "$(git rev-parse "$sha^{tree}")" = "$(git rev-parse "refs/remotes/origin/$base^{tree}")" ]; then
-  decide same-tree "head tree equals the tip tree of $base"
+  base_sha="$(git rev-parse "refs/remotes/origin/$base^{commit}")"
+  here="$(cd "$(dirname "$0")" && pwd)"
+  if python3 -I "$here/verify-prior-ci.py" "$base_sha" --branch "$base"; then
+    decide same-tree "head tree equals the tip tree of $base, whose own push CI is green"
+  fi
+  decide full "head tree equals the tip of $base but that tip has no green push CI"
 fi
 decide full "the tree differs from $base"
