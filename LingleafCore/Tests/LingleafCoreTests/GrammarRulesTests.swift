@@ -8,13 +8,13 @@ final class GrammarRulesTests: XCTestCase {
 
     func testTheBundledRulesLoad() throws {
         let grammar = GrammarRules.shared
-        XCTAssertEqual(grammar.rules.count, 13, "the bundled grammar-rules.json must load")
+        XCTAssertEqual(grammar.rules.count, 15, "the bundled grammar-rules.json must load")
         XCTAssertEqual(grammar.categories.map(\.id), ["sentence", "verbs", "prepositions"])
         XCTAssertEqual(grammar.rules(in: "prepositions").map(\.id), ["time-prepositions", "place-prepositions"])
         XCTAssertNil(grammar.rule(id: "nope"))
         let time = try XCTUnwrap(grammar.rule(id: "time-prepositions"))
         XCTAssertEqual(time.level, "A1")
-        XCTAssertEqual(time.title.text(for: "es"), "In, on, at: fechas y horas")
+        XCTAssertEqual(time.title.text(for: "es"), "In, on, at: tiempo")
         XCTAssertEqual(time.title.text(for: "fr"), "In, on, at: time")
         XCTAssertEqual(time.lines.lines(for: "es").count, time.lines.lines(for: "en").count)
         XCTAssertNotNil(time.note)
@@ -35,8 +35,19 @@ final class GrammarRulesTests: XCTestCase {
         XCTAssertEqual(item.filled(with: 9), "")
         let order = try XCTUnwrap(GrammarRules.shared.rule(id: "question-order"))
         XCTAssertEqual(order.practice[0].kind, .choose)
-        XCTAssertEqual(order.practice[0].filled(with: 1), "Where you live?")
+        XCTAssertEqual(order.practice[0].filled(with: 1), "Where she lives?")
         XCTAssertEqual(order.practice[0].ask?.text(for: "es"), "Elige la pregunta.")
+    }
+
+    func testAnItemKeepsItsFixedOrderAndItsSpanishStimulus() throws {
+        let time = try XCTUnwrap(GrammarRules.shared.rule(id: "time-prepositions"))
+        XCTAssertTrue(time.practice[0].fixedOrder)
+        XCTAssertNil(time.practice[0].textLang)
+        let there = try XCTUnwrap(GrammarRules.shared.rule(id: "subject-it-there"))
+        XCTAssertFalse(there.practice[0].fixedOrder, "absent means shuffled")
+        let spanish = try XCTUnwrap(there.practice.last)
+        XCTAssertEqual(spanish.textLang, "es")
+        XCTAssertEqual(spanish.kind, .choose)
     }
 
     func testEveryBundledItemHasExactlyOneRightOptionWithItsFeedback() {
@@ -86,7 +97,7 @@ final class GrammarRulesTests: XCTestCase {
     }
 
     func testTheBundledDataLoadsFromBytes() throws {
-        XCTAssertEqual(try GrammarRules.load(Self.bundled).rules.count, 13)
+        XCTAssertEqual(try GrammarRules.load(Self.bundled).rules.count, 15)
     }
 
     func testAFileThatIsTooLargeTooDeepOrAnotherSchemaIsRefused() throws {
@@ -195,7 +206,12 @@ final class GrammarRulesTests: XCTestCase {
         XCTAssertEqual(ids("PASADO"), ids("pasado"))
         XCTAssertTrue(ids("había").contains("subject-it-there"))
         XCTAssertEqual(ids("habia"), ids("había"))
-        XCTAssertEqual(GrammarSearch.words("Niño, DON'T-go! 5 mayo"), ["nino", "don", "t", "go", "5", "mayo"])
+        XCTAssertEqual(GrammarSearch.words("Niño, DON'T-go! 5 mayo"), ["nino", "don", "t", "go", "mayo"], "digits are no words")
+        XCTAssertEqual(GrammarSearch.words("Ni\u{F1}o"), GrammarSearch.words("Nin\u{303}o"), "precomposed and decomposed read the same")
+        XCTAssertEqual(GrammarSearch.words("CAFÉ"), ["cafe"])
+        XCTAssertEqual(GrammarSearch.words("one\u{2014}two\u{A0}three_four"), ["one", "two", "three", "four"], "all split")
+        XCTAssertEqual(GrammarSearch.words(""), [])
+        XCTAssertEqual(GrammarSearch.words("123 !?"), [])
     }
 
     func testSearchNeedsEveryWordToStartAWord() {
@@ -205,10 +221,26 @@ final class GrammarRulesTests: XCTestCase {
         XCTAssertEqual(ids("zzzz"), [])
     }
 
+    func testEveryQueryWordNeedsAWordItPrefixesInAnyOfTheTextsOfBothLanguages() {
+        let rule = GrammarRules.shared.rules[0]
+        let texts = [rule.title.en, rule.title.es, rule.lines.en[0], rule.lines.es[0], rule.examples[0].en, rule.examples[0].es,
+                     rule.aliases[0]]
+        for text in texts {
+            let word = GrammarSearch.words(text)[0]
+            XCTAssertTrue(GrammarSearch.matches(rule, query: String(word.prefix(3))), "\(word) starts a word of \(rule.id)")
+            XCTAssertFalse(GrammarSearch.matches(rule, query: word + "qq"), "a word is matched from its start, not past its end")
+        }
+        XCTAssertFalse(GrammarSearch.matches(rule, query: "ts"), "a word in the middle of another is no match")
+    }
+
     func testAnEmptyOrLongQueryIsHandled() {
         XCTAssertEqual(ids("").count, rules.count)
         XCTAssertEqual(ids("  ,, ").count, rules.count)
         XCTAssertEqual(ids(String(repeating: "a", count: 500)), [])
+        // Only the first 100 code points of the query are looked at: a word after them is ignored.
+        let padded = "irregular" + String(repeating: " ", count: GrammarSearch.maxQuery - 9)
+        XCTAssertTrue(ids(padded + "zzzz").contains("irregular-past"), "the part past 100 is cut")
+        XCTAssertEqual(ids(String(padded.dropLast()) + "zzzz"), [], "zzzz starts inside the first 100")
     }
 
     func testSearchFindsRulesByExampleAndAlias() {

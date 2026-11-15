@@ -22,6 +22,8 @@ feat/*, fix/*  ──PR──▶  develop  ──release PR──▶  main
 - Releases: a pull request `develop → main`, approved by the maintainer. Tag `vX.Y.Z` on `main`.
 - Hotfixes: `fix/*` from `main`, merged into `main` and back into `develop`.
 
+- Dependabot bumps of pinned CI actions are never auto-merged: verify the SHA against the upstream tag first (`docs/dependabot.md`).
+
 ## Fixing problems (mandatory)
 
 - Never take the easy way out to make a check, an audit or a test pass. Analyse the root cause and fix it there.

@@ -3,15 +3,26 @@ import Foundation
 /// Search in the Grammar list (SPEC.md S20): ignores case and accents, looks in the title, rule lines,
 /// examples and aliases of both languages, and needs every word of the query to start a word there.
 public enum GrammarSearch {
-    /// Longest query looked at, in characters.
+    /// Longest query looked at, in code points.
     static let maxQuery = 100
 
-    /// The words of `text`: lower-case, without accents, split on anything that is not a letter or digit.
+    /// The words of `text` (SPEC.md S20, Search): lower-cased with the locale-independent `lowercased()`, accents
+    /// stripped (NFD, no combining marks), split on every character that is not a letter (Unicode category L).
     public static func words(_ text: String) -> [String] {
-        text.folding(options: [.diacriticInsensitive, .caseInsensitive], locale: nil)
-            .lowercased()
-            .split { !$0.isLetter && !$0.isNumber }
-            .map(String.init)
+        var words: [String] = []
+        var current = String.UnicodeScalarView()
+        for scalar in text.lowercased().decomposedStringWithCanonicalMapping.unicodeScalars {
+            switch scalar.properties.generalCategory {
+            case .nonspacingMark, .spacingMark, .enclosingMark:
+                continue
+            case .uppercaseLetter, .lowercaseLetter, .titlecaseLetter, .modifierLetter, .otherLetter:
+                current.append(scalar)
+            default:
+                if !current.isEmpty { words.append(String(current)); current = String.UnicodeScalarView() }
+            }
+        }
+        if !current.isEmpty { words.append(String(current)) }
+        return words
     }
 
     /// Every word a rule can be found by.
@@ -22,7 +33,7 @@ public enum GrammarSearch {
     }
 
     public static func matches(_ rule: GrammarRule, query: String) -> Bool {
-        let wanted = words(String(query.prefix(maxQuery)))
+        let wanted = words(String(String.UnicodeScalarView(query.unicodeScalars.prefix(maxQuery))))
         guard !wanted.isEmpty else { return true }
         let have = searchWords(rule)
         return wanted.allSatisfy { word in have.contains { $0.hasPrefix(word) } }

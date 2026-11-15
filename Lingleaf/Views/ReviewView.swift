@@ -35,6 +35,8 @@ struct ReviewView: View {
                         .padding(.vertical, 8)
                 }
                 .scrollBounceBehavior(.basedOnSize)
+                // The answers stay in view: the content that scrolls fades out above them (iOS 26).
+                .modifier(AnswersEdge())
                 if revealed { answers }
             } else if loaded {
                 finished
@@ -96,7 +98,8 @@ struct ReviewView: View {
                 Text("\(tomorrow) words tomorrow.")
             }
         } actions: {
-            Button("Done") { dismiss() }.buttonStyle(.borderedProminent)
+            // Back to the list the session started from (not "Done", which the toolbar also says).
+            Button("Back to Words") { dismiss() }.buttonStyle(.borderedProminent)
             if dueNow > 0 {
                 Button("Keep going") { startSession() }.buttonStyle(.bordered)
             }
@@ -164,9 +167,27 @@ struct ReviewView: View {
     }
 
     /// The translation, then the sentence the word was saved from (the word in bold),
-    /// its translation and a button to hear it.
+    /// its translation and a button to hear it. A word saved unsure at accessibility sizes shows its
+    /// sentence first and its readings after: the sentence tells which one it is (SPEC S7).
     @ViewBuilder
     private func meaning(_ word: VocabWord) -> some View {
+        let hasSentence = !word.context.isEmpty && TextTools.normalize(word.context) != word.word
+        if dynamicTypeSize.isAccessibilitySize, word.isUnsure, hasSentence {
+            sentence(word)
+            Divider()
+            translations(word)
+        } else {
+            translations(word)
+            // A verb group saved without one is the sentence itself: not twice.
+            if hasSentence {
+                Divider()
+                sentence(word)
+            }
+        }
+    }
+
+    /// The word's meaning, or both readings of a word saved unsure, with its IPA.
+    private func translations(_ word: VocabWord) -> some View {
         VStack(spacing: 4) {
             if !word.phonetic.isEmpty, word.kind == nil { Text(word.phonetic).foregroundStyle(Brand.secondaryText) }
             if let meanings = word.meanings, word.isUnsure {
@@ -190,7 +211,7 @@ struct ReviewView: View {
                     }
                 }
             } else if word.translation.isEmpty {
-                Text("No translation yet. Connect to the internet once to get it.")
+                Text(Self.noMeaningText(word))
                     .font(.callout)
                     .foregroundStyle(Brand.secondaryText)
                     .multilineTextAlignment(.center)
@@ -201,38 +222,39 @@ struct ReviewView: View {
                     .font(.title2).multilineTextAlignment(.center)
             }
         }
-        // A verb group saved without one is the sentence itself: not twice.
-        if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
-            Divider()
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
+    }
+
+    /// The sentence the word was saved from, its translation and a button to hear it.
+    private func sentence(_ word: VocabWord) -> some View {
+        HStack(alignment: .top) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(Self.marked(word.context, word: word)).font(readingFont(size: 17)).italic()
+                    .fixedSize(horizontal: false, vertical: true)
+                // Only in the current translation language; another one is translated meanwhile.
+                if let translation = word.contextTranslation(in: model.targetLanguage) {
+                    Text(translation).font(.callout).foregroundStyle(Brand.secondaryText)
                         .fixedSize(horizontal: false, vertical: true)
-                    // Only in the current translation language; another one is translated meanwhile.
-                    if let translation = word.contextTranslation(in: model.targetLanguage) {
-                        Text(translation).font(.callout).foregroundStyle(Brand.secondaryText)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                Spacer(minLength: 8)
-                Button {
-                    model.speaker.speak(word.context, rate: model.state.settings.speechRate)
-                } label: {
-                    Label("Listen to the sentence", systemImage: "speaker.wave.1")
-                        .labelStyle(.iconOnly)
-                        .frame(minWidth: 44, minHeight: 44)
-                        .contentShape(Rectangle())
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer(minLength: 8)
+            Button {
+                model.speaker.speak(word.context, rate: model.state.settings.speechRate)
+            } label: {
+                Label("Listen to the sentence", systemImage: "speaker.wave.1")
+                    .labelStyle(.iconOnly)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     /// `sentence` with the saved word in bold: only the occurrence that was tapped when the record
     /// knows it (SPEC S7), else its forms read in the sentence, or the saved group of words.
     static func marked(_ sentence: String, word: VocabWord) -> AttributedString {
         var text = AttributedString(sentence)
-        let ranges = word.formRange.map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
+        // A word saved from a story's sense with a group of words ("went red") marks the whole group.
+        let ranges = (word.groupRange ?? word.formRange).map { [$0] } ?? TextTools.occurrences(of: word, in: sentence)
         for range in ranges {
             guard let stringRange = Range(range.nsRange, in: sentence), let marked = Range(stringRange, in: text) else { continue }
             text[marked].inlinePresentationIntent = .stronglyEmphasized
@@ -240,12 +262,20 @@ struct ReviewView: View {
         return text
     }
 
+    /// Why a word has no meaning: a story sense with no source to translate has none out of context (S19), the
+    /// sentence's translation tells; any other word is waiting for its translation to arrive.
+    static func noMeaningText(_ word: VocabWord) -> String {
+        Sense.isStory(word.sense) && word.translationSource == nil
+            ? String(localized: "No single meaning out of context. See the sentence.")
+            : String(localized: "No translation yet. Connect to the internet once to get it.")
+    }
+
     /// The button VoiceOver was on disappears; say what appeared in its place.
     private func announceMeaning(of word: VocabWord) {
         let readings = word.isUnsure ? word.meanings?.map { $0.text.isEmpty ? $0.label : "\($0.label), \($0.text)" } : nil
         var announcement = AttributedString(
             readings?.joined(separator: ". ") ?? (word.translation.isEmpty
-                ? String(localized: "No translation yet. Connect to the internet once to get it.") : word.translation)
+                ? Self.noMeaningText(word) : word.translation)
         )
         // High priority: not cut off by VoiceOver moving focus away from the vanished button.
         announcement.accessibilitySpeechAnnouncementPriority = .high
@@ -262,5 +292,16 @@ struct ReviewView: View {
         }
         revealed = false
         model.library.answerReview(word.word, sense: word.sense, correct: correct)
+    }
+}
+
+/// The scrolling card fades out above the fixed answers (iOS 26's scroll edge effect); before, nothing.
+private struct AnswersEdge: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26, *) {
+            content.scrollEdgeEffectStyle(.soft, for: .bottom)
+        } else {
+            content
+        }
     }
 }

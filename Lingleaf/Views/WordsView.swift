@@ -10,6 +10,8 @@ struct WordsView: View {
     var body: some View {
         let due = model.library.dueWords().count
         let words = model.state.words.filter { $0.learned == showLearned }
+        // The words the open corrections card changed, read once for the whole list.
+        let fixedIDs = model.library.correctedWordIDs()
         NavigationStack {
             List {
                 Section {
@@ -59,7 +61,7 @@ struct WordsView: View {
                     .multilineTextAlignment(.center)
                 }
                 ForEach(words) { word in
-                    WordRow(word: word) { delete(word) }
+                    WordRow(word: word, isFixed: fixedIDs.contains(word.id)) { delete(word) }
                 }
             }
             .navigationTitle("Words")
@@ -105,14 +107,30 @@ struct WordsView: View {
 
 private struct WordRow: View {
     let word: VocabWord
+    /// The open corrections card changed this word (SPEC S18).
+    let isFixed: Bool
     let onDelete: () -> Void
     @Environment(AppModel.self) private var model
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
-        HStack(alignment: .top) {
+        // At accessibility sizes the name, the tag and the IPA each get a line.
+        let heading = dynamicTypeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+        return HStack(alignment: .top) {
             VStack(alignment: .leading, spacing: 3) {
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                heading {
                     Text(verbatim: model.state.displayName(word)).font(.headline)
+                    // While the corrections card is open, the words it fixed say so (SPEC S18).
+                    if isFixed {
+                        Text("Fixed")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(Color.black)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 2)
+                            .background(Brand.marker, in: Capsule())
+                    }
                     if !word.phonetic.isEmpty, word.kind == nil {
                         Text(word.phonetic).font(.caption).foregroundStyle(Brand.secondaryText)
                     }
@@ -131,8 +149,16 @@ private struct WordRow: View {
                 }
                 // A verb group saved without one is the sentence itself: not twice.
                 if !word.context.isEmpty, TextTools.normalize(word.context) != word.word {
-                    Text(word.context).font(.caption).italic().foregroundStyle(Brand.secondaryText)
-                        .fixedSize(horizontal: false, vertical: true)
+                    // A group saved from a story's sense is marked whole in its sentence.
+                    Group {
+                        if word.groupRange == nil {
+                            Text(word.context)
+                        } else {
+                            Text(ReviewView.marked(word.context, word: word))
+                        }
+                    }
+                    .font(.caption).italic().foregroundStyle(Brand.secondaryText)
+                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
             // One VoiceOver element per word ("beach, /biːtʃ/, playa, …") instead of

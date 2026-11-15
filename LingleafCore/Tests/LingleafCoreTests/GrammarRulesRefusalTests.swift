@@ -301,6 +301,85 @@ final class GrammarRulesRefusalTests: XCTestCase {
         }
     }
 
+    // MARK: fixedOrder and textLang
+
+    func testFixedOrderIsABooleanOrAbsent() throws {
+        try loads(try item("his-her-its") { $0["fixedOrder"] = true }, "fixedOrder true")
+        try loads(try item("his-her-its") { $0["fixedOrder"] = false }, "fixedOrder false")
+        try loads(try item("his-her-its") { $0["fixedOrder"] = nil }, "fixedOrder absent")
+        for (kind, bad) in [("a string", "true" as Any), ("a number", 1), ("zero", 0), ("null", NSNull()), ("a list", [true])] {
+            try refused(try item("his-her-its") { $0["fixedOrder"] = bad }, "fixedOrder as \(kind)")
+        }
+        let read = try GrammarRules.load(data(item("his-her-its") { $0["fixedOrder"] = true }))
+        XCTAssertTrue(read.rule(id: "his-her-its")?.practice[0].fixedOrder == true)
+    }
+
+    func testTextLangIsEsOnAChooseItemOnly() throws {
+        try loads(try item("question-order") { $0["textLang"] = "es" }, "es on a choose item")
+        try loads(try item("question-order") { $0["textLang"] = nil }, "absent on a choose item")
+        for bad in ["en", "ES", "es ", "", "fr"] {
+            try refused(try item("question-order") { $0["textLang"] = bad }, "textLang \(bad.debugDescription)")
+        }
+        for bad in [1, true, NSNull(), ["es"]] as [Any] {
+            try refused(try item("question-order") { $0["textLang"] = bad }, "textLang \(bad) of the wrong type")
+        }
+        try refused(try item("his-her-its") { $0["textLang"] = "es" }, "es on a gap item")
+        let read = try GrammarRules.load(data(item("question-order") { $0["textLang"] = "es" }))
+        XCTAssertEqual(read.rule(id: "question-order")?.practice[0].textLang, "es")
+    }
+
+    func testAnOptionalFieldThatIsPresentMustHoldAValue() throws {
+        try refused(try rule { $0["note"] = NSNull() }, "note null")
+        try refused(try rule { $0["spanish"] = NSNull() }, "spanish null")
+        try refused(try rule { $0["contrast"] = ["forms": ["a", "b"], "gloss": NSNull()] }, "gloss null")
+        try refused(try rule { $0["books"] = ["mode": "none", "patterns": NSNull()] }, "patterns null")
+        try refused(try item("question-order") { $0["ask"] = NSNull() }, "ask null")
+        try refused(try item("his-her-its") { $0["text"] = NSNull() }, "text null")
+    }
+
+    // MARK: Size and depth
+
+    func testTheFileCapIs256KilobytesOfBytes() throws {
+        let valid = Self.bundled
+        let padding = GrammarRules.maxBytes - valid.count
+        XCTAssertGreaterThan(padding, 0)
+        XCTAssertNoThrow(try GrammarRules.load(valid + Data(repeating: 0x20, count: padding)), "exactly 256 KB")
+        XCTAssertThrowsError(try GrammarRules.load(valid + Data(repeating: 0x20, count: padding + 1))) {
+            XCTAssertEqual($0 as? GrammarRulesError, .tooLarge)
+        }
+    }
+
+    func testTheDepthCapIsEightContainers() throws {
+        let limit = GrammarRules.maxDepth
+        XCTAssertEqual(limit, 8)
+        let ok = Data(("{\"schema\": 1, \"x\": " + String(repeating: "[", count: limit - 1) + String(repeating: "]", count: limit - 1) + "}").utf8)
+        XCTAssertThrowsError(try GrammarRules.load(ok)) { XCTAssertNotEqual($0 as? GrammarRulesError, .tooDeep, "8 deep passes the depth check") }
+        let deep = Data(("{\"schema\": 1, \"x\": " + String(repeating: "[", count: limit) + String(repeating: "]", count: limit) + "}").utf8)
+        XCTAssertThrowsError(try GrammarRules.load(deep)) { XCTAssertEqual($0 as? GrammarRulesError, .tooDeep) }
+        // The bundled file nests well inside the cap.
+        XCTAssertTrue(JSONGuard.isShallow(Self.bundled, maxDepth: limit))
+        XCTAssertFalse(JSONGuard.isShallow(Self.bundled, maxDepth: 5))
+    }
+
+    func testTheSchemaVersionIsRefusedFirstAsItself() throws {
+        for bad: Any in [0, 2, -1, "1", 1.5, NSNull()] {
+            var json = try root()
+            json["schema"] = bad
+            try refused(json, "schema \(bad)")
+        }
+        var future = try root()
+        future["schema"] = 2
+        future["new"] = "field"
+        XCTAssertThrowsError(try GrammarRules.load(data(future)))
+    }
+
+    func testInvalidBytesAreRefusedWholeWithoutACrash() throws {
+        XCTAssertThrowsError(try GrammarRules.load(Data()))
+        XCTAssertThrowsError(try GrammarRules.load(Data([0xFF, 0xFE, 0x00])))
+        XCTAssertThrowsError(try GrammarRules.load(Self.bundled.prefix(Self.bundled.count / 2)))
+        XCTAssertThrowsError(try GrammarRules.load(Data("null".utf8)))
+    }
+
     // MARK: Gap and ask
 
     func testAGapItemHasNoAskAndAChooseItemNeedsOne() throws {

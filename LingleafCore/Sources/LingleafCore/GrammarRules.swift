@@ -118,7 +118,7 @@ public struct GrammarRules: Sendable {
                 let letters: (Substring) -> Bool = { word in
                     !word.isEmpty && word.utf8.allSatisfy { (0x61...0x7A).contains($0) || $0 == 0x7C || $0 == 0x2A }
                 }
-                try check((1...5).contains(words.count) && words.allSatisfy(letters) && pattern.utf8.count <= 80, "\(id): book pattern \(pattern)")
+                try check((1...5).contains(words.count) && words.allSatisfy(letters) && isText(pattern), "\(id): book pattern \(pattern)")
             }
         }
     }
@@ -133,6 +133,8 @@ public struct GrammarRules: Sendable {
         try check(item.feedback.count == item.options.count, "\(item.id): one feedback line per option")
         try check(item.feedback.allSatisfy { isText($0.en) && isText($0.es) }, "\(item.id): feedback")
         try check(isPair(item.ask), "\(item.id): ask")
+        let spanishOK = item.textLang == nil || (item.textLang == "es" && item.kind == .choose)
+        try check(spanishOK, "\(item.id): textLang is es, on a choose item only")
         switch item.kind {
         case .gap:
             try check(item.ask == nil, "\(item.id): a gap item has no ask")
@@ -227,6 +229,11 @@ public struct PracticeItem: Equatable, Sendable {
     public let answer: Int
     /// One line per option, in the options' order: why it is right or not.
     public let feedback: [GrammarText]
+    /// True: shown in the file's order (a, an, the; in, on, at). Otherwise shuffled (SPEC.md, "Option order").
+    public let fixedOrder: Bool
+    /// "es" when `text` is a Spanish sentence (a `choose` item): drawn only for a learner whose translation or
+    /// interface language is Spanish. nil for English text.
+    public let textLang: String?
 
     public var correct: String { options[answer] }
 
@@ -282,7 +289,10 @@ private extension Decoder {
 
 private extension KeyedDecodingContainer where K == GrammarKey {
     func value<T: Decodable>(_ key: String) throws -> T { try decode(T.self, forKey: GrammarKey(key)) }
-    func optional<T: Decodable>(_ key: String) throws -> T? { try decodeIfPresent(T.self, forKey: GrammarKey(key)) }
+    /// Absent is fine; a key that is present must hold a value of the right type (a JSON null is refused).
+    func optional<T: Decodable>(_ key: String) throws -> T? {
+        contains(GrammarKey(key)) ? try decode(T.self, forKey: GrammarKey(key)) : nil
+    }
 }
 
 private struct GrammarFile: Decodable {
@@ -354,7 +364,9 @@ extension PracticeItem.Kind: Decodable {}
 
 extension PracticeItem: Decodable {
     public init(from decoder: Decoder) throws {
-        let c = try decoder.strictObject(["id", "level", "kind", "options", "answer", "feedback"], optional: ["text", "ask"])
+        let c = try decoder.strictObject(
+            ["id", "level", "kind", "options", "answer", "feedback"], optional: ["text", "ask", "fixedOrder", "textLang"]
+        )
         id = try c.value("id")
         level = try c.value("level")
         kind = try c.value("kind")
@@ -363,13 +375,16 @@ extension PracticeItem: Decodable {
         options = try c.value("options")
         answer = try c.value("answer")
         feedback = try c.value("feedback")
+        fixedOrder = try c.optional("fixedOrder") ?? false
+        textLang = try c.optional("textLang")
     }
 }
 
 extension GrammarRule: Decodable {
     public init(from decoder: Decoder) throws {
         let c = try decoder.strictObject(
-            ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "books", "practice"], optional: ["note", "spanish"]
+            ["id", "category", "level", "title", "rule", "examples", "contrast", "aliases", "books", "practice"],
+            optional: ["note", "spanish"]
         )
         id = try c.value("id")
         category = try c.value("category")

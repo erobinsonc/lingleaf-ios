@@ -1,6 +1,32 @@
-The stories in this folder (the-red-boat.txt, a-day-at-the-market.txt,
-the-lighthouse-keeper.txt) are original works written for Lingleaf. They are
-dedicated to the public domain under Creative Commons CC0 1.0 Universal.
+The stories in this folder are original works written for Lingleaf:
+
+  a-shoe-in-the-fridge.txt
+  an-empty-apartment.txt
+  nours-long-race.txt
+  a-part-for-lila.txt
+  the-oven-next-door.txt
+  the-tree-in-the-second-row.txt
+  a-very-important-visitor.txt
+  the-beat-on-the-hill.txt
+  the-chess-table-by-the-lake.txt
+  notes-on-the-fridge.txt
+  the-presentation-in-kisumu.txt
+  three-in-the-morning.txt
+  a-number-in-osaka.txt
+  an-apartment-full-of-notes.txt
+  lane-four.txt
+  five-minutes-maximum.txt
+  the-exit-interview.txt
+  the-second-violin.txt
+  the-red-boat.txt
+  a-day-at-the-market.txt
+  the-lighthouse-keeper.txt
+
+and the senses files (<story>.senses.json) next to the 18 newest: notes on how a word is used
+in each story. They are dedicated to the public domain under Creative Commons CC0 1.0 Universal.
+All 21 stories were written with AI assistance (Claude, Anthropic) from the maintainer's brief and reviewed by the
+maintainer; the senses files were made with the same help. The originality checks of the 18 newest are kept in
+docs/stories-provenance.md.
 The full legal text follows.
 
 Creative Commons Legal Code

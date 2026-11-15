@@ -1,0 +1,756 @@
+{
+ "schemaVersion": 1,
+ "story": "the-tree-in-the-second-row",
+ "senses": {
+  "about_approx": {
+   "lemma": "about",
+   "pos": "adverb",
+   "ipa": "əˈbaʊt",
+   "es": "unas, más o menos",
+   "kind": "word"
+  },
+  "back_rear_room": {
+   "lemma": "back",
+   "pos": "noun",
+   "ipa": "bæk",
+   "es": "fondo (de una sala)",
+   "kind": "word"
+  },
+  "branch_tree": {
+   "lemma": "branch",
+   "pos": "noun",
+   "ipa": "bræntʃ",
+   "es": "rama",
+   "kind": "word"
+  },
+  "colleague": {
+   "lemma": "colleague",
+   "pos": "noun",
+   "ipa": "ˈkɑliɡ",
+   "es": "compañero, compañera de trabajo",
+   "kind": "word"
+  },
+  "come_over": {
+   "lemma": "come over",
+   "pos": "phrasal verb",
+   "ipa": "kʌm ˈoʊvər",
+   "es": "venir, pasarse (por casa de alguien)",
+   "kind": "chunk"
+  },
+  "costume": {
+   "lemma": "costume",
+   "pos": "noun",
+   "ipa": "ˈkɑstum",
+   "es": "disfraz (no «costumbre»)",
+   "kind": "word",
+   "en": "clothes worn for a play or party"
+  },
+  "crazy_hectic": {
+   "lemma": "crazy",
+   "pos": "adjective",
+   "ipa": "ˈkreɪzi",
+   "es": "alocado, caótico",
+   "kind": "word"
+  },
+  "cut_out": {
+   "lemma": "cut out",
+   "pos": "phrasal verb",
+   "ipa": "kʌt aʊt",
+   "es": "recortar",
+   "kind": "chunk"
+  },
+  "desk": {
+   "lemma": "desk",
+   "pos": "noun",
+   "ipa": "dɛsk",
+   "es": "escritorio, mesa de trabajo",
+   "kind": "word"
+  },
+  "drive_taxi": {
+   "lemma": "drive",
+   "pos": "verb",
+   "ipa": "draɪv",
+   "es": "conducir, manejar",
+   "kind": "word"
+  },
+  "floor_ground": {
+   "lemma": "floor",
+   "pos": "noun",
+   "ipa": "flɔr",
+   "es": "suelo",
+   "kind": "word",
+   "en": "the lower surface of a room or a pool"
+  },
+  "fly_in": {
+   "lemma": "fly in",
+   "pos": "phrasal verb",
+   "ipa": "flaɪ ɪn",
+   "es": "llegar en avión",
+   "kind": "chunk"
+  },
+  "hall_school": {
+   "lemma": "hall",
+   "pos": "noun",
+   "ipa": "hɔl",
+   "es": "auditorio",
+   "kind": "word"
+  },
+  "keep_promise": {
+   "lemma": "keep",
+   "pos": "verb",
+   "ipa": "kip",
+   "es": "cumplir (una promesa)",
+   "kind": "word"
+  },
+  "line_actor": {
+   "lemma": "line",
+   "pos": "noun",
+   "ipa": "laɪn",
+   "es": "frase, parlamento (de un actor)",
+   "kind": "word"
+  },
+  "look_for": {
+   "lemma": "look for",
+   "pos": "phrasal verb",
+   "ipa": "lʊk fɔr",
+   "es": "buscar",
+   "kind": "chunk"
+  },
+  "look_like": {
+   "lemma": "look like",
+   "pos": "phrase",
+   "ipa": "lʊk laɪk",
+   "es": "parecer(se a)",
+   "kind": "chunk"
+  },
+  "manager_boss": {
+   "lemma": "manager",
+   "pos": "noun",
+   "ipa": "ˈmænɪdʒər",
+   "es": "jefe, jefa; gerente",
+   "kind": "word"
+  },
+  "mom": {
+   "lemma": "mom",
+   "pos": "noun",
+   "ipa": "mɑm",
+   "es": "mamá",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "move_reschedule": {
+   "lemma": "move",
+   "pos": "verb",
+   "ipa": "muv",
+   "es": "cambiar (de hora o de día)",
+   "kind": "word"
+  },
+  "of_course": {
+   "lemma": "of course",
+   "pos": "phrase",
+   "ipa": "əv kɔrs",
+   "es": "claro, por supuesto",
+   "kind": "chunk"
+  },
+  "part_section": {
+   "lemma": "part",
+   "pos": "noun",
+   "ipa": "pɑrt",
+   "es": "parte (de la historia)",
+   "kind": "word",
+   "en": "a section of a story"
+  },
+  "play_theatre": {
+   "lemma": "play",
+   "pos": "noun",
+   "ipa": "pleɪ",
+   "es": "obra de teatro",
+   "kind": "word"
+  },
+  "practice_rehearse": {
+   "lemma": "practice",
+   "pos": "verb",
+   "ipa": "ˈpræktɪs",
+   "es": "ensayar, practicar",
+   "kind": "word",
+   "variety": "AmE"
+  },
+  "right_tag": {
+   "lemma": "right",
+   "pos": "adverb",
+   "ipa": "raɪt",
+   "es": "¿verdad?, ¿no?",
+   "kind": "word"
+  },
+  "row_line": {
+   "lemma": "row",
+   "pos": "noun",
+   "ipa": "roʊ",
+   "es": "fila",
+   "kind": "word"
+  },
+  "screen_display": {
+   "lemma": "screen",
+   "pos": "noun",
+   "ipa": "skrin",
+   "es": "pantalla",
+   "kind": "word"
+  },
+  "sit_down": {
+   "lemma": "sit down",
+   "pos": "phrasal verb",
+   "ipa": "sɪt daʊn",
+   "es": "sentarse",
+   "kind": "chunk"
+  },
+  "stage_theatre": {
+   "lemma": "stage",
+   "pos": "noun",
+   "ipa": "steɪdʒ",
+   "es": "escenario",
+   "kind": "word"
+  },
+  "stand_up": {
+   "lemma": "stand up",
+   "pos": "phrasal verb",
+   "ipa": "stænd ʌp",
+   "es": "levantarse, ponerse de pie",
+   "kind": "chunk"
+  },
+  "still_yet": {
+   "lemma": "still",
+   "pos": "adverb",
+   "ipa": "stɪl",
+   "es": "todavía",
+   "kind": "word",
+   "en": "up to now, even now"
+  },
+  "story_tale": {
+   "lemma": "story",
+   "pos": "noun",
+   "ipa": "ˈstɔri",
+   "es": "cuento",
+   "kind": "word"
+  },
+  "take_motorbike": {
+   "lemma": "take",
+   "pos": "verb",
+   "ipa": "teɪk",
+   "es": "tomar (un transporte)",
+   "kind": "word"
+  },
+  "try_on": {
+   "lemma": "try on",
+   "pos": "phrasal verb",
+   "ipa": "traɪ ɑn",
+   "es": "probarse (ropa)",
+   "kind": "chunk"
+  },
+  "turn_around": {
+   "lemma": "turn around",
+   "pos": "phrasal verb",
+   "ipa": "tɝn əˈraʊnd",
+   "es": "darse la vuelta",
+   "kind": "chunk"
+  },
+  "turn_go": {
+   "lemma": "turn",
+   "pos": "noun",
+   "ipa": "tɝn",
+   "es": "turno",
+   "kind": "word"
+  },
+  "walk_out": {
+   "lemma": "walk out",
+   "pos": "phrasal verb",
+   "ipa": "wɔk aʊt",
+   "es": "salir (andando)",
+   "kind": "chunk"
+  },
+  "wave_back": {
+   "lemma": "wave back",
+   "pos": "phrasal verb",
+   "ipa": "weɪv bæk",
+   "es": "devolver el saludo con la mano",
+   "kind": "chunk"
+  },
+  "wave_hand": {
+   "lemma": "wave",
+   "pos": "verb",
+   "ipa": "weɪv",
+   "es": "saludar con la mano",
+   "kind": "word",
+   "en": "to move the hand to say hello"
+  },
+  "wear_clothes": {
+   "lemma": "wear",
+   "pos": "verb",
+   "ipa": "wɛr",
+   "es": "llevar puesto",
+   "kind": "word"
+  },
+  "whats_wrong": {
+   "lemma": "what's wrong",
+   "pos": "phrase",
+   "ipa": "wʌts rɔŋ",
+   "es": "¿qué te pasa?",
+   "kind": "chunk"
+  }
+ },
+ "entries": [
+  {
+   "p": 0,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 1,
+   "start": 161,
+   "end": 166,
+   "text": "drove",
+   "sense": "drive_taxi"
+  },
+  {
+   "p": 1,
+   "start": 235,
+   "end": 240,
+   "text": "crazy",
+   "sense": "crazy_hectic"
+  },
+  {
+   "p": 2,
+   "start": 62,
+   "end": 65,
+   "text": "Mom",
+   "sense": "mom"
+  },
+  {
+   "p": 2,
+   "start": 87,
+   "end": 91,
+   "text": "play",
+   "sense": "play_theatre",
+   "chunk": {
+    "start": 82,
+    "end": 91,
+    "text": "do a play",
+    "es": "hacer una obra de teatro"
+   }
+  },
+  {
+   "p": 4,
+   "start": 4,
+   "end": 8,
+   "text": "play",
+   "sense": "play_theatre"
+  },
+  {
+   "p": 4,
+   "start": 68,
+   "end": 75,
+   "text": "costume",
+   "sense": "costume"
+  },
+  {
+   "p": 5,
+   "start": 23,
+   "end": 28,
+   "text": "right",
+   "sense": "right_tag"
+  },
+  {
+   "p": 7,
+   "start": 36,
+   "end": 43,
+   "text": "manager",
+   "sense": "manager_boss"
+  },
+  {
+   "p": 7,
+   "start": 107,
+   "end": 111,
+   "text": "move",
+   "sense": "move_reschedule"
+  },
+  {
+   "p": 8,
+   "start": 22,
+   "end": 28,
+   "text": "screen",
+   "sense": "screen_display"
+  },
+  {
+   "p": 8,
+   "start": 63,
+   "end": 69,
+   "text": "flying",
+   "sense": "fly_in",
+   "chunk": {
+    "start": 63,
+    "end": 87,
+    "text": "flying in from Singapore",
+    "es": "llegan en avión desde Singapur"
+   }
+  },
+  {
+   "p": 9,
+   "start": 22,
+   "end": 26,
+   "text": "desk",
+   "sense": "desk"
+  },
+  {
+   "p": 9,
+   "start": 54,
+   "end": 63,
+   "text": "colleague",
+   "sense": "colleague"
+  },
+  {
+   "p": 10,
+   "start": 8,
+   "end": 13,
+   "text": "wrong",
+   "sense": "whats_wrong",
+   "chunk": {
+    "start": 1,
+    "end": 13,
+    "text": "What's wrong",
+    "es": "¿Qué te pasa?"
+   }
+  },
+  {
+   "p": 14,
+   "start": 4,
+   "end": 10,
+   "text": "course",
+   "sense": "of_course",
+   "chunk": {
+    "start": 1,
+    "end": 10,
+    "text": "Of course",
+    "es": "Claro"
+   }
+  },
+  {
+   "p": 16,
+   "start": 0,
+   "end": 4,
+   "text": "Part",
+   "sense": "part_section"
+  },
+  {
+   "p": 17,
+   "start": 14,
+   "end": 19,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 17,
+   "start": 24,
+   "end": 31,
+   "text": "costume",
+   "sense": "costume"
+  },
+  {
+   "p": 18,
+   "start": 13,
+   "end": 18,
+   "text": "story",
+   "sense": "story_tale"
+  },
+  {
+   "p": 18,
+   "start": 35,
+   "end": 43,
+   "text": "practice",
+   "sense": "practice_rehearse"
+  },
+  {
+   "p": 18,
+   "start": 48,
+   "end": 52,
+   "text": "line",
+   "sense": "line_actor"
+  },
+  {
+   "p": 18,
+   "start": 61,
+   "end": 65,
+   "text": "play",
+   "sense": "play_theatre"
+  },
+  {
+   "p": 18,
+   "start": 83,
+   "end": 87,
+   "text": "line",
+   "sense": "line_actor"
+  },
+  {
+   "p": 18,
+   "start": 124,
+   "end": 129,
+   "text": "about",
+   "sense": "about_approx"
+  },
+  {
+   "p": 21,
+   "start": 13,
+   "end": 18,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 23,
+   "start": 28,
+   "end": 36,
+   "text": "costumes",
+   "sense": "costume"
+  },
+  {
+   "p": 23,
+   "start": 87,
+   "end": 91,
+   "text": "come",
+   "sense": "come_over",
+   "chunk": {
+    "start": 87,
+    "end": 96,
+    "text": "come over",
+    "es": "pasarme por tu casa"
+   }
+  },
+  {
+   "p": 24,
+   "start": 70,
+   "end": 73,
+   "text": "cut",
+   "sense": "cut_out",
+   "chunk": {
+    "start": 70,
+    "end": 77,
+    "text": "cut out",
+    "es": "recortó"
+   }
+  },
+  {
+   "p": 24,
+   "start": 154,
+   "end": 159,
+   "text": "tried",
+   "sense": "try_on",
+   "chunk": {
+    "start": 154,
+    "end": 165,
+    "text": "tried it on",
+    "es": "se lo probó"
+   }
+  },
+  {
+   "p": 24,
+   "start": 170,
+   "end": 176,
+   "text": "turned",
+   "sense": "turn_around",
+   "chunk": {
+    "start": 170,
+    "end": 183,
+    "text": "turned around",
+    "es": "se dio la vuelta"
+   }
+  },
+  {
+   "p": 25,
+   "start": 3,
+   "end": 7,
+   "text": "look",
+   "sense": "look_like",
+   "chunk": {
+    "start": 3,
+    "end": 12,
+    "text": "look like",
+    "es": "parezco"
+   }
+  },
+  {
+   "p": 27,
+   "start": 155,
+   "end": 160,
+   "text": "stood",
+   "sense": "stand_up",
+   "chunk": {
+    "start": 155,
+    "end": 163,
+    "text": "stood up",
+    "es": "se levantó"
+   }
+  },
+  {
+   "p": 27,
+   "start": 227,
+   "end": 233,
+   "text": "walked",
+   "sense": "walk_out",
+   "chunk": {
+    "start": 227,
+    "end": 237,
+    "text": "walked out",
+    "es": "salió"
+   }
+  },
+  {
+   "p": 28,
+   "start": 31,
+   "end": 35,
+   "text": "took",
+   "sense": "take_motorbike"
+  },
+  {
+   "p": 28,
+   "start": 136,
+   "end": 140,
+   "text": "hall",
+   "sense": "hall_school"
+  },
+  {
+   "p": 28,
+   "start": 175,
+   "end": 178,
+   "text": "sat",
+   "sense": "sit_down",
+   "chunk": {
+    "start": 175,
+    "end": 183,
+    "text": "sat down",
+    "es": "se sentó"
+   }
+  },
+  {
+   "p": 28,
+   "start": 191,
+   "end": 195,
+   "text": "back",
+   "sense": "back_rear_room",
+   "chunk": {
+    "start": 184,
+    "end": 195,
+    "text": "at the back",
+    "es": "al fondo"
+   }
+  },
+  {
+   "p": 29,
+   "start": 7,
+   "end": 12,
+   "text": "stage",
+   "sense": "stage_theatre"
+  },
+  {
+   "p": 29,
+   "start": 42,
+   "end": 46,
+   "text": "rows",
+   "sense": "row_line"
+  },
+  {
+   "p": 29,
+   "start": 71,
+   "end": 74,
+   "text": "row",
+   "sense": "row_line"
+  },
+  {
+   "p": 30,
+   "start": 16,
+   "end": 20,
+   "text": "turn",
+   "sense": "turn_go"
+  },
+  {
+   "p": 30,
+   "start": 78,
+   "end": 84,
+   "text": "looked",
+   "sense": "look_for",
+   "chunk": {
+    "start": 78,
+    "end": 88,
+    "text": "looked for",
+    "es": "buscó"
+   }
+  },
+  {
+   "p": 30,
+   "start": 106,
+   "end": 111,
+   "text": "waved",
+   "sense": "wave_hand"
+  },
+  {
+   "p": 30,
+   "start": 118,
+   "end": 123,
+   "text": "waved",
+   "sense": "wave_back",
+   "chunk": {
+    "start": 118,
+    "end": 128,
+    "text": "waved back",
+    "es": "le devolvió el saludo"
+   }
+  },
+  {
+   "p": 30,
+   "start": 136,
+   "end": 142,
+   "text": "branch",
+   "sense": "branch_tree"
+  },
+  {
+   "p": 30,
+   "start": 174,
+   "end": 179,
+   "text": "floor",
+   "sense": "floor_ground"
+  },
+  {
+   "p": 32,
+   "start": 10,
+   "end": 14,
+   "text": "play",
+   "sense": "play_theatre"
+  },
+  {
+   "p": 33,
+   "start": 39,
+   "end": 43,
+   "text": "keep",
+   "sense": "keep_promise"
+  },
+  {
+   "p": 34,
+   "start": 137,
+   "end": 142,
+   "text": "still",
+   "sense": "still_yet"
+  },
+  {
+   "p": 34,
+   "start": 143,
+   "end": 150,
+   "text": "wearing",
+   "sense": "wear_clothes"
+  },
+  {
+   "p": 34,
+   "start": 155,
+   "end": 162,
+   "text": "costume",
+   "sense": "costume"
+  }
+ ]
+}
