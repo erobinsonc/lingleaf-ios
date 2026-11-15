@@ -9,80 +9,7 @@ extension LingleafUITests {
     /// meaning). Collects every issue before failing, so one CI run shows the whole list.
     func testAccessibilityAudit() throws {
         var issues: [String] = []
-        func audit(_ screen: String) throws {
-            // The audit measures the pixels of one screenshot against the accessibility tree. A tab
-            // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
-            // than any fixed wait: audited mid-transition, black text on white failed contrast and
-            // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
-            // tree). So wait until the screen itself has stopped changing, not for a fixed time.
-            if !waitUntilSettled() {
-                attachEvidence("audit-\(screen)-never-settled")
-                // Auditing a screen that is still changing proves nothing: say so instead of going on.
-                XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
-            }
-            if screen == "Library" {
-                diagnose("t0-settled")
-                RunLoop.current.run(until: Date().addingTimeInterval(4))
-                diagnose("t0+4s")
-            }
-            // The reader hides the tab bar; then nothing can sit under it.
-            let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
-            let before = issues.count
-            // A row half under the glass tab bar is measured against the bar's blur too, but
-            // XCTest can't always resolve its elements, and then the exemption below can't
-            // see where they are. Such unresolved contrast findings are accepted only up to the
-            // number of elements under the bar right now; any more still fail, with a screenshot.
-            let underBar = Self.elementsUnder(tabBar, in: app)
-            var unresolved: [String] = []
-            // The audit itself can time out (the first one after a cold simulator boot): that is
-            // no result, so it runs again; the findings of an audit that completes always count.
-            for attempt in 1...3 {
-                issues.removeSubrange(before...)
-                unresolved = []
-                do {
-                    try app.performAccessibilityAudit { issue in
-                        // Rows scrolled under the translucent tab bar are measured against
-                        // the bar's blur; scrolled into view they read normally. The tab
-                        // bar's own buttons are not exempt: their contrast is still checked.
-                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
-                           !Self.isTabBarButton(flagged, in: tabBar) { return true }
-                        // The search field is UIKit's own (from `.searchable`); its clipping
-                        // at large text sizes is iOS's to handle, not something the app can change.
-                        if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                        if Self.knownFalsePositive(issue, on: screen) { return true }
-                        if issue.auditType == .contrast, issue.element == nil {
-                            unresolved.append(
-                                "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
-                            return true
-                        }
-                        let element = issue.element.map {
-                            "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
-                        } ?? "screen"
-                        issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
-                        return true
-                    }
-                    break
-                } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
-                    && error.code == -56 && attempt < 3 {
-                    RunLoop.current.run(until: Date().addingTimeInterval(2))
-                }
-            }
-            if unresolved.count > underBar {
-                issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
-                issues += unresolved
-            }
-            if screen == "Library" { diagnose(issues.count > before ? "after-FAILED-audit" : "after-passed-audit") }
-            // Evidence for any finding: the screen as audited, kept with the test results, so a
-            // finding without a resolvable element (a view that changed mid-audit) can be traced.
-            if issues.count > before {
-                let shot = XCTAttachment(screenshot: app.screenshot())
-                // Named like the tour's shots, so CI exports and publishes it with them.
-                let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
-                shot.name = "en-light-99-audit-\(slug)"
-                shot.lifetime = .keepAlways
-                add(shot)
-            }
-        }
+        func audit(_ screen: String) throws { issues += try auditScreen(screen) }
         for tab in ["Library", "Discover", "Words", "Settings"] {
             app.tabBars.buttons[tab].tap()
             // The tab's own screen is there (its title), then still.
@@ -132,113 +59,85 @@ extension LingleafUITests {
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
     }
 
-    // swiftlint:disable all
-    private func note(_ text: String) { XCTContext.runActivity(named: text) { _ in } }
-
-    /// DIAGNOSTIC (throwaway): frames and a contrast profile of the Library rows near the tab bar.
-    private func diagnose(_ tag: String) {
-        let window = app.windows.firstMatch.frame
-        let bar = app.tabBars.firstMatch
-        let barFrame = bar.exists ? bar.frame : CGRect.null
-        let row = app.staticTexts["A Day at the Market"].firstMatch
-        let rowFrame = row.exists ? row.frame : CGRect.null
-        note("DIAG \(tag) uptime=\(Int(ProcessInfo.processInfo.systemUptime))s window=\(window) tabBar=\(barFrame) row=\(rowFrame) hittable=\(row.exists && row.isHittable) cells=\(app.cells.count)")
-        guard let cg = app.screenshot().image.cgImage else { note("DIAG \(tag) no image"); return }
-        let w = cg.width, h = cg.height
-        var buffer = [UInt8](repeating: 0, count: w * h * 4)
-        buffer.withUnsafeMutableBytes { raw in
-            guard let ctx = CGContext(data: raw.baseAddress, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
-                                      space: CGColorSpaceCreateDeviceRGB(),
-                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return }
-            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+    /// Audits the screen now showing and returns every finding (empty when it is clean).
+    func auditScreen(_ screen: String) throws -> [String] {
+        var issues: [String] = []
+        // The audit measures the pixels of one screenshot against the accessibility tree. A tab
+        // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
+        // than any fixed wait: audited mid-transition, black text on white failed contrast and
+        // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
+        // tree). So wait until the screen itself has stopped changing, not for a fixed time.
+        if !waitUntilSettled() {
+            attachEvidence("audit-\(screen)-never-settled")
+            // Auditing a screen that is still changing proves nothing: say so instead of going on.
+            XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
         }
-        let scale = CGFloat(w) / max(window.width, 1)
-        func channel(_ v: UInt8) -> Double {
-            let s = Double(v) / 255
-            return s <= 0.03928 ? s / 12.92 : pow((s + 0.055) / 1.055, 2.4)
-        }
-        func luminance(_ x: Int, _ y: Int) -> Double {
-            let i = (y * w + x) * 4
-            return 0.2126 * channel(buffer[i]) + 0.7152 * channel(buffer[i + 1]) + 0.0722 * channel(buffer[i + 2])
-        }
-        let xs = rowFrame.isNull ? (80, 300) : (Int(rowFrame.minX), Int(rowFrame.maxX))
-        let top = Int(max(0, (barFrame.isNull ? window.height : barFrame.minY) - 140))
-        var parts: [String] = []
-        var yy = top
-        while yy < Int(window.height) {
-            let py = min(h - 1, Int(CGFloat(yy) * scale))
-            var lo = 1.0, hi = 0.0
-            var px = Int(CGFloat(xs.0) * scale)
-            while px < min(w - 1, Int(CGFloat(xs.1) * scale)) {
-                let l = luminance(px, py); lo = min(lo, l); hi = max(hi, l); px += 2
-            }
-            parts.append("\(yy):\(String(format: "%.1f", (hi + 0.05) / (lo + 0.05)))/bg\(String(format: "%.2f", hi))")
-            yy += 6
-        }
-        note("DIAG \(tag) profile y:ratio/maxLum \(parts.joined(separator: " "))")
-        if !rowFrame.isNull {
-            var lo = 1.0, hi = 0.0
-            for y in Int(rowFrame.minY * scale)..<min(h, Int(rowFrame.maxY * scale)) {
-                for x in stride(from: Int(rowFrame.minX * scale), to: min(w, Int(rowFrame.maxX * scale)), by: 2) {
-                    let l = luminance(x, y); lo = min(lo, l); hi = max(hi, l)
-                }
-            }
-            note("DIAG \(tag) row-element contrast \(String(format: "%.2f", (hi + 0.05) / (lo + 0.05))) lo=\(lo) hi=\(hi)")
-        }
-    }
-
-    func testDiagRepeatFullAudit() throws {
-        app.tabBars.buttons["Library"].tap()
-        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
-        waitUntilSettled()
-        let bar = app.tabBars.firstMatch.frame
-        for i in 1...6 {
-            var lines: [String] = []
-            let start = Date()
-            var failure = ""
+        // The reader hides the tab bar; then nothing can sit under it.
+        let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
+        let before = issues.count
+        // The bar's blur starts above its frame (glassReach). What the audit flags in that strip is
+        // accepted only when the screenshot itself shows the text at 4.5:1 or better.
+        let glass = Self.glassZone(above: tabBar)
+        let pixels = Pixels(app: app)
+        // A row half under the glass tab bar is measured against the bar's blur too, but
+        // XCTest can't always resolve the element of a finding, and then the exemption below can't
+        // see where it is. Such unresolved contrast findings are accepted only up to the number of
+        // elements the exemption would accept right now (the same rule, applied to the tree);
+        // any more still fail, with a screenshot. Resolved or not, the same elements pass.
+        let underBar = Self.elementsUnder(tabBar, glass: glass, pixels: pixels, in: app)
+        var unresolved: [String] = []
+        // The audit itself can time out (the first one after a cold simulator boot): that is
+        // no result, so it runs again; the findings of an audit that completes always count.
+        for attempt in 1...3 {
+            issues.removeSubrange(before...)
+            unresolved = []
             do {
                 try app.performAccessibilityAudit { issue in
-                    let e = issue.element
-                    let hits = e.map { $0.frame.intersects(bar) } ?? false
-                    lines.append("type=\(issue.auditType.rawValue) label=\(e?.label ?? "NIL") frame=\(e.map { "\($0.frame)" } ?? "-") underBar=\(hits) kind=\(e.map { "\($0.elementType.rawValue)" } ?? "-")")
+                    XCTContext.runActivity(named: "DIAGRES type=\(issue.auditType.rawValue) resolved=\(issue.element != nil) label=\(issue.element?.label ?? "-")") { _ in }
+                    // Rows scrolled under the translucent tab bar are measured against
+                    // the bar's blur; scrolled into view they read normally. The tab
+                    // bar's own buttons are not exempt: their contrast is still checked.
+                    if issue.auditType == .contrast, let flagged = issue.element, !Self.isTabBarButton(flagged, in: tabBar) {
+                        if flagged.frame.intersects(tabBar) { return true }
+                        if Self.legibleInGlass(flagged.frame, glass: glass, pixels: pixels) { return true }
+                    }
+                    // The search field is UIKit's own (from `.searchable`); its clipping
+                    // at large text sizes is iOS's to handle, not something the app can change.
+                    if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
+                    if Self.knownFalsePositive(issue, on: screen) { return true }
+                    if issue.auditType == .contrast, issue.element == nil {
+                        unresolved.append(
+                            "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
+                        return true
+                    }
+                    let element = issue.element.map {
+                        "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
+                    } ?? "screen"
+                    issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
                     return true
                 }
-            } catch let e { failure = "ERROR \(e)" }
-            let wouldFail = lines.contains { $0.contains("type=") && $0.contains("label=A Day at the Market") && $0.contains("underBar=false") }
-            note("DIAGFULL run=\(i) took=\(Int(Date().timeIntervalSince(start)))s n=\(lines.count) wouldFail=\(wouldFail) \(failure) :: \(lines.joined(separator: " || "))")
+                break
+            } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                && error.code == -56 && attempt < 3 {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
         }
-    }
-
-    func testDiagRepeatLibraryContrast() throws {
-        func contrastRun(_ tag: String) {
-            var found: [String] = []
-            let start = Date()
-            do {
-                try app.performAccessibilityAudit(for: .contrast) { issue in
-                    found.append("\(issue.element?.label ?? "nil")@\(issue.element.map { "\($0.frame)" } ?? "-")")
-                    return true
-                }
-            } catch { found.append("ERROR \(error)") }
-            note("DIAGRUN \(tag) took=\(Int(Date().timeIntervalSince(start)))s issues=\(found.count) \(found.joined(separator: " | "))")
+        if unresolved.count > underBar {
+            issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
+            issues += unresolved
         }
-        app.tabBars.buttons["Library"].tap()
-        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
-        waitUntilSettled()
-        for i in 1...6 { contrastRun("same-state-\(i)") }
-        app.swipeUp(); waitUntilSettled()
-        note("DIAG scrolledDown row=\(app.staticTexts["A Day at the Market"].firstMatch.frame)")
-        for i in 1...2 { contrastRun("scrolled-down-\(i)") }
-        app.swipeDown(); waitUntilSettled()
-        contrastRun("scrolled-back-to-top")
-        app.tabBars.buttons["Discover"].tap()
-        _ = app.navigationBars["Discover"].waitForExistence(timeout: 10)
-        waitUntilSettled()
-        app.tabBars.buttons["Library"].tap()
-        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
-        waitUntilSettled()
-        for i in 1...2 { contrastRun("revisit-\(i)") }
+        // Evidence for any finding: the screen as audited, kept with the test results, so a
+        // finding without a resolvable element (a view that changed mid-audit) can be traced.
+        if issues.count > before {
+            let shot = XCTAttachment(screenshot: app.screenshot())
+            // Named like the tour's shots, so CI exports and publishes it with them.
+            let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
+            shot.name = "en-light-99-audit-\(slug)"
+            shot.lifetime = .keepAlways
+            add(shot)
+        }
+        return issues
     }
-    // swiftlint:enable all
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
     /// bar (the clock changes by itself), are the same. False when it never does within `timeout`.
@@ -309,17 +208,105 @@ extension LingleafUITests {
 
     /// A tab bar button sits entirely inside the bar; rows scrolled under the bar only overlap it.
     /// Labelled elements of the screen (not the tab bar's own) that reach under the tab bar.
-    private static func elementsUnder(_ tabBar: CGRect, in app: XCUIApplication) -> Int {
+    private static func elementsUnder(_ tabBar: CGRect, glass: CGRect, pixels: Pixels?, in app: XCUIApplication) -> Int {
         guard !tabBar.isNull, let root = try? app.snapshot() else { return 0 }
         func count(_ node: XCUIElementSnapshot) -> Int {
             if node.elementType == .tabBar { return 0 }
-            if node.children.isEmpty { return !node.label.isEmpty && node.frame.intersects(tabBar) ? 1 : 0 }
+            if node.children.isEmpty {
+                guard !node.label.isEmpty else { return 0 }
+                return node.frame.intersects(tabBar) || legibleInGlass(node.frame, glass: glass, pixels: pixels) ? 1 : 0
+            }
             return node.children.reduce(0) { $0 + count($1) }
         }
         return count(root)
     }
 
+    /// How far above the tab bar's frame the glass backdrop and the scroll-edge blur reach, in points. Measured
+    /// on the Library screen (CI simulator, iOS 26, run 43677625249): a row's background starts to change
+    /// 23 pt above the bar (white 1.00 at 765 pt, 0.98 at 771, 0.96 at 777, 0.92 at 789; the bar starts at 791).
+    private static let glassReach: CGFloat = 24
+    private static let minimumContrast = 4.5
+
+    /// The strip above the tab bar that the bar's blur reaches.
+    private static func glassZone(above tabBar: CGRect) -> CGRect {
+        tabBar.isNull ? .null : CGRect(x: tabBar.minX, y: tabBar.minY - glassReach, width: tabBar.width, height: glassReach)
+    }
+
+    /// True for an element that reaches into the blur strip AND whose own pixels in the screenshot contrast at
+    /// WCAG AA or better. The audit flags such rows on some runs (and only when it resolves their element) although
+    /// the text measures 19:1 (black on white); a row whose pixels really are low-contrast is not accepted.
+    private static func legibleInGlass(_ frame: CGRect, glass: CGRect, pixels: Pixels?) -> Bool {
+        guard !glass.isNull, frame.intersects(glass), let ratio = pixels?.contrast(of: frame) else { return false }
+        return ratio >= minimumContrast
+    }
+
+    /// The pixels of one screenshot, to measure what is really on screen.
+    private struct Pixels {
+        private let rgba: [UInt8]
+        private let width: Int
+        private let height: Int
+        private let scale: CGFloat
+
+        init?(app: XCUIApplication) {
+            let window = app.windows.firstMatch.frame
+            guard window.width > 0, let image = app.screenshot().image.cgImage else { return nil }
+            var buffer = [UInt8](repeating: 0, count: image.width * image.height * 4)
+            let drawn = buffer.withUnsafeMutableBytes { raw -> Bool in
+                guard let context = CGContext(
+                    data: raw.baseAddress, width: image.width, height: image.height, bitsPerComponent: 8,
+                    bytesPerRow: image.width * 4, space: CGColorSpaceCreateDeviceRGB(),
+                    bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return false }
+                context.draw(image, in: CGRect(x: 0, y: 0, width: image.width, height: image.height))
+                return true
+            }
+            guard drawn else { return nil }
+            rgba = buffer
+            width = image.width
+            height = image.height
+            scale = CGFloat(image.width) / window.width
+        }
+
+        /// WCAG contrast ratio of the darkest against the lightest pixel inside `frame` (points).
+        func contrast(of frame: CGRect) -> Double? {
+            let x0 = max(0, Int(frame.minX * scale)), x1 = min(width, Int(frame.maxX * scale))
+            let y0 = max(0, Int(frame.minY * scale)), y1 = min(height, Int(frame.maxY * scale))
+            guard x0 < x1, y0 < y1 else { return nil }
+            var lowest = 1.0, highest = 0.0
+            for y in y0..<y1 {
+                for x in stride(from: x0, to: x1, by: 2) {
+                    let value = luminance(x, y)
+                    lowest = min(lowest, value)
+                    highest = max(highest, value)
+                }
+            }
+            return (highest + 0.05) / (lowest + 0.05)
+        }
+
+        private func luminance(_ x: Int, _ y: Int) -> Double {
+            func channel(_ byte: UInt8) -> Double {
+                let value = Double(byte) / 255
+                return value <= 0.03928 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
+            }
+            let index = (y * width + x) * 4
+            return 0.2126 * channel(rgba[index]) + 0.7152 * channel(rgba[index + 1]) + 0.0722 * channel(rgba[index + 2])
+        }
+    }
+
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
         element.elementType == .button && tabBar.contains(element.frame)
     }
+
+    // swiftlint:disable all
+    func testDiagFixedLibraryAudit() throws {
+        app.tabBars.buttons["Library"].tap()
+        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
+        var failures = 0
+        for i in 1...6 {
+            let found = try auditScreen("Library")
+            if !found.isEmpty { failures += 1 }
+            XCTContext.runActivity(named: "DIAGFIX run=\(i) findings=\(found.count) \(found.joined(separator: " || "))") { _ in }
+        }
+        XCTAssertEqual(failures, 0)
+    }
+    // swiftlint:enable all
 }
