@@ -19,20 +19,10 @@ T = "LingleafUITests"  # the UI test target
 # SpanishLight 396, EnglishLargestText 251, SpanishLargestText 243; accessibility audit 198,
 # listen 92; the other UI tests 20-55 each. Each shard targets ~11 minutes of tests.
 SHARDS = [
-    {"name": "tours-1", "only": ["ScreenTour/testTourEnglishDark", "ScreenTour/testTourSpanishLargestText"]},
-    {"name": "tours-2", "only": ["ScreenTour/testTourEnglishLight", "ScreenTour/testTourEnglishLargestText"]},
-    {"name": "tour-3-audit", "only": [
-        "ScreenTour/testTourSpanishLight",
-        # The audit has failed on a cold simulator when it ran first or second in a fresh shard
-        # (contrast of the Library row next to the tab bar) and passed after these four tests, which is
-        # the order the unsharded run had. Keep them together until the audit itself is made robust.
-        "LingleafUITests/testAContractionSaysWhatItStandsFor",
-        "LingleafUITests/testAModalVerbShowsItsVerbGroupAndWhatItDoes",
-        "LingleafUITests/testAPerfectSaysWhatItDoes",
-        "LingleafUITests/testAboutSaysTheRecommendedBooksArePublicDomainWorldwide",
-        "LingleafUITests/testAccessibilityAudit",
-    ]},
-    {"name": "ui-rest", "rest": True},
+    {"name": "d1-alone", "only": ["LingleafUITests/testAccessibilityAudit"]},
+    {"name": "d2-alone-again", "only": ["LingleafUITests/testAccessibilityAudit", "LingleafUITests/testAContractionSaysWhatItStandsFor"]},
+    {"name": "d3-modal", "only": ["LingleafUITests/testAModalVerbShowsItsVerbGroupAndWhatItDoes", "LingleafUITests/testAccessibilityAudit"]},
+    {"name": "d4-perfect-about", "only": ["LingleafUITests/testAPerfectSaysWhatItDoes", "LingleafUITests/testAboutSaysTheRecommendedBooksArePublicDomainWorldwide", "LingleafUITests/testAccessibilityAudit"]},
 ]
 
 

@@ -20,6 +20,11 @@ extension LingleafUITests {
                 // Auditing a screen that is still changing proves nothing: say so instead of going on.
                 XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
             }
+            if screen == "Library" {
+                diagnose("t0-settled")
+                RunLoop.current.run(until: Date().addingTimeInterval(4))
+                diagnose("t0+4s")
+            }
             // The reader hides the tab bar; then nothing can sit under it.
             let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
             let before = issues.count
@@ -66,6 +71,7 @@ extension LingleafUITests {
                 issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
                 issues += unresolved
             }
+            if screen == "Library" { diagnose(issues.count > before ? "after-FAILED-audit" : "after-passed-audit") }
             // Evidence for any finding: the screen as audited, kept with the test results, so a
             // finding without a resolvable element (a view that changed mid-audit) can be traced.
             if issues.count > before {
@@ -124,6 +130,60 @@ extension LingleafUITests {
         XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
         try audit("Review with the meaning")
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
+    }
+
+    private func note(_ text: String) { XCTContext.runActivity(named: text) { _ in } }
+
+    /// DIAGNOSTIC (throwaway): frames and a contrast profile of the Library rows near the tab bar.
+    private func diagnose(_ tag: String) {
+        let window = app.windows.firstMatch.frame
+        let bar = app.tabBars.firstMatch
+        let barFrame = bar.exists ? bar.frame : CGRect.null
+        let row = app.staticTexts["A Day at the Market"].firstMatch
+        let rowFrame = row.exists ? row.frame : CGRect.null
+        note("DIAG \(tag) uptime=\(Int(ProcessInfo.processInfo.systemUptime))s window=\(window) tabBar=\(barFrame) row=\(rowFrame) hittable=\(row.exists && row.isHittable) cells=\(app.cells.count)")
+        guard let cg = app.screenshot().image.cgImage else { note("DIAG \(tag) no image"); return }
+        let w = cg.width, h = cg.height
+        var buffer = [UInt8](repeating: 0, count: w * h * 4)
+        buffer.withUnsafeMutableBytes { raw in
+            guard let ctx = CGContext(data: raw.baseAddress, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                      space: CGColorSpaceCreateDeviceRGB(),
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return }
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        }
+        let scale = CGFloat(w) / max(window.width, 1)
+        func channel(_ v: UInt8) -> Double {
+            let s = Double(v) / 255
+            return s <= 0.03928 ? s / 12.92 : pow((s + 0.055) / 1.055, 2.4)
+        }
+        func luminance(_ x: Int, _ y: Int) -> Double {
+            let i = (y * w + x) * 4
+            return 0.2126 * channel(buffer[i]) + 0.7152 * channel(buffer[i + 1]) + 0.0722 * channel(buffer[i + 2])
+        }
+        let xs = rowFrame.isNull ? (80, 300) : (Int(rowFrame.minX), Int(rowFrame.maxX))
+        let top = Int(max(0, (barFrame.isNull ? window.height : barFrame.minY) - 140))
+        var parts: [String] = []
+        var yy = top
+        while yy < Int(window.height) {
+            let py = min(h - 1, Int(CGFloat(yy) * scale))
+            var lo = 1.0, hi = 0.0
+            var px = Int(CGFloat(xs.0) * scale)
+            while px < min(w - 1, Int(CGFloat(xs.1) * scale)) {
+                let l = luminance(px, py); lo = min(lo, l); hi = max(hi, l); px += 2
+            }
+            parts.append("\(yy):\(String(format: "%.1f", (hi + 0.05) / (lo + 0.05)))/bg\(String(format: "%.2f", hi))")
+            yy += 6
+        }
+        note("DIAG \(tag) profile y:ratio/maxLum \(parts.joined(separator: " "))")
+        if !rowFrame.isNull {
+            var lo = 1.0, hi = 0.0
+            for y in Int(rowFrame.minY * scale)..<min(h, Int(rowFrame.maxY * scale)) {
+                for x in stride(from: Int(rowFrame.minX * scale), to: min(w, Int(rowFrame.maxX * scale)), by: 2) {
+                    let l = luminance(x, y); lo = min(lo, l); hi = max(hi, l)
+                }
+            }
+            note("DIAG \(tag) row-element contrast \(String(format: "%.2f", (hi + 0.05) / (lo + 0.05))) lo=\(lo) hi=\(hi)")
+        }
     }
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
