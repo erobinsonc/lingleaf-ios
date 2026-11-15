@@ -47,7 +47,7 @@ final class GrammarProgressReadingTests: XCTestCase {
         XCTAssertEqual(GrammarProgress.decode(data, known: onlyTime, now: now, in: utc).rules.keys.sorted(), [time.id])
     }
 
-    func testTheLargestProgressStaysUnderTheCapAndReadsBackWhole() {
+    func testTheLargestProgressStaysUnderTheCapAndReadsBackWhole() throws {
         var entries: [String: RuleProgress] = [:]
         var knownIDs: [String: Set<String>] = [:]
         for index in 0..<GrammarProgress.maxEntries {
@@ -76,9 +76,9 @@ final class GrammarProgressReadingTests: XCTestCase {
             knownIDs[id] = Set(ids)
         }
         let progress = GrammarProgress(rules: entries)
-        let data = progress.encoded()
-        XCTAssertGreaterThan(data.count, 300_000, "a test of the cap must reach near it")
-        XCTAssertLessThanOrEqual(data.count, GrammarProgress.maxBytes, "the most this format can hold fits the 384 KB cap")
+        let data = try XCTUnwrap(progress.encoded())
+        XCTAssertGreaterThan(data.count, 370_000, "200 rules x 12 items, 40-char ids, compact JSON, absent values omitted: about 374 KB")
+        XCTAssertLessThanOrEqual(data.count, GrammarProgress.maxBytes, "the most the other limits allow fits the 512 KB cap")
         XCTAssertEqual(GrammarProgress.decode(data, known: knownIDs, now: now, in: utc), progress, "what is saved can be read back whole")
     }
 
@@ -104,7 +104,7 @@ final class GrammarProgressReadingTests: XCTestCase {
 
     func testAFileOverTheCapOrNestedTooDeepGivesEmptyProgress() {
         let valid = #"{"schema": 2, "rules": {"a": {"attempts": 1}}}"#
-        // The cap is on bytes: padded to exactly 384 KB it is read, one byte more it is not.
+        // The cap is on bytes: padded to exactly 512 KB it is read, one byte more it is not.
         let padding = GrammarProgress.maxBytes - valid.utf8.count
         XCTAssertEqual(decode(valid + String(repeating: " ", count: padding))["a"].attempts, 1)
         XCTAssertEqual(decode(valid + String(repeating: " ", count: padding + 1)), GrammarProgress())

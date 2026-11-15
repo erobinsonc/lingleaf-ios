@@ -64,6 +64,9 @@ public struct RuleProgress: Equatable, Sendable {
     /// "Skip to the rule" was pressed on the pretest; kept out of the local measurement.
     public var pretestSkipped = false
     public var lastPair: ItemPair?
+    /// The pretest is offered while the rule has not been shown: neither answered nor skipped (S22). Leaving the
+    /// page without doing either offers it again; after either it is never offered again for the rule.
+    public var pretestOffered: Bool { !pretestDone && !pretestSkipped }
     /// At most 2 right answers on different days to different items; with 2 the rule is Practiced.
     public var rightDays: [RightDay] = []
     public var items: [String: ItemProgress] = [:]
@@ -76,7 +79,7 @@ public struct RuleProgress: Equatable, Sendable {
 public struct GrammarProgress: Equatable, Sendable {
     public static let maxEntries = 200
     public static let maxItems = 12
-    public static let maxBytes = 384 * 1024
+    public static let maxBytes = 512 * 1024
     public static let maxCount = 1000
     public static let maxBox = 5
     /// Rules kept in "Recent".
@@ -100,10 +103,11 @@ public struct GrammarProgress: Equatable, Sendable {
         return progress.rightDays.count >= 2 ? .practised : .new
     }
 
-    /// Opening a rule page moves it to the front of "Recent".
+    /// Opening a rule page moves it to the front of "Recent". A time before 2020-01-01 (a clock that was never
+    /// set) or not a number is ignored: reading would drop it anyway, so the entry would only change on reload.
     public mutating func opened(_ id: String, at date: Date) {
         let seconds = date.timeIntervalSince1970
-        guard seconds.isFinite, abs(seconds) < 1e15 else { return }
+        guard seconds.isFinite, seconds >= Double(Self.earliest), seconds < 1e15 else { return }
         update(id) { $0.opened = Int(seconds) }
     }
 
@@ -236,7 +240,8 @@ public struct GrammarProgress: Equatable, Sendable {
         grammar.isAvailable ? encoded() : nil
     }
 
-    func encoded() -> Data {
+    /// The saved bytes, or nil when they could not be made: never empty data, which would replace the file.
+    func encoded() -> Data? {
         var object: [String: Any] = [:]
         for (id, progress) in rules {
             var items: [String: Any] = [:]
@@ -256,6 +261,6 @@ public struct GrammarProgress: Equatable, Sendable {
             object[id] = entry
         }
         let root: [String: Any] = ["schema": Self.schemaVersion, "rules": object]
-        return (try? JSONSerialization.data(withJSONObject: root, options: [.sortedKeys])) ?? Data()
+        return try? JSONSerialization.data(withJSONObject: root, options: [.sortedKeys])
     }
 }

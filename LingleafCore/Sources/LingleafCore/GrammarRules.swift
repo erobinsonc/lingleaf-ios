@@ -57,7 +57,12 @@ public struct GrammarRules: Sendable {
     static func load(_ data: Data) throws -> GrammarRules {
         guard data.count <= maxBytes else { throw GrammarRulesError.tooLarge }
         guard JSONGuard.isShallow(data, maxDepth: maxDepth) else { throw GrammarRulesError.tooDeep }
-        let file = try JSONDecoder().decode(GrammarFile.self, from: data)
+        // Validated whole before decoding (as for saved progress), then read by bytes: a raw control character, a JSON
+        // null anywhere, or a `schema` or `answer` that is not an integer literal (`1.0`) refuses the file.
+        guard (try? JSONSerialization.jsonObject(with: data)) is [String: Any],
+              let clean = GrammarJSON.scrubbed(data, integerKeys: ["schema", "answer"], policy: .strict)
+        else { throw GrammarRulesError.malformed("not strict JSON") }
+        let file = try JSONDecoder().decode(GrammarFile.self, from: clean)
         let result = GrammarRules(categories: file.categories, rules: file.rules)
         try result.validate()
         return result
@@ -106,20 +111,24 @@ public struct GrammarRules: Sendable {
         try check((3...12).contains(rule.practice.count), "\(id): 3–12 practice items")
     }
 
-    /// `none` has no patterns; `patterns` has 1–12, each of 1–5 words made of a–z, `|` (alternatives) and `*` (any word).
+    /// `none` has no patterns; `patterns` has 1-12, each of 1-5 words separated by exactly one space. A word is
+    /// either `*` alone (any one word) or 1+ alternatives separated by a single `|`, each 1+ of a-z.
     private static func validate(books: GrammarBooks, _ id: String) throws {
         switch books.mode {
         case .none:
             try check(books.patterns.isEmpty, "\(id): books none has no patterns")
         case .patterns:
-            try check((1...12).contains(books.patterns.count), "\(id): 1–12 book patterns")
+            try check((1...12).contains(books.patterns.count), "\(id): 1-12 book patterns")
             for pattern in books.patterns {
                 let words = pattern.split(separator: " ", omittingEmptySubsequences: false)
-                let letters: (Substring) -> Bool = { word in
-                    !word.isEmpty && word.utf8.allSatisfy { (0x61...0x7A).contains($0) || $0 == 0x7C || $0 == 0x2A }
-                }
-                try check((1...5).contains(words.count) && words.allSatisfy(letters) && isText(pattern), "\(id): book pattern \(pattern)")
+                try check((1...5).contains(words.count) && words.allSatisfy(isBookWord), "\(id): book pattern \(pattern)")
             }
+        }
+    }
+
+    private static func isBookWord(_ word: Substring) -> Bool {
+        word == "*" || word.split(separator: "|", omittingEmptySubsequences: false).allSatisfy { alternative in
+            !alternative.isEmpty && alternative.utf8.allSatisfy { (0x61...0x7A).contains($0) }
         }
     }
 

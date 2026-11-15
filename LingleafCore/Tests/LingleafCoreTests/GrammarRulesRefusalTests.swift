@@ -288,6 +288,7 @@ final class GrammarRulesRefusalTests: XCTestCase {
         try loads(try rule("his-her-its", books(["mode": "none", "patterns": [String]()])), "none with an empty list")
         try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": ["went|came"]])), "one pattern")
         try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": ["on monday|tuesday", "at * night", "a b c d e"]])), "wildcards")
+        try loads(try rule("his-her-its", books(["mode": "patterns", "patterns": ["*", "a|b|c d", "* * * * *"]])), "any word, alternatives")
         try refused(try rule("his-her-its", books(["mode": "none", "patterns": ["went"]])), "none with patterns")
         try refused(try rule("his-her-its", books(["mode": "patterns"])), "patterns without a list")
         try refused(try rule("his-her-its", books(["mode": "patterns", "patterns": [String]()])), "an empty list")
@@ -296,7 +297,8 @@ final class GrammarRulesRefusalTests: XCTestCase {
         try refused(try rule("his-her-its", books(["mode": "regex", "patterns": ["a"]])), "unknown mode")
         try refused(try rule("his-her-its", books(["patterns": ["a"]])), "missing mode")
         try refused(try rule("his-her-its", books(["mode": "none", "extra": 1])), "unknown key")
-        for bad in ["", " ", "a  b", "a b c d e f", "Went", "went!", "a(b)", "a.*", "went\u{200B}", "caf\u{E9}", " went", "went "] {
+        for bad in ["", " ", "a  b", "a b c d e f", "Went", "went!", "a(b)", "a.*", "went\u{200B}", "caf\u{E9}", " went", "went ",
+                    "a||b", "|a", "a|", "|", "a*b", "**", "*a", "a|*", "* *a", "a  b", "a b ", " a b"] {
             try refused(try rule("his-her-its", books(["mode": "patterns", "patterns": [bad]])), "pattern \(bad.debugDescription)")
         }
     }
