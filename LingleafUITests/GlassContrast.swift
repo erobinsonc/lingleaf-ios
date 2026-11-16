@@ -73,8 +73,9 @@ struct Pixels {
     /// grey one). Words of the same text split too, and measure the same, so a narrow gap costs nothing.
     private static let separation: CGFloat = 5
     /// The background must be one thing: the ring outside the frame and the border inside it agree on its
-    /// luminance (a dark ring or ornament around grey text would otherwise become the "background").
-    private static let backgroundAgreement = 0.15
+    /// luminance (a dark ring or ornament around grey text would otherwise become the "background"). A label whose
+    /// frame is its own tinted chip (a level badge: 0.2 apart on CI) is therefore not measured, not misjudged.
+    private static let backgroundAgreement = 0.08
     /// Share of the ring that must lie within `backgroundAgreement` of its median (the blur's gradient does).
     private static let homogeneousShare = 0.9
     /// A block of text counts at this percentile of its columns' best ratios, so that a few dark pixels

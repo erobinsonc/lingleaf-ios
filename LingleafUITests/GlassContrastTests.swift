@@ -98,6 +98,12 @@ final class GlassContrastTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(light, Glass.minimumContrast)
     }
 
+    func testALabelOnItsOwnTintedChipIsNotMeasuredAgainstThePage() {
+        let chip = rect(60, 38, 40, 18)    // frame == chip: white page outside, tint inside
+        let pixels = bitmap([(chip, 0xC8), (rect(68, 42, 24, 8), 0x40)])
+        XCTAssertNil(pixels.textContrast(in: chip), "outside white, inside tint: not one background, so no verdict")
+    }
+
     func testTheFramesOriginIsSubtractedBeforeMeasuring() throws {
         let pixels = bitmap([(text, black)], origin: CGPoint(x: 100, y: 50))
         let ratio = try XCTUnwrap(pixels.textContrast(in: frame.offsetBy(dx: 100, dy: 50)))
