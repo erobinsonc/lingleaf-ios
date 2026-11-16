@@ -21,7 +21,7 @@ T = "LingleafUITests"  # the UI test target
 # listen 92; the other UI tests 20-55 each. Each shard targets ~11 minutes of tests.
 SHARDS = [
     {"name": "x1", "only": ["LingleafUITests/testDiagFixedLibraryAudit"]},
-    {"name": "x2", "only": ["LingleafUITests/testDiagFixedLibraryAudit"]},
+    {"name": "x2", "only": ["LingleafUITests/testAccessibilityAudit"]},
     {"name": "x3", "only": ["LingleafUITests/testAccessibilityAudit"]},
     {"name": "x4", "only": ["GlassContrastTests"]},
 ]
