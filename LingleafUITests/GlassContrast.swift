@@ -80,7 +80,7 @@ struct Pixels {
     private static let homogeneousShare = 0.9
     /// A block of text counts at this percentile of its columns' best ratios, so that a few dark pixels
     /// (an ornament, a stray mark) merged into a block of grey text cannot vouch for the block.
-    private static let blockPercentile = 0.25
+    static let blockPercentile = 0.25
 
     init(rgba: [UInt8], width: Int, height: Int, scale: CGFloat, origin: CGPoint = .zero) {
         self.rgba = rgba
@@ -116,7 +116,9 @@ struct Pixels {
     /// space, each at the low end of its columns' strongest pixels. The result is the weakest of them, so a grey
     /// subtitle under a black title, or grey text beside a dark cover, fails.
     /// Nil when there is no ink, the background is not one thing (only when `strict`), or the frame cannot be measured.
-    func textContrast(in frame: CGRect, strict: Bool = true) -> Double? {
+    /// `percentile` is where in its columns' strongest pixels a block is read (default: low, so decoys cannot vouch);
+    /// 1 reads the strongest column, the most generous reading, for checks that must not raise false alarms.
+    func textContrast(in frame: CGRect, strict: Bool = true, percentile: Double = blockPercentile) -> Double? {
         let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down)))
         let x1 = min(width, Int(((frame.maxX - origin.x) * scale).rounded(.up)))
         let y0 = max(0, Int(((frame.minY - origin.y) * scale).rounded(.down)))
@@ -131,7 +133,7 @@ struct Pixels {
         for (offset, hasInk) in (rowsWithInk + [false]).enumerated() {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
-                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), x0, x1, background)
+                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), x0, x1, background, percentile)
                 if let weakest { worst = min(worst ?? weakest, weakest) }
                 top = nil
             }
@@ -140,14 +142,14 @@ struct Pixels {
     }
 
     /// Within a line, the weakest of its blocks (runs of columns with ink, set apart by blank space).
-    private func weakestBlock(rows: Range<Int>, _ x0: Int, _ x1: Int, _ background: Double) -> Double? {
+    private func weakestBlock(rows: Range<Int>, _ x0: Int, _ x1: Int, _ background: Double, _ percentile: Double) -> Double? {
         let gap = max(1, Int((Self.separation * scale).rounded()))
         var worst: Double?
         var columns: [Double] = []
         var blank = 0
         func close() {
             if !columns.isEmpty {
-                let value = columns.sorted()[Int(Double(columns.count - 1) * Self.blockPercentile)]
+                let value = columns.sorted()[Int(Double(columns.count - 1) * percentile)]
                 worst = min(worst ?? value, value)
             }
             columns = []

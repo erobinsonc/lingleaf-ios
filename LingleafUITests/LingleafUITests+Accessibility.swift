@@ -137,7 +137,8 @@ extension LingleafUITests {
             }
         }
         // An unresolved finding cannot be tied to an element, so a row under the bar must not absorb it for
-        // free: while one is open, every label clear of the bar and the strip is measured too, and any below 4.5.
+        // free: while one is open, every label clear of the bar and the strip is measured too (at its strongest
+        // column, the most generous reading, so only text that is weak even then is reported) and any below 4.5.
         if !unresolved.isEmpty {
             issues += Self.weakLabels(above: strip, pixels: lastPixels, in: app, screen: screen)
         }
@@ -247,8 +248,10 @@ extension LingleafUITests {
             guard node.children.isEmpty else { return node.children.forEach(visit) }
             let frame = node.frame
             guard !node.label.isEmpty, Glass.isTextLeaf(node.elementType, frame), frame.maxY <= strip.minY,
-                  window.contains(frame), let ratio = pixels.textContrast(in: frame) else { return }
-            XCTContext.runActivity(named: "DIAGSWEEP label=\(node.label.prefix(30)) ratio=\(String(format: "%.2f", ratio)) frame=\(frame)") { _ in }
+                  window.contains(frame),
+                  let ratio = pixels.textContrast(in: frame, percentile: 1) else { return }
+            let lowRatio = pixels.textContrast(in: frame).map { String(format: "%.2f", $0) } ?? "-"
+            XCTContext.runActivity(named: "DIAGSWEEP label=\(node.label.prefix(30)) max=\(String(format: "%.2f", ratio)) p25=\(lowRatio) frame=\(frame)") { _ in }
             guard ratio < Glass.minimumContrast else { return }
             let measured = String(format: "%.2f", ratio)
             weak.append("[\(screen)] label '\(node.label.prefix(40))' measures \(measured):1 while a finding is unresolved")
