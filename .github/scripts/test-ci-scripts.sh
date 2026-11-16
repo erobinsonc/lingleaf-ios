@@ -2,30 +2,44 @@
 # Local tests for ci-plan.sh, ci-gate.py, verify-prior-ci.py and test-shards.py.
 # Usage: .github/scripts/test-ci-scripts.sh
 set -uo pipefail
-# No bytecode is read or written: a swapped .pyc (unchecked hash) would run instead of its source.
-export PYTHONDONTWRITEBYTECODE=1
+# Python runs as `python3 -I -B`: -I ignores PYTHON* variables, so the flag -B (not an env var) is what keeps
+# bytecode from being written, and no repository module is imported (a swapped .pyc would run instead of its source).
 here="$(cd "$(dirname "$0")" && pwd)"
 fail=0
 ok() { echo "ok   $1"; }
 bad() { echo "FAIL $1"; fail=1; }
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
 
-# --- no Python bytecode in the repository, tracked or lying around ---
+# --- no Python bytecode in the repository, tracked or lying around: stop before running any Python ---
 root="$(cd "$here/../.." && pwd)"
-if tracked="$(git -C "$root" ls-files 2>/dev/null | grep -E '(^|/)__pycache__/|\.pyc$')" && [ -n "$tracked" ]; then bad "bytecode is tracked: $tracked"; else ok "no tracked .pyc or __pycache__"; fi
-lying="$(find "$root" -path "$root/.git" -prune -o \( -name __pycache__ -o -name '*.pyc' \) -print 2>/dev/null)"
-[ -z "$lying" ] && ok "no .pyc or __pycache__ on disk" || bad "bytecode on disk: $lying"
+found="$( { git -C "$root" ls-files 2>/dev/null | grep -E '(^|/)__pycache__/|\.pyc$'
+            find "$root" -path "$root/.git" -prune -o \( -name __pycache__ -o -name '*.py[co]' \) -print 2>/dev/null; } || true)"
+if [ -n "$found" ]; then
+  echo "FAIL bytecode in the repository (tracked or on disk), nothing was run:"; echo "$found" | head -5
+  exit 1
+fi
+ok "no .pyc or __pycache__, tracked or on disk"
 grep -qE '^(__pycache__/|\*\.pyc)$' "$root/.gitignore" && ok ".gitignore keeps bytecode out" || bad ".gitignore lacks __pycache__/ or *.pyc"
 
+# --- the app may not override accessibility frames (the audit tests trust them) ---
+"$here/check-accessibility-frames.sh" "$root" >/dev/null && ok "app: no accessibility frame overrides" || bad "app overrides an accessibility frame"
+mkdir -p "$t/app/Lingleaf" "$t/clean/Lingleaf"
+printf 'struct V { var x = 1 }\n' > "$t/clean/Lingleaf/V.swift"
+"$here/check-accessibility-frames.sh" "$t/clean" >/dev/null && ok "frames check: clean tree passes" || bad "frames check: clean tree"
+for needle in 'view.accessibilityFrame = .zero' 'view.accessibilityPath = UIBezierPath()' 'func f() { _ = accessibilityFrameInContainerSpace }'; do
+  printf '%s\n' "$needle" > "$t/app/Lingleaf/V.swift"
+  "$here/check-accessibility-frames.sh" "$t/app" >/dev/null 2>&1 && bad "frames check missed: $needle" || ok "frames check fails on: ${needle%% *}"
+done
+
 # --- shards: sources and shard lists agree ---
-python3 -I "$here/test-shards.py" --check >/dev/null && ok "shards: every test runs in exactly one shard" || bad "shards: check"
+python3 -I -B "$here/test-shards.py" --check >/dev/null && ok "shards: every test runs in exactly one shard" || bad "shards: check"
 
 # --- gate ---
 needs() { # <plan> <heavy> <verify>
   printf '{"plan":{"result":"%s"},"heavy":{"result":"%s"},"verify":{"result":"%s"}}' "$1" "$2" "$3"; }
 gate() { # <want-rc> <mode> <plan> <heavy> <verify>
   local want="$1" mode="$2"; shift 2
-  MODE="$mode" NEEDS="$(needs "$@")" python3 -I "$here/ci-gate.py" --heavy heavy --verify verify >/dev/null 2>&1; local rc=$?
+  MODE="$mode" NEEDS="$(needs "$@")" python3 -I -B "$here/ci-gate.py" --heavy heavy --verify verify >/dev/null 2>&1; local rc=$?
   if { [ "$want" = 0 ] && [ $rc -eq 0 ]; } || { [ "$want" != 0 ] && [ $rc -ne 0 ]; }; then ok "gate $mode $* -> $want"; else bad "gate $mode $* (rc=$rc)"; fi
 }
 gate 0 full success success skipped
@@ -43,7 +57,7 @@ gate 1 release success skipped skipped   # release without the prior-run check
 gate 1 release success success success
 gate 1 "" success success skipped        # unknown mode
 gate 1 bogus success skipped skipped
-NEEDS='{"plan":{"result":"success"}}' MODE=full python3 -I "$here/ci-gate.py" --heavy heavy >/dev/null 2>&1 && bad "gate: missing job passed" || ok "gate: a missing job fails"
+NEEDS='{"plan":{"result":"success"}}' MODE=full python3 -I -B "$here/ci-gate.py" --heavy heavy >/dev/null 2>&1 && bad "gate: missing job passed" || ok "gate: a missing job fails"
 
 # --- fake gh (canned API answers chosen by $FAKE_CASE; the commit comes from the query) ---
 mkdir -p "$t/bin"
@@ -107,7 +121,7 @@ want "garbage base" "$(plan pull_request '--upload-pack=x' fix/x "$(git rev-pars
 cd "$t" || exit 1
 
 sha=0123456789abcdef0123456789abcdef01234567
-verify() { FAKE_CASE="$1" PATH="$t/bin:$PATH" python3 -I "$here/verify-prior-ci.py" "$sha" "${@:2}" >/dev/null 2>&1; }
+verify() { FAKE_CASE="$1" PATH="$t/bin:$PATH" python3 -I -B "$here/verify-prior-ci.py" "$sha" "${@:2}" >/dev/null 2>&1; }
 verify good && ok "verify: green develop push run passes" || bad "verify: good case"
 for c in none pending failed otherbranch missingjob skippedapp duplicate; do verify "$c" && bad "verify: $c passed" || ok "verify: $c fails"; done
 FAKE_BRANCH=main verify good --branch main && ok "verify: --branch main passes for a main run" || bad "verify: --branch"
@@ -117,9 +131,9 @@ cd "$w" || exit 1
 git_ checkout -q main; git_ pull -q origin main 2>/dev/null
 sha_main="$(git rev-parse HEAD)"
 git_ checkout -q -b rel develop 2>/dev/null; git_ merge -q --no-edit main 2>/dev/null; sha_rel="$(git rev-parse HEAD)"
-FAKE_CASE=good PATH="$t/bin:$PATH" python3 -I "$here/verify-prior-ci.py" "$sha_rel" --require-ancestor main >/dev/null 2>&1 && ok "verify: main is an ancestor -> passes" || bad "verify: ancestor case"
+FAKE_CASE=good PATH="$t/bin:$PATH" python3 -I -B "$here/verify-prior-ci.py" "$sha_rel" --require-ancestor main >/dev/null 2>&1 && ok "verify: main is an ancestor -> passes" || bad "verify: ancestor case"
 git_ checkout -q main; echo more > d; git_ add d; git_ commit -qm "main moved"; git_ push -q origin main 2>/dev/null
-FAKE_CASE=good PATH="$t/bin:$PATH" python3 -I "$here/verify-prior-ci.py" "$sha_rel" --require-ancestor main >/dev/null 2>&1 && bad "verify: moved main accepted" || ok "verify: main moved since the plan -> fails"
+FAKE_CASE=good PATH="$t/bin:$PATH" python3 -I -B "$here/verify-prior-ci.py" "$sha_rel" --require-ancestor main >/dev/null 2>&1 && bad "verify: moved main accepted" || ok "verify: main moved since the plan -> fails"
 cd "$t" || exit 1
 
 # --- merge-screenshots ---
@@ -134,12 +148,12 @@ rm -rf "$t/parts"; "$here/merge-screenshots.sh" "$t/parts" "$t/merged" >/dev/nul
 
 # --- pick-simulator ---
 sim='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-18-6":[{"name":"iPhone 16","udid":"A"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPad Air","udid":"B"},{"name":"iPhone 17","udid":"C"}],"com.apple.CoreSimulator.SimRuntime.watchOS-26-0":[{"name":"iPhone-like","udid":"D"}]}}'
-[ "$(printf '%s' "$sim" | python3 -I "$here/pick-simulator.py")" = "C com.apple.CoreSimulator.SimRuntime.iOS-26-0" ] && ok "simulator: newest iOS runtime, first iPhone" || bad "simulator pick"
+[ "$(printf '%s' "$sim" | python3 -I -B "$here/pick-simulator.py")" = "C com.apple.CoreSimulator.SimRuntime.iOS-26-0" ] && ok "simulator: newest iOS runtime, first iPhone" || bad "simulator pick"
 sim2='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-9-3":[{"name":"iPhone 6","udid":"E"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17","udid":"F"}],"com.apple.CoreSimulator.SimRuntime.iOS-100-0":[{"name":"iPhone 99","udid":"G"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-4":[{"name":"iPhone 17e","udid":"H"}]}}'
-[ "$(printf '%s' "$sim2" | python3 -I "$here/pick-simulator.py" | cut -d' ' -f1)" = G ] && ok "simulator: iOS-100-0 beats iOS-26-4 beats iOS-9-3 (numeric, not string order)" || bad "simulator: version order"
+[ "$(printf '%s' "$sim2" | python3 -I -B "$here/pick-simulator.py" | cut -d' ' -f1)" = G ] && ok "simulator: iOS-100-0 beats iOS-26-4 beats iOS-9-3 (numeric, not string order)" || bad "simulator: version order"
 sim3='{"devices":{"com.apple.CoreSimulator.SimRuntime.iOS-26-0":[{"name":"iPhone 17","udid":"F"}],"com.apple.CoreSimulator.SimRuntime.iOS-26-4":[{"name":"iPhone 17e","udid":"H"}]}}'
-[ "$(printf '%s' "$sim3" | python3 -I "$here/pick-simulator.py" | cut -d' ' -f1)" = H ] && ok "simulator: iOS-26-4 beats iOS-26-0" || bad "simulator: minor version"
-printf '{"devices":{}}' | python3 -I "$here/pick-simulator.py" >/dev/null 2>&1 && bad "simulator: none accepted" || ok "simulator: none fails"
+[ "$(printf '%s' "$sim3" | python3 -I -B "$here/pick-simulator.py" | cut -d' ' -f1)" = H ] && ok "simulator: iOS-26-4 beats iOS-26-0" || bad "simulator: minor version"
+printf '{"devices":{}}' | python3 -I -B "$here/pick-simulator.py" >/dev/null 2>&1 && bad "simulator: none accepted" || ok "simulator: none fails"
 
 # --- shards: modifiers and attributes on classes and tests, and the per-shard count ---
 mkdir -p "$t/src/LingleafUITests"
@@ -160,12 +174,15 @@ extension First {
     func testFive() throws {}
 }
 SW
-n="$(python3 -I - "$here" "$t/src" <<'PY'
-import sys, importlib.util
-spec = importlib.util.spec_from_file_location("ts", sys.argv[1] + "/test-shards.py"); ts = importlib.util.module_from_spec(spec); spec.loader.exec_module(ts)
-print(len(ts.tests_in_sources(sys.argv[2])))
+n="$(python3 -I -B - "$here" "$t/src" <<'PY'
+import sys
+from pathlib import Path
+# Compiled from the source text: no import machinery, so no cached bytecode can stand in for the source.
+namespace = {"__name__": "test_shards", "__file__": sys.argv[1] + "/test-shards.py"}
+exec(compile(Path(namespace["__file__"]).read_text(), namespace["__file__"], "exec"), namespace)
+print(len(namespace["tests_in_sources"](sys.argv[2])))
 PY
 )"
 [ "$n" = 5 ] && ok "shards: attributes and modifiers are understood (5 tests)" || bad "shards: parsed $n tests, want 5"
-python3 -I "$here/test-shards.py" --matrix | python3 -I -c "import json,sys; m=json.load(sys.stdin)['include']; assert all(isinstance(x['count'],int) and x['count']>0 for x in m)" && ok "shards: every shard has a count" || bad "shards: counts"
+python3 -I -B "$here/test-shards.py" --matrix | python3 -I -B -c "import json,sys; m=json.load(sys.stdin)['include']; assert all(isinstance(x['count'],int) and x['count']>0 for x in m)" && ok "shards: every shard has a count" || bad "shards: counts"
 exit $fail

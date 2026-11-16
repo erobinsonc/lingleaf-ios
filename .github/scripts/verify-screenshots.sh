@@ -4,6 +4,7 @@
 # job. Writes ready=true|false to $GITHUB_OUTPUT (false: nothing to publish).
 # Usage: verify-screenshots.sh <dir>
 set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
 dir="${1:?directory}"
 out="${GITHUB_OUTPUT:-/dev/null}"
 max_files=200
@@ -28,12 +29,8 @@ while IFS= read -r -d '' entry; do
   [ "$size" -le "$max_bytes" ] || { echo "::error::Too large: $shown"; exit 1; }
   total=$((total + size))
   [ "$total" -le "$max_total" ] || { echo "::error::Total size over the limit"; exit 1; }
-  # PNG signature, then the IHDR chunk (length 13, "IHDR") with a width and height that are neither 0 nor absurd.
-  [ "$(head -c 16 "$entry" | od -An -tx1 | tr -d ' \n')" = "89504e470d0a1a0a0000000d49484452" ] || { echo "::error::Not a PNG: $shown"; exit 1; }
-  dims="$(dd if="$entry" bs=1 skip=16 count=8 2>/dev/null | od -An -tu1 | tr -s ' ')"
-  read -r w1 w2 w3 w4 h1 h2 h3 h4 <<< "$dims"
-  width=$(( (w1 << 24) | (w2 << 16) | (w3 << 8) | w4 )); height=$(( (h1 << 24) | (h2 << 16) | (h3 << 8) | h4 ))
-  { [ "$width" -ge 1 ] && [ "$width" -le 16384 ] && [ "$height" -ge 1 ] && [ "$height" -le 16384 ]; } || { echo "::error::Unexpected PNG size: $shown"; exit 1; }
+  # Every chunk, CRC, IHDR first, IEND last with nothing after it, and a size within budget (verify-png.py).
+  python3 -I -B "$here/verify-png.py" "$entry" 2>/dev/null || { echo "::error::Not an acceptable PNG: $shown"; exit 1; }
   count=$((count + 1))
 done < <(find "$dir" -mindepth 1 -print0)
 [ "$count" -le "$max_files" ] || { echo "::error::Too many files: $count"; exit 1; }
