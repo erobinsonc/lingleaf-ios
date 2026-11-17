@@ -25,6 +25,10 @@ the push CI of `develop` is still running, `Verify the develop CI run` fails: re
 failed jobs) when the push run has finished. Shards are listed in `.github/scripts/test-shards.py`; a new
 UI test runs in the `ui-rest` shard until someone rebalances.
 
+The accessibility audit accepts a finding next to the translucent tab bar only after measuring the text's own pixels
+(`LingleafUITests/GlassContrast.swift`); `GlassContrastTests` checks that measurement on synthetic bitmaps, and the audit
+runs in light appearance only.
+
 ## Principles
 
 - Same behaviour on iOS and Android.
