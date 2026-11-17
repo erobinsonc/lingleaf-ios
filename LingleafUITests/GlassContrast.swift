@@ -50,8 +50,8 @@ enum Glass {
     static func isExemptUnderBar(_ frame: CGRect, strip: CGRect, pixels: Pixels?) -> Bool {
         guard let part = partAboveStrip(frame, strip: strip) else { return true }
         guard let pixels else { return false }
-        // Not strict: a cover or an image has no "own background" to agree with; any ink above the strip
-        // still has to reach 4.5:1 against the median of the ring around it.
+        // Not strict: a cover or an image has no "own background" to agree with, and a part cut from a row may sit
+        // beside other surfaces; any ink above the strip still has to reach 4.5:1 against the frame's own border.
         guard let ratio = pixels.textContrast(in: part, strict: false) else { return true }
         return ratio >= minimumContrast
     }
@@ -113,7 +113,7 @@ struct Pixels {
 
     /// The lowest contrast ratio of the text inside `frame` (points) against its local background: the background
     /// is the median of a ring of pixels just outside the frame, which must be homogeneous and agree with the
-    /// frame's own border; the text is every line (rows of ink) and, within a line, every block set apart by blank
+    /// frame's own border (not strict: the frame's own border alone); the text is every line (rows of ink) and, within a line, every block set apart by blank
     /// space, each at the low end of its columns' strongest pixels. The result is the weakest of them, so a grey
     /// subtitle under a black title, or grey text beside a dark cover, fails.
     /// Nil when there is no ink, the background is not one thing (only when `strict`), or the frame cannot be measured.
@@ -188,7 +188,9 @@ struct Pixels {
         }
         guard around.count >= 8, border.count >= 8 else { return nil }
         let outside = around.sorted()[around.count / 2], inside = border.sorted()[border.count / 2]
-        guard strict else { return outside }
+        // Not strict (a part cut out of a larger element): the frame's own border is the background. The ring may lie
+        // across a boundary (a white cell above grey footer text) and its median then misjudges the background.
+        guard strict else { return inside }
         let agreeing = around.filter { abs($0 - outside) <= Self.backgroundAgreement }.count
         guard Double(agreeing) >= Double(around.count) * Self.homogeneousShare,
               abs(outside - inside) <= Self.backgroundAgreement else { return nil }
