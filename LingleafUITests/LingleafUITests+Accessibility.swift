@@ -95,6 +95,12 @@ extension LingleafUITests {
             lastPixels = pixels
             do {
                 try app.performAccessibilityAudit { issue in
+                    let resolved = issue.element
+                    let strictR = resolved.flatMap { e in pixels?.textContrast(in: e.frame) }.map { String(format: "%.2f", $0) } ?? "-"
+                    let part = resolved.flatMap { e in Glass.partAboveStrip(e.frame, strip: strip) }
+                    let partR = part.flatMap { p in pixels?.textContrast(in: p, strict: false) }.map { String(format: "%.2f", $0) } ?? "-"
+                    let where_ = resolved.map { "\($0.elementType.rawValue) \($0.frame)" } ?? "-"
+                    XCTContext.runActivity(named: "DIAGRES resolved=\(resolved != nil) label=\(resolved?.label ?? "-") at=\(where_) strict=\(strictR) aboveStrip=\(partR)") { _ in }
                     // Rows scrolled under the translucent tab bar are measured against
                     // the bar's blur; scrolled into view they read normally. The tab
                     // bar's own buttons are not exempt: their contrast is still checked.
@@ -136,6 +142,7 @@ extension LingleafUITests {
         if !unresolved.isEmpty {
             issues += Self.weakLabels(above: strip, pixels: lastPixels, in: app, screen: screen)
         }
+        XCTContext.runActivity(named: "DIAGBUDGET screen=\(screen) unresolved=\(unresolved.count) allowance=\(underBar) issues=\(issues.count)") { _ in }
         if unresolved.count > underBar {
             issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, allowance \(underBar) (elements under the tab bar)")
             issues += unresolved
@@ -242,7 +249,10 @@ extension LingleafUITests {
             let frame = node.frame
             guard !node.label.isEmpty, Glass.isTextLeaf(node.elementType, frame), frame.maxY <= strip.minY,
                   window.contains(frame),
-                  let ratio = pixels.textContrast(in: frame, percentile: 1), ratio < Glass.minimumContrast else { return }
+                  let ratio = pixels.textContrast(in: frame, percentile: 1) else { return }
+            let lowRatio = pixels.textContrast(in: frame).map { String(format: "%.2f", $0) } ?? "-"
+            XCTContext.runActivity(named: "DIAGSWEEP label=\(node.label.prefix(30)) max=\(String(format: "%.2f", ratio)) p25=\(lowRatio) frame=\(frame)") { _ in }
+            guard ratio < Glass.minimumContrast else { return }
             let measured = String(format: "%.2f", ratio)
             weak.append("[\(screen)] label '\(node.label.prefix(40))' measures \(measured):1 while a finding is unresolved")
         }
@@ -253,4 +263,18 @@ extension LingleafUITests {
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
         element.elementType == .button && tabBar.contains(element.frame)
     }
+
+    // swiftlint:disable all
+    func testDiagFixedLibraryAudit() throws {
+        app.tabBars.buttons["Library"].tap()
+        _ = app.navigationBars["Library"].waitForExistence(timeout: 10)
+        var failures = 0
+        for i in 1...8 {
+            let found = try auditScreen("Library")
+            if !found.isEmpty { failures += 1 }
+            XCTContext.runActivity(named: "DIAGFIX run=\(i) findings=\(found.count) \(found.joined(separator: " || "))") { _ in }
+        }
+        XCTAssertEqual(failures, 0)
+    }
+    // swiftlint:enable all
 }
