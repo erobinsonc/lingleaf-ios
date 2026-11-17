@@ -69,6 +69,9 @@ struct Pixels {
     /// A pixel is text ("ink") when it differs from the local background by at least this contrast ratio.
     /// (The blur's gradient measures about 1.07 against its median; faint text, from 1.12, counts and fails.)
     private static let inkRatio = 1.12
+    /// Faint runs below this ratio, as wide as this share of the frame and touching its edge, are surfaces.
+    private static let surfaceRatio = 1.5
+    private static let surfaceWidth = 0.9
     /// Blank space (points) that separates two things on one line (a cover and a title, or a black word and a
     /// grey one). Words of the same text split too, and measure the same, so a narrow gap costs nothing.
     private static let separation: CGFloat = 5
@@ -134,7 +137,7 @@ struct Pixels {
         for (offset, hasInk) in (rowsWithInk + [false]).enumerated() {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
-                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), x0, x1, background, percentile)
+                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background, percentile)
                 if let weakest { worst = min(worst ?? weakest, weakest) }
                 top = nil
             }
@@ -143,15 +146,25 @@ struct Pixels {
     }
 
     /// Within a line, the weakest of its blocks (runs of columns with ink, set apart by blank space).
-    private func weakestBlock(rows: Range<Int>, _ x0: Int, _ x1: Int, _ background: Double, _ percentile: Double) -> Double? {
+    private func weakestBlock(rows: Range<Int>, _ xs: (Int, Int), _ ys: (Int, Int), _ background: Double,
+                              _ percentile: Double) -> Double? {
+        let (x0, x1) = xs
         let gap = max(1, Int((Self.separation * scale).rounded()))
         var worst: Double?
         var inkPixels: [Double] = []
-        var blank = 0
+        var blank = 0, first = 0, last = 0
+        let touchesEdge = rows.lowerBound == ys.0 || rows.upperBound == ys.1
         func close() {
             if !inkPixels.isEmpty {
-                let value = inkPixels.sorted()[Int(Double(inkPixels.count - 1) * percentile)]
-                worst = min(worst ?? value, value)
+                let sorted = inkPixels.sorted()
+                // A faint run across the whole width, at the frame's edge, is the edge of a surface (a white cell
+                // above grey footer text), not text; real text of any colour reaches well above this.
+                let isSurface = (sorted.last ?? 0) < Self.surfaceRatio && touchesEdge
+                    && Double(last - first + 1) >= Double(x1 - x0) * Self.surfaceWidth
+                if !isSurface {
+                    let value = sorted[Int(Double(sorted.count - 1) * percentile)]
+                    worst = min(worst ?? value, value)
+                }
             }
             inkPixels = []
             blank = 0
@@ -159,6 +172,8 @@ struct Pixels {
         for x in x0..<x1 {
             let column = rows.map { Self.ratio(luminance(x, $0), background) }.filter { $0 >= Self.inkRatio }
             if !column.isEmpty {
+                if inkPixels.isEmpty { first = x }
+                last = x
                 inkPixels += column
                 blank = 0
             } else if !inkPixels.isEmpty {

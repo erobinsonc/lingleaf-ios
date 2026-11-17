@@ -150,6 +150,16 @@ final class GlassContrastTests: XCTestCase {
         XCTAssertTrue(Glass.isExemptUnderBar(cover, strip: rect(0, 70, 300, 24), pixels: pixels))
     }
 
+    func testTheEdgeOfAWhiteCellInsideTheFrameIsNotText() throws {
+        // Grey footer text whose frame reaches 3 px into the white cell above it.
+        let surface = (rect(0, 33, 300, 87), UInt8(0xE0)), part = rect(20, 30, 200, 40)
+        let ratio = try XCTUnwrap(bitmap([surface, (rect(30, 45, 120, 10), black)]).textContrast(in: part, strict: false))
+        XCTAssertGreaterThanOrEqual(ratio, Glass.minimumContrast)
+        XCTAssertNil(bitmap([surface]).textContrast(in: part, strict: false), "the edge alone is no text")
+        let faint = try XCTUnwrap(bitmap([surface, (rect(30, 45, 60, 10), 0xC8)]).textContrast(in: part, strict: false))
+        XCTAssertLessThan(faint, Glass.minimumContrast, "a faint short run that does not span the frame is still text")
+    }
+
     func testTextOnGreySurfaceBesideAWhiteCellIsMeasuredAgainstTheSurface() throws {
         let surface = (rect(0, 30, 300, 90), UInt8(0xE0)), part = rect(20, 30, 200, 40)   // part touches the white above
         let strong = try XCTUnwrap(bitmap([surface, (rect(30, 45, 120, 10), black)]).textContrast(in: part, strict: false))
