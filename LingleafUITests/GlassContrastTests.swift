@@ -150,6 +150,45 @@ final class GlassContrastTests: XCTestCase {
         XCTAssertTrue(Glass.isExemptUnderBar(cover, strip: rect(0, 70, 300, 24), pixels: pixels))
     }
 
+    /// A bitmap of 1 px anti-aliased strokes (half, full, half coverage) of `ink` on `paper`, like thin footnote text.
+    private func thinText(ink: UInt8, paper: UInt8, rows: Range<Int> = 40..<50) -> Pixels {
+        let width = 300, height = 120
+        var rgba = [UInt8](repeating: paper, count: width * height * 4)
+        for y in 0..<height {
+            for x in 0..<width { set(&rgba, width, x, y, paper) }
+        }
+        func blend(_ coverage: Double) -> UInt8 { UInt8((Double(paper) + (Double(ink) - Double(paper)) * coverage).rounded()) }
+        for stroke in 0..<12 {
+            for y in rows {
+                set(&rgba, width, 60 + stroke * 8, y, blend(0.5))
+                set(&rgba, width, 61 + stroke * 8, y, blend(1))
+                set(&rgba, width, 62 + stroke * 8, y, blend(0.5))
+            }
+        }
+        return Pixels(rgba: rgba, width: width, height: height, scale: 1)
+    }
+
+    func testThinAntiAliasedDarkGreyTextReadsAtItsRealContrast() throws {
+        // #4D4D4D on #F2F2F2 is 7.6:1 (the Settings footers measure 8.45:1 on white, #4D4D4D); one third of the
+        // ink pixels are full strength, the rest anti-aliased. The estimator must not read it below 4.5.
+        let ratio = try XCTUnwrap(thinText(ink: 0x4D, paper: 0xF2).textContrast(in: frame))
+        XCTAssertGreaterThanOrEqual(ratio, Glass.minimumContrast)
+        XCTAssertLessThan(try XCTUnwrap(thinText(ink: 0x99, paper: 0xF2).textContrast(in: frame)), Glass.minimumContrast,
+                          "#999 stays low however thin")
+    }
+
+    func testALineCutByThePartsBottomEdgeIsLeftOut() throws {
+        // A full line, and below it only the anti-aliased tips of the next line, which the strip's cut leaves behind.
+        let part = rect(50, 35, 120, 28)
+        let pixels = bitmap([(rect(60, 40, 100, 10), black), (rect(60, 60, 100, 3), 0xB0)])
+        let uncut = try XCTUnwrap(pixels.textContrast(in: part, strict: false))
+        XCTAssertLessThan(uncut, Glass.minimumContrast, "measured as a line, the tips read low")
+        let ratio = try XCTUnwrap(pixels.textContrast(in: part, strict: false, openBottom: true))
+        XCTAssertGreaterThanOrEqual(ratio, Glass.minimumContrast)
+        let onlyTips = bitmap([(rect(60, 60, 100, 3), 0xB0)])
+        XCTAssertNil(onlyTips.textContrast(in: part, strict: false, openBottom: true), "nothing measurable above the cut")
+    }
+
     func testTheEdgeOfAWhiteCellInsideTheFrameIsNotText() throws {
         // Grey footer text whose frame reaches 3 px into the white cell above it.
         let surface = (rect(0, 33, 300, 87), UInt8(0xE0)), part = rect(20, 30, 200, 40)
