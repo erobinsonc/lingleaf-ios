@@ -34,7 +34,7 @@ fi
 if [ "$(git rev-parse "$sha^{tree}")" = "$(git rev-parse "refs/remotes/origin/$base^{tree}")" ]; then
   base_sha="$(git rev-parse "refs/remotes/origin/$base^{commit}")"
   here="$(cd "$(dirname "$0")" && pwd)"
-  if python3 -I "$here/verify-prior-ci.py" "$base_sha" --branch "$base"; then
+  if python3 -I -B "$here/verify-prior-ci.py" "$base_sha" --branch "$base"; then
     decide same-tree "head tree equals the tip tree of $base, whose own push CI is green"
   fi
   decide full "head tree equals the tip of $base but that tip has no green push CI"

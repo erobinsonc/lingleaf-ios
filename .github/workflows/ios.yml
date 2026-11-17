@@ -8,7 +8,8 @@ on:
 permissions:
   contents: read
 
-# Python never reads or writes bytecode in CI: a swapped .pyc must not run instead of its source.
+# Python writes no bytecode in CI (for the python3 calls without -I; the repository scripts run as `python3 -I -B`,
+# since -I ignores this variable). A swapped .pyc must not run instead of its source.
 env:
   PYTHONDONTWRITEBYTECODE: "1"
 
@@ -64,7 +65,7 @@ jobs:
           SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
         run: .github/scripts/ci-plan.sh
       - id: shards
-        run: echo "shards=$(python3 -I .github/scripts/test-shards.py --matrix)" >> "$GITHUB_OUTPUT"
+        run: echo "shards=$(python3 -I -B .github/scripts/test-shards.py --matrix)" >> "$GITHUB_OUTPUT"
 
   # Release PR (develop -> main) only: the head commit already ran the full CI as a push on develop.
   # A release PR opened while that push run is still going fails here: re-run this job when it ends.
@@ -86,7 +87,7 @@ jobs:
       - env:
           GH_TOKEN: ${{ github.token }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: python3 -I .github/scripts/verify-prior-ci.py "$HEAD_SHA" --branch develop --require-ancestor main
+        run: python3 -I -B .github/scripts/verify-prior-ci.py "$HEAD_SHA" --branch develop --require-ancestor main
 
   core-tests:
     name: Core tests (macOS)
@@ -127,7 +128,7 @@ jobs:
       - env:
           MODE: ${{ needs.plan.outputs.mode }}
           NEEDS: ${{ toJSON(needs) }}
-        run: python3 -I .github/scripts/ci-gate.py --heavy core-tests --verify release-verify
+        run: python3 -I -B .github/scripts/ci-gate.py --heavy core-tests --verify release-verify
 
   app-build:
     name: Lint and build for testing (macOS)
@@ -154,7 +155,7 @@ jobs:
         id: toolchain
         run: |
           set -o pipefail
-          read -r UDID RUNTIME < <(xcrun simctl list devices available -j | python3 -I .github/scripts/pick-simulator.py)
+          read -r UDID RUNTIME < <(xcrun simctl list devices available -j | python3 -I -B .github/scripts/pick-simulator.py)
           # The shards must test with the Xcode and the simulator runtime this build was made for.
           echo "xcode=$(xcodebuild -version | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           echo "runtime=$RUNTIME" >> "$GITHUB_OUTPUT"
@@ -202,7 +203,7 @@ jobs:
           BUILT_FOR_RUNTIME: ${{ needs.app-build.outputs.runtime }}
         run: |
           set -o pipefail
-          read -r UDID RUNTIME < <(xcrun simctl list devices available -j | python3 -I .github/scripts/pick-simulator.py)
+          read -r UDID RUNTIME < <(xcrun simctl list devices available -j | python3 -I -B .github/scripts/pick-simulator.py)
           echo "Simulator: $UDID ($RUNTIME)"
           [ "$RUNTIME" = "$BUILT_FOR_RUNTIME" ] || { echo "::error::Simulator runtime differs from the build: $RUNTIME vs $BUILT_FOR_RUNTIME"; exit 1; }
           [ "$(xcodebuild -version | tr '\n' ' ')" = "$BUILT_WITH_XCODE" ] || { echo "::error::Xcode differs from the build's"; exit 1; }
@@ -255,7 +256,7 @@ jobs:
       - env:
           MODE: ${{ needs.plan.outputs.mode }}
           NEEDS: ${{ toJSON(needs) }}
-        run: python3 -I .github/scripts/ci-gate.py --heavy app-build,app-tests --verify release-verify
+        run: python3 -I -B .github/scripts/ci-gate.py --heavy app-build,app-tests --verify release-verify
 
   # Two jobs on purpose. The first runs the bumped actions with a read-only token and
   # hands over only files that passed a strict check. The second holds the write token
