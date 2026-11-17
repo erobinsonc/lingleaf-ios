@@ -224,4 +224,45 @@ struct Pixels {
         let index = (y * width + x) * 4
         return 0.2126 * channel(rgba[index]) + 0.7152 * channel(rgba[index + 1]) + 0.0722 * channel(rgba[index + 2])
     }
+
+    // swiftlint:disable all
+    /// DIAGNOSTIC (throwaway): ink-ratio histogram, percentiles and darkest pixel of a frame.
+    func diagStats(_ frame: CGRect) -> String {
+        let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down))), x1 = min(width, Int(((frame.maxX - origin.x) * scale).rounded(.up)))
+        let y0 = max(0, Int(((frame.minY - origin.y) * scale).rounded(.down))), y1 = min(height, Int(((frame.maxY - origin.y) * scale).rounded(.up)))
+        guard x1 - x0 >= 4, y1 - y0 >= 4 else { return "empty" }
+        var border: [Double] = []
+        for y in y0..<y1 { for x in x0..<x1 where x < x0 + 3 || x >= x1 - 3 || y < y0 + 3 || y >= y1 - 3 { border.append(luminance(x, y)) } }
+        let bg = border.sorted()[border.count / 2]
+        var ratios: [Double] = []
+        var darkest = 1.0, darkX = 0, darkY = 0
+        for y in y0..<y1 { for x in x0..<x1 {
+            let l = luminance(x, y)
+            let r = Self.ratio(l, bg)
+            if r >= Self.inkRatio { ratios.append(r) }
+            if l < darkest { darkest = l; darkX = x; darkY = y }
+        } }
+        ratios.sort()
+        func pct(_ q: Double) -> String { ratios.isEmpty ? "-" : String(format: "%.2f", ratios[Int(Double(ratios.count - 1) * q)]) }
+        let bins: [(Double, Double)] = [(1.12, 1.5), (1.5, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 8), (8, 100)]
+        let hist = bins.map { b in "\(b.0)-\(b.1):\(ratios.filter { $0 >= b.0 && $0 < b.1 }.count)" }.joined(separator: " ")
+        let i = (darkY * width + darkX) * 4
+        return "bgLum=\(String(format: "%.3f", bg)) ink=\(ratios.count) p50=\(pct(0.5)) p75=\(pct(0.75)) p90=\(pct(0.9)) p99=\(pct(0.99)) max=\(pct(1)) darkestRGB=\(rgba[i]),\(rgba[i + 1]),\(rgba[i + 2]) hist[\(hist)]"
+    }
+
+    /// DIAGNOSTIC: per-row min/max luminance over a horizontal range, in points.
+    func diagProfile(x: ClosedRange<CGFloat>, y: ClosedRange<CGFloat>) -> String {
+        var parts: [String] = []
+        var yy = y.lowerBound
+        while yy <= y.upperBound {
+            let py = min(height - 1, Int((yy - origin.y) * scale))
+            var lo = 1.0, hi = 0.0
+            var px = Int((x.lowerBound - origin.x) * scale)
+            while px < min(width - 1, Int((x.upperBound - origin.x) * scale)) { let l = luminance(px, py); lo = min(lo, l); hi = max(hi, l); px += 2 }
+            parts.append("\(Int(yy)):\(String(format: "%.2f", lo))-\(String(format: "%.2f", hi))")
+            yy += 6
+        }
+        return parts.joined(separator: " ")
+    }
+    // swiftlint:enable all
 }

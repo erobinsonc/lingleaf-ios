@@ -253,4 +253,36 @@ extension LingleafUITests {
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
         element.elementType == .button && tabBar.contains(element.frame)
     }
+
+    // swiftlint:disable all
+    func testDiagSettingsFooter() throws {
+        func note(_ t: String) { XCTContext.runActivity(named: t) { _ in } }
+        app.tabBars.buttons["Settings"].tap()
+        _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
+        waitUntilSettled()
+        func report(_ tag: String) {
+            let bar = app.tabBars.firstMatch.frame
+            let strip = Glass.zone(above: bar)
+            let el = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Translation happens")).firstMatch
+            guard el.exists, let px = Pixels(app: app) else { note("DIAGF \(tag) no footer or pixels"); return }
+            let f = el.frame
+            note("DIAGF \(tag) bar=\(bar) frame=\(f) strip=\(strip) window=\(app.windows.firstMatch.frame)")
+            note("DIAGF \(tag) whole \(px.diagStats(f))")
+            if let part = Glass.partAboveStrip(f, strip: strip) {
+                note("DIAGF \(tag) part=\(part) \(px.diagStats(part))")
+                let r75 = px.textContrast(in: part, strict: false).map { String(format: "%.2f", $0) } ?? "-"
+                let r90 = px.textContrast(in: part, strict: false, percentile: 0.9).map { String(format: "%.2f", $0) } ?? "-"
+                let r100 = px.textContrast(in: part, strict: false, percentile: 1).map { String(format: "%.2f", $0) } ?? "-"
+                note("DIAGF \(tag) textContrast part p75=\(r75) p90=\(r90) max=\(r100)")
+            }
+            note("DIAGF \(tag) profile \(px.diagProfile(x: 16...386, y: (bar.minY - 150)...(bar.maxY - 1)))")
+        }
+        report("top")
+        for _ in 0..<6 { app.swipeUp() }
+        waitUntilSettled()
+        report("bottom")
+        let found = try auditScreen("Settings")
+        note("DIAGF bottom audit findings=\(found.count) \(found.joined(separator: " || "))")
+    }
+    // swiftlint:enable all
 }
