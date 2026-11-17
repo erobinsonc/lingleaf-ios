@@ -5,9 +5,11 @@ import XCTest
 /// (`GlassContrastTests`, on synthetic bitmaps).
 enum Glass {
     /// How far above the tab bar's frame the glass backdrop and the scroll-edge blur reach, in points.
-    /// Measured only in portrait, light appearance and the default text size, on the Library screen
-    /// (CI simulator, iOS 26, run 43677625249): a row's background starts to change 23 pt above the bar
-    /// (white 1.00 at 765 pt, 0.98 at 771, 0.96 at 777, 0.92 at 789; the bar starts at 791).
+    /// Measured only in portrait, light appearance and the default text size (the audit runs light only; a dark
+    /// calibration would have to be measured the same way), on the Library screen (CI simulator, iOS 26,
+    /// run 43677625249): a row's background starts to change 23 pt above the bar (white 1.00 at 765 pt, 0.98 at
+    /// 771, 0.96 at 777, 0.92 at 789; the bar starts at 791). Settings agrees: its luminance profile changes
+    /// from 773 pt (18 pt above the bar), inside the strip.
     static let reach: CGFloat = 24
     /// WCAG AA for normal text. Applied to all text here, which is stricter than the 3:1 of large text.
     static let minimumContrast = 4.5
@@ -52,7 +54,9 @@ enum Glass {
         guard let pixels else { return false }
         // Not strict: a cover or an image has no "own background" to agree with, and a part cut from a row may sit
         // beside other surfaces; any ink above the strip still has to reach 4.5:1 against the frame's own border.
-        guard let ratio = pixels.textContrast(in: part, strict: false) else { return true }
+        // The part is cut at the strip, so a line of text that reaches the cut shows only its top rows (anti-aliased
+        // tips): that line is left out (it lies partly under the blur, where nothing is measurable); the others count.
+        guard let ratio = pixels.textContrast(in: part, strict: false, openBottom: true) else { return true }
         return ratio >= minimumContrast
     }
 }
@@ -122,7 +126,9 @@ struct Pixels {
     /// Nil when there is no ink, the background is not one thing (only when `strict`), or the frame cannot be measured.
     /// `percentile` is where in a block's ink pixels the block is read (default 0.75, so decoys cannot vouch);
     /// 1 reads the strongest pixel, the most generous reading, for checks that must not raise false alarms.
-    func textContrast(in frame: CGRect, strict: Bool = true, percentile: Double = blockPercentile) -> Double? {
+    /// `openBottom` marks a frame cut across its content at the bottom: a line that reaches the cut is not measured.
+    func textContrast(in frame: CGRect, strict: Bool = true, percentile: Double = blockPercentile,
+                      openBottom: Bool = false) -> Double? {
         let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down)))
         let x1 = min(width, Int(((frame.maxX - origin.x) * scale).rounded(.up)))
         let y0 = max(0, Int(((frame.minY - origin.y) * scale).rounded(.down)))
@@ -137,9 +143,10 @@ struct Pixels {
         for (offset, hasInk) in (rowsWithInk + [false]).enumerated() {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
+                defer { top = nil }
+                if openBottom, y0 + offset == y1 { continue }
                 let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background, percentile)
                 if let weakest { worst = min(worst ?? weakest, weakest) }
-                top = nil
             }
         }
         return worst
@@ -224,45 +231,4 @@ struct Pixels {
         let index = (y * width + x) * 4
         return 0.2126 * channel(rgba[index]) + 0.7152 * channel(rgba[index + 1]) + 0.0722 * channel(rgba[index + 2])
     }
-
-    // swiftlint:disable all
-    /// DIAGNOSTIC (throwaway): ink-ratio histogram, percentiles and darkest pixel of a frame.
-    func diagStats(_ frame: CGRect) -> String {
-        let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down))), x1 = min(width, Int(((frame.maxX - origin.x) * scale).rounded(.up)))
-        let y0 = max(0, Int(((frame.minY - origin.y) * scale).rounded(.down))), y1 = min(height, Int(((frame.maxY - origin.y) * scale).rounded(.up)))
-        guard x1 - x0 >= 4, y1 - y0 >= 4 else { return "empty" }
-        var border: [Double] = []
-        for y in y0..<y1 { for x in x0..<x1 where x < x0 + 3 || x >= x1 - 3 || y < y0 + 3 || y >= y1 - 3 { border.append(luminance(x, y)) } }
-        let bg = border.sorted()[border.count / 2]
-        var ratios: [Double] = []
-        var darkest = 1.0, darkX = 0, darkY = 0
-        for y in y0..<y1 { for x in x0..<x1 {
-            let l = luminance(x, y)
-            let r = Self.ratio(l, bg)
-            if r >= Self.inkRatio { ratios.append(r) }
-            if l < darkest { darkest = l; darkX = x; darkY = y }
-        } }
-        ratios.sort()
-        func pct(_ q: Double) -> String { ratios.isEmpty ? "-" : String(format: "%.2f", ratios[Int(Double(ratios.count - 1) * q)]) }
-        let bins: [(Double, Double)] = [(1.12, 1.5), (1.5, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 8), (8, 100)]
-        let hist = bins.map { b in "\(b.0)-\(b.1):\(ratios.filter { $0 >= b.0 && $0 < b.1 }.count)" }.joined(separator: " ")
-        let i = (darkY * width + darkX) * 4
-        return "bgLum=\(String(format: "%.3f", bg)) ink=\(ratios.count) p50=\(pct(0.5)) p75=\(pct(0.75)) p90=\(pct(0.9)) p99=\(pct(0.99)) max=\(pct(1)) darkestRGB=\(rgba[i]),\(rgba[i + 1]),\(rgba[i + 2]) hist[\(hist)]"
-    }
-
-    /// DIAGNOSTIC: per-row min/max luminance over a horizontal range, in points.
-    func diagProfile(x: ClosedRange<CGFloat>, y: ClosedRange<CGFloat>) -> String {
-        var parts: [String] = []
-        var yy = y.lowerBound
-        while yy <= y.upperBound {
-            let py = min(height - 1, Int((yy - origin.y) * scale))
-            var lo = 1.0, hi = 0.0
-            var px = Int((x.lowerBound - origin.x) * scale)
-            while px < min(width - 1, Int((x.upperBound - origin.x) * scale)) { let l = luminance(px, py); lo = min(lo, l); hi = max(hi, l); px += 2 }
-            parts.append("\(Int(yy)):\(String(format: "%.2f", lo))-\(String(format: "%.2f", hi))")
-            yy += 6
-        }
-        return parts.joined(separator: " ")
-    }
-    // swiftlint:enable all
 }

@@ -9,13 +9,21 @@ extension LingleafUITests {
     /// meaning). Collects every issue before failing, so one CI run shows the whole list.
     func testAccessibilityAudit() throws {
         var issues: [String] = []
-        func audit(_ screen: String) throws { issues += try auditScreen(screen) }
+        func audit(_ screen: String, types: XCUIAccessibilityAuditType = .all) throws {
+            issues += try auditScreen(screen, types: types)
+        }
         for tab in ["Library", "Discover", "Words", "Settings"] {
             app.tabBars.buttons[tab].tap()
             // The tab's own screen is there (its title), then still.
             _ = app.navigationBars[tab].waitForExistence(timeout: 10)
             try audit(tab)
         }
+        // Settings again, scrolled to its end, so that every text is audited at least once clear of the tab bar
+        // (the footers at the bottom lie under the bar when it is at the top). Contrast only: audited for everything,
+        // the About texts there are reported as "Dynamic Type unsupported" and "clipped", although the AX5 tour
+        // (en-light-ax5-49-settings-about-ax5) shows them scaling and wrapping. That is for the maintainer to decide.
+        for _ in 0..<6 { app.swipeUp() }
+        try audit("Settings (scrolled)", types: .contrast)
         app.tabBars.buttons["Library"].tap()
         button(startingWith: "The Red Boat").tap()
         XCTAssertTrue(app.links["beach"].firstMatch.waitForExistence(timeout: 10))
@@ -60,7 +68,7 @@ extension LingleafUITests {
     }
 
     /// Audits the screen now showing and returns every finding (empty when it is clean).
-    func auditScreen(_ screen: String) throws -> [String] {
+    func auditScreen(_ screen: String, types: XCUIAccessibilityAuditType = .all) throws -> [String] {
         var issues: [String] = []
         // The audit measures the pixels of one screenshot against the accessibility tree. A tab
         // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
@@ -94,7 +102,7 @@ extension LingleafUITests {
             let pixels = tabBar.isNull ? nil : Pixels(app: app)
             lastPixels = pixels
             do {
-                try app.performAccessibilityAudit { issue in
+                try app.performAccessibilityAudit(for: types) { issue in
                     // Rows scrolled under the translucent tab bar are measured against
                     // the bar's blur; scrolled into view they read normally. The tab
                     // bar's own buttons are not exempt: their contrast is still checked.
@@ -112,7 +120,7 @@ extension LingleafUITests {
                     // The search field is UIKit's own (from `.searchable`); its clipping
                     // at large text sizes is iOS's to handle, not something the app can change.
                     if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                    if Self.knownFalsePositive(issue, on: screen) { return true }
+                    if Self.knownFalsePositive(issue, on: screen.replacingOccurrences(of: " (scrolled)", with: "")) { return true }
                     if issue.auditType == .contrast, issue.element == nil {
                         unresolved.append(
                             "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
@@ -253,36 +261,4 @@ extension LingleafUITests {
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
         element.elementType == .button && tabBar.contains(element.frame)
     }
-
-    // swiftlint:disable all
-    func testDiagSettingsFooter() throws {
-        func note(_ t: String) { XCTContext.runActivity(named: t) { _ in } }
-        app.tabBars.buttons["Settings"].tap()
-        _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
-        waitUntilSettled()
-        func report(_ tag: String) {
-            let bar = app.tabBars.firstMatch.frame
-            let strip = Glass.zone(above: bar)
-            let el = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH %@", "Translation happens")).firstMatch
-            guard el.exists, let px = Pixels(app: app) else { note("DIAGF \(tag) no footer or pixels"); return }
-            let f = el.frame
-            note("DIAGF \(tag) bar=\(bar) frame=\(f) strip=\(strip) window=\(app.windows.firstMatch.frame)")
-            note("DIAGF \(tag) whole \(px.diagStats(f))")
-            if let part = Glass.partAboveStrip(f, strip: strip) {
-                note("DIAGF \(tag) part=\(part) \(px.diagStats(part))")
-                let r75 = px.textContrast(in: part, strict: false).map { String(format: "%.2f", $0) } ?? "-"
-                let r90 = px.textContrast(in: part, strict: false, percentile: 0.9).map { String(format: "%.2f", $0) } ?? "-"
-                let r100 = px.textContrast(in: part, strict: false, percentile: 1).map { String(format: "%.2f", $0) } ?? "-"
-                note("DIAGF \(tag) textContrast part p75=\(r75) p90=\(r90) max=\(r100)")
-            }
-            note("DIAGF \(tag) profile \(px.diagProfile(x: 16...386, y: (bar.minY - 150)...(bar.maxY - 1)))")
-        }
-        report("top")
-        for _ in 0..<6 { app.swipeUp() }
-        waitUntilSettled()
-        report("bottom")
-        let found = try auditScreen("Settings")
-        note("DIAGF bottom audit findings=\(found.count) \(found.joined(separator: " || "))")
-    }
-    // swiftlint:enable all
 }
