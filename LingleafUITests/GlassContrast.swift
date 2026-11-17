@@ -50,8 +50,8 @@ enum Glass {
     static func isExemptUnderBar(_ frame: CGRect, strip: CGRect, pixels: Pixels?) -> Bool {
         guard let part = partAboveStrip(frame, strip: strip) else { return true }
         guard let pixels else { return false }
-        // Not strict: a cover or an image has no "own background" to agree with; any ink above the strip
-        // still has to reach 4.5:1 against the median of the ring around it.
+        // Not strict: a cover or an image has no "own background" to agree with, and a part cut from a row may sit
+        // beside other surfaces; any ink above the strip still has to reach 4.5:1 against the frame's own border.
         guard let ratio = pixels.textContrast(in: part, strict: false) else { return true }
         return ratio >= minimumContrast
     }
@@ -69,6 +69,9 @@ struct Pixels {
     /// A pixel is text ("ink") when it differs from the local background by at least this contrast ratio.
     /// (The blur's gradient measures about 1.07 against its median; faint text, from 1.12, counts and fails.)
     private static let inkRatio = 1.12
+    /// Faint runs below this ratio, as wide as this share of the frame and touching its edge, are surfaces.
+    private static let surfaceRatio = 1.5
+    private static let surfaceWidth = 0.9
     /// Blank space (points) that separates two things on one line (a cover and a title, or a black word and a
     /// grey one). Words of the same text split too, and measure the same, so a narrow gap costs nothing.
     private static let separation: CGFloat = 5
@@ -78,9 +81,10 @@ struct Pixels {
     private static let backgroundAgreement = 0.08
     /// Share of the ring that must lie within `backgroundAgreement` of its median (the blur's gradient does).
     private static let homogeneousShare = 0.9
-    /// A block of text counts at this percentile of its columns' best ratios, so that a few dark pixels
-    /// (an ornament, a stray mark) merged into a block of grey text cannot vouch for the block.
-    static let blockPercentile = 0.25
+    /// A block of text counts at this percentile of its ink pixels' ratios (the value reached by the strongest
+    /// quarter of them: the strokes, not their anti-aliased edges), so that a few dark pixels (an ornament, a stray
+    /// mark) merged into a block of grey text cannot vouch for the block.
+    static let blockPercentile = 0.75
 
     init(rgba: [UInt8], width: Int, height: Int, scale: CGFloat, origin: CGPoint = .zero) {
         self.rgba = rgba
@@ -112,12 +116,12 @@ struct Pixels {
 
     /// The lowest contrast ratio of the text inside `frame` (points) against its local background: the background
     /// is the median of a ring of pixels just outside the frame, which must be homogeneous and agree with the
-    /// frame's own border; the text is every line (rows of ink) and, within a line, every block set apart by blank
+    /// frame's own border (not strict: the frame's own border alone); the text is every line (rows of ink) and, within a line, every block set apart by blank
     /// space, each at the low end of its columns' strongest pixels. The result is the weakest of them, so a grey
     /// subtitle under a black title, or grey text beside a dark cover, fails.
     /// Nil when there is no ink, the background is not one thing (only when `strict`), or the frame cannot be measured.
-    /// `percentile` is where in its columns' strongest pixels a block is read (default: low, so decoys cannot vouch);
-    /// 1 reads the strongest column, the most generous reading, for checks that must not raise false alarms.
+    /// `percentile` is where in a block's ink pixels the block is read (default 0.75, so decoys cannot vouch);
+    /// 1 reads the strongest pixel, the most generous reading, for checks that must not raise false alarms.
     func textContrast(in frame: CGRect, strict: Bool = true, percentile: Double = blockPercentile) -> Double? {
         let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down)))
         let x1 = min(width, Int(((frame.maxX - origin.x) * scale).rounded(.up)))
@@ -133,7 +137,7 @@ struct Pixels {
         for (offset, hasInk) in (rowsWithInk + [false]).enumerated() {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
-                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), x0, x1, background, percentile)
+                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background, percentile)
                 if let weakest { worst = min(worst ?? weakest, weakest) }
                 top = nil
             }
@@ -142,25 +146,37 @@ struct Pixels {
     }
 
     /// Within a line, the weakest of its blocks (runs of columns with ink, set apart by blank space).
-    private func weakestBlock(rows: Range<Int>, _ x0: Int, _ x1: Int, _ background: Double, _ percentile: Double) -> Double? {
+    private func weakestBlock(rows: Range<Int>, _ xs: (Int, Int), _ ys: (Int, Int), _ background: Double,
+                              _ percentile: Double) -> Double? {
+        let (x0, x1) = xs
         let gap = max(1, Int((Self.separation * scale).rounded()))
         var worst: Double?
-        var columns: [Double] = []
-        var blank = 0
+        var inkPixels: [Double] = []
+        var blank = 0, first = 0, last = 0
+        let touchesEdge = rows.lowerBound == ys.0 || rows.upperBound == ys.1
         func close() {
-            if !columns.isEmpty {
-                let value = columns.sorted()[Int(Double(columns.count - 1) * percentile)]
-                worst = min(worst ?? value, value)
+            if !inkPixels.isEmpty {
+                let sorted = inkPixels.sorted()
+                // A faint run across the whole width, at the frame's edge, is the edge of a surface (a white cell
+                // above grey footer text), not text; real text of any colour reaches well above this.
+                let isSurface = (sorted.last ?? 0) < Self.surfaceRatio && touchesEdge
+                    && Double(last - first + 1) >= Double(x1 - x0) * Self.surfaceWidth
+                if !isSurface {
+                    let value = sorted[Int(Double(sorted.count - 1) * percentile)]
+                    worst = min(worst ?? value, value)
+                }
             }
-            columns = []
+            inkPixels = []
             blank = 0
         }
         for x in x0..<x1 {
-            let column = rows.map { Self.ratio(luminance(x, $0), background) }.max() ?? 1
-            if column >= Self.inkRatio {
-                columns.append(column)
+            let column = rows.map { Self.ratio(luminance(x, $0), background) }.filter { $0 >= Self.inkRatio }
+            if !column.isEmpty {
+                if inkPixels.isEmpty { first = x }
+                last = x
+                inkPixels += column
                 blank = 0
-            } else if !columns.isEmpty {
+            } else if !inkPixels.isEmpty {
                 blank += 1
                 if blank >= gap { close() }
             }
@@ -187,7 +203,9 @@ struct Pixels {
         }
         guard around.count >= 8, border.count >= 8 else { return nil }
         let outside = around.sorted()[around.count / 2], inside = border.sorted()[border.count / 2]
-        guard strict else { return outside }
+        // Not strict (a part cut out of a larger element): the frame's own border is the background. The ring may lie
+        // across a boundary (a white cell above grey footer text) and its median then misjudges the background.
+        guard strict else { return inside }
         let agreeing = around.filter { abs($0 - outside) <= Self.backgroundAgreement }.count
         guard Double(agreeing) >= Double(around.count) * Self.homogeneousShare,
               abs(outside - inside) <= Self.backgroundAgreement else { return nil }
