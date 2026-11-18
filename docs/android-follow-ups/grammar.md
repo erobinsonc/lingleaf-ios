@@ -2,6 +2,9 @@
 
 Copy SPEC.md wholesale from iOS at merge time (S7, S20-S25 and "Grammar rules data" are shared logic); it must match the iOS `feat/grammar-core` head at merge time (the SPEC is the contract; this note only lists what is easy to get wrong). This is what has to match.
 
+## Update: spec of the Grammar screens and irregular verbs (iOS only for now)
+SPEC.md also holds the spec of the Grammar screens and the verb pages: the pretest with "Skip" / "Omitir", the daily counter `itemsAnswered`, the counters table, the draw, the Recent and list-layout rules, the "English | Español" control, the integer rule of `tips.json` and the irregular-verb list, page, search and sentences file ('Verb sentences data'). None of it is mirrored in Kotlin yet: when Android resumes, copy the whole SPEC.md, then read this note against it. Where a line below disagrees with SPEC.md, SPEC.md wins (known cases: the toggle that names the other language, "Skip to the rule", the raw-literal rule for day numbers and `opened`, and "at most 2 rounds a day", now a count of 6 answered items). The Grammar and verb string keys (tab, pretest, rule page, verb pages) exist in the iOS catalogue only for now; the Android strings are added at that copy.
+
 ## Files that must be identical in both repos
 - `grammar-rules.json` (15 rules, 101 items, wave 1), byte for byte; the SHA-256 in SPEC.md is the gate. Bundled in the core module next to `irregular-verbs.json`.
 - Keep `*.json -text` in `.gitattributes` on Android too, so no line-ending conversion changes the bytes.
