@@ -273,7 +273,7 @@ final class GrammarRulesFileTests: XCTestCase {
         XCTAssertEqual(chooseItems([a, b, c, d], today: 6, lastPair: nil, spanish: true), ["c", "d"], "c and d share day 4: the flagged one first")
     }
 
-    func testASpanishStimulusIsOnlyOnAChooseItemAndEveryRuleKeepsFourOthers() throws {
+    func testASpanishStimulusIsOnlyOnAChooseItemAndEveryRuleKeepsFourWithoutSpanish() throws {
         for rule in try rules() {
             let items = try XCTUnwrap(rule["practice"] as? [[String: Any]])
             var drawable = 0
