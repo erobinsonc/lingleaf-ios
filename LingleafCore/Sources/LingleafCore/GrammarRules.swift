@@ -166,13 +166,34 @@ public struct GrammarRules: Sendable {
     }
 
     /// Characters no text may hold: controls, invisible formatting (bidi, zero-width), line and paragraph
-    /// separators and private use. Same set as the irregular-verb table's texts.
-    private static let forbidden: Set<Unicode.GeneralCategory> = [.control, .format, .lineSeparator, .paragraphSeparator, .privateUse]
+    /// separators, private use and unassigned code points (Cn).
+    private static let forbidden: Set<Unicode.GeneralCategory> = [
+        .control, .format, .lineSeparator, .paragraphSeparator, .privateUse, .unassigned,
+    ]
 
     /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), none forbidden.
-    static func isText(_ text: String) -> Bool {
-        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= maxText
-            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) }
+    static func isText(_ text: String) -> Bool { isText(text, max: maxText) }
+
+    /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`).
+    static func isText(_ text: String, max: Int) -> Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
+            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) || isNoncharacter($0) }
+            && marksAreFew(text)
+    }
+
+    /// U+FFFE, U+FFFF and U+FDD0 to U+FDEF (the other planes' noncharacters are unassigned, so already refused).
+    private static func isNoncharacter(_ scalar: Unicode.Scalar) -> Bool {
+        scalar.value == 0xFFFE || scalar.value == 0xFFFF || (0xFDD0...0xFDEF).contains(scalar.value)
+    }
+
+    /// At most 2 consecutive combining marks (Mn): a stack of marks is how text is made unreadable.
+    private static func marksAreFew(_ text: String) -> Bool {
+        var run = 0
+        for scalar in text.unicodeScalars {
+            run = scalar.properties.generalCategory == .nonspacingMark ? run + 1 : 0
+            if run > 2 { return false }
+        }
+        return true
     }
 }
 
@@ -275,7 +296,7 @@ public struct GrammarRule: Equatable, Sendable {
 
 // MARK: Strict decoding
 
-private struct GrammarKey: CodingKey {
+struct GrammarKey: CodingKey {
     let stringValue: String
     var intValue: Int? { nil }
     init(_ string: String) { stringValue = string }
@@ -283,7 +304,7 @@ private struct GrammarKey: CodingKey {
     init?(intValue: Int) { nil }
 }
 
-private extension Decoder {
+extension Decoder {
     /// The object's container, refusing a key outside `required` + `optional` or a missing required one.
     func strictObject(_ required: Set<String>, optional: Set<String> = []) throws -> KeyedDecodingContainer<GrammarKey> {
         let keyed = try self.container(keyedBy: GrammarKey.self)
@@ -296,7 +317,7 @@ private extension Decoder {
     }
 }
 
-private extension KeyedDecodingContainer where K == GrammarKey {
+extension KeyedDecodingContainer where K == GrammarKey {
     func value<T: Decodable>(_ key: String) throws -> T { try decode(T.self, forKey: GrammarKey(key)) }
     /// Absent is fine; a key that is present must hold a value of the right type (a JSON null is refused).
     func optional<T: Decodable>(_ key: String) throws -> T? {
