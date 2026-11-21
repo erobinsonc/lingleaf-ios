@@ -115,7 +115,7 @@ struct GrammarRuleRow: View {
     var body: some View {
         let title = rule.title.text(for: model.chromeLanguage)
         let state = grammar.progress.state(of: rule.id)
-        let layout = typeSize.isAccessibilityCategory
+        let layout = typeSize.isAccessibilitySize
             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
             : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
         NavigationLink(value: GrammarRoute.rule(rule.id)) {
@@ -125,7 +125,7 @@ struct GrammarRuleRow: View {
                     Text(verbatim: GrammarLabels.level(rule.level)).font(.subheadline).foregroundStyle(Brand.secondaryText)
                 }
                 if state != .new {
-                    if !typeSize.isAccessibilityCategory { Spacer(minLength: 8) }
+                    if !typeSize.isAccessibilitySize { Spacer(minLength: 8) }
                     stateLabel(state)
                 }
             }

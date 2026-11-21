@@ -151,6 +151,8 @@ final class GrammarListTests: XCTestCase {
 /// an NSNumber that `as? Bool` would also accept for 1 and 0, so only the number's own type may decide (SPEC S21).
 /// Runs in the core job on macOS in CI.
 final class GrammarLanguageDefaultsTests: XCTestCase {
+    // Each write is preceded by removing the key: CoreFoundation treats the number 0 and `false` (1 and `true`) as
+    // equal and may skip an overwrite, which would leave the old boolean in place.
     private var defaults: UserDefaults!
     private let suite = "grammar-language-tests"
 
@@ -166,16 +168,22 @@ final class GrammarLanguageDefaultsTests: XCTestCase {
     func testABooleanWrittenToTheDefaultsReadsAsABooleanAndANumberAsAbsent() {
         let key = GrammarLanguage.settingKey
         XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "nothing written")
+        defaults.removeObject(forKey: key)
         defaults.set(true, forKey: key)
         XCTAssertEqual(GrammarLanguage.boolean(defaults.object(forKey: key)), true)
+        defaults.removeObject(forKey: key)
         defaults.set(false, forKey: key)
         XCTAssertEqual(GrammarLanguage.boolean(defaults.object(forKey: key)), false)
+        defaults.removeObject(forKey: key)
         defaults.set(1, forKey: key)
         XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "the number 1 is not true")
+        defaults.removeObject(forKey: key)
         defaults.set(0, forKey: key)
         XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "the number 0 is not false")
+        defaults.removeObject(forKey: key)
         defaults.set(1.0, forKey: key)
         XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)))
+        defaults.removeObject(forKey: key)
         defaults.set("true", forKey: key)
         XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)))
         XCTAssertNil(GrammarLanguage.boolean(NSNumber(value: 1)))
@@ -193,10 +201,13 @@ final class GrammarLanguageDefaultsTests: XCTestCase {
             GrammarLanguage.effective(setting: defaults.object(forKey: key), translationLanguage: "es", interfaceLanguage: "en")
         }
         XCTAssertEqual(effective(), .es, "absent: Spanish translation on an English interface")
+        defaults.removeObject(forKey: key)
         defaults.set(false, forKey: key)
         XCTAssertEqual(effective(), .en)
+        defaults.removeObject(forKey: key)
         defaults.set(0, forKey: key)
         XCTAssertEqual(effective(), .es, "the number 0 is absent, not false")
+        defaults.removeObject(forKey: key)
         defaults.set(true, forKey: key)
         XCTAssertEqual(effective(), .es)
     }

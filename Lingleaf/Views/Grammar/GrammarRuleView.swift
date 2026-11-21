@@ -18,7 +18,7 @@ struct GrammarRuleView: View {
 
     /// The primary button is pinned to the bottom edge, except at accessibility text sizes and in landscape
     /// (compact height), where it would take too much of the screen and follows the content instead.
-    private var isInline: Bool { typeSize.isAccessibilityCategory || verticalSizeClass == .compact }
+    private var isInline: Bool { typeSize.isAccessibilitySize || verticalSizeClass == .compact }
 
     var body: some View {
         let language = model.grammarLanguage

@@ -27,7 +27,7 @@ public enum GrammarListLayout: Equatable, Sendable {
     }
 
     /// Rules by level, stable: file order inside a level.
-    static func sorted(_ rules: [GrammarRule]) -> [GrammarRule] {
+    public static func sorted(_ rules: [GrammarRule]) -> [GrammarRule] {
         rules.enumerated().sorted { lhs, rhs in
             let left = GrammarLevel.rank(lhs.element.level), right = GrammarLevel.rank(rhs.element.level)
             return left != right ? left < right : lhs.offset < rhs.offset
