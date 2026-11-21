@@ -63,4 +63,19 @@ final class StrictJSONTests: XCTestCase {
         }
         XCTAssertNotNil(GrammarJSON.scrubbed(Data(#"{"a":"x y"}"#.utf8), integerKeys: [], policy: .strict))
     }
+
+    /// SPEC.md: an integer literal is `0` or `-?[1-9][0-9]*`; `-0` is not one, nor is a leading zero.
+    func testNegativeZeroIsNotAnIntegerLiteral() throws {
+        let scrub = { (token: String, policy: GrammarJSON.Policy) in
+            let data = GrammarJSON.scrubbed(Data(#"{"schema":\#(token)}"#.utf8), integerKeys: ["schema"], policy: policy)
+            return data.map { String(decoding: $0, as: UTF8.self) }
+        }
+        for token in ["0", "1", "-1", "10", "-10", "123456789"] {
+            XCTAssertEqual(scrub(token, .strict), #"{"schema":\#(token)}"#, token)
+        }
+        for token in ["-0", "00", "01", "-01", "-", "1.0", "-0.0", "1e0", "0e0"] {
+            XCTAssertNil(scrub(token, .strict), token)
+            XCTAssertEqual(scrub(token, .tolerant), #"{"schema":null}"#, token)
+        }
+    }
 }

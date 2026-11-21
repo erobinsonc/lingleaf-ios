@@ -75,35 +75,29 @@ final class VerbSentencesFileTests: XCTestCase {
         XCTAssertTrue(try specText().contains("(17 as of this version)"))
     }
 
-    /// SPEC.md: S3's sense logic reads every sense-1 context as sense 1 and every sense-0 context as sense 0. The
-    /// bundled file's contexts first (none yet), then the SPEC's own examples for lie.
-    func testSenseOneContextResolvesToSenseOne() throws {
+    /// SPEC.md, cue rule: every sentence of lie and hang has a cue of its sense and none of the other's. The bundled file
+    /// first (no sentences yet), then the SPEC's own examples, and the closed lists the SPEC names.
+    func testHomonymSentencesCarryTheirCue() throws {
         let table = IrregularVerbs.shared
-        func sense(of sentence: VerbSentence) -> Int? {
-            let view = SentenceView(sentence.en)
-            guard let verb = table.verb(base: sentence.form),
-                  let index = view.tokens.firstIndex(of: sentence.form) else { return nil }
-            return VerbSentencesLint.baseSense(verb, next: index + 1 < view.tokens.count ? view.tokens[index + 1] : nil)
-        }
         for entry in try VerbSentences.load(data()).verbs {
-            for sentence in entry.sentences where sentence.context {
-                XCTAssertEqual(sense(of: sentence), sentence.senseIndex, "\(entry.base): \(sentence.en)")
+            guard let verb = table.verb(base: entry.base), verb.homonym != nil else { continue }
+            for sentence in entry.sentences {
+                let found = try XCTUnwrap(VerbSentencesLint.cues(SentenceView(sentence.en), base: entry.base))
+                XCTAssertTrue(sentence.senseIndex == 1 ? found.sense1 && !found.sense0 : found.sense0 && !found.sense1, sentence.en)
             }
         }
+        XCTAssertEqual(table.verbs.filter { $0.homonym != nil }.map(\.base).sorted(), ["hang", "lie"], "the cue lists cover these two")
         let f = VerbSentencesFixtures.self
-        let one = [f.sentence("didnt", "lie", "She didn't lie to me.", sense: 1, context: true),
-                   f.sentence("advice", "lie", "You should never lie to her.", sense: 1, context: true)]
-        let zero = f.sentence("advice", "lie", "You should lie down for an hour.", context: true)
-        for item in one { XCTAssertEqual(sense(of: try decoded(item)), 1, item["en"] as? String ?? "") }
-        XCTAssertEqual(sense(of: try decoded(zero)), 0)
-        XCTAssertEqual(f.problems(f.file(of: "lie", [one[0]])).filter { $0.hasPrefix("s3") }, [])
-        XCTAssertEqual(f.problems(f.file(of: "lie", [one[1]])).filter { $0.hasPrefix("s3") }, [])
-        XCTAssertEqual(f.problems(f.file(of: "lie", [zero])).filter { $0.hasPrefix("s3") }, [])
-    }
-
-    private func decoded(_ json: [String: Any]) throws -> VerbSentence {
-        let file = try VerbSentences.load(VerbSentencesFixtures.data(VerbSentencesFixtures.file(of: "lie", [json])))
-        return try XCTUnwrap(file.verbs.first?.sentences.first)
+        let examples: [(String, String, String, Int)] = [
+            ("lie", "didnt", "She didn't lie to me.", 1), ("lie", "advice", "You should never lie to her.", 1),
+            ("hang", "didnt", "They didn't hang the thief.", 1), ("lie", "advice", "You should lie down for an hour.", 0),
+            ("hang", "habit", "I hang my coat here every day.", 0),
+        ]
+        for (verb, slot, en, sense) in examples {
+            let json = f.file(of: verb, [f.sentence(slot, verb, en, sense: sense, context: true)])
+            XCTAssertEqual(f.problems(json), [], en)
+        }
+        XCTAssertEqual(VerbSentencesLint.hangExecuted.intersection(["man", "men"]), [], "man can read as a painting or a figure")
     }
 
     // MARK: Release pull requests

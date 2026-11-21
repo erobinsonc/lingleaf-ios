@@ -367,6 +367,29 @@ final class VerbSentencesRefusalTests: XCTestCase {
         refused(take { $0[0]["en"] = String(repeating: "e\u{0301}", count: 61) }, "text-en")
     }
 
+    func testAtMostTwoConsecutiveCombiningMarksAreAllowed() {
+        loads(take { $0[0]["es"] = "a\u{0301}\u{0302}b" }, "two marks")
+        loads(take { $0[0]["es"] = "a\u{0301}b\u{0301}\u{0302}c\u{0301}" }, "runs are counted apart")
+        loads(take { $0[0]["es"] = "a\u{0301}\u{0302}\u{20DD}\u{0301}" }, "an enclosing mark (Me) ends the run")
+        refused(take { $0[0]["es"] = "a\u{0301}\u{0302}\u{0303}" }, "text-es")
+        refused(take { $0[0]["en"] = "I take\u{0301}\u{0302}\u{0303}\u{0304} the bus." }, "text-en")
+    }
+
+    /// The same rules for the texts of grammar-rules.json (SPEC.md); the bundled file still loads.
+    func testTheGrammarRulesTextRuleIsTheSame() throws {
+        XCTAssertTrue(GrammarRules.isText("café ñ — “así” ¿sí?"))
+        let bad = [
+            "a\u{0378}", "a\(Self.nc(0xFFFE))", "a\(Self.nc(0xFFFF))", "a\(Self.nc(0xFDD0))", "a\(Self.nc(0xFDEF))",
+            "a\u{0301}\u{0302}\u{0303}", "a\u{E000}", "a\u{200B}",
+        ]
+        for text in bad {
+            XCTAssertFalse(GrammarRules.isText(text), text.unicodeScalars.map(\.value).description)
+        }
+        XCTAssertTrue(GrammarRules.isText("a\u{0301}\u{0302}"))
+        XCTAssertFalse(GrammarRules.isText(String(repeating: "x", count: 5), max: 4))
+        XCTAssertTrue(GrammarRules.shared.isAvailable, "the bundled rules are not refused by the stricter text rule")
+    }
+
     func testBlankTextIsRefused() {
         for blank in ["", " ", "   ", "\t", "\n", "\u{00A0}\u{2003}"] {
             refused(take { $0[0]["en"] = blank }, "text-en")
@@ -375,12 +398,20 @@ final class VerbSentencesRefusalTests: XCTestCase {
         }
     }
 
-    private static let forbidden: [(String, String)] = [
-        ("control", "a\u{0007}b"), ("newline", "a\nb"), ("delete", "a\u{007F}b"), ("C1 control", "a\u{0085}b"),
-        ("bidi override", "a\u{202E}b"), ("bidi isolate", "a\u{2066}b"), ("zero-width space", "a\u{200B}b"),
-        ("zero-width joiner", "a\u{200D}b"), ("byte order mark", "a\u{FEFF}b"), ("private use", "a\u{E000}b"),
-        ("line separator", "a\u{2028}b"), ("paragraph separator", "a\u{2029}b"), ("soft hyphen", "a\u{00AD}b"),
-    ]
+    private static func nc(_ value: UInt32) -> String { String(Unicode.Scalar(value)!) }
+
+    private static let forbidden: [(String, String)] = {
+        let nc = VerbSentencesRefusalTests.nc
+        return [
+            ("control", "a\u{0007}b"), ("newline", "a\nb"), ("delete", "a\u{007F}b"), ("C1 control", "a\u{0085}b"),
+            ("bidi override", "a\u{202E}b"), ("bidi isolate", "a\u{2066}b"), ("zero-width space", "a\u{200B}b"),
+            ("zero-width joiner", "a\u{200D}b"), ("byte order mark", "a\u{FEFF}b"), ("private use", "a\u{E000}b"),
+            ("line separator", "a\u{2028}b"), ("paragraph separator", "a\u{2029}b"), ("soft hyphen", "a\u{00AD}b"),
+            ("unassigned", "a\u{0378}b"), ("noncharacter FFFE", "a\(nc(0xFFFE))b"), ("noncharacter FFFF", "a\(nc(0xFFFF))b"),
+            ("noncharacter FDD0", "a\(nc(0xFDD0))b"), ("noncharacter FDEF", "a\(nc(0xFDEF))b"),
+            ("three marks", "a\u{0301}\u{0302}\u{0303}b"),
+        ]
+    }()
 
     func testEveryTextFieldRefusesEveryForbiddenCharacter() {
         for (name, text) in Self.forbidden {

@@ -4,7 +4,7 @@ import Foundation
 /// the same on Apple Foundation and Linux Foundation, whatever `JSONSerialization` or `JSONDecoder` do with the
 /// cases below (SPEC.md, Grammar rules data). It looks only at the bytes, outside the text of the strings:
 /// - a raw control character (below 0x20) inside a string is refused (JSON forbids it; platforms differ);
-/// - a number is an integer only when written as an integer literal, `-?[0-9]+`: no fraction, no exponent
+/// - a number is an integer only when written as an integer literal, `0|-?[1-9][0-9]*`: no fraction, no exponent, no `-0`
 ///   (`5.0`, `1e1` and `2.0` are not integers, though some decoders read them as 5, 10 and 2). It matters only for
 ///   the members named in `integerKeys`; any other number is left as written (counts accept decimals);
 /// - `Policy.strict` (the rules file) refuses a JSON `null` anywhere and a non-integer under `integerKeys`;
@@ -300,7 +300,9 @@ enum GrammarJSON {
     }
 
     private static func isInteger(_ token: ArraySlice<UInt8>) -> Bool {
+        // `0` or `-?[1-9][0-9]*`: no `-0`, no leading zero.
         let digits = token.first == 0x2D ? token.dropFirst() : token
-        return !digits.isEmpty && digits.allSatisfy { (0x30...0x39).contains($0) }
+        guard let first = digits.first, digits.allSatisfy({ (0x30...0x39).contains($0) }) else { return false }
+        return token.first == 0x2D ? first != 0x30 : (first != 0x30 || digits.count == 1)
     }
 }

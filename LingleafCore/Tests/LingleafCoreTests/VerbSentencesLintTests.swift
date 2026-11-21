@@ -347,55 +347,88 @@ final class VerbSentencesLintTests: VerbSentencesLintCase {
 
     // MARK: S3
 
-    func testSenseOneContextResolvesToSenseOneOnTheSpecsOwnLieExamples() {
+    func testTheSpecsExamplesPassTheNoContradictionCheckAndTheCueRule() {
         clean("lie", [f.sentence("didnt", "lie", "She didn't lie to me.", sense: 1, context: true)])
         clean("lie", [f.sentence("advice", "lie", "You should never lie to her.", sense: 1, context: true)])
         clean("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", context: true)])
-        // The cue of the other sense: "lie to" read as sense 0, "lie down" read as sense 1.
-        refused("lie", [f.sentence("didnt", "lie", "She didn't lie to me.", context: true)], "s3")
-        refused("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", sense: 1, context: true)], "s3")
+        clean("hang", [f.sentence("didnt", "hang", "They didn't hang the thief.", sense: 1, context: true)])
+        clean("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)])
     }
 
-    func testABaseFormWhoseNextWordDoesNotTellItsSenseIsRefusedNeverGuessed() {
-        // The table's next-word lists (the sense logic of S3) have no word for "the" or "my" after "hang": unresolved.
-        refused("hang", [f.sentence("didnt", "hang", "They didn't hang the man.", sense: 1, context: true)], "s3")
-        refused("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)], "s3")
-        refused("lie", [f.sentence("habit", "lie", "I lie a lot every day.", context: true)], "s3")
-        refused("lie", [f.sentence("habit", "lie", "I always lie.", context: true)], "s3")
-        clean("hang", [f.sentence("habit", "hang", "I hang from the bar every day.", context: true)])
-        clean("hang", [f.sentence("habit", "hang", "I hang up the phone every day.", context: true)])
-        XCTAssertNil(VerbSentencesLint.baseSense(IrregularVerbs.shared.verb(base: "lie")!, next: nil))
-        XCTAssertEqual(VerbSentencesLint.baseSense(IrregularVerbs.shared.verb(base: "take")!, next: nil), 0, "no homonym: always sense 0")
-        XCTAssertEqual(VerbSentencesLint.baseSense(IrregularVerbs.shared.verb(base: "lie")!, next: "to"), 1)
-        XCTAssertEqual(VerbSentencesLint.baseSense(IrregularVerbs.shared.verb(base: "lie")!, next: "down"), 0)
+    /// S3 takes the sense of the base of lie and hang from nothing: it is accepted, and the cue rule proves the sense.
+    func testTheBaseOfLieAndHangIsNotReadByS3ButItsSenseIsProvedByTheCue() {
+        XCTAssertEqual(codes("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)]), [])
+        refused("lie", [f.sentence("habit", "lie", "I lie a lot every day.", context: true)], "cue-sense")
+        refused("hang", [f.sentence("habit", "hang", "I hang it here every day.", context: true)], "cue-sense")
+        // The cue of the other sense, or both senses' cues, is refused.
+        refused("lie", [f.sentence("didnt", "lie", "She didn't lie to me.", context: true)], "cue-sense")
+        refused("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", sense: 1, context: true)], "cue-sense")
+        refused("lie", [f.sentence("advice", "lie", "You should lie to him down there.", sense: 1, context: true)], "cue-sense")
+        refused("hang", [f.sentence("didnt", "hang", "They didn't hang the thief.", context: true)], "cue-sense")
+        refused("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", sense: 1, context: true)], "cue-sense")
+        refused("hang", [f.sentence("didnt", "hang", "They didn't hang the thief or the coat.", sense: 1, context: true)], "cue-sense")
+        // Another verb has no cue lists.
+        clean("take", [f.sentence("habit", "take", "I take the bus every day.", context: true)])
+    }
+
+    func testTheCueListsHoldTheirCases() {
+        let lie = { (text: String) in VerbSentencesLint.cues(SentenceView(text), base: "lie")! }
+        for person in ["me", "you", "him", "her", "us", "them", "Tom", "my mom", "your boss", "the teacher", "everyone", "her father"] {
+            XCTAssertTrue(lie("She lied to \(person).").sense1, person)
+        }
+        for form in ["lie", "lied", "lies", "lying"] { XCTAssertTrue(lie("It is \(form) to me.").sense1, form) }
+        XCTAssertFalse(lie("She lied about it.").sense1)
+        XCTAssertFalse(lie("She lied to").sense1, "nothing after to")
+        XCTAssertFalse(lie("She lied to the dog.").sense1, "a dog is not a listed person")
+        XCTAssertFalse(lie("She told me to lie.").sense1)
+        for place in ["down", "on", "in", "still", "awake", "flat", "here", "there"] { XCTAssertTrue(lie("I lie \(place).").sense0, place) }
+        XCTAssertFalse(lie("I lie.").sense0)
+        let hang = { (text: String) in VerbSentencesLint.cues(SentenceView(text), base: "hang")! }
+        for thing in ["coat", "picture", "painting", "photo", "mirror", "flag", "sign", "clothes", "washing", "towel", "curtains", "lamp"] {
+            XCTAssertTrue(hang("I hang the \(thing).").sense0, thing)
+        }
+        for person in ["murderer", "killer", "thief", "criminal", "prisoner", "traitor", "outlaw", "thieves"] {
+            XCTAssertTrue(hang("They hang the \(person).").sense1, person)
+        }
+        XCTAssertFalse(hang("They hang the man.").sense1)
+        XCTAssertFalse(hang("They hang the man.").sense0, "no cue at all")
     }
 
     func testAPastOrParticipleOfTheTableIsThatVerbAndTheTwinIsSenseOne() {
         clean("lie", [f.sentence("past", "lay", "Yesterday I lay on the bed.")])
         clean("lie", [f.sentence("past", "lied", "Yesterday he lied to me.", sense: 1)])
         clean("lie", [f.sentence("perfect", "lain", "The dog has lain here since noon.")])
-        clean("hang", [f.sentence("past", "hanged", "Yesterday they hanged the man.", sense: 1)])
+        clean("hang", [f.sentence("past", "hanged", "Yesterday they hanged the thief.", sense: 1)])
         clean("hang", [f.sentence("past", "hung", "Yesterday I hung my coat there.")])
         // The sense the sentence claims must be the form's (the reader's rule): "lied" is no form of sense 0.
         XCTAssertNil(try? VerbSentences.load(f.data(f.file(of: "lie", [f.sentence("past", "lied", "Yesterday he lied to me.")]))))
     }
 
-    func testAFormThatIsAlsoAnotherWordIsReadInItsSentence() {
+    /// S3 proving the word a noun, a name, another verb or another sense contradicts the file.
+    func testAFormThatS3ProvesAnotherWordIsRefused() {
         clean("leave", [f.sentence("past", "left", "She left her bag here yesterday.")])
         clean("leave", [f.sentence("perfect", "left", "I have just left the house.")])
         refused("leave", [f.sentence("past", "left", "Yesterday the left was wet.")], "s3")
+        // A name: "Aunt Rose" is not the past of rise.
+        refused("rise", [f.sentence("past", "rose", "We met Aunt Rose yesterday.")], "s3")
+        // The twin's noun after a determiner: "his lies".
+        flagged("lie", [f.sentence("third", "lies", "His lies hurt me at six.")], "s3")
+        // Another sense of this verb: "lying to" is the twin, not the verb.
+        flagged("lie", [f.sentence("now", "lying", "He is lying to me now.")], "s3")
     }
 
-    func testAnSOrIngFormMustBeProvenAsTheVerbBySentence() {
-        clean("light", [f.sentence("third", "lights", "She lights the candle at six.")])
-        clean("light", [f.sentence("now", "lighting", "He is lighting a candle now.")])
-        refused("light", [f.sentence("third", "lights", "The lights are on at six.")], "s3")
-        clean("lie", [f.sentence("third", "lies", "She lies on the couch at six.")])
-        clean("lie", [f.sentence("now", "lying", "He is lying on the grass now.")])
-        refused("lie", [f.sentence("third", "lies", "She lies a lot at six.")], "s3")
-        refused("lie", [f.sentence("now", "lying", "He is lying a lot now.")], "s3")
-        clean("hang", [f.sentence("third", "hangs", "The picture hangs on the wall.")])
-        refused("hang", [f.sentence("third", "hangs", "He hangs the picture at six.")], "s3")
+    /// Unsure and ordinary readings are accepted (and only reported), as are the forms S3 does not read on their own.
+    func testAnUnsureOrOrdinaryReadingIsAcceptedAndReported() throws {
+        clean("light", [f.sentence("third", "lights", "The lights are on at six.")])
+        clean("take", [f.sentence("gerund", "taking", "Taking a photo is fun.")])
+        clean("lie", [f.sentence("third", "lies", "She lies here at six.")])
+        let file = try VerbSentences.load(f.data(f.file(of: "light", [f.sentence("third", "lights", "The lights are on at six.")])))
+        XCTAssertEqual(VerbSentencesLint.unsureReadings(in: file), ["light 0 third: The lights are on at six."])
+        let proven = try VerbSentences.load(f.data(f.file(of: "light", [f.sentence("third", "lights", "She lights the candle at six.")])))
+        XCTAssertEqual(VerbSentencesLint.unsureReadings(in: proven), [])
+        XCTAssertEqual(VerbSentencesLint.unsureReadings(in: VerbSentences(verbs: [VerbSentenceEntry(base: "nothing", sentences: [])])), [])
+        let missing = try VerbSentences.load(f.data(f.file(of: "take", [f.sentence("habit", "take", "I ride the bus.")])))
+        XCTAssertEqual(VerbSentencesLint.unsureReadings(in: missing), [], "no form found: reported by the bold rule")
     }
 
     func testTheAuxiliaryOfHaveBeAndDoCountsAsTheVerb() {
@@ -409,7 +442,8 @@ final class VerbSentencesLintTests: VerbSentencesLintCase {
         }
         // Read on its own, "being" at the start of a sentence is not proven as the verb; as position 3 of be it is the auxiliary.
         XCTAssertTrue(resolves(.now, "being", "Being rude is hard.", "be"))
-        XCTAssertFalse(resolves(.habit, "being", "Being rude is hard.", "be"), "outside the construction of the position")
-        XCTAssertFalse(resolves(.now, "taking", "Taking photos is fun.", "take"), "take has no auxiliary reading")
+        XCTAssertTrue(resolves(.habit, "being", "Being rude is hard.", "be"), "ordinary: accepted anyway")
+        XCTAssertTrue(resolves(.now, "taking", "Taking photos is fun.", "take"), "unsure: accepted")
+        XCTAssertFalse(resolves(.past, "left", "Yesterday the left was wet.", "leave"), "a noun is proved")
     }
 }

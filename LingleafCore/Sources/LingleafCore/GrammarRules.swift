@@ -166,8 +166,10 @@ public struct GrammarRules: Sendable {
     }
 
     /// Characters no text may hold: controls, invisible formatting (bidi, zero-width), line and paragraph
-    /// separators and private use. Same set as the irregular-verb table's texts.
-    private static let forbidden: Set<Unicode.GeneralCategory> = [.control, .format, .lineSeparator, .paragraphSeparator, .privateUse]
+    /// separators, private use and unassigned code points (Cn).
+    private static let forbidden: Set<Unicode.GeneralCategory> = [
+        .control, .format, .lineSeparator, .paragraphSeparator, .privateUse, .unassigned,
+    ]
 
     /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), none forbidden.
     static func isText(_ text: String) -> Bool { isText(text, max: maxText) }
@@ -175,7 +177,23 @@ public struct GrammarRules: Sendable {
     /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`).
     static func isText(_ text: String, max: Int) -> Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
-            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) }
+            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) || isNoncharacter($0) }
+            && marksAreFew(text)
+    }
+
+    /// U+FFFE, U+FFFF and U+FDD0 to U+FDEF (the other planes' noncharacters are unassigned, so already refused).
+    private static func isNoncharacter(_ scalar: Unicode.Scalar) -> Bool {
+        scalar.value == 0xFFFE || scalar.value == 0xFFFF || (0xFDD0...0xFDEF).contains(scalar.value)
+    }
+
+    /// At most 2 consecutive combining marks (Mn): a stack of marks is how text is made unreadable.
+    private static func marksAreFew(_ text: String) -> Bool {
+        var run = 0
+        for scalar in text.unicodeScalars {
+            run = scalar.properties.generalCategory == .nonspacingMark ? run + 1 : 0
+            if run > 2 { return false }
+        }
+        return true
     }
 }
 

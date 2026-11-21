@@ -2,7 +2,8 @@ import Foundation
 
 /// The content rules of `irregular-verb-sentences.json` (SPEC.md, Verb sentences data) beyond the reader's: the
 /// bold form, the label-fit cues, same-form time cues, `perfectq` against `perfect`, `spoken`, length by level, the
-/// `context` sentence, the S3 sense check and, for release pull requests, completeness. Run by the tests (never at
+/// `context` sentence, the S3 no-contradiction check, the cue rule of lie and hang and, for release pull requests,
+/// completeness. Run by the tests (never at
 /// launch). Each problem is one line that starts with a stable code ("bold-twice: take didnt"); an empty list
 /// means the file passes. The content rules that need a reader (originality, Spanish, natural wording, the
 /// `wordfreq` band) are reviewed, not tested here.
@@ -36,9 +37,10 @@ public enum VerbSentencesLint {
         out += problems.map { "\($0): \(tag)" }
         guard let index = found else { return out }
         out += cueProblems(sentence, view: view, index: index, verb: verb).map { "\($0): \(tag)" }
+        out += cueProblem(sentence, view: view, verb: verb).map { "\($0): \(tag)" }
         out += spokenProblems(sentence, view: view, index: index, verb: verb).map { "\($0): \(tag)" }
         if !resolves(sentence, view: view, index: index, verb: verb, table: table) {
-            out.append("s3: \(tag) the word \"\(view.tokens[index])\" does not resolve to \(verb.base) sense \(sentence.senseIndex)")
+            out.append("s3: \(tag) S3 proves \"\(view.tokens[index])\" is not \(verb.base) sense \(sentence.senseIndex)")
         }
         return out
     }
@@ -154,48 +156,106 @@ public enum VerbSentencesLint {
         return sentence.spoken == expected ? [] : ["spoken-wrong"]
     }
 
-    // MARK: S3 sense
+    // MARK: S3 (no contradiction)
 
-    /// S3's reading of the word at the form's position: it must be this verb in this sense, never a noun or unsure
-    /// (SPEC.md, bold-form rule). A table form that is certain is that verb; an -s or -ing form, or a form that is also
-    /// another word, is read in its sentence (`IrregularVerbs.resolve`); the base of a verb with a homonym (lie, hang)
-    /// takes its sense from the next word, as "lying" and "hangs" do (the table's `homonymBefore` and `verbBefore`).
-    /// For have, be and do a reading as the verb's own auxiliary in the construction of the position counts.
+    /// What S3 makes of the word at the form's position, against what the file says (`base`, `senseIndex`).
+    enum Reading3 { case contradicts, agrees, unsure }
+
+    /// A no-contradiction check, not a resolution check (SPEC.md, bold-form rule): the file says which verb and sense a
+    /// sentence is; S3 only reads a tapped word of a book. S3's reading of the word at the position of `form` may be
+    /// unsure, ordinary, or none (a gerund, the base, an -s or -ing form it leaves ordinary): all accepted. It must never
+    /// be proved as another verb, another sense of this verb, a noun or a name. For have, be and do, a reading as the
+    /// verb's own auxiliary in the construction of the position is accepted. The sense of lie and hang is the cue rule's.
+    static func s3Reading(
+        _ sentence: VerbSentence, view: SentenceView, index: Int, verb: IrregularVerb, table: IrregularVerbs
+    ) -> Reading3 {
+        let word = view.tokens[index]
+        if auxiliaries(of: verb.base, slot: sentence.slot).contains(word) { return .agrees }
+        let wantsHomonym = sentence.senseIndex == 1
+        func judge(_ reading: Reading?) -> Reading3 {
+            guard let reading else { return .unsure }
+            switch reading.kind {
+            case .noun: return .contradicts
+            case .verb, .homonym: return reading.base == verb.base && (reading.kind == .homonym) == wantsHomonym ? .agrees : .contradicts
+            case .word, .expression, .unsure: return .unsure
+            }
+        }
+        if table.homographs[word] != nil { return judge(table.resolve(view.words, index)) }
+        guard let entry = table.tableForms[word] else { return .unsure }
+        if entry.base != verb.base { return .contradicts }
+        if entry.kind == .certain { return (entry.sense == Sense.homonym) == wantsHomonym ? .agrees : .contradicts }
+        return judge(table.resolve(view.words, index))
+    }
+
     static func resolves(
         _ sentence: VerbSentence, view: SentenceView, index: Int, verb: IrregularVerb, table: IrregularVerbs
     ) -> Bool {
-        let word = view.tokens[index]
-        let wantsHomonym = sentence.senseIndex == 1
-        func accepts(_ reading: Reading?) -> Bool {
-            guard let reading, reading.isVerb, reading.base == verb.base else { return false }
-            return (reading.kind == .homonym) == wantsHomonym
-        }
-        let resolved: Bool
-        if table.homographs[word] != nil {
-            resolved = accepts(table.resolve(view.words, index))
-        } else if let entry = table.tableForms[word] {
-            if entry.base != verb.base {
-                resolved = false
-            } else if entry.kind == .certain {
-                resolved = (entry.sense == Sense.homonym) == wantsHomonym
-            } else {
-                resolved = accepts(table.resolve(view.words, index))
-            }
-        } else if word == verb.base {
-            let next = index + 1 < view.tokens.count ? view.tokens[index + 1] : nil
-            resolved = baseSense(verb, next: next).map { ($0 == 1) == wantsHomonym } ?? false
-        } else {
-            resolved = false
-        }
-        return resolved || auxiliaries(of: verb.base, slot: sentence.slot).contains(word)
+        s3Reading(sentence, view: view, index: index, verb: verb, table: table) != .contradicts
     }
 
-    /// The sense of the base form of `verb` from the next word: nil when it does not tell (never guessed).
-    static func baseSense(_ verb: IrregularVerb, next: String?) -> Int? {
-        guard let homonym = verb.homonym else { return 0 }
-        guard let next else { return nil }
-        if homonym.homonymBefore.contains(next) { return 1 }
-        return homonym.verbBefore.contains(next) ? 0 : nil
+    /// The sentences S3 leaves unsure or ordinary (accepted; reported for the reviewer): "base sense slot: en".
+    public static func unsureReadings(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
+        var out: [String] = []
+        for entry in file.verbs {
+            guard let verb = table.verb(base: entry.base) else { continue }
+            for sentence in entry.sentences {
+                let view = SentenceView(sentence.en)
+                guard let index = occurrence(of: sentence, in: view, verb: verb).0 else { continue }
+                if s3Reading(sentence, view: view, index: index, verb: verb, table: table) == .unsure {
+                    out.append("\(entry.base) \(sentence.senseIndex) \(sentence.slot.rawValue): \(sentence.en)")
+                }
+            }
+        }
+        return out
+    }
+
+    // MARK: Cue rule (verbs with a homonym)
+
+    static let hangExecuted: Set<String> = [
+        "murderer", "killer", "thief", "criminal", "prisoner", "traitor", "outlaw",
+        "murderers", "killers", "thieves", "criminals", "prisoners", "traitors", "outlaws",
+    ]
+    static let hangThings: Set<String> = [
+        "coat", "picture", "painting", "photo", "mirror", "flag", "sign", "clothes", "washing", "towel", "curtains", "lamp",
+        "coats", "pictures", "paintings", "photos", "mirrors", "flags", "signs", "towels", "lamps",
+    ]
+    static let lieDeceived: Set<String> = ["me", "you", "him", "her", "us", "them"]
+    static let liePersons: Set<String> = [
+        "mom", "dad", "mother", "father", "sister", "brother", "friend", "teacher", "boss", "wife", "husband", "parents", "everyone",
+    ]
+    static let lieDeterminers: Set<String> = ["my", "your", "his", "her", "our", "their", "the"]
+    static let liePlaces: Set<String> = ["down", "on", "in", "still", "awake", "flat", "here", "there"]
+    static let lieForms: Set<String> = ["lie", "lied", "lies", "lying"]
+
+    /// Whether the sentence has a cue of the sense (`second`: 1, the homonym) and, apart from it, one of the other sense.
+    static func cues(_ view: SentenceView, base: String) -> (sense0: Bool, sense1: Bool)? {
+        let tokens = view.tokens
+        switch base {
+        case "hang":
+            return (tokens.contains(where: hangThings.contains), tokens.contains(where: hangExecuted.contains))
+        case "lie":
+            return (tokens.contains(where: liePlaces.contains), tokens.indices.contains { deceived(view, at: $0) })
+        default:
+            return nil
+        }
+    }
+
+    /// "lie", "lied", "lies" or "lying" followed by "to" and a person (a pronoun, a name or a listed person, with an
+    /// optional determiner).
+    private static func deceived(_ view: SentenceView, at k: Int) -> Bool {
+        let tokens = view.tokens
+        guard lieForms.contains(tokens[k]), k + 2 < tokens.count, tokens[k + 1] == "to" else { return false }
+        var next = k + 2
+        if lieDeterminers.contains(tokens[next]), next + 1 < tokens.count, !lieDeceived.contains(tokens[next]) { next += 1 }
+        let word = tokens[next]
+        return lieDeceived.contains(word) || liePersons.contains(word) || view.words.titlecase(next)
+    }
+
+    private static func cueProblem(_ sentence: VerbSentence, view: SentenceView, verb: IrregularVerb) -> [String] {
+        guard verb.homonym != nil, let found = cues(view, base: verb.base) else { return [] }
+        let own = sentence.senseIndex == 1 ? found.sense1 : found.sense0
+        let other = sentence.senseIndex == 1 ? found.sense0 : found.sense1
+        return own && !other ? [] : ["cue-sense"]
     }
 
     // MARK: A verb's sense
