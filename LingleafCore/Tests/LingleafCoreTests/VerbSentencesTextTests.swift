@@ -96,6 +96,26 @@ final class VerbSentencesTextTests: VerbSentencesReaderCase {
         XCTAssertTrue(GrammarRules.isText("a" + marks + " b" + marks))
     }
 
+    /// A mark follows Lu, Ll, Lt, Lm, Lo or Nd only: not "²", "¹", "³", "¼", "½", "¾" (No), nor a Roman numeral (Nl, outside
+    /// the blocks anyway); a modifier letter is fine.
+    func testMarksFollowOnlyLettersAndDecimalDigits() {
+        let mark = "\u{0301}"
+        for number in ["\u{00B2}", "\u{00B3}", "\u{00B9}", "\u{00BC}", "\u{00BD}", "\u{00BE}", "\u{2160}"] {
+            XCTAssertFalse(GrammarRules.isText("a" + number + mark), number)
+            refused(take { $0[0]["es"] = "a" + number + mark }, "text-es")
+        }
+        for base in ["a", "A", "\u{01C5}", "\u{02B0}", "\u{0294}", "7"] {
+            XCTAssertTrue(GrammarRules.isText(base + mark), base)
+        }
+        loads(take { $0[0]["es"] = "x\u{02B0}\u{0301}" }, "after a modifier letter")
+    }
+
+    /// Blank is empty or only U+0020; any other white space is already refused as a character.
+    func testBlankMeansEmptyOrOnlySpaces() {
+        for blank in ["", " ", "     "] { XCTAssertFalse(GrammarRules.isText(blank), blank) }
+        XCTAssertTrue(GrammarRules.isText(" a "))
+    }
+
     func testBlankTextIsRefused() {
         for blank in ["", " ", "   ", "\t", "\n", "\u{00A0}\u{2003}"] {
             refused(take { $0[0]["en"] = blank }, "text-en")

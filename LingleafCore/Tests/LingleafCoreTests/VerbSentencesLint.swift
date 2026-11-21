@@ -177,7 +177,12 @@ enum VerbSentencesLint {
             guard let reading else { return .unsure }
             switch reading.kind {
             case .noun: return .contradicts
-            case .verb, .homonym: return reading.base == verb.base && (reading.kind == .homonym) == wantsHomonym ? .agrees : .contradicts
+            case .verb, .homonym:
+                if reading.base != verb.base { return .contradicts }
+                if (reading.kind == .homonym) == wantsHomonym { return .agrees }
+                // S3 takes the sense of lying, lies, hanging and hangs from the next word: a guess, not a proof ("The town lies
+                // to the north."). The cue rule proves the sense of lie and hang, so a next-word reading never contradicts.
+                return reading.step == .sense ? .unsure : .contradicts
             case .word, .expression, .unsure: return .unsure
             }
         }

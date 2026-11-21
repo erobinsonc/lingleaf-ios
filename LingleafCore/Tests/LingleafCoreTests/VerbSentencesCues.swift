@@ -54,23 +54,39 @@ extension VerbSentencesLint {
         return base == "lie" ? lieCues(view.tokens, k) : hangCues(view.tokens, k)
     }
 
+    /// Sense 0 (the cue a sense-0 sentence needs): a place word within 2 words after the form, or "to the" + a direction
+    /// ("The town lies to the north."). "lied" is only the twin, so its "to the north" is never a direction: "He lied to the
+    /// north team." is sense 1, by design.
     private static func lieCues(_ tokens: [String], _ k: Int) -> (sense0: Bool, sense1: Bool) {
         let after = tokens[min(k + 1, tokens.count)..<min(k + 3, tokens.count)]
-        return (after.contains(where: liePlaces.contains), deceives(tokens, k))
+        return (after.contains(where: liePlaces.contains) || isDirection(tokens, k), deceives(tokens, k))
     }
 
-    /// The form followed by "to" and anything but "the" + a direction, or by "about" or "through" (not "lying about": it can
-    /// be things lying about, a cue of neither sense).
+    /// The check AGAINST a sense-1 sentence is narrower: only the word right after the verb (or "to the" + a direction) counts,
+    /// so "He lied about it there." is not contradicted by a place two words away.
+    static func lieSenseZeroAdjacent(_ tokens: [String], _ k: Int) -> Bool {
+        (k + 1 < tokens.count && liePlaces.contains(tokens[k + 1])) || isDirection(tokens, k)
+    }
+
+    /// The form followed by "to the" and a direction word; never for "lied".
+    private static func isDirection(_ tokens: [String], _ k: Int) -> Bool {
+        guard tokens[k] != "lied", k + 3 < tokens.count else { return false }
+        return tokens[k + 1] == "to" && tokens[k + 2] == "the" && lieDirections.contains(tokens[k + 3])
+    }
+
+    /// The form followed by "to" and anything but "the" + a direction (for lie, lies, lying), or by "about" or "through" (not
+    /// "lying about": it can be things lying about, a cue of neither sense).
     private static func deceives(_ tokens: [String], _ k: Int) -> Bool {
         guard k + 1 < tokens.count, lieDeceivesBefore.contains(tokens[k + 1]) else { return false }
         if tokens[k + 1] != "to" { return tokens[k] != "lying" }
-        guard k + 2 < tokens.count else { return false }
-        return !(tokens[k + 2] == "the" && k + 3 < tokens.count && lieDirections.contains(tokens[k + 3]))
+        return k + 2 < tokens.count && !isDirection(tokens, k)
     }
 
     private static func hangCues(_ tokens: [String], _ k: Int) -> (sense0: Bool, sense1: Bool) {
         let next = k + 1 < tokens.count ? tokens[k + 1] : nil
-        let thing = tokens.contains(where: hangThings.contains) || next.map(hangParticles.contains) == true
+        // "hanged" proves sense 1 by itself: "The thief was hanged on Friday." has no sense-0 particle.
+        let particle = tokens[k] != "hanged" && next.map(hangParticles.contains) == true
+        let thing = tokens.contains(where: hangThings.contains) || particle
         let executed = tokens.contains(where: hangExecuted.contains) || (tokens[k] == "hanged" && next.map(hangedObjects.contains) == true)
         return (thing, executed)
     }
@@ -82,7 +98,9 @@ extension VerbSentencesLint {
         let next = index + 1 < view.tokens.count ? view.tokens[index + 1] : nil
         if verb.base == "hang", next.map(hangReflexives.contains) == true { out.append("hang-reflexive") }
         let own = sentence.senseIndex == 1 ? found.sense1 : found.sense0
-        let other = sentence.senseIndex == 1 ? found.sense0 : found.sense1
+        var other = sentence.senseIndex == 1 ? found.sense0 : found.sense1
+        // Against a sense-1 sentence of lie, only a place right after the verb counts (the cue a sense-0 sentence needs is wider).
+        if verb.base == "lie", sentence.senseIndex == 1 { other = lieSenseZeroAdjacent(view.tokens, index) }
         let needsCue = [1, 2, 3, 6, 10].contains(sentence.slot.position)
         if other || (needsCue && !own) { out.append("cue-sense") }
         return out

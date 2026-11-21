@@ -366,8 +366,9 @@ final class VerbSentencesLintTests: VerbSentencesLintCase {
         refused("rise", [f.sentence("past", "rose", "We met Aunt Rose yesterday.")], "s3")
         // The twin's noun after a determiner: "his lies".
         flagged("lie", [f.sentence("third", "lies", "His lies hurt me at six.")], "s3")
-        // Another sense of this verb: "lying to" is the twin, not the verb.
-        flagged("lie", [f.sentence("now", "lying", "He is lying to me now.")], "s3")
+        // Another sense of this verb, proved by S3 (not by its next-word guess):
+        // The next word's sense for lying, lies, hanging, hangs is a guess, not a proof: the cue rule refuses it, not S3.
+        XCTAssertEqual(codes("lie", [f.sentence("now", "lying", "He is lying to me now.")]), ["cue-sense"])
     }
 
     /// Unsure and ordinary readings are accepted (and only reported), as are the forms S3 does not read on their own.

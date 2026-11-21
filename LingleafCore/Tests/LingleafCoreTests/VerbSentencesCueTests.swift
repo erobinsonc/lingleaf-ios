@@ -10,6 +10,7 @@ final class VerbSentencesCueTests: VerbSentencesLintCase {
         clean("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", context: true)])
         clean("hang", [f.sentence("didnt", "hang", "They didn't hang the thief.", sense: 1, context: true)])
         clean("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)])
+        clean("hang", [f.sentence("past", "hanged", "Yesterday they hanged him.", sense: 1)])
     }
 
     // MARK: Where a cue is required
@@ -109,10 +110,62 @@ final class VerbSentencesCueTests: VerbSentencesLintCase {
         XCTAssertFalse(VerbSentencesLint.cues(SentenceView("They hung him."), base: "hang")!.sense1, "only after hanged")
     }
 
+    /// "hanged" proves sense 1: a particle right after it is no sense-0 cue.
+    func testAParticleAfterHangedIsNotASenseZeroCue() {
+        let sentences = [
+            "The thief was hanged on Friday.", "The men were hanged in 1800.", "The pirate was hanged by the neck.",
+            "The prisoner was hanged from a tree.", "The spy was hanged near the wall.", "The rebels were hanged over the gate.",
+        ]
+        for text in sentences {
+            XCTAssertFalse(VerbSentencesLint.cues(SentenceView(text), base: "hang")!.sense0, text)
+        }
+        clean("hang", [f.sentence("passive", "hanged", "The thief was hanged on Friday.", sense: 1)])
+        clean("hang", [f.sentence("passive", "hanged", "The pirate was hanged by the neck.", sense: 1)])
+        clean("hang", [f.sentence("passive", "hanged", "The prisoner was hanged from a tree.", sense: 1)])
+        clean("hang", [f.sentence("passive", "hanged", "The soldiers were hanged in March.", sense: 1)])
+        // "hung" still takes the particle as a sense-0 cue, and refuses an executed person.
+        XCTAssertTrue(VerbSentencesLint.cues(SentenceView("Yesterday I hung up my coat."), base: "hang")!.sense0)
+        refused("hang", [f.sentence("past", "hung", "Yesterday they hung on the thief.")], "cue-sense")
+    }
+
+    func testLieToTheDirectionIsSenseZeroExceptForLied() {
+        clean("lie", [f.sentence("third", "lies", "The town lies to the north.")])
+        clean("lie", [f.sentence("third", "lies", "The village lies to the east of the river.")])
+        for direction in ["north", "south", "east", "west", "left", "right", "end", "top"] {
+            let found = VerbSentencesLint.cues(SentenceView("The town lies to the \(direction)."), base: "lie")!
+            XCTAssertTrue(found.sense0, direction)
+            XCTAssertFalse(found.sense1, direction)
+        }
+        // "lied" is only the twin: "to the north team" is the team, a sense-1 reading by design.
+        clean("lie", [f.sentence("past", "lied", "Yesterday he lied to the north team.", sense: 1)])
+        XCTAssertTrue(VerbSentencesLint.cues(SentenceView("He lied to the north team."), base: "lie")!.sense1)
+        XCTAssertFalse(VerbSentencesLint.cues(SentenceView("He lied to the north team."), base: "lie")!.sense0)
+        XCTAssertTrue(VerbSentencesLint.cues(SentenceView("Why do you lie to the police?"), base: "lie")!.sense1)
+        XCTAssertFalse(VerbSentencesLint.cues(SentenceView("The town lies to the"), base: "lie")!.sense0, "nothing after the")
+    }
+
+    /// The cue a sense-0 sentence needs counts within 2 words; the check against a sense-1 sentence uses only the next word.
+    func testThePlaceWindowIsTwoWordsForSenseZeroAndOneWordAgainstSenseOne() {
+        clean("lie", [f.sentence("habit", "lie", "I lie again at work every day.", context: true)])
+        clean("lie", [f.sentence("advice", "lie", "You should lie quietly on the bed.", context: true)])
+        // Sense 1 with a place two words after the verb is not contradicted ...
+        clean("lie", [f.sentence("past", "lied", "Yesterday he lied about here.", sense: 1)])
+        // ... but one right after the verb is.
+        refused("lie", [f.sentence("past", "lied", "Yesterday he lied here.", sense: 1)], "cue-sense")
+        let tokens = SentenceView("He lied about here.").tokens
+        XCTAssertFalse(VerbSentencesLint.lieSenseZeroAdjacent(tokens, 1))
+        XCTAssertTrue(VerbSentencesLint.cues(SentenceView("He lied about here."), base: "lie")!.sense0, "the wider own-sense window")
+    }
+
     /// "thief's" is one word: the apostrophe stays in it, so it is not the executed person "thief".
     func testAnApostropheNameTokenIsNotTheExecutedPerson() {
         clean("hang", [f.sentence("past", "hung", "Yesterday she hung the thief's coat.")])
         XCTAssertEqual(SentenceView("She hung the thief's coat.").tokens, ["she", "hung", "the", "thief's", "coat"])
+        let curly = SentenceView("She hung the thief\u{2019}s coat.").tokens
+        XCTAssertEqual(curly, ["she", "hung", "the", "thief's", "coat"], "a curly apostrophe")
+        let plural = SentenceView("They hung the thieves' coats.").tokens
+        XCTAssertEqual(plural, ["they", "hung", "the", "thieves", "coats"], "a plural possessive")
+        XCTAssertFalse(VerbSentencesLint.cues(SentenceView("She hung the thief's coat."), base: "hang")!.sense1)
     }
 
     func testNoReflexiveAfterHang() {

@@ -201,7 +201,7 @@ public struct GrammarRules: Sendable {
 
     /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`, the table's texts).
     static func isText(_ text: String, max: Int) -> Bool {
-        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
+        !text.unicodeScalars.allSatisfy({ $0.value == 0x20 }) && text.unicodeScalars.count <= max
             && text.unicodeScalars.allSatisfy(isAcceptable)
             && marksAreFew(text)
     }
@@ -225,9 +225,10 @@ public struct GrammarRules: Sendable {
         return true
     }
 
+    /// Lu, Ll, Lt, Lm, Lo or Nd (Android: UPPERCASE_LETTER, LOWERCASE_LETTER, TITLECASE_LETTER, MODIFIER_LETTER, OTHER_LETTER,
+    /// DECIMAL_DIGIT_NUMBER). Not Nl or No: no mark after "²", "½" or a Roman numeral.
     private static func isLetterOrDigit(_ category: Unicode.GeneralCategory) -> Bool {
-        [.uppercaseLetter, .lowercaseLetter, .titlecaseLetter, .modifierLetter, .otherLetter, .decimalNumber, .letterNumber,
-         .otherNumber].contains(category)
+        [.uppercaseLetter, .lowercaseLetter, .titlecaseLetter, .modifierLetter, .otherLetter, .decimalNumber].contains(category)
     }
 }
 
