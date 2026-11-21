@@ -117,8 +117,8 @@ final class AppModel {
         let language = arguments.contains("-ui-testing-no-language") ? nil : "es"
         // With -ui-testing-due a word is waiting for review (new words are first due tomorrow).
         let due = arguments.contains("-ui-testing-due")
-        if arguments.contains("-ui-testing-offline") { return uiTesting(offline: true, language: language, due: due) }
-        if arguments.contains("-ui-testing") { return uiTesting(offline: false, language: language, due: due) }
+        if UITestMode.isOffline { return uiTesting(offline: true, language: language, due: due) }
+        if UITestMode.isOn { return uiTesting(offline: false, language: language, due: due) }
         #endif
         return live()
     }

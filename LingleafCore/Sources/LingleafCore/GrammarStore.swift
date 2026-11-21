@@ -116,7 +116,7 @@ public final class GrammarStore {
     /// or the disk refused; the changes stay and `flush()` tries again).
     @discardableResult
     public func save() -> Bool {
-        guard let data = progress.encoded(for: grammar), file.write(data) else {
+        guard let data = progress.encoded(for: grammar, today: today), file.write(data) else {
             hasUnsavedChanges = true
             return false
         }

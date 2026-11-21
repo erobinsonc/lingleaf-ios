@@ -160,8 +160,9 @@ public struct GrammarProgress: Equatable, Sendable {
             if !right, context == .tryIt { progress.tryMiss = day }
             if context == .tryIt {
                 // Try it and Practice answers, "Not sure" included: n + 1 on the same day, else {today, 1}.
+                // Clamped before adding: a stored n of Int.max (set in memory) must not overflow.
                 var before = 0
-                if let stored = $0.itemsAnswered, stored.day == day { before = max(stored.n, 0) }
+                if let stored = $0.itemsAnswered, stored.day == day { before = min(max(stored.n, 0), Self.maxItemsAnswered) }
                 $0.itemsAnswered = ItemsAnswered(day: day, n: min(before + 1, Self.maxItemsAnswered))
             }
             progress.seen = max(progress.seen, progress.missed)
@@ -195,7 +196,8 @@ public struct GrammarProgress: Equatable, Sendable {
 
     /// The items of the rule's last Review visit; nil when the visit had fewer than 2 items.
     public mutating func setLastPair(_ id: String, _ pair: ItemPair?) {
-        update(id) { $0.lastPair = pair }
+        // Two different items, or nothing (the reader keeps no other pair).
+        update(id) { $0.lastPair = pair.flatMap { $0.first == $0.second ? nil : $0 } }
     }
 
     /// "Add to Review" (S25): every item gets box 0 and is due tomorrow (`today` + 1); counts and `reviewed` stay.
@@ -257,32 +259,43 @@ public struct GrammarProgress: Equatable, Sendable {
 
     /// What to save, or nil when the bundled rules did not load: with no rules every saved entry would
     /// read as unknown, so saving would overwrite the learner's progress with nothing. Keep the file.
-    public func encoded(for grammar: GrammarRules) -> Data? {
-        grammar.isAvailable ? encoded() : nil
+    /// What is written is what `decode` keeps: a value the reader would drop is left out here (`today`, when
+    /// given, is the Grammar day number the reader will check the days against), so a file never holds
+    /// something that reads back as something else.
+    public func encoded(for grammar: GrammarRules, today: Int? = nil) -> Data? {
+        grammar.isAvailable ? encoded(known: grammar.knownItems, today: today) : nil
     }
 
     /// The saved bytes, or nil when they could not be made: never empty data, which would replace the file.
-    func encoded() -> Data? {
+    /// `known` (rule id to its item ids) lets the writer also leave out a `lastPair` or a right-day item that is
+    /// not an item of the rule, as the reader does.
+    func encoded(known: [String: Set<String>]? = nil, today: Int? = nil) -> Data? {
+        // The reader reads a day as an integer 0 to today (`due`: to today + 31); a clock before 2001 makes days negative.
+        func day(_ value: Int, ahead: Int = 0) -> Bool { value >= 0 && today.map { value <= $0 + ahead } ?? true }
         var object: [String: Any] = [:]
         for (id, progress) in rules {
+            let itemIDs = known?[id]
             var items: [String: Any] = [:]
             for (itemID, item) in progress.items {
                 var entry: [String: Any] = ["box": item.box, "seen": item.seen, "missed": item.missed, "reviewed": item.reviewed]
-                if let due = item.due { entry["due"] = due }
-                if let tryMiss = item.tryMiss { entry["tryMiss"] = tryMiss }
+                if let due = item.due, day(due, ahead: Self.maxDueAhead) { entry["due"] = due }
+                if let tryMiss = item.tryMiss, day(tryMiss) { entry["tryMiss"] = tryMiss }
                 items[itemID] = entry
             }
+            let rightDays = progress.rightDays.filter { day($0.day) && (itemIDs?.contains($0.item) ?? true) }.prefix(2)
             var entry: [String: Any] = [
                 "attempts": progress.attempts, "rights": progress.rights, "inReview": progress.inReview,
                 "pretestDone": progress.pretestDone, "pretestSkipped": progress.pretestSkipped,
-                "rightDays": progress.rightDays.map { ["day": $0.day, "item": $0.item] as [String: Any] }, "items": items,
+                "rightDays": rightDays.map { ["day": $0.day, "item": $0.item] as [String: Any] }, "items": items,
             ]
             if let opened = progress.opened { entry["opened"] = opened }
-            // A day before 2001 would not be read back (a day is 0 to today): not written.
-            if let answered = progress.itemsAnswered, answered.day >= 0, (0...Self.maxItemsAnswered).contains(answered.n) {
+            if let answered = progress.itemsAnswered, day(answered.day), (0...Self.maxItemsAnswered).contains(answered.n) {
                 entry["itemsAnswered"] = ["day": answered.day, "n": answered.n]
             }
-            if let pair = progress.lastPair { entry["lastPair"] = [pair.first, pair.second] }
+            if let pair = progress.lastPair, pair.first != pair.second {
+                let inRule = itemIDs.map { $0.contains(pair.first) && $0.contains(pair.second) } ?? true
+                if inRule { entry["lastPair"] = [pair.first, pair.second] }
+            }
             object[id] = entry
         }
         let root: [String: Any] = ["schema": Self.schemaVersion, "rules": object]

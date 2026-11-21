@@ -63,8 +63,7 @@ final class GrammarModel {
     static func make() -> GrammarModel {
         #if DEBUG
         // UI tests only: a fresh folder per launch, so progress never leaks between tests or into a real install.
-        let arguments = ProcessInfo.processInfo.arguments
-        if arguments.contains("-ui-testing") || arguments.contains("-ui-testing-offline") {
+        if UITestMode.isOn {
             let temporary = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
             return GrammarModel(store: GrammarStore(directory: temporary))
         }

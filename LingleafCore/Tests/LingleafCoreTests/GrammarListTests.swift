@@ -145,3 +145,60 @@ final class GrammarListTests: XCTestCase {
         XCTAssertEqual(GrammarText(en: "a", es: "b").text(for: GrammarLanguage.es.rawValue), "b")
     }
 }
+
+#if canImport(Darwin)
+/// The Apple branch of `GrammarLanguage.boolean`, which cannot run on Linux: a Boolean read back from `UserDefaults` is
+/// an NSNumber that `as? Bool` would also accept for 1 and 0, so only the number's own type may decide (SPEC S21).
+/// Runs in the core job on macOS in CI.
+final class GrammarLanguageDefaultsTests: XCTestCase {
+    private var defaults: UserDefaults!
+    private let suite = "grammar-language-tests"
+
+    override func setUp() {
+        defaults = UserDefaults(suiteName: suite)
+        defaults.removePersistentDomain(forName: suite)
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suite)
+    }
+
+    func testABooleanWrittenToTheDefaultsReadsAsABooleanAndANumberAsAbsent() {
+        let key = GrammarLanguage.settingKey
+        XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "nothing written")
+        defaults.set(true, forKey: key)
+        XCTAssertEqual(GrammarLanguage.boolean(defaults.object(forKey: key)), true)
+        defaults.set(false, forKey: key)
+        XCTAssertEqual(GrammarLanguage.boolean(defaults.object(forKey: key)), false)
+        defaults.set(1, forKey: key)
+        XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "the number 1 is not true")
+        defaults.set(0, forKey: key)
+        XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)), "the number 0 is not false")
+        defaults.set(1.0, forKey: key)
+        XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)))
+        defaults.set("true", forKey: key)
+        XCTAssertNil(GrammarLanguage.boolean(defaults.object(forKey: key)))
+        XCTAssertNil(GrammarLanguage.boolean(NSNumber(value: 1)))
+        XCTAssertNil(GrammarLanguage.boolean(NSNumber(value: 0)))
+        XCTAssertEqual(GrammarLanguage.boolean(NSNumber(value: true)), true)
+        XCTAssertEqual(GrammarLanguage.boolean(NSNumber(value: false)), false)
+        XCTAssertEqual(GrammarLanguage.boolean(true), true)
+        XCTAssertEqual(GrammarLanguage.boolean(false), false)
+        XCTAssertNil(GrammarLanguage.boolean(1))
+    }
+
+    func testTheEffectiveLanguageFollowsOnlyARealBooleanFromTheDefaults() {
+        let key = GrammarLanguage.settingKey
+        func effective() -> GrammarLanguage {
+            GrammarLanguage.effective(setting: defaults.object(forKey: key), translationLanguage: "es", interfaceLanguage: "en")
+        }
+        XCTAssertEqual(effective(), .es, "absent: Spanish translation on an English interface")
+        defaults.set(false, forKey: key)
+        XCTAssertEqual(effective(), .en)
+        defaults.set(0, forKey: key)
+        XCTAssertEqual(effective(), .es, "the number 0 is absent, not false")
+        defaults.set(true, forKey: key)
+        XCTAssertEqual(effective(), .es)
+    }
+}
+#endif
