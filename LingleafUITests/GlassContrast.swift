@@ -54,8 +54,9 @@ enum Glass {
         guard let pixels else { return false }
         // Not strict: a cover or an image has no "own background" to agree with, and a part cut from a row may sit
         // beside other surfaces; any ink above the strip still has to reach 4.5:1 against the frame's own border.
-        // The part is cut at the strip, so a line of text that reaches the cut shows only its top rows (anti-aliased
-        // tips): that line is left out (it lies partly under the blur, where nothing is measurable); the others count.
+        // The part is cut at the strip, so a line of text that reaches the cut shows only part of itself (anti-aliased
+        // tips): it is read at its strongest pixel, the most generous reading, and counts like any other line, so a
+        // genuinely weak line whose frame crosses the strip edge is still reported.
         guard let ratio = pixels.textContrast(in: part, strict: false, openBottom: true) else { return true }
         return ratio >= minimumContrast
     }
@@ -126,7 +127,8 @@ struct Pixels {
     /// Nil when there is no ink, the background is not one thing (only when `strict`), or the frame cannot be measured.
     /// `percentile` is where in a block's ink pixels the block is read (default 0.75, so decoys cannot vouch);
     /// 1 reads the strongest pixel, the most generous reading, for checks that must not raise false alarms.
-    /// `openBottom` marks a frame cut across its content at the bottom: a line that reaches the cut is not measured.
+    /// `openBottom` marks a frame cut across its content at the bottom: a line that reaches the cut is read at its
+    /// strongest pixel (it shows only part of itself), and still counts.
     func textContrast(in frame: CGRect, strict: Bool = true, percentile: Double = blockPercentile,
                       openBottom: Bool = false) -> Double? {
         let x0 = max(0, Int(((frame.minX - origin.x) * scale).rounded(.down)))
@@ -144,8 +146,9 @@ struct Pixels {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
                 defer { top = nil }
-                if openBottom, y0 + offset == y1 { continue }
-                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background, percentile)
+                let cutLine = openBottom && y0 + offset == y1
+                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background,
+                                           cutLine ? 1 : percentile)
                 if let weakest { worst = min(worst ?? weakest, weakest) }
             }
         }

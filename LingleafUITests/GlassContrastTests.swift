@@ -172,8 +172,9 @@ final class GlassContrastTests: XCTestCase {
     // happens on your iPhone..."): the footer's text is #4D4D4D on white, 8.45:1. Ink-ratio histogram of the whole
     // footer frame (ratios 1.12-1.5: 3948 pixels, 1.5-2: 1233, 2-3: 1975, 3-4: 1458, 4-5: 990, 5-6: 884, 6-8: 3907,
     // 8+: 6881; p50 6.19, p75 8.06, p90 8.45); scrolled clear of the bar every block reads 8.45. Cut at the blur
-    // strip the weakest block, a line whose tips alone reached the cut, read 4.26 (strongest pixel 5.57): the
-    // estimator was fine, the cut line was not text. The line that reaches the cut is now left out (openBottom).
+    // strip the weakest block, a line whose tips alone reached the cut, read 4.26 at p75 (4.88 at p90) and its
+    // strongest pixel was 5.57. The estimator was fine; the cut line is a partial line. It is therefore read at its
+    // strongest pixel (openBottom) and still counts: 5.57 passes, a real #999 stays 2.85.
     func testThinAntiAliasedDarkGreyTextReadsAtItsRealContrast() throws {
         // #4D4D4D on #F2F2F2 is 7.6:1 (the Settings footers measure 8.45:1 on white, #4D4D4D); one third of the
         // ink pixels are full strength, the rest anti-aliased. The estimator must not read it below 4.5.
@@ -183,16 +184,29 @@ final class GlassContrastTests: XCTestCase {
                           "#999 stays low however thin")
     }
 
-    func testALineCutByThePartsBottomEdgeIsLeftOut() throws {
-        // A full line, and below it only the anti-aliased tips of the next line, which the strip's cut leaves behind.
+    func testALineCutByThePartsBottomEdgeIsReadAtItsStrongestPixel() throws {
         let part = rect(50, 35, 120, 28)
-        let pixels = bitmap([(rect(60, 40, 100, 10), black), (rect(60, 60, 100, 3), 0xB0)])
-        let uncut = try XCTUnwrap(pixels.textContrast(in: part, strict: false))
-        XCTAssertLessThan(uncut, Glass.minimumContrast, "measured as a line, the tips read low")
-        let ratio = try XCTUnwrap(pixels.textContrast(in: part, strict: false, openBottom: true))
-        XCTAssertGreaterThanOrEqual(ratio, Glass.minimumContrast)
-        let onlyTips = bitmap([(rect(60, 60, 100, 3), 0xB0)])
-        XCTAssertNil(onlyTips.textContrast(in: part, strict: false, openBottom: true), "nothing measurable above the cut")
+        // A full line, and below it the anti-aliased tips of the next line with a few stems at full strength
+        // (what the strip's cut leaves of the footer): the strongest pixel is #4D4D4D, 8.45:1 on white.
+        var blocks: [Block] = [(rect(60, 40, 100, 10), black), (rect(60, 60, 100, 3), 0xB0)]
+        for stem in stride(from: 60, to: 160, by: 8) { blocks.append((rect(stem, 60, 1, 3), 0x4D)) }
+        let withStems = try XCTUnwrap(bitmap(blocks).textContrast(in: part, strict: false, openBottom: true))
+        XCTAssertGreaterThanOrEqual(withStems, Glass.minimumContrast)
+        // Tips alone, none of them strong (0xB0 is 2.2:1), do not reach 4.5: reported, never exempted.
+        let tipsOnly = bitmap([(rect(60, 40, 100, 10), black), (rect(60, 60, 100, 3), 0xB0)])
+        XCTAssertLessThan(try XCTUnwrap(tipsOnly.textContrast(in: part, strict: false, openBottom: true)), Glass.minimumContrast)
+        XCTAssertNil(bitmap([]).textContrast(in: part, strict: false, openBottom: true), "no ink at all: nothing to measure")
+    }
+
+    func testAGreyLineWhoseBottomReachesTheCutIsNotExempt() throws {
+        let strip = rect(0, 63, 300, 24), frame = rect(50, 35, 120, 40)   // the frame crosses the strip edge
+        let pixels = bitmap([(rect(60, 55, 100, 15), grey999)])           // #999, 2.85:1, runs from 55 to 70
+        let ratio = try XCTUnwrap(pixels.textContrast(in: Glass.partAboveStrip(frame, strip: strip) ?? .null,
+                                                       strict: false, openBottom: true))
+        XCTAssertLessThan(ratio, Glass.minimumContrast, "the cut line counts: #999 stays 2.85")
+        XCTAssertFalse(Glass.isExemptUnderBar(frame, strip: strip, pixels: pixels), "a weak line at the cut is reported")
+        let strong = bitmap([(rect(60, 55, 100, 15), black)])
+        XCTAssertTrue(Glass.isExemptUnderBar(frame, strip: strip, pixels: strong))
     }
 
     func testTheEdgeOfAWhiteCellInsideTheFrameIsNotText() throws {

@@ -102,7 +102,7 @@ jobs:
         run: swift test --package-path LingleafCore --enable-code-coverage
       - name: Coverage gate (Sources only, ≥90% of lines)
         run: |
-          python3 - "$(swift test --package-path LingleafCore --show-codecov-path)" <<'PY'
+          python3 -I -B - "$(swift test --package-path LingleafCore --show-codecov-path)" <<'PY'
           import json, sys
           data = json.load(open(sys.argv[1]))["data"][0]["files"]
           files = [f for f in data if "/Sources/" in f["filename"]]
@@ -148,7 +148,7 @@ jobs:
       - name: SwiftLint
         run: swiftlint lint --reporter github-actions-logging
       - name: Every localized string has its Spanish translation
-        run: python3 .github/scripts/check-localized-keys.py
+        run: python3 -I -B .github/scripts/check-localized-keys.py
       - name: Generate project
         run: xcodegen generate
       - name: Build for testing
@@ -193,7 +193,12 @@ jobs:
         with:
           name: build-products
       - name: Unpack the build products
-        run: mkdir build && tar -xf build-products.tar -C build
+        # Into a directory that did not exist, and only if every member lies under Build/Products.
+        run: |
+          [ ! -e build ] || { echo "::error::build already exists"; exit 1; }
+          if tar -tf build-products.tar | grep -qvE '^Build/Products(/|$)'; then echo "::error::Unexpected path in build-products.tar"; exit 1; fi
+          mkdir build
+          tar -xf build-products.tar -C build
       - name: Test
         env:
           TEST_ARGS: ${{ matrix.args }}
@@ -235,7 +240,7 @@ jobs:
           SHARD: ${{ matrix.name }}
         run: |
           [ -d "TestResults-$SHARD.xcresult" ] || { echo "No result bundle"; exit 0; }
-          python3 .github/scripts/export-screenshots.py "TestResults-$SHARD.xcresult"
+          python3 -I -B .github/scripts/export-screenshots.py "TestResults-$SHARD.xcresult"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:

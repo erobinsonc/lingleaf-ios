@@ -27,7 +27,8 @@ UI test runs in the `ui-rest` shard until someone rebalances.
 
 The accessibility audit accepts a finding next to the translucent tab bar only after measuring the text's own pixels
 (`LingleafUITests/GlassContrast.swift`); `GlassContrastTests` checks that measurement on synthetic bitmaps, and the audit
-runs in light appearance only.
+runs in light appearance only. The rule covers the bottom tab bar only for now; the top navigation bar's blur is not
+covered yet.
 
 ## Principles
 
