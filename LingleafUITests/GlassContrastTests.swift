@@ -168,6 +168,12 @@ final class GlassContrastTests: XCTestCase {
         return Pixels(rgba: rgba, width: width, height: height, scale: 1)
     }
 
+    // Evidence behind the two calibration tests below (diagnostic runs 44150220287, Settings footer "Translation
+    // happens on your iPhone..."): the footer's text is #4D4D4D on white, 8.45:1. Ink-ratio histogram of the whole
+    // footer frame (ratios 1.12-1.5: 3948 pixels, 1.5-2: 1233, 2-3: 1975, 3-4: 1458, 4-5: 990, 5-6: 884, 6-8: 3907,
+    // 8+: 6881; p50 6.19, p75 8.06, p90 8.45); scrolled clear of the bar every block reads 8.45. Cut at the blur
+    // strip the weakest block, a line whose tips alone reached the cut, read 4.26 (strongest pixel 5.57): the
+    // estimator was fine, the cut line was not text. The line that reaches the cut is now left out (openBottom).
     func testThinAntiAliasedDarkGreyTextReadsAtItsRealContrast() throws {
         // #4D4D4D on #F2F2F2 is 7.6:1 (the Settings footers measure 8.45:1 on white, #4D4D4D); one third of the
         // ink pixels are full strength, the rest anti-aliased. The estimator must not read it below 4.5.
