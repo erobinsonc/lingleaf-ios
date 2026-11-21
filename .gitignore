@@ -16,3 +16,6 @@ xcuserdata/
 *.mobileprovision
 *.provisionprofile
 *.keychain
+# Python bytecode never belongs in the repo (a swapped .pyc could run instead of its source)
+__pycache__/
+*.pyc
