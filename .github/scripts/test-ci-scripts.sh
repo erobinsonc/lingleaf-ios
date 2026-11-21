@@ -10,15 +10,20 @@ ok() { echo "ok   $1"; }
 bad() { echo "FAIL $1"; fail=1; }
 t="$(mktemp -d)"; trap 'rm -rf "$t"' EXIT
 
-# --- no Python bytecode in the repository, tracked or lying around: stop before running any Python ---
+# --- no Python outside .github/scripts, no bytecode, no extension modules or .pth: stop before running any Python ---
 root="$(cd "$here/../.." && pwd)"
-found="$( { git -C "$root" ls-files 2>/dev/null | grep -E '(^|/)__pycache__/|\.pyc$'
-            find "$root" -path "$root/.git" -prune -o \( -name __pycache__ -o -name '*.py[co]' \) -print 2>/dev/null; } || true)"
-if [ -n "$found" ]; then
-  echo "FAIL bytecode in the repository (tracked or on disk), nothing was run:"; echo "$found" | head -5
-  exit 1
-fi
-ok "no .pyc or __pycache__, tracked or on disk"
+if ! "$here/check-python-files.sh" "$root"; then echo "FAIL unexpected Python files in the repository, nothing was run"; exit 1; fi
+tracked="$(git -C "$root" ls-files 2>/dev/null | grep -E '(^|/)__pycache__/|\.py[co]$' || true)"
+[ -z "$tracked" ] && ok "no tracked bytecode" || { echo "FAIL bytecode is tracked: $tracked"; exit 1; }
+ok "no Python files outside .github/scripts, no bytecode"
+# The detector itself, on small trees.
+mkdir -p "$t/py/.github/scripts" "$t/py/sub"
+printf 'x = 1\n' > "$t/py/.github/scripts/ok.py"
+"$here/check-python-files.sh" "$t/py" >/dev/null 2>&1 && ok "python check: only .github/scripts passes" || bad "python check: clean tree"
+for name in json.py sitecustomize.py sub/x.py mod.so evil.pth sub/__pycache__/a.cpython-313.pyc; do
+  rm -rf "$t/py2"; mkdir -p "$t/py2/.github/scripts" "$t/py2/sub" "$t/py2/sub/__pycache__"; printf 'x\n' > "$t/py2/$name"
+  "$here/check-python-files.sh" "$t/py2" >/dev/null 2>&1 && bad "python check missed $name" || ok "python check fails on $name"
+done
 grep -qE '^(__pycache__/|\*\.pyc)$' "$root/.gitignore" && ok ".gitignore keeps bytecode out" || bad ".gitignore lacks __pycache__/ or *.pyc"
 
 # --- the app may not override accessibility frames (the audit tests trust them) ---
@@ -35,11 +40,11 @@ done
 python3 -I -B "$here/test-shards.py" --check >/dev/null && ok "shards: every test runs in exactly one shard" || bad "shards: check"
 
 # --- gate ---
-needs() { # <plan> <heavy> <verify>
-  printf '{"plan":{"result":"%s"},"heavy":{"result":"%s"},"verify":{"result":"%s"}}' "$1" "$2" "$3"; }
+needs() { # <plan> <heavy> <verify> [scripts]
+  printf '{"plan":{"result":"%s"},"heavy":{"result":"%s"},"verify":{"result":"%s"},"scripts":{"result":"%s"}}' "$1" "$2" "$3" "${4:-success}"; }
 gate() { # <want-rc> <mode> <plan> <heavy> <verify>
   local want="$1" mode="$2"; shift 2
-  MODE="$mode" NEEDS="$(needs "$@")" python3 -I -B "$here/ci-gate.py" --heavy heavy --verify verify >/dev/null 2>&1; local rc=$?
+  MODE="$mode" NEEDS="$(needs "$@")" python3 -I -B "$here/ci-gate.py" --heavy heavy --verify verify --required scripts >/dev/null 2>&1; local rc=$?
   if { [ "$want" = 0 ] && [ $rc -eq 0 ]; } || { [ "$want" != 0 ] && [ $rc -ne 0 ]; }; then ok "gate $mode $* -> $want"; else bad "gate $mode $* (rc=$rc)"; fi
 }
 gate 0 full success success skipped
@@ -57,6 +62,11 @@ gate 1 release success skipped skipped   # release without the prior-run check
 gate 1 release success success success
 gate 1 "" success success skipped        # unknown mode
 gate 1 bogus success skipped skipped
+for m in full same-tree; do   # the script tests must have succeeded in every mode
+  r=skipped; [ "$m" = full ] && r=success
+  MODE="$m" NEEDS="$(needs success $r skipped failure)" python3 -I -B "$here/ci-gate.py" --heavy heavy --verify verify --required scripts >/dev/null 2>&1 && bad "gate $m passed with failing script tests" || ok "gate $m fails when the script tests failed"
+done
+MODE=release NEEDS="$(needs success skipped success cancelled)" python3 -I -B "$here/ci-gate.py" --heavy heavy --verify verify --required scripts >/dev/null 2>&1 && bad "gate release passed with cancelled script tests" || ok "gate release fails when the script tests were cancelled"
 NEEDS='{"plan":{"result":"success"}}' MODE=full python3 -I -B "$here/ci-gate.py" --heavy heavy >/dev/null 2>&1 && bad "gate: missing job passed" || ok "gate: a missing job fails"
 
 # --- fake gh (canned API answers chosen by $FAKE_CASE; the commit comes from the query) ---

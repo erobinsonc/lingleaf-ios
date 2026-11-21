@@ -117,7 +117,7 @@ jobs:
 
   core:
     name: Core logic (tests, coverage ≥90%)
-    needs: [plan, core-tests, release-verify]
+    needs: [plan, scripts, core-tests, release-verify]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -128,7 +128,7 @@ jobs:
       - env:
           MODE: ${{ needs.plan.outputs.mode }}
           NEEDS: ${{ toJSON(needs) }}
-        run: python3 -I -B .github/scripts/ci-gate.py --heavy core-tests --verify release-verify
+        run: python3 -I -B .github/scripts/ci-gate.py --heavy core-tests --verify release-verify --required scripts
 
   app-build:
     name: Lint and build for testing (macOS)
@@ -231,6 +231,7 @@ jobs:
         if: always()
         with:
           name: test-results-${{ matrix.name }}
+          overwrite: true
           path: TestResults-${{ matrix.name }}.xcresult
           if-no-files-found: ignore
       # ScreenTour attaches a screenshot of every screen (EN/ES, light/dark).
@@ -245,12 +246,13 @@ jobs:
         if: always()
         with:
           name: ios-screenshots-shard-${{ matrix.name }}
+          overwrite: true
           path: screenshots
           if-no-files-found: ignore
 
   app:
     name: App (SwiftLint, build, UI + accessibility tests)
-    needs: [plan, app-build, app-tests, release-verify]
+    needs: [plan, scripts, app-build, app-tests, release-verify]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -261,7 +263,7 @@ jobs:
       - env:
           MODE: ${{ needs.plan.outputs.mode }}
           NEEDS: ${{ toJSON(needs) }}
-        run: python3 -I -B .github/scripts/ci-gate.py --heavy app-build,app-tests --verify release-verify
+        run: python3 -I -B .github/scripts/ci-gate.py --heavy app-build,app-tests --verify release-verify --required scripts
 
   # Two jobs on purpose. The first runs the bumped actions with a read-only token and
   # hands over only files that passed a strict check. The second holds the write token
@@ -320,9 +322,11 @@ jobs:
       contents: write
       actions: read # lets the gh CLI fetch the verified artifact of this run
     steps:
-      # On pull_request this is the merge commit; accepted because forks are excluded above.
+      # The scripts that run with the write token come from the base branch on a pull request (a change to them
+      # takes effect once merged, and is tested by "CI script tests" meanwhile), from the pushed commit on a push.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
           persist-credentials: false
       # gh CLI (preinstalled), not an action: nothing third-party runs with the write token.
       - name: Fetch the verified screenshots

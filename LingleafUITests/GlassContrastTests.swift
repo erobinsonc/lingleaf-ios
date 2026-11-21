@@ -198,6 +198,16 @@ final class GlassContrastTests: XCTestCase {
         XCTAssertNil(bitmap([]).textContrast(in: part, strict: false, openBottom: true), "no ink at all: nothing to measure")
     }
 
+    func testGreyLinesCutInTheMiddleOfTheirGlyphsFail() throws {
+        let strip = rect(0, 63, 300, 24), frame = rect(50, 35, 120, 40)
+        for grey in [grey999, UInt8(0xBB)] {
+            let pixels = bitmap([(rect(60, 58, 100, 14), grey)])   // glyph rows 58..72, cut at 63
+            let part = try XCTUnwrap(Glass.partAboveStrip(frame, strip: strip))
+            XCTAssertLessThan(try XCTUnwrap(pixels.textContrast(in: part, strict: false, openBottom: true)), Glass.minimumContrast)
+            XCTAssertFalse(Glass.isExemptUnderBar(frame, strip: strip, pixels: pixels), "grey \(grey) cut mid-glyph is reported")
+        }
+    }
+
     func testAGreyLineWhoseBottomReachesTheCutIsNotExempt() throws {
         let strip = rect(0, 63, 300, 24), frame = rect(50, 35, 120, 40)   // the frame crosses the strip edge
         let pixels = bitmap([(rect(60, 55, 100, 15), grey999)])           // #999, 2.85:1, runs from 55 to 70

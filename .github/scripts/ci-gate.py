@@ -4,6 +4,7 @@
 Usage: MODE=<plan mode> NEEDS='<toJSON(needs)>' ci-gate.py --heavy a,b --verify c
   heavy jobs : must succeed in `full`, must be skipped in `same-tree` and `release`
   verify jobs: must succeed in `release`, must be skipped otherwise
+  required   : must have succeeded in every mode (the script tests)
   plan       : must have succeeded, so a missing or failed plan can never pass
 A failed, cancelled, or unexpectedly skipped job never passes: only the exact expected result does.
 """
@@ -15,11 +16,13 @@ import sys
 parser = argparse.ArgumentParser()
 parser.add_argument("--heavy", default="")
 parser.add_argument("--verify", default="")
+parser.add_argument("--required", default="")
 args = parser.parse_args()
 needs = json.loads(os.environ["NEEDS"])
 mode = os.environ.get("MODE", "")
 heavy = [j for j in args.heavy.split(",") if j]
 verify = [j for j in args.verify.split(",") if j]
+required = [j for j in args.required.split(",") if j]
 
 expect = {}
 if mode == "full":
@@ -31,6 +34,7 @@ elif mode == "release":
 else:
     sys.exit(f"::error::Unknown CI mode '{mode[:20]}': the plan job did not succeed.")
 
+expect.update({j: "success" for j in required})
 bad = []
 if needs.get("plan", {}).get("result") != "success":
     bad.append("plan")

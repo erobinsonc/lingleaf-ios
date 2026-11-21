@@ -74,6 +74,10 @@ struct Pixels {
     /// A pixel is text ("ink") when it differs from the local background by at least this contrast ratio.
     /// (The blur's gradient measures about 1.07 against its median; faint text, from 1.12, counts and fails.)
     private static let inkRatio = 1.12
+    /// Rows of ink this close to the cut (points) are read generously: a line cut by the strip has about this much
+    /// height at most. Known gap: a different, strong line that touches the cut line without a blank row between them
+    /// shares the generous reading; lines in the app are separated by blank rows.
+    private static let cutDepth: CGFloat = 28
     /// Faint runs below this ratio, as wide as this share of the frame and touching its edge, are surfaces.
     private static let surfaceRatio = 1.5
     private static let surfaceWidth = 0.9
@@ -146,10 +150,20 @@ struct Pixels {
             if hasInk, top == nil { top = offset }
             if !hasInk, let start = top {
                 defer { top = nil }
-                let cutLine = openBottom && y0 + offset == y1
-                let weakest = weakestBlock(rows: (y0 + start)..<(y0 + offset), (x0, x1), (y0, y1), background,
-                                           cutLine ? 1 : percentile)
-                if let weakest { worst = min(worst ?? weakest, weakest) }
+                let rows = (y0 + start)..<(y0 + offset)
+                // The rows at the cut show only part of a line: they are read at the strongest pixel; the rows above
+                // them (whole lines, which may run into it without a blank row) are read as usual. Both count.
+                var readings: [(Range<Int>, Double)] = [(rows, percentile)]
+                if openBottom, rows.upperBound == y1 {
+                    let cutStart = max(rows.lowerBound, rows.upperBound - Int((Self.cutDepth * scale).rounded()))
+                    readings = [(cutStart..<rows.upperBound, 1)]
+                    if cutStart > rows.lowerBound { readings.append((rows.lowerBound..<cutStart, percentile)) }
+                }
+                for (part, reading) in readings {
+                    if let weakest = weakestBlock(rows: part, (x0, x1), (y0, y1), background, reading) {
+                        worst = min(worst ?? weakest, weakest)
+                    }
+                }
             }
         }
         return worst
