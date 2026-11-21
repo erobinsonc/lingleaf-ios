@@ -165,28 +165,35 @@ public struct GrammarRules: Sendable {
             && text.utf8.allSatisfy { (0x61...0x7A).contains($0) || (0x30...0x39).contains($0) || $0 == 0x2D }
     }
 
-    /// Characters no text may hold: controls, invisible formatting (bidi, zero-width), line and paragraph
-    /// separators, private use and unassigned code points (Cn).
+    /// Characters no text may hold: controls, invisible formatting (bidi, zero-width), line and paragraph separators and
+    /// private use. These categories are stable across Unicode versions.
     private static let forbidden: Set<Unicode.GeneralCategory> = [
-        .control, .format, .lineSeparator, .paragraphSeparator, .privateUse, .unassigned,
+        .control, .format, .lineSeparator, .paragraphSeparator, .privateUse,
     ]
 
-    /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), none forbidden.
+    /// The only blocks a text may use (SPEC.md, Grammar rules data), whole blocks, fixed, identical on Android: Basic Latin,
+    /// Latin-1 Supplement, Latin Extended-A and B (U+0000..U+024F), IPA Extensions, Spacing Modifier Letters, Combining
+    /// Diacritical Marks (U+0250..U+036F), General Punctuation (U+2000..U+206F) and Arrows (U+2190..U+21FF). A fixed list,
+    /// not the category "unassigned" (Cn), which follows the Unicode version of each OS: the same file is read the same
+    /// everywhere. It leaves out every noncharacter (U+FFFE, U+FFFF, U+FDD0..U+FDEF), CJK, emoji and the other scripts.
+    static let allowedBlocks: [ClosedRange<UInt32>] = [0x0000...0x036F, 0x2000...0x206F, 0x2190...0x21FF]
+
+    static func isAllowed(_ scalar: Unicode.Scalar) -> Bool {
+        allowedBlocks.contains { $0.contains(scalar.value) }
+    }
+
+    /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), only the allowed blocks, none
+    /// forbidden. The one text rule of every bundled file (rules, irregular verbs, verb sentences).
     static func isText(_ text: String) -> Bool { isText(text, max: maxText) }
 
-    /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`).
+    /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`, the table's texts).
     static func isText(_ text: String, max: Int) -> Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
-            && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) || isNoncharacter($0) }
+            && text.unicodeScalars.allSatisfy { isAllowed($0) && !forbidden.contains($0.properties.generalCategory) }
             && marksAreFew(text)
     }
 
-    /// U+FFFE, U+FFFF and U+FDD0 to U+FDEF (the other planes' noncharacters are unassigned, so already refused).
-    private static func isNoncharacter(_ scalar: Unicode.Scalar) -> Bool {
-        scalar.value == 0xFFFE || scalar.value == 0xFFFF || (0xFDD0...0xFDEF).contains(scalar.value)
-    }
-
-    /// At most 2 consecutive combining marks (Mn): a stack of marks is how text is made unreadable.
+    /// At most 2 consecutive non-spacing marks (Mn; Android: NON_SPACING_MARK): a stack of marks is how text is made unreadable.
     private static func marksAreFew(_ text: String) -> Bool {
         var run = 0
         for scalar in text.unicodeScalars {

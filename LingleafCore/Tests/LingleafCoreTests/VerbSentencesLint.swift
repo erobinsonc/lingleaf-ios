@@ -1,20 +1,21 @@
 import Foundation
+@testable import LingleafCore
 
 /// The content rules of `irregular-verb-sentences.json` (SPEC.md, Verb sentences data) beyond the reader's: the
 /// bold form, the label-fit cues, same-form time cues, `perfectq` against `perfect`, `spoken`, length by level, the
 /// `context` sentence, the S3 no-contradiction check, the cue rule of lie and hang and, for release pull requests,
-/// completeness. Run by the tests (never at
-/// launch). Each problem is one line that starts with a stable code ("bold-twice: take didnt"); an empty list
+/// completeness. Test code: it lives in the test target and is never shipped in the app. Each problem is one line that
+/// starts with a stable code ("bold-twice: take didnt"); an empty list
 /// means the file passes. The content rules that need a reader (originality, Spanish, natural wording, the
 /// `wordfreq` band) are reviewed, not tested here.
-public enum VerbSentencesLint {
+enum VerbSentencesLint {
     /// Words in `en` by level (SPEC.md: A1 4-8, A2 5-10, B1 6-12, B2 7-14, C1 and C2 8-16).
     static let wordRange: [String: ClosedRange<Int>] = [
         "A1": 4...8, "A2": 5...10, "B1": 6...12, "B2": 7...14, "C1": 8...16, "C2": 8...16,
     ]
 
     /// Every problem of the file: the reader's first, then the content rules, in file order.
-    public static func problems(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
+    static func problems(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
         var out = VerbSentences.problems(in: file, table: table)
         for entry in file.verbs {
             guard let verb = table.verb(base: entry.base) else { continue }
@@ -194,7 +195,7 @@ public enum VerbSentencesLint {
     }
 
     /// The sentences S3 leaves unsure or ordinary (accepted; reported for the reviewer): "base sense slot: en".
-    public static func unsureReadings(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
+    static func unsureReadings(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
         var out: [String] = []
         for entry in file.verbs {
             guard let verb = table.verb(base: entry.base) else { continue }
@@ -302,7 +303,7 @@ public enum VerbSentencesLint {
     /// position (only 3 and 10 may be omitted), the five past or participle positions (4, 5, 7, 8, 9) always, and for
     /// a verb with a homonym exactly the positions 4, 7, 8 and one of 1, 6 or 10 of sense 1. The reader's and the
     /// content rules are in `problems(in:)`; this is the rest.
-    public static func completenessProblems(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
+    static func completenessProblems(in file: VerbSentences, table: IrregularVerbs = .shared) -> [String] {
         var out: [String] = []
         for verb in table.verbs {
             guard let entry = file.entry(base: verb.base) else {

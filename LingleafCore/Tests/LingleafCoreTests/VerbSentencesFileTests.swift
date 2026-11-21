@@ -88,16 +88,51 @@ final class VerbSentencesFileTests: XCTestCase {
         }
         XCTAssertEqual(table.verbs.filter { $0.homonym != nil }.map(\.base).sorted(), ["hang", "lie"], "the cue lists cover these two")
         let f = VerbSentencesFixtures.self
-        let examples: [(String, String, String, Int)] = [
-            ("lie", "didnt", "She didn't lie to me.", 1), ("lie", "advice", "You should never lie to her.", 1),
-            ("hang", "didnt", "They didn't hang the thief.", 1), ("lie", "advice", "You should lie down for an hour.", 0),
-            ("hang", "habit", "I hang my coat here every day.", 0),
+        let examples: [(verb: String, sentence: [String: Any])] = [
+            ("lie", f.sentence("didnt", "lie", "She didn't lie to me.", sense: 1, context: true)),
+            ("lie", f.sentence("advice", "lie", "You should never lie to her.", sense: 1, context: true)),
+            ("hang", f.sentence("didnt", "hang", "They didn't hang the thief.", sense: 1, context: true)),
+            ("lie", f.sentence("advice", "lie", "You should lie down for an hour.", context: true)),
+            ("hang", f.sentence("habit", "hang", "I hang my coat here every day.", context: true)),
         ]
-        for (verb, slot, en, sense) in examples {
-            let json = f.file(of: verb, [f.sentence(slot, verb, en, sense: sense, context: true)])
-            XCTAssertEqual(f.problems(json), [], en)
+        for example in examples {
+            XCTAssertEqual(f.problems(f.file(of: example.verb, [example.sentence])), [], example.sentence["en"] as? String ?? "")
         }
         XCTAssertEqual(VerbSentencesLint.hangExecuted.intersection(["man", "men"]), [], "man can read as a painting or a figure")
+    }
+
+    // MARK: The text allowlist
+
+    /// SPEC.md: a fixed allowlist of whole blocks. Every non-ASCII code point of the three bundled files and of the SPEC's
+    /// own section "Verb sentences data" is inside it (so the same files load on every platform and OS version).
+    func testEveryNonASCIIScalarOfTheBundledFilesIsInTheAllowlist() throws {
+        let resources = Self.root.appending(path: "LingleafCore/Sources/LingleafCore/Resources")
+        var texts: [(String, String)] = try ["grammar-rules", "irregular-verbs", "irregular-verb-sentences"].map {
+            ($0, try String(contentsOf: resources.appending(path: "\($0).json"), encoding: .utf8))
+        }
+        let spec = try specText()
+        let section = try XCTUnwrap(spec.range(of: "Verb sentences data (shared logic"))
+        texts.append(("SPEC.md, Verb sentences data", String(spec[section.lowerBound...])))
+        for (name, text) in texts {
+            let outside = Set(text.unicodeScalars.filter { $0.value > 0x7F && !GrammarRules.isAllowed($0) })
+            XCTAssertEqual(outside, [], "\(name) holds code points outside the allowlist")
+        }
+        XCTAssertGreaterThan(texts[0].1.unicodeScalars.filter { $0.value > 0x7F }.count, 100, "the scan saw the rules' non-ASCII text")
+        XCTAssertEqual(GrammarRules.allowedBlocks, [0x0000...0x036F, 0x2000...0x206F, 0x2190...0x21FF])
+    }
+
+    func testTheAllowlistIsExactlyTheBlocksTheSpecNames() throws {
+        let inside: [UInt32] = [0x00, 0x7F, 0x80, 0xFF, 0x100, 0x17F, 0x24F, 0x250, 0x2AF, 0x2B0, 0x2FF, 0x300, 0x36F]
+        for value in inside + [0x2000, 0x206F, 0x2190, 0x21FF] {
+            XCTAssertTrue(GrammarRules.isAllowed(try XCTUnwrap(Unicode.Scalar(value))), String(value, radix: 16))
+        }
+        let outside: [UInt32] = [
+            0x370, 0x378, 0x3B1, 0x400, 0x2E80, 0x1FFF, 0x2070, 0x218F, 0x2200, 0x4E2D, 0xFDD0, 0xFFFE, 0xFFFF, 0x1F600, 0x10FFFF,
+        ]
+        for value in outside {
+            XCTAssertFalse(GrammarRules.isAllowed(try XCTUnwrap(Unicode.Scalar(value))), String(value, radix: 16))
+        }
+        XCTAssertTrue(try specText().contains("Basic Latin, Latin-1 Supplement, Latin Extended-A, Latin Extended-B (U+0000 to U+024F)"))
     }
 
     // MARK: Release pull requests

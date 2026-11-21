@@ -3,49 +3,7 @@ import XCTest
 
 /// Every refusal of the reader of `irregular-verb-sentences.json` (SPEC.md, Verb sentences data), one vector each.
 /// Each refusal is paired with the same edit made valid, so a test cannot pass for another reason.
-final class VerbSentencesRefusalTests: XCTestCase {
-    private typealias Json = [String: Any]
-    private let f = VerbSentencesFixtures.self
-
-    private func take(_ edit: (inout [Json]) -> Void = { _ in }) -> Json {
-        var sentences = f.take
-        edit(&sentences)
-        return f.file(of: "take", sentences)
-    }
-
-    private func load(_ json: Json) throws -> VerbSentences { try VerbSentences.load(f.data(json)) }
-
-    private func loads(_ json: Json, _ message: String, line: UInt = #line) {
-        XCTAssertNoThrow(try load(json), message, line: line)
-    }
-
-    /// Refused with a problem that starts with `code` (the first of the list is not enough: every problem is listed).
-    private func refused(_ json: Json, _ code: String, line: UInt = #line) {
-        refused(f.data(json), code, line: line)
-    }
-
-    private func refused(_ bytes: Data, _ code: String, line: UInt = #line) {
-        do {
-            _ = try VerbSentences.load(bytes)
-            XCTFail("loaded; expected \(code)", line: line)
-        } catch VerbSentencesError.invalid(let problems) {
-            XCTAssertTrue(problems.contains { $0.hasPrefix(code) }, "\(problems) lacks \(code)", line: line)
-        } catch VerbSentencesError.malformed(let reason) {
-            XCTAssertTrue(reason.contains(code), "malformed \(reason) lacks \(code)", line: line)
-        } catch {
-            XCTAssertEqual("\(error)", code, line: line)
-        }
-    }
-
-    private func bytes(_ text: String) -> Data { Data(text.utf8) }
-
-    private let sentenceJSON = #"{"slot":"habit","form":"take","en":"I take the bus every day.","es":"x","#
-        + #""senseIndex":0,"level":"A2","context":true}"#
-
-    private func raw(sentence: String? = nil, extra: String = "", schema: String = "1") -> Data {
-        bytes(#"{"schema":\#(schema),"verbs":[{"base":"take","sentences":[\#(sentence ?? sentenceJSON)]}]\#(extra)}"#)
-    }
-
+final class VerbSentencesRefusalTests: VerbSentencesReaderCase {
     // MARK: The shape that loads
 
     func testAnEmptyFileAndACompleteVerbLoad() throws {
@@ -155,11 +113,12 @@ final class VerbSentencesRefusalTests: XCTestCase {
     }
 
     func testALoneSurrogateEscapeIsRefusedAndAPairLoads() {
-        for escape in [#"\ud800"#, #"\udc00"#, #"\ud800x"#, #"\udbffA"#, #"\ud800\ud800"#, #"é\udfff"#] {
+        for escape in [#"\ud800"#, #"\udc00"#, #"\ud800x"#, #"\udbff\u0041"#, #"\ud800\ud800"#, #"\u00e9\udfff"#] {
             refused(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: "b\(escape)s")), "lone surrogate")
         }
-        XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b😀s"#))))
-        XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"bés"#))))
+        // A valid pair passes the byte rule (no "lone surrogate"); its character (an emoji) is outside the text allowlist.
+        refused(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\ud83d\ude00s"#)), "text-en")
+        XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\u00e9s"#))))
         XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\\ud800s"#))),
             "an escaped backslash")
     }
@@ -348,80 +307,6 @@ final class VerbSentencesRefusalTests: XCTestCase {
             loads(f.file(of: "learn", [f.sentence("past", form, "Yesterday I \(form) it.")]), form)
         }
         refused(f.file(of: "learn", [f.sentence("past", "learns", "Yesterday I learns it.")]), "form-class")
-    }
-
-    // MARK: Texts
-
-    private func atLength(_ count: Int, prefix: String = "I take the bus ") -> String {
-        prefix + String(repeating: "x", count: count - prefix.unicodeScalars.count)
-    }
-
-    func testTheTextCapsAreInCodePoints() {
-        loads(take { $0[0]["en"] = self.atLength(120) }, "en at 120")
-        refused(take { $0[0]["en"] = self.atLength(121) }, "text-en")
-        loads(take { $0[0]["es"] = String(repeating: "ñ", count: 160) }, "es at 160")
-        refused(take { $0[0]["es"] = String(repeating: "ñ", count: 161) }, "text-es")
-        loads(take { $0[0]["spoken"] = String(repeating: "x", count: 200) }, "spoken at 200")
-        refused(take { $0[0]["spoken"] = String(repeating: "x", count: 201) }, "text-spoken")
-        // A combining mark counts as a code point: 120 letters with a mark each is 240.
-        refused(take { $0[0]["en"] = String(repeating: "e\u{0301}", count: 61) }, "text-en")
-    }
-
-    func testAtMostTwoConsecutiveCombiningMarksAreAllowed() {
-        loads(take { $0[0]["es"] = "a\u{0301}\u{0302}b" }, "two marks")
-        loads(take { $0[0]["es"] = "a\u{0301}b\u{0301}\u{0302}c\u{0301}" }, "runs are counted apart")
-        loads(take { $0[0]["es"] = "a\u{0301}\u{0302}\u{20DD}\u{0301}" }, "an enclosing mark (Me) ends the run")
-        refused(take { $0[0]["es"] = "a\u{0301}\u{0302}\u{0303}" }, "text-es")
-        refused(take { $0[0]["en"] = "I take\u{0301}\u{0302}\u{0303}\u{0304} the bus." }, "text-en")
-    }
-
-    /// The same rules for the texts of grammar-rules.json (SPEC.md); the bundled file still loads.
-    func testTheGrammarRulesTextRuleIsTheSame() throws {
-        XCTAssertTrue(GrammarRules.isText("café ñ — “así” ¿sí?"))
-        let bad = [
-            "a\u{0378}", "a\(Self.nc(0xFFFE))", "a\(Self.nc(0xFFFF))", "a\(Self.nc(0xFDD0))", "a\(Self.nc(0xFDEF))",
-            "a\u{0301}\u{0302}\u{0303}", "a\u{E000}", "a\u{200B}",
-        ]
-        for text in bad {
-            XCTAssertFalse(GrammarRules.isText(text), text.unicodeScalars.map(\.value).description)
-        }
-        XCTAssertTrue(GrammarRules.isText("a\u{0301}\u{0302}"))
-        XCTAssertFalse(GrammarRules.isText(String(repeating: "x", count: 5), max: 4))
-        XCTAssertTrue(GrammarRules.shared.isAvailable, "the bundled rules are not refused by the stricter text rule")
-    }
-
-    func testBlankTextIsRefused() {
-        for blank in ["", " ", "   ", "\t", "\n", "\u{00A0}\u{2003}"] {
-            refused(take { $0[0]["en"] = blank }, "text-en")
-            refused(take { $0[0]["es"] = blank }, "text-es")
-            refused(take { $0[0]["spoken"] = blank }, "text-spoken")
-        }
-    }
-
-    private static func nc(_ value: UInt32) -> String { String(Unicode.Scalar(value)!) }
-
-    private static let forbidden: [(String, String)] = {
-        let nc = VerbSentencesRefusalTests.nc
-        return [
-            ("control", "a\u{0007}b"), ("newline", "a\nb"), ("delete", "a\u{007F}b"), ("C1 control", "a\u{0085}b"),
-            ("bidi override", "a\u{202E}b"), ("bidi isolate", "a\u{2066}b"), ("zero-width space", "a\u{200B}b"),
-            ("zero-width joiner", "a\u{200D}b"), ("byte order mark", "a\u{FEFF}b"), ("private use", "a\u{E000}b"),
-            ("line separator", "a\u{2028}b"), ("paragraph separator", "a\u{2029}b"), ("soft hyphen", "a\u{00AD}b"),
-            ("unassigned", "a\u{0378}b"), ("noncharacter FFFE", "a\(nc(0xFFFE))b"), ("noncharacter FFFF", "a\(nc(0xFFFF))b"),
-            ("noncharacter FDD0", "a\(nc(0xFDD0))b"), ("noncharacter FDEF", "a\(nc(0xFDEF))b"),
-            ("three marks", "a\u{0301}\u{0302}\u{0303}b"),
-        ]
-    }()
-
-    func testEveryTextFieldRefusesEveryForbiddenCharacter() {
-        for (name, text) in Self.forbidden {
-            refused(take { $0[0]["en"] = text }, "text-en")
-            refused(take { $0[0]["es"] = text }, "text-es")
-            refused(take { $0[0]["spoken"] = text }, "text-spoken")
-            refused(f.file(of: "take", [], omitted: [["slot": "advice", "reason": "no \(text) sentence"]]), "omitted-reason")
-            XCTAssertFalse(name.isEmpty)
-        }
-        loads(take { $0[0]["es"] = "Tomo el autobús, ¿sí? ñ — “así”" }, "accents, punctuation and quotes are fine")
     }
 
     // MARK: context

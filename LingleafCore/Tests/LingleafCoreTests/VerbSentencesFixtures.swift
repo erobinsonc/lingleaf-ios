@@ -78,3 +78,49 @@ class VerbSentencesLintCase: XCTestCase {
         XCTAssertTrue(codes(verb, sentences).contains(code), "\(codes(verb, sentences)) lacks \(code)", line: line)
     }
 }
+
+/// The helpers of the reader's tests: files built from small pieces, loaded and refused against the real table.
+class VerbSentencesReaderCase: XCTestCase {
+    typealias Json = [String: Any]
+    let f = VerbSentencesFixtures.self
+
+    func take(_ edit: (inout [Json]) -> Void = { _ in }) -> Json {
+        var sentences = f.take
+        edit(&sentences)
+        return f.file(of: "take", sentences)
+    }
+
+    func load(_ json: Json) throws -> VerbSentences { try VerbSentences.load(f.data(json)) }
+
+    func loads(_ json: Json, _ message: String, line: UInt = #line) {
+        XCTAssertNoThrow(try load(json), message, line: line)
+    }
+
+    /// Refused with a problem that starts with `code` (the first of the list is not enough: every problem is listed).
+    func refused(_ json: Json, _ code: String, line: UInt = #line) {
+        refused(f.data(json), code, line: line)
+    }
+
+    func refused(_ bytes: Data, _ code: String, line: UInt = #line) {
+        do {
+            _ = try VerbSentences.load(bytes)
+            XCTFail("loaded; expected \(code)", line: line)
+        } catch VerbSentencesError.invalid(let problems) {
+            XCTAssertTrue(problems.contains { $0.hasPrefix(code) }, "\(problems) lacks \(code)", line: line)
+        } catch VerbSentencesError.malformed(let reason) {
+            XCTAssertTrue(reason.contains(code), "malformed \(reason) lacks \(code)", line: line)
+        } catch {
+            XCTAssertEqual("\(error)", code, line: line)
+        }
+    }
+
+    func bytes(_ text: String) -> Data { Data(text.utf8) }
+
+    let sentenceJSON = #"{"slot":"habit","form":"take","en":"I take the bus every day.","es":"x","#
+        + #""senseIndex":0,"level":"A2","context":true}"#
+
+    func raw(sentence: String? = nil, extra: String = "", schema: String = "1") -> Data {
+        bytes(#"{"schema":\#(schema),"verbs":[{"base":"take","sentences":[\#(sentence ?? sentenceJSON)]}]\#(extra)}"#)
+    }
+
+}
