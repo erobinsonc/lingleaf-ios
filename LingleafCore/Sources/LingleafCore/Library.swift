@@ -167,6 +167,9 @@ public struct Settings: Codable, Equatable, Sendable {
     /// AVSpeechUtterance rate (0…1, 0.5 is normal).
     public var speechRate = 0.45
     public var targetLanguage: String?
+    /// The language of the Grammar rule text (SPEC S21): true "Español", false "English"; nil until the learner
+    /// chooses (then `GrammarLanguage.effective` decides) and never nil again after a choice.
+    public var grammarInSpanish: Bool?
 
     public init() {}
 
@@ -187,6 +190,8 @@ public struct Settings: Codable, Equatable, Sendable {
         fontSize = try c.decodeIfPresent(Double.self, forKey: .fontSize) ?? defaults.fontSize
         speechRate = try c.decodeIfPresent(Double.self, forKey: .speechRate) ?? defaults.speechRate
         targetLanguage = try c.decodeIfPresent(String.self, forKey: .targetLanguage)
+        // Only a real boolean counts: a number, a string or null reads as absent (the settings file stays readable).
+        grammarInSpanish = try? c.decode(Bool.self, forKey: .grammarInSpanish)
     }
 }
 

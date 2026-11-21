@@ -625,6 +625,16 @@
         }
       }
     },
+    "Don't mix up": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No confundas"
+          }
+        }
+      }
+    },
     "Done for now.": {
       "localizations": {
         "es": {
@@ -661,6 +671,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Elemental"
+          }
+        }
+      }
+    },
+    "Examples": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejemplos"
           }
         }
       }
@@ -818,6 +838,16 @@
         }
       }
     },
+    "If you speak Spanish": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si hablas español"
+          }
+        }
+      }
+    },
     "Import a .txt file": {
       "localizations": {
         "es": {
@@ -834,6 +864,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En el Repaso"
+          }
+        }
+      }
+    },
+    "In Review: this rule's questions will come back when you review.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el Repaso: las preguntas de esta regla volverán cuando repases."
           }
         }
       }
@@ -1208,12 +1248,32 @@
         }
       }
     },
+    "Practice": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicar"
+          }
+        }
+      }
+    },
     "Practiced": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Practicada"
+          }
+        }
+      }
+    },
+    "Practiced: right answers on 2 different days.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicada: respuestas correctas en 2 días distintos."
           }
         }
       }
@@ -1560,6 +1620,16 @@
         }
       }
     },
+    "Rule language": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Idioma de la regla"
+          }
+        }
+      }
+    },
     "Rules": {
       "localizations": {
         "es": {
@@ -1616,6 +1686,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Buscando en Project Gutenberg…"
+          }
+        }
+      }
+    },
+    "See other rules": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver otras reglas"
           }
         }
       }
@@ -1872,6 +1952,16 @@
         }
       }
     },
+    "Try it": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pruébalo"
+          }
+        }
+      }
+    },
     "UK English": {
       "localizations": {
         "es": {
@@ -1988,6 +2078,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sin conexión. Conéctate a internet para buscar."
+          }
+        }
+      }
+    },
+    "You've finished today's practice for this rule. Try another rule, or come back tomorrow.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya practicaste esta regla hoy. Prueba otra regla o vuelve mañana."
           }
         }
       }

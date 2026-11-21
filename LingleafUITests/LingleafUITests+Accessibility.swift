@@ -83,6 +83,12 @@ extension LingleafUITests {
             _ = app.navigationBars[tab].waitForExistence(timeout: 10)
             try audit(tab)
         }
+        // A Grammar rule page, in the language of its default (Spanish translation: the rule in Spanish).
+        app.tabBars.buttons["Grammar"].tap()
+        button(startingWith: "His, her, its").tap()
+        XCTAssertTrue(app.buttons["Try it"].waitForExistence(timeout: 10))
+        try audit("Grammar rule")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
         app.tabBars.buttons["Library"].tap()
         button(startingWith: "The Red Boat").tap()
         XCTAssertTrue(app.links["beach"].firstMatch.waitForExistence(timeout: 10))

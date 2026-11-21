@@ -184,13 +184,27 @@ final class ScreenTour: XCTestCase {
         app.terminate()
     }
 
-    /// The Grammar tab (SPEC S20, S21): the list with a rule Practiced and one In Review and "Recent".
+    /// The Grammar tab (SPEC S20, S21): the list with a rule Practiced and one In Review and "Recent", a rule page, and
+    /// a rule at the daily limit.
     private func grammarTour(_ labels: Labels) {
         launch(labels, ["-ui-testing", "-ui-testing-grammar-states", "-ui-testing-grammar-recent"])
         app.tabBars.buttons[labels.grammarTab].tap()
         let rule = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.grammarRule)).firstMatch
         _ = rule.waitForExistence(timeout: 10)
         snap("50-grammar-list")
+        if rule.exists {
+            rule.tap()
+            RunLoop.current.run(until: Date().addingTimeInterval(1))
+            snap("51-grammar-rule")
+        }
+        launch(labels, ["-ui-testing", "-ui-testing-grammar-limit"])
+        app.tabBars.buttons[labels.grammarTab].tap()
+        let limited = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "In, on, at")).firstMatch
+        if limited.waitForExistence(timeout: 10) {
+            limited.tap()
+            RunLoop.current.run(until: Date().addingTimeInterval(1))
+            snap("52-grammar-rule-daily-limit")
+        }
     }
 
     /// The app's own stories (SPEC S19): the Library rows, Discover's stories at a level, a story in the
