@@ -53,6 +53,12 @@ final class GrammarModel {
         progress = store.progress
     }
 
+    /// Any other change (seeds for UI tests, Add to Review in a later slice), saved the same way; it gets today's day number.
+    func update(_ change: (inout GrammarProgress, Int) -> Void) {
+        store.update(change)
+        progress = store.progress
+    }
+
     /// The app is leaving the foreground: save what has not been saved.
     func flush() {
         store.flush()
@@ -65,7 +71,9 @@ final class GrammarModel {
         // UI tests only: a fresh folder per launch, so progress never leaks between tests or into a real install.
         if UITestMode.isOn {
             let temporary = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString, directoryHint: .isDirectory)
-            return GrammarModel(store: GrammarStore(directory: temporary))
+            let model = GrammarModel(store: GrammarStore(directory: temporary))
+            model.seedForUITests(UITestMode.arguments)
+            return model
         }
         #endif
         let support = URL.applicationSupportDirectory.appending(path: "Lingleaf", directoryHint: .isDirectory)

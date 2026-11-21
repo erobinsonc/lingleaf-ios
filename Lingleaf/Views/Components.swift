@@ -122,6 +122,8 @@ struct ContentView: View {
             WordsView()
                 .tabItem { Label("Words", systemImage: "rectangle.stack") }
                 .badge(due)
+            GrammarView()
+                .tabItem { Label("Grammar", systemImage: "lightbulb") }
             SettingsView()
                 .tabItem { Label("Settings", systemImage: "gearshape") }
         }
