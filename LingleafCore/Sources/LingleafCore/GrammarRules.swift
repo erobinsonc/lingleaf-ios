@@ -170,8 +170,11 @@ public struct GrammarRules: Sendable {
     private static let forbidden: Set<Unicode.GeneralCategory> = [.control, .format, .lineSeparator, .paragraphSeparator, .privateUse]
 
     /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), none forbidden.
-    static func isText(_ text: String) -> Bool {
-        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= maxText
+    static func isText(_ text: String) -> Bool { isText(text, max: maxText) }
+
+    /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`).
+    static func isText(_ text: String, max: Int) -> Bool {
+        !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
             && !text.unicodeScalars.contains { forbidden.contains($0.properties.generalCategory) }
     }
 }
@@ -275,7 +278,7 @@ public struct GrammarRule: Equatable, Sendable {
 
 // MARK: Strict decoding
 
-private struct GrammarKey: CodingKey {
+struct GrammarKey: CodingKey {
     let stringValue: String
     var intValue: Int? { nil }
     init(_ string: String) { stringValue = string }
@@ -283,7 +286,7 @@ private struct GrammarKey: CodingKey {
     init?(intValue: Int) { nil }
 }
 
-private extension Decoder {
+extension Decoder {
     /// The object's container, refusing a key outside `required` + `optional` or a missing required one.
     func strictObject(_ required: Set<String>, optional: Set<String> = []) throws -> KeyedDecodingContainer<GrammarKey> {
         let keyed = try self.container(keyedBy: GrammarKey.self)
@@ -296,7 +299,7 @@ private extension Decoder {
     }
 }
 
-private extension KeyedDecodingContainer where K == GrammarKey {
+extension KeyedDecodingContainer where K == GrammarKey {
     func value<T: Decodable>(_ key: String) throws -> T { try decode(T.self, forKey: GrammarKey(key)) }
     /// Absent is fine; a key that is present must hold a value of the right type (a JSON null is refused).
     func optional<T: Decodable>(_ key: String) throws -> T? {
