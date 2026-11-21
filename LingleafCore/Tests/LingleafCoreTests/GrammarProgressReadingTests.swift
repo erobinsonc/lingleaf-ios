@@ -72,14 +72,54 @@ final class GrammarProgressReadingTests: XCTestCase {
             }
             entry.lastPair = ItemPair(ids[0], ids[1])
             entry.rightDays = [RightDay(day: today - 1, item: ids[2]), RightDay(day: today, item: ids[3])]
+            entry.itemsAnswered = ItemsAnswered(day: today, n: GrammarProgress.maxItemsAnswered)
             entries[id] = entry
             knownIDs[id] = Set(ids)
         }
         let progress = GrammarProgress(rules: entries)
         let data = try XCTUnwrap(progress.encoded())
-        XCTAssertGreaterThan(data.count, 370_000, "200 rules x 12 items, 40-char ids, compact JSON, absent values omitted: about 374 KB")
+        XCTAssertGreaterThan(data.count, 378_000, "200 rules x 12 items, 40-char ids, compact JSON, `itemsAnswered` too: about 381 KB")
         XCTAssertLessThanOrEqual(data.count, GrammarProgress.maxBytes, "the most the other limits allow fits the 512 KB cap")
         XCTAssertEqual(GrammarProgress.decode(data, known: knownIDs, now: now, in: utc), progress, "what is saved can be read back whole")
+    }
+
+    // MARK: itemsAnswered
+
+    /// The saved `itemsAnswered` of the rule `a`, read on day 30, written as the JSON `value` (the rest of the rule is kept).
+    private func answered(_ value: String) -> (ItemsAnswered?, Int) {
+        let day30 = Date(timeIntervalSince1970: 978_307_200 + 30 * 86_400 + 12 * 3_600)
+        let json = #"{"schema": 2, "rules": {"a": {"attempts": 4, "itemsAnswered": \#(value)}}}"#
+        let read = GrammarProgress.decode(Data(json.utf8), known: known, now: day30, in: utc)["a"]
+        return (read.itemsAnswered, read.attempts)
+    }
+
+    func testTheItemsAnsweredVectorsOfTheSpec() {
+        XCTAssertEqual(GrammarDay.number(of: Date(timeIntervalSince1970: 978_307_200 + 30 * 86_400 + 12 * 3_600), in: utc), 30)
+        for (day, n) in [(20, 3), (30, 3), (0, 3), (20, 0), (20, 6)] {
+            let (read, attempts) = answered(#"{"day": \#(day), "n": \#(n)}"#)
+            XCTAssertEqual(read, ItemsAnswered(day: day, n: n), "{\(day), \(n)}")
+            XCTAssertEqual(attempts, 4, "the rest of the rule is kept")
+        }
+        let absent = [
+            #"{"day": 5.0, "n": 3}"#, #"{"day": 5e0, "n": 3}"#, #"{"day": 2e1, "n": 3}"#,
+            #"{"day": 20, "n": 3.0}"#, #"{"day": 20, "n": 3e0}"#, #"{"day": 20, "n": 3.7}"#,
+            #"{"day": true, "n": 3}"#, #"{"day": false, "n": 3}"#, #"{"day": 20, "n": true}"#, #"{"day": 20, "n": false}"#,
+            #"{"day": "5", "n": 3}"#, #"{"day": 20, "n": "3"}"#, #"{"day": 20, "n": null}"#, #"{"day": 20, "n": [3]}"#,
+            #"{"day": 18446744073709551616, "n": 3}"#, #"{"day": 20, "n": 18446744073709551616}"#,
+            #"{"day": 20, "n": 7}"#, #"{"day": 20, "n": -1}"#, #"{"day": -1, "n": 3}"#, #"{"day": 31, "n": 3}"#,
+            #"{"day": 20}"#, #"{"n": 3}"#, #"{"day": 20, "n": 3, "extra": 1}"#, #"{}"#,
+            #"{"day": {"a": 1}, "n": 3}"#, #"{"day": 20, "n": {"a": 1}}"#, #"{"d\u0061y": 5.0, "n": 3}"#, #"{"day": 20, "\u006e": 3.5}"#,
+            "7", "[20, 3]", "[]", "true", "null", #""20""#,
+        ]
+        for value in absent {
+            let (read, attempts) = answered(value)
+            XCTAssertNil(read, value)
+            XCTAssertEqual(attempts, 4, "\(value): the rest of the rule is kept")
+        }
+    }
+
+    func testAnItemsAnsweredWithEscapedKeysIsReadLikeThePlainOne() {
+        XCTAssertEqual(answered(#"{"d\u0061y": 20, "\u006e": 3}"#).0, ItemsAnswered(day: 20, n: 3))
     }
 
     // MARK: A file that cannot be trusted

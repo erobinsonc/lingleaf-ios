@@ -50,6 +50,17 @@ public enum GrammarAnswerContext: Equatable, Sendable {
     case pretest, tryIt, review
 }
 
+/// The practice items answered on one day (S22): at most 6 a day per rule. Stored as `{day, n}`.
+public struct ItemsAnswered: Equatable, Sendable {
+    public var day: Int
+    public var n: Int
+
+    public init(day: Int, n: Int) {
+        self.day = day
+        self.n = n
+    }
+}
+
 /// What the learner has done with one rule.
 public struct RuleProgress: Equatable, Sendable {
     /// When the rule page was last opened (Unix time, whole seconds); nil if never.
@@ -69,6 +80,9 @@ public struct RuleProgress: Equatable, Sendable {
     public var pretestOffered: Bool { !pretestDone && !pretestSkipped }
     /// At most 2 right answers on different days to different items; with 2 the rule is Practiced.
     public var rightDays: [RightDay] = []
+    /// Practice items answered on one day, for the daily limit (S22); nil when none was answered yet or the field
+    /// was not readable. Pretest and Review answers never count.
+    public var itemsAnswered: ItemsAnswered?
     public var items: [String: ItemProgress] = [:]
 
     public init() {}
@@ -82,8 +96,10 @@ public struct GrammarProgress: Equatable, Sendable {
     public static let maxBytes = 512 * 1024
     public static let maxCount = 1000
     public static let maxBox = 5
-    /// Rules kept in "Recent".
+    /// Rules shown in "Recent" (`GrammarRecent`).
     public static let recentCount = 3
+    /// Practice items answered per rule and day, at most (`GrammarPractice.dailyMax`).
+    public static let maxItemsAnswered = 6
     /// How far ahead a due day can be: the longest Review interval plus a day.
     public static let maxDueAhead = 31
     static let schemaVersion = 2
@@ -111,6 +127,13 @@ public struct GrammarProgress: Equatable, Sendable {
         update(id) { $0.opened = Int(seconds) }
     }
 
+    /// The practice items answered today on a rule (S22): `n` when the stored day is `today`, else 0 (a stored day that
+    /// is earlier or later counts as nothing until the next answer replaces it).
+    public func answeredToday(_ id: String, today: Int) -> Int {
+        guard let answered = self[id].itemsAnswered, answered.day == today else { return 0 }
+        return min(max(answered.n, 0), Self.maxItemsAnswered)
+    }
+
     /// An item is shown (before any answer): `seen` goes up by 1. An item the rule doesn't have is ignored.
     public mutating func shown(_ rule: GrammarRule, item: String) {
         guard rule.practice.contains(where: { $0.id == item }) else { return }
@@ -135,6 +158,12 @@ public struct GrammarProgress: Equatable, Sendable {
                 $0.rightDays.append(RightDay(day: day, item: item))
             }
             if !right, context == .tryIt { progress.tryMiss = day }
+            if context == .tryIt {
+                // Try it and Practice answers, "Not sure" included: n + 1 on the same day, else {today, 1}.
+                var before = 0
+                if let stored = $0.itemsAnswered, stored.day == day { before = max(stored.n, 0) }
+                $0.itemsAnswered = ItemsAnswered(day: day, n: min(before + 1, Self.maxItemsAnswered))
+            }
             progress.seen = max(progress.seen, progress.missed)
             $0.items[item] = progress
         }
@@ -206,14 +235,6 @@ public struct GrammarProgress: Equatable, Sendable {
         update(id) { $0 = entry }
     }
 
-    /// The last rules opened, newest first (ties by id, so the order is stable).
-    public func recent(limit: Int = recentCount) -> [String] {
-        rules.compactMap { id, progress in progress.opened.map { (id, $0) } }
-            .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0 < $1.0 }
-            .prefix(limit)
-            .map(\.0)
-    }
-
     /// The item's entry for a change, or nil when the rule already holds the most items and this one is new.
     private static func entry(_ rule: inout RuleProgress, _ item: String) -> ItemProgress? {
         guard rule.items[item] != nil || rule.items.count < maxItems else { return nil }
@@ -257,6 +278,10 @@ public struct GrammarProgress: Equatable, Sendable {
                 "rightDays": progress.rightDays.map { ["day": $0.day, "item": $0.item] as [String: Any] }, "items": items,
             ]
             if let opened = progress.opened { entry["opened"] = opened }
+            // A day before 2001 would not be read back (a day is 0 to today): not written.
+            if let answered = progress.itemsAnswered, answered.day >= 0, (0...Self.maxItemsAnswered).contains(answered.n) {
+                entry["itemsAnswered"] = ["day": answered.day, "n": answered.n]
+            }
             if let pair = progress.lastPair { entry["lastPair"] = [pair.first, pair.second] }
             object[id] = entry
         }
