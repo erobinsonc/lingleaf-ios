@@ -77,7 +77,7 @@ extension LingleafUITests {
                 add(shot)
             }
         }
-        for tab in ["Library", "Discover", "Words", "Settings"] {
+        for tab in ["Library", "Discover", "Words", "Grammar", "Settings"] {
             app.tabBars.buttons[tab].tap()
             // The tab's own screen is there (its title), then still.
             _ = app.navigationBars[tab].waitForExistence(timeout: 10)

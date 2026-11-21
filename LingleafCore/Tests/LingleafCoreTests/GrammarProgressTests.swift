@@ -2,7 +2,7 @@ import XCTest
 @testable import LingleafCore
 
 /// Local Grammar progress (schema 2, SPEC.md Grammar rules data, Progress): what is kept per rule and per item,
-/// the Grammar day, "Recent", the three states ("Practiced" boundary vectors) and Add to / Remove from Review.
+/// the Grammar day, the three states ("Practiced" boundary vectors) and Add to / Remove from Review.
 /// Reading a saved file back is in `GrammarProgressReadingTests`.
 final class GrammarProgressTests: XCTestCase {
     private let date = Date(timeIntervalSince1970: 1_800_000_000)
@@ -52,22 +52,7 @@ final class GrammarProgressTests: XCTestCase {
         XCTAssertEqual(GrammarDay.number(of: Date(timeIntervalSince1970: 4_107_585_600), in: utc), 36_218)
     }
 
-    // MARK: Recent, answers, counts
-
-    func testRecentIsTheLastThreeOpenedNewestFirst() {
-        var progress = GrammarProgress()
-        XCTAssertEqual(progress.recent(), [])
-        progress.opened("a", at: later(1))
-        progress.opened("b", at: later(2))
-        progress.opened("c", at: later(3))
-        progress.opened("d", at: later(4))
-        XCTAssertEqual(progress.recent(), ["d", "c", "b"])
-        progress.opened("a", at: later(5))
-        XCTAssertEqual(progress.recent(), ["a", "d", "c"])
-        XCTAssertEqual(progress.recent(limit: 1), ["a"])
-        progress.opened("x", at: later(5))
-        XCTAssertEqual(progress.recent(limit: 2), ["a", "x"], "ties go by id")
-    }
+    // MARK: Answers, counts
 
     func testOpenedIsKeptInWholeSecondsAndNeverFromAnImpossibleDate() {
         var progress = GrammarProgress()

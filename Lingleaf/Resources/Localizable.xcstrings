@@ -189,6 +189,52 @@
         }
       }
     },
+    "%lld rules": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rule"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rules"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld regla"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reglas"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reglas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld words tomorrow.": {
       "localizations": {
         "en": {
@@ -321,6 +367,16 @@
         }
       }
     },
+    "Advanced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanzado"
+          }
+        }
+      }
+    },
     "Again": {
       "localizations": {
         "es": {
@@ -414,6 +470,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Volver a Palabras"
+          }
+        }
+      }
+    },
+    "Beginner": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Principiante"
           }
         }
       }
@@ -589,6 +655,16 @@
         }
       }
     },
+    "Elementary": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elemental"
+          }
+        }
+      }
+    },
     "Filter": {
       "localizations": {
         "es": {
@@ -692,6 +768,16 @@
         }
       }
     },
+    "Grammar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gramática"
+          }
+        }
+      }
+    },
     "Group: %@": {
       "localizations": {
         "es": {
@@ -742,6 +828,16 @@
         }
       }
     },
+    "In Review": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el Repaso"
+          }
+        }
+      }
+    },
     "In the text: %@": {
       "localizations": {
         "es": {
@@ -758,6 +854,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "En tu biblioteca"
+          }
+        }
+      }
+    },
+    "Intermediate": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermedio"
           }
         }
       }
@@ -922,6 +1028,16 @@
         }
       }
     },
+    "New": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueva"
+          }
+        }
+      }
+    },
     "No accounts, no ads, no tracking.": {
       "localizations": {
         "es": {
@@ -968,6 +1084,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "No hay libros recomendados en este nivel."
+          }
+        }
+      }
+    },
+    "No rules match. Try a shorter word, like in, on or at.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna regla coincide. Prueba con una palabra más corta, como in, on o at."
           }
         }
       }
@@ -1082,6 +1208,16 @@
         }
       }
     },
+    "Practiced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicada"
+          }
+        }
+      }
+    },
     "Previous sentence": {
       "localizations": {
         "es": {
@@ -1098,6 +1234,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Política de privacidad"
+          }
+        }
+      }
+    },
+    "Proficient": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Experto"
           }
         }
       }
@@ -1244,6 +1390,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Progreso de lectura"
+          }
+        }
+      }
+    },
+    "Recent": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recientes"
           }
         }
       }
@@ -1404,6 +1560,16 @@
         }
       }
     },
+    "Rules": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reglas"
+          }
+        }
+      }
+    },
     "Save word": {
       "localizations": {
         "es": {
@@ -1430,6 +1596,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Guardada"
+          }
+        }
+      }
+    },
+    "Search rules": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar reglas"
           }
         }
       }
@@ -1722,6 +1898,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Autor desconocido"
+          }
+        }
+      }
+    },
+    "Upper intermediate": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermedio alto"
           }
         }
       }

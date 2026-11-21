@@ -50,6 +50,17 @@ public enum GrammarAnswerContext: Equatable, Sendable {
     case pretest, tryIt, review
 }
 
+/// The practice items answered on one day (S22): at most 6 a day per rule. Stored as `{day, n}`.
+public struct ItemsAnswered: Equatable, Sendable {
+    public var day: Int
+    public var n: Int
+
+    public init(day: Int, n: Int) {
+        self.day = day
+        self.n = n
+    }
+}
+
 /// What the learner has done with one rule.
 public struct RuleProgress: Equatable, Sendable {
     /// When the rule page was last opened (Unix time, whole seconds); nil if never.
@@ -69,6 +80,9 @@ public struct RuleProgress: Equatable, Sendable {
     public var pretestOffered: Bool { !pretestDone && !pretestSkipped }
     /// At most 2 right answers on different days to different items; with 2 the rule is Practiced.
     public var rightDays: [RightDay] = []
+    /// Practice items answered on one day, for the daily limit (S22); nil when none was answered yet or the field
+    /// was not readable. Pretest and Review answers never count.
+    public var itemsAnswered: ItemsAnswered?
     public var items: [String: ItemProgress] = [:]
 
     public init() {}
@@ -82,8 +96,10 @@ public struct GrammarProgress: Equatable, Sendable {
     public static let maxBytes = 512 * 1024
     public static let maxCount = 1000
     public static let maxBox = 5
-    /// Rules kept in "Recent".
+    /// Rules shown in "Recent" (`GrammarRecent`).
     public static let recentCount = 3
+    /// Practice items answered per rule and day, at most (`GrammarPractice.dailyMax`).
+    public static let maxItemsAnswered = 6
     /// How far ahead a due day can be: the longest Review interval plus a day.
     public static let maxDueAhead = 31
     static let schemaVersion = 2
@@ -111,6 +127,13 @@ public struct GrammarProgress: Equatable, Sendable {
         update(id) { $0.opened = Int(seconds) }
     }
 
+    /// The practice items answered today on a rule (S22): `n` when the stored day is `today`, else 0 (a stored day that
+    /// is earlier or later counts as nothing until the next answer replaces it).
+    public func answeredToday(_ id: String, today: Int) -> Int {
+        guard let answered = self[id].itemsAnswered, answered.day == today else { return 0 }
+        return min(max(answered.n, 0), Self.maxItemsAnswered)
+    }
+
     /// An item is shown (before any answer): `seen` goes up by 1. An item the rule doesn't have is ignored.
     public mutating func shown(_ rule: GrammarRule, item: String) {
         guard rule.practice.contains(where: { $0.id == item }) else { return }
@@ -135,6 +158,13 @@ public struct GrammarProgress: Equatable, Sendable {
                 $0.rightDays.append(RightDay(day: day, item: item))
             }
             if !right, context == .tryIt { progress.tryMiss = day }
+            if context == .tryIt {
+                // Try it and Practice answers, "Not sure" included: n + 1 on the same day, else {today, 1}.
+                // Clamped before adding: a stored n of Int.max (set in memory) must not overflow.
+                var before = 0
+                if let stored = $0.itemsAnswered, stored.day == day { before = min(max(stored.n, 0), Self.maxItemsAnswered) }
+                $0.itemsAnswered = ItemsAnswered(day: day, n: min(before + 1, Self.maxItemsAnswered))
+            }
             progress.seen = max(progress.seen, progress.missed)
             $0.items[item] = progress
         }
@@ -166,7 +196,8 @@ public struct GrammarProgress: Equatable, Sendable {
 
     /// The items of the rule's last Review visit; nil when the visit had fewer than 2 items.
     public mutating func setLastPair(_ id: String, _ pair: ItemPair?) {
-        update(id) { $0.lastPair = pair }
+        // Two different items, or nothing (the reader keeps no other pair).
+        update(id) { $0.lastPair = pair.flatMap { $0.first == $0.second ? nil : $0 } }
     }
 
     /// "Add to Review" (S25): every item gets box 0 and is due tomorrow (`today` + 1); counts and `reviewed` stay.
@@ -206,14 +237,6 @@ public struct GrammarProgress: Equatable, Sendable {
         update(id) { $0 = entry }
     }
 
-    /// The last rules opened, newest first (ties by id, so the order is stable).
-    public func recent(limit: Int = recentCount) -> [String] {
-        rules.compactMap { id, progress in progress.opened.map { (id, $0) } }
-            .sorted { $0.1 != $1.1 ? $0.1 > $1.1 : $0.0 < $1.0 }
-            .prefix(limit)
-            .map(\.0)
-    }
-
     /// The item's entry for a change, or nil when the rule already holds the most items and this one is new.
     private static func entry(_ rule: inout RuleProgress, _ item: String) -> ItemProgress? {
         guard rule.items[item] != nil || rule.items.count < maxItems else { return nil }
@@ -236,28 +259,43 @@ public struct GrammarProgress: Equatable, Sendable {
 
     /// What to save, or nil when the bundled rules did not load: with no rules every saved entry would
     /// read as unknown, so saving would overwrite the learner's progress with nothing. Keep the file.
-    public func encoded(for grammar: GrammarRules) -> Data? {
-        grammar.isAvailable ? encoded() : nil
+    /// What is written is what `decode` keeps: a value the reader would drop is left out here (`today`, when
+    /// given, is the Grammar day number the reader will check the days against), so a file never holds
+    /// something that reads back as something else.
+    public func encoded(for grammar: GrammarRules, today: Int? = nil) -> Data? {
+        grammar.isAvailable ? encoded(known: grammar.knownItems, today: today) : nil
     }
 
     /// The saved bytes, or nil when they could not be made: never empty data, which would replace the file.
-    func encoded() -> Data? {
+    /// `known` (rule id to its item ids) lets the writer also leave out a `lastPair` or a right-day item that is
+    /// not an item of the rule, as the reader does.
+    func encoded(known: [String: Set<String>]? = nil, today: Int? = nil) -> Data? {
+        // The reader reads a day as an integer 0 to today (`due`: to today + 31); a clock before 2001 makes days negative.
+        func day(_ value: Int, ahead: Int = 0) -> Bool { value >= 0 && today.map { value <= $0 + ahead } ?? true }
         var object: [String: Any] = [:]
         for (id, progress) in rules {
+            let itemIDs = known?[id]
             var items: [String: Any] = [:]
             for (itemID, item) in progress.items {
                 var entry: [String: Any] = ["box": item.box, "seen": item.seen, "missed": item.missed, "reviewed": item.reviewed]
-                if let due = item.due { entry["due"] = due }
-                if let tryMiss = item.tryMiss { entry["tryMiss"] = tryMiss }
+                if let due = item.due, day(due, ahead: Self.maxDueAhead) { entry["due"] = due }
+                if let tryMiss = item.tryMiss, day(tryMiss) { entry["tryMiss"] = tryMiss }
                 items[itemID] = entry
             }
+            let rightDays = progress.rightDays.filter { day($0.day) && (itemIDs?.contains($0.item) ?? true) }.prefix(2)
             var entry: [String: Any] = [
                 "attempts": progress.attempts, "rights": progress.rights, "inReview": progress.inReview,
                 "pretestDone": progress.pretestDone, "pretestSkipped": progress.pretestSkipped,
-                "rightDays": progress.rightDays.map { ["day": $0.day, "item": $0.item] as [String: Any] }, "items": items,
+                "rightDays": rightDays.map { ["day": $0.day, "item": $0.item] as [String: Any] }, "items": items,
             ]
             if let opened = progress.opened { entry["opened"] = opened }
-            if let pair = progress.lastPair { entry["lastPair"] = [pair.first, pair.second] }
+            if let answered = progress.itemsAnswered, day(answered.day), (0...Self.maxItemsAnswered).contains(answered.n) {
+                entry["itemsAnswered"] = ["day": answered.day, "n": answered.n]
+            }
+            if let pair = progress.lastPair, pair.first != pair.second {
+                let inRule = itemIDs.map { $0.contains(pair.first) && $0.contains(pair.second) } ?? true
+                if inRule { entry["lastPair"] = [pair.first, pair.second] }
+            }
             object[id] = entry
         }
         let root: [String: Any] = ["schema": Self.schemaVersion, "rules": object]

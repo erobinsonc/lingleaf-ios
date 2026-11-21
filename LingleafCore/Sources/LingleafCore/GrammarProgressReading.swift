@@ -44,7 +44,7 @@ extension GrammarProgress {
     }
 
     /// Members that hold a whole number read as an integer only when written as an integer literal.
-    private static let integerKeys: Set<String> = ["schema", "opened", "day", "due", "tryMiss"]
+    private static let integerKeys: Set<String> = ["schema", "opened", "day", "due", "tryMiss", "n"]
 
     /// The file without an optional UTF-8 BOM, or nil when it is not UTF-8 that starts as a JSON object: the first
     /// byte that is not white space is `{`, there is no 0x00 byte (so no UTF-16 or UTF-32) and no invalid sequence.
@@ -84,6 +84,7 @@ extension GrammarProgress {
         let pretestSkipped: Bool
         let lastPair: [String]?
         let rightDays: [Tolerant<SavedRightDay>]
+        let itemsAnswered: SavedItemsAnswered?
         let items: [String: Tolerant<SavedItem>]
 
         init(from decoder: Decoder) throws {
@@ -96,10 +97,13 @@ extension GrammarProgress {
             pretestSkipped = c.flag(.pretestSkipped)
             lastPair = try? c.decode([String].self, forKey: .lastPair)
             rightDays = (try? c.decode([Tolerant<SavedRightDay>].self, forKey: .rightDays)) ?? []
+            itemsAnswered = try? c.decode(SavedItemsAnswered.self, forKey: .itemsAnswered)
             items = (try? c.decode([String: Tolerant<SavedItem>].self, forKey: .items)) ?? [:]
         }
 
-        enum Key: String, CodingKey { case opened, attempts, rights, inReview, pretestDone, pretestSkipped, lastPair, rightDays, items }
+        enum Key: String, CodingKey {
+            case opened, attempts, rights, inReview, pretestDone, pretestSkipped, lastPair, rightDays, itemsAnswered, items
+        }
 
         func progress(items itemIDs: Set<String>, _ limits: Limits) -> RuleProgress {
             var result = RuleProgress()
@@ -117,6 +121,8 @@ extension GrammarProgress {
                 guard itemIDs.contains(entry.item), entry.day >= 0, entry.day <= limits.today else { continue }
                 if GrammarProgress.accepts(entry, after: result.rightDays) { result.rightDays.append(entry) }
             }
+            // Comparisons, not a range: a clock before 2001 makes `today` negative.
+            if let saved = itemsAnswered, saved.day >= 0, saved.day <= limits.today { result.itemsAnswered = saved.value }
             let kept = items.filter { GrammarRules.isSlug($0.key) && itemIDs.contains($0.key) }.sorted { $0.key < $1.key }
             for (id, saved) in kept.prefix(GrammarProgress.maxItems) {
                 if let saved = saved.value { result.items[id] = saved.progress(limits) }
@@ -128,6 +134,38 @@ extension GrammarProgress {
     fileprivate struct SavedRightDay: Decodable {
         let day: Int
         let item: String
+    }
+
+    /// `itemsAnswered` {`day`, `n`} (SPEC.md S22): exactly those two keys, both integers written as integer literals
+    /// (`GrammarJSON` turned any other number into null, and the typed read refuses a JSON boolean, a string, an array
+    /// or an object); `n` is 0 to 6. Anything else fails the read and drops this field alone: no truncation, no
+    /// saturation (those are for counts). `day` is range-checked against today by the caller.
+    fileprivate struct SavedItemsAnswered: Decodable {
+        let day: Int
+        let n: Int
+
+        var value: ItemsAnswered { ItemsAnswered(day: day, n: n) }
+
+        init(from decoder: Decoder) throws {
+            // Open keys, so that a key outside `day` and `n` is seen (a closed enum would not list it).
+            let c = try decoder.container(keyedBy: AnyKey.self)
+            guard Set(c.allKeys.map(\.stringValue)) == ["day", "n"] else {
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "keys"))
+            }
+            day = try c.decode(Int.self, forKey: AnyKey("day"))
+            n = try c.decode(Int.self, forKey: AnyKey("n"))
+            guard (0...GrammarProgress.maxItemsAnswered).contains(n) else {
+                throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath, debugDescription: "n"))
+            }
+        }
+    }
+
+    fileprivate struct AnyKey: CodingKey {
+        let stringValue: String
+        var intValue: Int? { nil }
+        init(_ string: String) { stringValue = string }
+        init?(stringValue: String) { self.stringValue = stringValue }
+        init?(intValue: Int) { nil }
     }
 
     fileprivate struct SavedItem: Decodable {

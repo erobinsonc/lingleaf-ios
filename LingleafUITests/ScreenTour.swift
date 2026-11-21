@@ -21,17 +21,20 @@ final class ScreenTour: XCTestCase {
         let get: String
         let read: String
         let listen: String
+        /// A rule of the Grammar list, by the start of its row's label.
+        let grammarRule: String
+        let grammarTab: String
     }
 
     private static let english = Labels(
         language: "en", saveWord: "Save word", undo: "Undo", reviewNow: "Review now", showMeaning: "Show meaning",
         remembered: "I remembered", knowIt: "I know it", privacyPolicy: "Privacy policy",
-        get: "Get", read: "Read", listen: "Listen"
+        get: "Get", read: "Read", listen: "Listen", grammarRule: "His, her, its", grammarTab: "Grammar"
     )
     private static let spanish = Labels(
         language: "es", saveWord: "Guardar palabra", undo: "Deshacer", reviewNow: "Repasar ahora", showMeaning: "Mostrar significado",
         remembered: "Lo recordé", knowIt: "Ya la sé", privacyPolicy: "Política de privacidad",
-        get: "Obtener", read: "Leer", listen: "Escuchar"
+        get: "Obtener", read: "Leer", listen: "Escuchar", grammarRule: "His, her, its", grammarTab: "Gramática"
     )
     /// The largest accessibility text size (AX5).
     private static let largestText = ["-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL"]
@@ -66,7 +69,7 @@ final class ScreenTour: XCTestCase {
         tab(1)
         _ = app.buttons["level-filter-all"].waitForExistence(timeout: 10)
         snap("48-discover-ax5")
-        tab(3)
+        tab(4)
         let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
         for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
         snap("49-settings-about-ax5")
@@ -155,7 +158,7 @@ final class ScreenTour: XCTestCase {
             _ = app.staticTexts["The Marvelous Land of Oz"].waitForExistence(timeout: 10)
             snap("11b-discover-search-results")
         }
-        tab(3)
+        tab(4)
         snap("12-settings")
         let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
         for _ in 0..<6 where !privacy.isHittable { app.swipeUp() }
@@ -177,7 +180,17 @@ final class ScreenTour: XCTestCase {
         correctionsTour(labels, count: 5, extra: [], undo: false)
         storiesTour(labels)
         moreScreens(labels)
+        grammarTour(labels)
         app.terminate()
+    }
+
+    /// The Grammar tab (SPEC S20, S21): the list with a rule Practiced and one In Review and "Recent".
+    private func grammarTour(_ labels: Labels) {
+        launch(labels, ["-ui-testing", "-ui-testing-grammar-states", "-ui-testing-grammar-recent"])
+        app.tabBars.buttons[labels.grammarTab].tap()
+        let rule = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.grammarRule)).firstMatch
+        _ = rule.waitForExistence(timeout: 10)
+        snap("50-grammar-list")
     }
 
     /// The app's own stories (SPEC S19): the Library rows, Discover's stories at a level, a story in the
@@ -253,7 +266,7 @@ final class ScreenTour: XCTestCase {
     /// The privacy link opens the policy in the app's browser view, at the Spanish summary in Spanish.
     private func privacyPolicyPage(_ labels: Labels) {
         launch(labels, ["-ui-testing"])
-        tab(3)
+        tab(4)
         let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
         for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
         guard privacy.exists else { return }

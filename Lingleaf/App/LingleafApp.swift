@@ -5,6 +5,8 @@ import LingleafCore
 @main
 struct LingleafApp: App {
     @State private var model = AppModel.make()
+    @State private var grammar = GrammarModel.make()
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         // Unselected tabs use the system grey, measured at 2.77:1 on the light tab bar;
@@ -20,9 +22,14 @@ struct LingleafApp: App {
                 #endif
                 // After the overlay, so the probe reads the model from the environment too.
                 .environment(model)
+                .environment(grammar)
                 .noVoiceAlert(model.speaker)
                 .tint(Brand.ink)
                 .preferredColorScheme(Self.forcedColorScheme)
+                // Grammar progress is saved at show and at answer; this catches what a failed save left behind.
+                .onChange(of: scenePhase) { _, phase in
+                    if phase != .active { grammar.flush() }
+                }
         }
     }
 
@@ -110,8 +117,8 @@ final class AppModel {
         let language = arguments.contains("-ui-testing-no-language") ? nil : "es"
         // With -ui-testing-due a word is waiting for review (new words are first due tomorrow).
         let due = arguments.contains("-ui-testing-due")
-        if arguments.contains("-ui-testing-offline") { return uiTesting(offline: true, language: language, due: due) }
-        if arguments.contains("-ui-testing") { return uiTesting(offline: false, language: language, due: due) }
+        if UITestMode.isOffline { return uiTesting(offline: true, language: language, due: due) }
+        if UITestMode.isOn { return uiTesting(offline: false, language: language, due: due) }
         #endif
         return live()
     }
