@@ -38,7 +38,7 @@ enum VerbSentencesLint {
         out += problems.map { "\($0): \(tag)" }
         guard let index = found else { return out }
         out += cueProblems(sentence, view: view, index: index, verb: verb).map { "\($0): \(tag)" }
-        out += cueProblem(sentence, view: view, verb: verb).map { "\($0): \(tag)" }
+        out += cueProblem(sentence, view: view, index: index, verb: verb).map { "\($0): \(tag)" }
         out += spokenProblems(sentence, view: view, index: index, verb: verb).map { "\($0): \(tag)" }
         if !resolves(sentence, view: view, index: index, verb: verb, table: table) {
             out.append("s3: \(tag) S3 proves \"\(view.tokens[index])\" is not \(verb.base) sense \(sentence.senseIndex)")
@@ -208,55 +208,6 @@ enum VerbSentencesLint {
             }
         }
         return out
-    }
-
-    // MARK: Cue rule (verbs with a homonym)
-
-    static let hangExecuted: Set<String> = [
-        "murderer", "killer", "thief", "criminal", "prisoner", "traitor", "outlaw",
-        "murderers", "killers", "thieves", "criminals", "prisoners", "traitors", "outlaws",
-    ]
-    static let hangThings: Set<String> = [
-        "coat", "picture", "painting", "photo", "mirror", "flag", "sign", "clothes", "washing", "towel", "curtains", "lamp",
-        "coats", "pictures", "paintings", "photos", "mirrors", "flags", "signs", "towels", "lamps",
-    ]
-    static let lieDeceived: Set<String> = ["me", "you", "him", "her", "us", "them"]
-    static let liePersons: Set<String> = [
-        "mom", "dad", "mother", "father", "sister", "brother", "friend", "teacher", "boss", "wife", "husband", "parents", "everyone",
-    ]
-    static let lieDeterminers: Set<String> = ["my", "your", "his", "her", "our", "their", "the"]
-    static let liePlaces: Set<String> = ["down", "on", "in", "still", "awake", "flat", "here", "there"]
-    static let lieForms: Set<String> = ["lie", "lied", "lies", "lying"]
-
-    /// Whether the sentence has a cue of the sense (`second`: 1, the homonym) and, apart from it, one of the other sense.
-    static func cues(_ view: SentenceView, base: String) -> (sense0: Bool, sense1: Bool)? {
-        let tokens = view.tokens
-        switch base {
-        case "hang":
-            return (tokens.contains(where: hangThings.contains), tokens.contains(where: hangExecuted.contains))
-        case "lie":
-            return (tokens.contains(where: liePlaces.contains), tokens.indices.contains { deceived(view, at: $0) })
-        default:
-            return nil
-        }
-    }
-
-    /// "lie", "lied", "lies" or "lying" followed by "to" and a person (a pronoun, a name or a listed person, with an
-    /// optional determiner).
-    private static func deceived(_ view: SentenceView, at k: Int) -> Bool {
-        let tokens = view.tokens
-        guard lieForms.contains(tokens[k]), k + 2 < tokens.count, tokens[k + 1] == "to" else { return false }
-        var next = k + 2
-        if lieDeterminers.contains(tokens[next]), next + 1 < tokens.count, !lieDeceived.contains(tokens[next]) { next += 1 }
-        let word = tokens[next]
-        return lieDeceived.contains(word) || liePersons.contains(word) || view.words.titlecase(next)
-    }
-
-    private static func cueProblem(_ sentence: VerbSentence, view: SentenceView, verb: IrregularVerb) -> [String] {
-        guard verb.homonym != nil, let found = cues(view, base: verb.base) else { return [] }
-        let own = sentence.senseIndex == 1 ? found.sense1 : found.sense0
-        let other = sentence.senseIndex == 1 ? found.sense0 : found.sense1
-        return own && !other ? [] : ["cue-sense"]
     }
 
     // MARK: A verb's sense

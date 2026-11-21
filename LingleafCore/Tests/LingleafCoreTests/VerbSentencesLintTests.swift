@@ -347,53 +347,6 @@ final class VerbSentencesLintTests: VerbSentencesLintCase {
 
     // MARK: S3
 
-    func testTheSpecsExamplesPassTheNoContradictionCheckAndTheCueRule() {
-        clean("lie", [f.sentence("didnt", "lie", "She didn't lie to me.", sense: 1, context: true)])
-        clean("lie", [f.sentence("advice", "lie", "You should never lie to her.", sense: 1, context: true)])
-        clean("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", context: true)])
-        clean("hang", [f.sentence("didnt", "hang", "They didn't hang the thief.", sense: 1, context: true)])
-        clean("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)])
-    }
-
-    /// S3 takes the sense of the base of lie and hang from nothing: it is accepted, and the cue rule proves the sense.
-    func testTheBaseOfLieAndHangIsNotReadByS3ButItsSenseIsProvedByTheCue() {
-        XCTAssertEqual(codes("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", context: true)]), [])
-        refused("lie", [f.sentence("habit", "lie", "I lie a lot every day.", context: true)], "cue-sense")
-        refused("hang", [f.sentence("habit", "hang", "I hang it here every day.", context: true)], "cue-sense")
-        // The cue of the other sense, or both senses' cues, is refused.
-        refused("lie", [f.sentence("didnt", "lie", "She didn't lie to me.", context: true)], "cue-sense")
-        refused("lie", [f.sentence("advice", "lie", "You should lie down for an hour.", sense: 1, context: true)], "cue-sense")
-        refused("lie", [f.sentence("advice", "lie", "You should lie to him down there.", sense: 1, context: true)], "cue-sense")
-        refused("hang", [f.sentence("didnt", "hang", "They didn't hang the thief.", context: true)], "cue-sense")
-        refused("hang", [f.sentence("habit", "hang", "I hang my coat here every day.", sense: 1, context: true)], "cue-sense")
-        refused("hang", [f.sentence("didnt", "hang", "They didn't hang the thief or the coat.", sense: 1, context: true)], "cue-sense")
-        // Another verb has no cue lists.
-        clean("take", [f.sentence("habit", "take", "I take the bus every day.", context: true)])
-    }
-
-    func testTheCueListsHoldTheirCases() {
-        let lie = { (text: String) in VerbSentencesLint.cues(SentenceView(text), base: "lie")! }
-        for person in ["me", "you", "him", "her", "us", "them", "Tom", "my mom", "your boss", "the teacher", "everyone", "her father"] {
-            XCTAssertTrue(lie("She lied to \(person).").sense1, person)
-        }
-        for form in ["lie", "lied", "lies", "lying"] { XCTAssertTrue(lie("It is \(form) to me.").sense1, form) }
-        XCTAssertFalse(lie("She lied about it.").sense1)
-        XCTAssertFalse(lie("She lied to").sense1, "nothing after to")
-        XCTAssertFalse(lie("She lied to the dog.").sense1, "a dog is not a listed person")
-        XCTAssertFalse(lie("She told me to lie.").sense1)
-        for place in ["down", "on", "in", "still", "awake", "flat", "here", "there"] { XCTAssertTrue(lie("I lie \(place).").sense0, place) }
-        XCTAssertFalse(lie("I lie.").sense0)
-        let hang = { (text: String) in VerbSentencesLint.cues(SentenceView(text), base: "hang")! }
-        for thing in ["coat", "picture", "painting", "photo", "mirror", "flag", "sign", "clothes", "washing", "towel", "curtains", "lamp"] {
-            XCTAssertTrue(hang("I hang the \(thing).").sense0, thing)
-        }
-        for person in ["murderer", "killer", "thief", "criminal", "prisoner", "traitor", "outlaw", "thieves"] {
-            XCTAssertTrue(hang("They hang the \(person).").sense1, person)
-        }
-        XCTAssertFalse(hang("They hang the man.").sense1)
-        XCTAssertFalse(hang("They hang the man.").sense0, "no cue at all")
-    }
-
     func testAPastOrParticipleOfTheTableIsThatVerbAndTheTwinIsSenseOne() {
         clean("lie", [f.sentence("past", "lay", "Yesterday I lay on the bed.")])
         clean("lie", [f.sentence("past", "lied", "Yesterday he lied to me.", sense: 1)])

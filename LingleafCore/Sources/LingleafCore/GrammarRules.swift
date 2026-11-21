@@ -175,11 +175,24 @@ public struct GrammarRules: Sendable {
     /// Latin-1 Supplement, Latin Extended-A and B (U+0000..U+024F), IPA Extensions, Spacing Modifier Letters, Combining
     /// Diacritical Marks (U+0250..U+036F), General Punctuation (U+2000..U+206F) and Arrows (U+2190..U+21FF). A fixed list,
     /// not the category "unassigned" (Cn), which follows the Unicode version of each OS: the same file is read the same
-    /// everywhere. It leaves out every noncharacter (U+FFFE, U+FFFF, U+FDD0..U+FDEF), CJK, emoji and the other scripts.
+    /// everywhere. It leaves out every noncharacter (U+FFFE, U+FFFF, U+FDD0..U+FDEF), CJK, emoji and the other scripts. The
+    /// blocks hold reserved scalars (e.g. U+2065) that are Cn in every Unicode version: the code never reads Cn, so they pass
+    /// the same way everywhere (the bundled files hold none).
     static let allowedBlocks: [ClosedRange<UInt32>] = [0x0000...0x036F, 0x2000...0x206F, 0x2190...0x21FF]
 
     static func isAllowed(_ scalar: Unicode.Scalar) -> Bool {
         allowedBlocks.contains { $0.contains(scalar.value) }
+    }
+
+    /// Inside the blocks, refused one by one: U+2065 (reserved, default-ignorable), U+034F (combining grapheme joiner, an
+    /// invisible mark), U+2024 and U+2044 (dot leader, fraction slash: no text uses them). Every space separator (Zs) but
+    /// U+0020 is refused too: U+00A0, U+2000..U+200A, U+202F, U+205F (and U+3000, outside the blocks).
+    private static let refusedScalars: Set<UInt32> = [0x2065, 0x034F, 0x2024, 0x2044]
+
+    private static func isAcceptable(_ scalar: Unicode.Scalar) -> Bool {
+        guard isAllowed(scalar), !refusedScalars.contains(scalar.value),
+              !forbidden.contains(scalar.properties.generalCategory) else { return false }
+        return scalar.properties.generalCategory != .spaceSeparator || scalar.value == 0x20
     }
 
     /// Not blank, at most `maxText` code points (as on Android: a combining mark counts), only the allowed blocks, none
@@ -189,18 +202,32 @@ public struct GrammarRules: Sendable {
     /// `isText` with another cap (the verb sentences' `en`, `es`, `spoken` and `reason`, the table's texts).
     static func isText(_ text: String, max: Int) -> Bool {
         !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && text.unicodeScalars.count <= max
-            && text.unicodeScalars.allSatisfy { isAllowed($0) && !forbidden.contains($0.properties.generalCategory) }
+            && text.unicodeScalars.allSatisfy(isAcceptable)
             && marksAreFew(text)
     }
 
-    /// At most 2 consecutive non-spacing marks (Mn; Android: NON_SPACING_MARK): a stack of marks is how text is made unreadable.
+    /// A non-spacing mark (Mn; Android: NON_SPACING_MARK) follows a letter, a digit or another mark, never a space or a
+    /// punctuation mark, and at most 2 follow in a row: a stack of marks, alone or spread over spaces, is how text is made
+    /// unreadable (a + 2 marks + space + 2 marks + space + 2 marks is refused).
     private static func marksAreFew(_ text: String) -> Bool {
         var run = 0
+        var previous: Unicode.GeneralCategory?
         for scalar in text.unicodeScalars {
-            run = scalar.properties.generalCategory == .nonspacingMark ? run + 1 : 0
-            if run > 2 { return false }
+            let category = scalar.properties.generalCategory
+            if category == .nonspacingMark {
+                guard let previous, previous == .nonspacingMark || isLetterOrDigit(previous), run < 2 else { return false }
+                run += 1
+            } else {
+                run = 0
+            }
+            previous = category
         }
         return true
+    }
+
+    private static func isLetterOrDigit(_ category: Unicode.GeneralCategory) -> Bool {
+        [.uppercaseLetter, .lowercaseLetter, .titlecaseLetter, .modifierLetter, .otherLetter, .decimalNumber, .letterNumber,
+         .otherNumber].contains(category)
     }
 }
 

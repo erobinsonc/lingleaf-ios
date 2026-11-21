@@ -58,12 +58,42 @@ final class VerbSentencesTextTests: VerbSentencesReaderCase {
             XCTAssertFalse(GrammarRules.isText("a\(outside)b"), outside)
         }
         let inside = [
-            "\u{00E9}", "\u{00BF}\u{00A1}\u{00AB}\u{00BB}", "\u{024F}", "\u{0250}", "\u{02FF}", "\u{0300}", "\u{2000}", "\u{2026}",
+            "a\u{0301}\u{0302}b", "\u{00E9}",
+            "\u{00BF}\u{00A1}\u{00AB}\u{00BB}", "\u{024F}", "\u{0250}", "\u{02FF}", "\u{0300}", "\u{2010}", "\u{2026}",
             "\u{2192}", "\u{21FF}", "\u{0254}\u{02C8}",
         ]
         for inside in inside {
             loads(take { $0[0]["es"] = "a\(inside)b" }, inside)
         }
+    }
+
+    /// Inside the blocks, refused one by one: invisible or reserved scalars, every space separator but U+0020.
+    func testInvisibleReservedAndExoticSpaceScalarsAreRefused() {
+        let scalars: [UInt32] = [0x2065, 0x034F, 0x2024, 0x2044, 0x00A0, 0x2000, 0x2001, 0x2003, 0x2009, 0x200A, 0x202F, 0x205F, 0x3000]
+        for value in scalars {
+            let text = "a" + String(Unicode.Scalar(value)!) + "b"
+            refused(take { $0[0]["es"] = text }, "text-es")
+            refused(take { $0[0]["en"] = "I take" + text }, "text-en")
+            XCTAssertFalse(GrammarRules.isText(text), String(value, radix: 16))
+            XCTAssertFalse(IrregularVerbs.isText(text), String(value, radix: 16))
+        }
+        loads(take { $0[0]["es"] = "a b" }, "U+0020 is the one space")
+    }
+
+    /// A mark follows a letter, a digit or a mark; at most 2 in a row; spreading marks over spaces does not get round it.
+    func testMarksCannotBeSpreadOverSpacesOrFollowASpace() {
+        let marks = "\u{0301}\u{0302}"
+        // The interleave PoC: a + 2 marks + U+2000 + 2 marks + U+2000 + 2 marks (the space is refused itself) ...
+        refused(take { $0[0]["es"] = "a" + marks + "\u{2000}" + marks + "\u{2000}" + marks }, "text-es")
+        // ... and the same over U+0020: a mark after a space is refused.
+        refused(take { $0[0]["es"] = "a" + marks + " " + marks + " " + marks }, "text-es")
+        refused(take { $0[0]["es"] = "a \u{0301}" }, "text-es")
+        refused(take { $0[0]["es"] = "\u{0301}a" }, "text-es")
+        refused(take { $0[0]["es"] = "a.\u{0301}" }, "text-es")
+        loads(take { $0[0]["es"] = "a" + marks + " b" + marks }, "marks after letters, 2 in a row")
+        loads(take { $0[0]["es"] = "5\u{0301}" }, "a mark after a digit")
+        XCTAssertFalse(GrammarRules.isText("a" + marks + " " + marks))
+        XCTAssertTrue(GrammarRules.isText("a" + marks + " b" + marks))
     }
 
     func testBlankTextIsRefused() {
