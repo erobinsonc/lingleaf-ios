@@ -347,6 +347,16 @@
         }
       }
     },
+    "(nothing)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(nada)"
+          }
+        }
+      }
+    },
     "About": {
       "localizations": {
         "es": {
@@ -464,6 +474,16 @@
         }
       }
     },
+    "Back to the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a la regla"
+          }
+        }
+      }
+    },
     "Back to Words": {
       "localizations": {
         "es": {
@@ -521,6 +541,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cerrar"
+          }
+        }
+      }
+    },
+    "collapsed": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "contraído"
           }
         }
       }
@@ -685,12 +715,32 @@
         }
       }
     },
+    "expanded": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "expandido"
+          }
+        }
+      }
+    },
     "Filter": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Filtro"
+          }
+        }
+      }
+    },
+    "Finish": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminar"
           }
         }
       }
@@ -804,6 +854,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Grupo: %@"
+          }
+        }
+      }
+    },
+    "Guess, then read the rule. A wrong guess is fine.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adivina y luego lee la regla. Si fallas, no pasa nada."
           }
         }
       }
@@ -1078,6 +1138,16 @@
         }
       }
     },
+    "Next": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente"
+          }
+        }
+      }
+    },
     "No accounts, no ads, no tracking.": {
       "localizations": {
         "es": {
@@ -1174,6 +1244,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "No disponible"
+          }
+        }
+      }
+    },
+    "Not quite:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No es esa:"
+          }
+        }
+      }
+    },
+    "Not sure": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No lo sé"
           }
         }
       }
@@ -1380,6 +1470,16 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Question %lld of %lld": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pregunta %lld de %lld"
           }
         }
       }
@@ -1620,6 +1720,26 @@
         }
       }
     },
+    "Right answer": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respuesta correcta"
+          }
+        }
+      }
+    },
+    "Right:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correcto:"
+          }
+        }
+      }
+    },
     "Rule language": {
       "localizations": {
         "es": {
@@ -1700,6 +1820,16 @@
         }
       }
     },
+    "See the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver la regla"
+          }
+        }
+      }
+    },
     "Selected": {
       "localizations": {
         "es": {
@@ -1746,6 +1876,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar la definición completa"
+          }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omitir"
+          }
+        }
+      }
+    },
+    "Skip to the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omitir e ir a la regla"
           }
         }
       }
@@ -1820,6 +1970,26 @@
         }
       }
     },
+    "That was the last round for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esa fue la última ronda de hoy."
+          }
+        }
+      }
+    },
+    "That's okay. Right:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pasa nada. Correcto:"
+          }
+        }
+      }
+    },
     "The sentence's translation tells you which one:": {
       "comment": "Word card, above the two readings of a word whose sentence doesn't tell which one it is.",
       "localizations": {
@@ -1857,6 +2027,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Este dispositivo no tiene voz en inglés. Agrégala en Ajustes > Accesibilidad > Contenido leído > Voces."
+          }
+        }
+      }
+    },
+    "This rule is now Practiced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta regla ahora está Practicada"
           }
         }
       }
@@ -1952,6 +2132,16 @@
         }
       }
     },
+    "Try a question first": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba primero con una pregunta"
+          }
+        }
+      }
+    },
     "Try it": {
       "localizations": {
         "es": {
@@ -2032,6 +2222,16 @@
         }
       }
     },
+    "Why not the others?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Por qué no las otras?"
+          }
+        }
+      }
+    },
     "Word from another language": {
       "localizations": {
         "es": {
@@ -2062,6 +2262,16 @@
         }
       }
     },
+    "You got %lld of %lld right": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acertaste %lld de %lld"
+          }
+        }
+      }
+    },
     "You're offline. Connect to the internet to download it.": {
       "localizations": {
         "es": {
@@ -2088,6 +2298,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ya practicaste esta regla hoy. Prueba otra regla o vuelve mañana."
+          }
+        }
+      }
+    },
+    "Your answer": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu respuesta"
+          }
+        }
+      }
+    },
+    "Your answer, right": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu respuesta, correcta"
           }
         }
       }

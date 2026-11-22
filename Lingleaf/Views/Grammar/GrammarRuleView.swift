@@ -13,6 +13,17 @@ struct GrammarRuleView: View {
     /// Opening a rule counts it for "Recent" once per push: coming back from a practice session or a verb page
     /// shows this page again but is not an opening (S20).
     @State private var opened = false
+    /// Where the learner is on this page: the pretest (an item shown with the rule hidden), its answer, or the rule.
+    /// Nil until something changes it: the pretest is offered while it was neither answered nor skipped (S22).
+    @State private var stage: Stage?
+    /// Items kept out of the rounds of this opening of the page (the pretest answered, or the item left on the page
+    /// after "Skip", once answered); view state, never stored.
+    @State private var excluded: Set<String> = []
+    @State private var round: GrammarRound?
+
+    private enum Stage { case pretest, answered, rule }
+
+    private var currentStage: Stage { stage ?? (grammar.progress[rule.id].pretestOffered ? .pretest : .rule) }
 
     let rule: GrammarRule
 
@@ -21,8 +32,34 @@ struct GrammarRuleView: View {
     private var isInline: Bool { typeSize.isAccessibilitySize || verticalSizeClass == .compact }
 
     var body: some View {
+        Group {
+            if currentStage == .rule { ruleBody } else { pretestBody }
+        }
+        .navigationTitle(categoryTitle)
+        .navigationBarTitleDisplayMode(.inline)
+        .modifier(PinnedBar(isPinned: !isInline) { bottomBar })
+        .navigationDestination(item: $round) { _ in
+            GrammarSessionView(
+                rule: rule, language: model.grammarLanguage,
+                drawRound: {
+                    GrammarPractice.draw(
+                        rule: rule, progress: grammar.progress[rule.id], spanishEligible: model.spanishEligible, excluding: excluded,
+                        count: GrammarPractice.roundSize(answeredToday: answeredToday)
+                    )
+                },
+                onAnswered: { id in if id == GrammarPretest.item(of: rule)?.id { excluded.insert(id) } }
+            )
+        }
+        .onAppear {
+            guard !opened else { return }
+            opened = true
+            grammar.opened(rule)
+        }
+    }
+
+    private var ruleBody: some View {
         let language = model.grammarLanguage
-        ScrollView {
+        return ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 languagePicker(language)
                 header(language)
@@ -39,14 +76,56 @@ struct GrammarRuleView: View {
             .frame(maxWidth: 640, alignment: .leading)
             .frame(maxWidth: .infinity)
         }
-        .navigationTitle(categoryTitle)
-        .navigationBarTitleDisplayMode(.inline)
-        .modifier(PinnedBar(isPinned: !isInline) { bottomBar })
-        .onAppear {
-            guard !opened else { return }
-            opened = true
-            grammar.opened(rule)
+    }
+
+    // MARK: The pretest
+
+    /// A question first, with the rule hidden (S22): "Skip" ends it, an answer ends it and "See the rule" shows the rule.
+    private var pretestBody: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Try a question first").font(.title2.bold()).accessibilityAddTraits(.isHeader)
+                Text("Guess, then read the rule. A wrong guess is fine.").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                // At accessibility sizes Skip moves to the navigation bar, so the question stays in view.
+                if currentStage == .pretest && !typeSize.isAccessibilitySize { skipButton }
+                if let item = GrammarPretest.item(of: rule) {
+                    GrammarItemView(
+                        item: item, language: model.grammarLanguage, allowsNotSure: false,
+                        seenBefore: grammar.progress[rule.id].items[item.id]?.seen ?? 0,
+                        onShown: { grammar.shown(rule, item: item) },
+                        onAnswered: { right in
+                            grammar.answeredPretest(rule, right: right)
+                            excluded.insert(item.id)
+                            stage = .answered
+                        }
+                    )
+                }
+                if isInline { bottomBar }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 12)
+            .frame(maxWidth: 640, alignment: .leading)
+            .frame(maxWidth: .infinity)
         }
+        .toolbar {
+            if currentStage == .pretest && typeSize.isAccessibilitySize {
+                ToolbarItem(placement: .topBarTrailing) { skipButton }
+            }
+        }
+    }
+
+    /// "Skip" is the visible word; a screen reader says "Skip to the rule" (it contains the visible text).
+    private var skipButton: some View {
+        Button("Skip") {
+            grammar.skippedPretest(rule)
+            stage = .rule
+        }
+        .buttonStyle(.borderless)
+        .frame(minWidth: 44, minHeight: 44, alignment: .leading)
+        .contentShape(Rectangle())
+        .accessibilityLabel(Text("Skip to the rule"))
+        .accessibilityInputLabels([Text("Skip"), Text("Skip to the rule")])
+        .accessibilityIdentifier("grammar-skip-pretest")
     }
 
     private var categoryTitle: String {
@@ -178,7 +257,15 @@ struct GrammarRuleView: View {
     @ViewBuilder
     private var bottomBarContent: some View {
         let size = GrammarPractice.roundSize(answeredToday: answeredToday)
-        if size == 0 {
+        if currentStage == .pretest {
+            EmptyView()
+        } else if currentStage == .answered {
+            Button("See the rule") { stage = .rule }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .frame(maxWidth: .infinity)
+                .padding(isInline ? 0 : 12)
+        } else if size == 0 {
             VStack(spacing: 10) {
                 Text("You've finished today's practice for this rule. Try another rule, or come back tomorrow.")
                     .font(.footnote)
@@ -206,23 +293,5 @@ struct GrammarRuleView: View {
         }
     }
 
-    /// The pretest and the practice session open from here (the next commits).
-    private func startPractice() {}
-}
-
-/// Pins its content to the bottom edge, under the content's scroll edge: the system scroll-edge effect on iOS 26, a bar
-/// material before it. When not pinned the content is not shown here (the caller places it inline).
-private struct PinnedBar<Bar: View>: ViewModifier {
-    let isPinned: Bool
-    @ViewBuilder let bar: () -> Bar
-
-    func body(content: Content) -> some View {
-        if !isPinned {
-            content
-        } else if #available(iOS 26, *) {
-            content.safeAreaBar(edge: .bottom) { bar() }
-        } else {
-            content.safeAreaInset(edge: .bottom) { bar().background(.bar) }
-        }
-    }
+    private func startPractice() { round = GrammarRound() }
 }

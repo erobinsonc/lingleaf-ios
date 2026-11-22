@@ -76,3 +76,25 @@ extension AppModel {
     /// The language of titles and chrome that exist in both languages (the interface's).
     var chromeLanguage: String { interfaceLanguage == "es" ? "es" : "en" }
 }
+
+/// A practice session pushed from a rule page.
+struct GrammarRound: Hashable {
+    let id = UUID()
+}
+
+/// Pins its content to the bottom edge, under the content's scroll edge: the system scroll-edge effect on iOS 26, a bar
+/// material before it. When not pinned the content is not shown here (the caller places it inline).
+struct PinnedBar<Bar: View>: ViewModifier {
+    let isPinned: Bool
+    @ViewBuilder let bar: () -> Bar
+
+    func body(content: Content) -> some View {
+        if !isPinned {
+            content
+        } else if #available(iOS 26, *) {
+            content.safeAreaBar(edge: .bottom) { bar() }
+        } else {
+            content.safeAreaInset(edge: .bottom) { bar().background(.bar) }
+        }
+    }
+}
