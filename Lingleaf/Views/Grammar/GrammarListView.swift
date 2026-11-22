@@ -19,13 +19,17 @@ struct GrammarView: View {
                 }
             }
             .navigationTitle("Grammar")
-            .searchable(text: $query, prompt: Text("Search rules"))
+            .searchable(text: $query, prompt: Text("Search rules and verbs"))
             .navigationDestination(for: GrammarRoute.self) { route in
                 switch route {
                 case .rule(let id):
                     if let rule = rules.rule(id: id) { GrammarRuleView(rule: rule) }
                 case .category(let id):
                     GrammarCategoryView(categoryID: id)
+                case .verbs:
+                    IrregularVerbsView()
+                case .verb(let base):
+                    if let verb = IrregularVerbs.shared.verb(base: base) { VerbPageView(verb: verb) }
                 }
             }
         }
@@ -35,6 +39,15 @@ struct GrammarView: View {
 
     @ViewBuilder
     private func browse(_ rules: GrammarRules) -> some View {
+        // The first row: every irregular verb.
+        Section {
+            NavigationLink(value: GrammarRoute.verbs) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Irregular verbs").font(.headline)
+                    Text(verbatim: "take · took · taken").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                }
+            }
+        }
         let recent = GrammarRecent.rules(progress: grammar.progress, in: rules)
         if !recent.isEmpty {
             Section {
@@ -84,6 +97,7 @@ struct GrammarView: View {
         } header: {
             SectionHeader("Rules").accessibilityAddTraits(.isHeader)
         }
+        IrregularVerbResults(verbs: IrregularVerbSearch.search(query, in: IrregularVerbs.shared))
     }
 }
 

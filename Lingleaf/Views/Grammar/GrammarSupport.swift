@@ -5,6 +5,9 @@ import LingleafCore
 enum GrammarRoute: Hashable {
     case rule(String)
     case category(String)
+    /// The irregular verbs, and one verb by its base.
+    case verbs
+    case verb(String)
 }
 
 /// Every content text of Grammar (a rule line, an example, a form) goes through here with the language it is

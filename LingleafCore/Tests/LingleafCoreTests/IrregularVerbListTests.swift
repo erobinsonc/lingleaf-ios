@@ -148,3 +148,26 @@ final class IrregularVerbListTests: XCTestCase {
         XCTAssertEqual(try said("tear", .s), "tares", "the table's respelling for the -s form")
     }
 }
+
+/// The lines of a verb row.
+final class IrregularVerbLineTests: XCTestCase {
+    private func verb(_ base: String) throws -> IrregularVerb { try XCTUnwrap(IrregularVerbs.shared.verb(base: base), base) }
+
+    func testARowShowsEveryFormOfEachSlot() throws {
+        XCTAssertEqual(IrregularVerbLine.forms(try verb("take")), "take · took · taken")
+        XCTAssertEqual(IrregularVerbLine.forms(try verb("learn")), "learn · learned / learnt · learned / learnt")
+        XCTAssertEqual(IrregularVerbLine.forms(try verb("dive")), "dive · dove / dived · dived")
+        XCTAssertEqual(IrregularVerbLine.forms(try verb("read")), "read · read · read")
+    }
+
+    func testTheMeaningsAreTheTablesAndTheHintIsHavePlusTheParticiple() throws {
+        XCTAssertEqual(IrregularVerbLine.meanings(try verb("take")), "tomar, llevar; tardar")
+        XCTAssertEqual(IrregularVerbLine.meanings(try verb("go")), "ir; irse")
+        XCTAssertEqual(IrregularVerbLine.participleHint(try verb("take")), "have taken")
+        XCTAssertEqual(IrregularVerbLine.participleHint(try verb("sow")), "have sown")
+        for verb in IrregularVerbs.shared.verbs {
+            XCTAssertFalse(IrregularVerbLine.forms(verb).isEmpty)
+            XCTAssertFalse(IrregularVerbLine.meanings(verb).isEmpty, verb.base)
+        }
+    }
+}

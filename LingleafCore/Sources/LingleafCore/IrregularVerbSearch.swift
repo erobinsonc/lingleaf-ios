@@ -80,3 +80,17 @@ public enum IrregularVerbSearch {
         return ranked.sorted { $0.rank != $1.rank ? $0.rank < $1.rank : $0.position < $1.position }.map(\.verb)
     }
 }
+
+/// The two lines of a verb row (SPEC S24): every form of each slot, and the Spanish meanings.
+public enum IrregularVerbLine {
+    /// "take · took · taken"; a slot with two forms shows both: "learn · learned / learnt · learned / learnt".
+    public static func forms(_ verb: IrregularVerb) -> String {
+        [VerbSlot.base, .past, .participle].map { GrammarSpeech.forms(of: verb, slot: $0).joined(separator: " / ") }.joined(separator: " · ")
+    }
+
+    /// The table's Spanish meanings, each entry as the table has it ("tomar, llevar"), the entries apart by "; ".
+    public static func meanings(_ verb: IrregularVerb) -> String { verb.es.joined(separator: "; ") }
+
+    /// The hint under the past participle: "have taken".
+    public static func participleHint(_ verb: IrregularVerb) -> String { "have " + (verb.participle.first ?? verb.base) }
+}

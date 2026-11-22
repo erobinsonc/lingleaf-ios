@@ -357,6 +357,16 @@
         }
       }
     },
+    "-ing form": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forma -ing"
+          }
+        }
+      }
+    },
     "About": {
       "localizations": {
         "es": {
@@ -490,6 +500,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Volver a Palabras"
+          }
+        }
+      }
+    },
+    "Base form": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forma base"
           }
         }
       }
@@ -788,6 +808,16 @@
         }
       }
     },
+    "Forms": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formas"
+          }
+        }
+      }
+    },
     "Free classics from Project Gutenberg.": {
       "localizations": {
         "es": {
@@ -864,6 +894,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Adivina y luego lee la regla. Si fallas, no pasa nada."
+          }
+        }
+      }
+    },
+    "He, she, it": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Él / ella (he, she, it)"
           }
         }
       }
@@ -964,6 +1004,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Intermedio"
+          }
+        }
+      }
+    },
+    "Irregular verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbos irregulares"
           }
         }
       }
@@ -1074,6 +1124,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Escuchar la frase"
+          }
+        }
+      }
+    },
+    "Listen, %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escuchar, %@"
           }
         }
       }
@@ -1314,6 +1374,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cuento propio"
+          }
+        }
+      }
+    },
+    "Past": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasado"
+          }
+        }
+      }
+    },
+    "Past participle": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Participio pasado"
           }
         }
       }
@@ -1790,12 +1870,22 @@
         }
       }
     },
-    "Search rules": {
+    "Search rules and verbs": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Buscar reglas"
+            "value": "Buscar reglas y verbos"
+          }
+        }
+      }
+    },
+    "Search verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar verbos"
           }
         }
       }
@@ -2152,6 +2242,16 @@
         }
       }
     },
+    "Try the verb or its meaning, like go or ir.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba el verbo o su significado, como go o ir."
+          }
+        }
+      }
+    },
     "UK English": {
       "localizations": {
         "es": {
@@ -2198,6 +2298,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inglés estadounidense"
+          }
+        }
+      }
+    },
+    "Verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbos"
           }
         }
       }
