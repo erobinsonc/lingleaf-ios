@@ -68,9 +68,12 @@ extension VerbSentencesLint {
         (k + 1 < tokens.count && liePlaces.contains(tokens[k + 1])) || isDirection(tokens, k)
     }
 
-    /// The form followed by "to the" and a direction word; never for "lied".
+    /// The forms of the verb that can also be sense 0 and are the same in both senses: lie, lies, lying. "lied" is only the twin.
+    static let lieSharedForms: Set<String> = ["lie", "lies", "lying"]
+
+    /// The form (lie, lies, lying) followed by "to the" and a direction word; never for "lied" or another form.
     private static func isDirection(_ tokens: [String], _ k: Int) -> Bool {
-        guard tokens[k] != "lied", k + 3 < tokens.count else { return false }
+        guard lieSharedForms.contains(tokens[k]), k + 3 < tokens.count else { return false }
         return tokens[k + 1] == "to" && tokens[k + 2] == "the" && lieDirections.contains(tokens[k + 3])
     }
 
@@ -99,8 +102,11 @@ extension VerbSentencesLint {
         if verb.base == "hang", next.map(hangReflexives.contains) == true { out.append("hang-reflexive") }
         let own = sentence.senseIndex == 1 ? found.sense1 : found.sense0
         var other = sentence.senseIndex == 1 ? found.sense0 : found.sense1
-        // Against a sense-1 sentence of lie, only a place right after the verb counts (the cue a sense-0 sentence needs is wider).
-        if verb.base == "lie", sentence.senseIndex == 1 { other = lieSenseZeroAdjacent(view.tokens, index) }
+        // Against a sense-1 sentence of lie, only a place right after the verb counts (the cue a sense-0 sentence needs is wider),
+        // and only where the form is shared (lie, lies, lying): "lied" proves sense 1 by itself, so no place contradicts it.
+        if verb.base == "lie", sentence.senseIndex == 1 {
+            other = lieSharedForms.contains(view.tokens[index]) && lieSenseZeroAdjacent(view.tokens, index)
+        }
         let needsCue = [1, 2, 3, 6, 10].contains(sentence.slot.position)
         if other || (needsCue && !own) { out.append("cue-sense") }
         return out

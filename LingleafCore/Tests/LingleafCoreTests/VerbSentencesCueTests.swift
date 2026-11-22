@@ -34,7 +34,8 @@ final class VerbSentencesCueTests: VerbSentencesLintCase {
         refused("hang", [f.sentence("past", "hung", "Yesterday she hung the thief.")], "cue-sense")
         refused("hang", [f.sentence("past", "hanged", "Yesterday they hanged the coat.", sense: 1)], "cue-sense")
         refused("lie", [f.sentence("past", "lay", "Yesterday I lay to him down.")], "cue-sense")
-        refused("lie", [f.sentence("past", "lied", "Yesterday he lied down.", sense: 1)], "cue-sense")
+        // "lied" proves sense 1: even "lied down" contradicts nothing.
+        clean("lie", [f.sentence("past", "lied", "Yesterday he lied down.", sense: 1)])
     }
 
     // MARK: lie, sense 1: a person deceived
@@ -150,8 +151,14 @@ final class VerbSentencesCueTests: VerbSentencesLintCase {
         clean("lie", [f.sentence("advice", "lie", "You should lie quietly on the bed.", context: true)])
         // Sense 1 with a place two words after the verb is not contradicted ...
         clean("lie", [f.sentence("past", "lied", "Yesterday he lied about here.", sense: 1)])
-        // ... but one right after the verb is.
-        refused("lie", [f.sentence("past", "lied", "Yesterday he lied here.", sense: 1)], "cue-sense")
+        // "lied" proves sense 1 by itself: a place right after it contradicts nothing.
+        clean("lie", [f.sentence("past", "lied", "Yesterday he lied here.", sense: 1)])
+        clean("lie", [f.sentence("past", "lied", "Yesterday she lied at work.", sense: 1)])
+        clean("lie", [f.sentence("perfect", "lied", "He has lied there before.", sense: 1)])
+        // lie, lies and lying keep the narrower check, and a direction is sense 0 for them only.
+        clean("lie", [f.sentence("advice", "lie", "You should never lie to me here.", sense: 1, context: true)])
+        XCTAssertEqual(VerbSentencesLint.lieSharedForms, ["lie", "lies", "lying"])
+        XCTAssertFalse(VerbSentencesLint.cues(SentenceView("Yesterday I lay to the north."), base: "lie")!.sense0, "lay is no shared form")
         let tokens = SentenceView("He lied about here.").tokens
         XCTAssertFalse(VerbSentencesLint.lieSenseZeroAdjacent(tokens, 1))
         XCTAssertTrue(VerbSentencesLint.cues(SentenceView("He lied about here."), base: "lie")!.sense0, "the wider own-sense window")
