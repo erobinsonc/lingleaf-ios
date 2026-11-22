@@ -4,6 +4,7 @@
 # job. Writes ready=true|false to $GITHUB_OUTPUT (false: nothing to publish).
 # Usage: verify-screenshots.sh <dir>
 set -euo pipefail
+here="$(cd "$(dirname "$0")" && pwd)"
 dir="${1:?directory}"
 out="${GITHUB_OUTPUT:-/dev/null}"
 max_files=200
@@ -28,7 +29,8 @@ while IFS= read -r -d '' entry; do
   [ "$size" -le "$max_bytes" ] || { echo "::error::Too large: $shown"; exit 1; }
   total=$((total + size))
   [ "$total" -le "$max_total" ] || { echo "::error::Total size over the limit"; exit 1; }
-  [ "$(head -c 8 "$entry" | od -An -tx1 | tr -d ' \n')" = "89504e470d0a1a0a" ] || { echo "::error::Not a PNG: $shown"; exit 1; }
+  # Every chunk, CRC, IHDR first, IEND last with nothing after it, and a size within budget (verify-png.py).
+  python3 -I -B "$here/verify-png.py" "$entry" 2>/dev/null || { echo "::error::Not an acceptable PNG: $shown"; exit 1; }
   count=$((count + 1))
 done < <(find "$dir" -mindepth 1 -print0)
 [ "$count" -le "$max_files" ] || { echo "::error::Too many files: $count"; exit 1; }
