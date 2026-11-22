@@ -98,10 +98,10 @@ class VerbSentencesReaderCase: XCTestCase {
 
     /// Refused with a problem that starts with `code` (the first of the list is not enough: every problem is listed).
     func refused(_ json: Json, _ code: String, line: UInt = #line) {
-        refused(f.data(json), code, line: line)
+        refusedBytes(f.data(json), code, line: line)
     }
 
-    func refused(_ bytes: Data, _ code: String, line: UInt = #line) {
+    func refusedBytes(_ bytes: Data, _ code: String, line: UInt = #line) {
         do {
             _ = try VerbSentences.load(bytes)
             XCTFail("loaded; expected \(code)", line: line)

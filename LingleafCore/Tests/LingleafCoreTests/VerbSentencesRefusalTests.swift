@@ -30,21 +30,21 @@ final class VerbSentencesRefusalTests: VerbSentencesReaderCase {
     }
 
     func testAByteOrderMarkIsRefused() {
-        refused(Data([0xEF, 0xBB, 0xBF]) + bytes("{\"schema\":1,\"verbs\":[]}"), "byte order mark")
+        refusedBytes(Data([0xEF, 0xBB, 0xBF]) + bytes("{\"schema\":1,\"verbs\":[]}"), "byte order mark")
     }
 
     func testANULByteIsRefusedAnywhere() {
-        refused(bytes("{\"schema\":1,\"verbs\":[]}") + Data([0]), "NUL")
-        refused(bytes(#"{"schema":1,"verbs":[],"a":"#) + Data([0x22, 0, 0x22]) + bytes("}"), "NUL")
+        refusedBytes(bytes("{\"schema\":1,\"verbs\":[]}") + Data([0]), "NUL")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[],"a":"#) + Data([0x22, 0, 0x22]) + bytes("}"), "NUL")
         // UTF-16 holds NUL bytes: refused as such, not read as something else.
-        refused(Data("{\"schema\":1,\"verbs\":[]}".utf16.flatMap { [UInt8($0 & 0xFF), UInt8($0 >> 8)] }), "NUL")
+        refusedBytes(Data("{\"schema\":1,\"verbs\":[]}".utf16.flatMap { [UInt8($0 & 0xFF), UInt8($0 >> 8)] }), "NUL")
     }
 
     func testBytesThatAreNotUTF8AreRefused() {
-        refused(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xFF, 0xFE]) + bytes("\"}"), "not UTF-8")
+        refusedBytes(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xFF, 0xFE]) + bytes("\"}"), "not UTF-8")
         // An overlong encoding of "/" and a UTF-8 encoded surrogate are not UTF-8 either.
-        refused(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xC0, 0xAF]) + bytes("\"}"), "not UTF-8")
-        refused(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xED, 0xA0, 0x80]) + bytes("\"}"), "not UTF-8")
+        refusedBytes(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xC0, 0xAF]) + bytes("\"}"), "not UTF-8")
+        refusedBytes(bytes("{\"schema\":1,\"verbs\":[],\"x\":\"") + Data([0xED, 0xA0, 0x80]) + bytes("\"}"), "not UTF-8")
         XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: "bús"))),
             "valid UTF-8 loads")
     }
@@ -53,20 +53,20 @@ final class VerbSentencesRefusalTests: VerbSentencesReaderCase {
         for control in [0x09, 0x0A, 0x0D, 0x01, 0x1F] as [UInt8] {
             let sentence = bytes(#"{"slot":"habit","form":"take","en":"I take the b"#) + Data([control])
                 + bytes(#"us every day.","es":"x","senseIndex":0,"level":"A2","context":true}"#)
-            refused(bytes(#"{"schema":1,"verbs":[{"base":"take","sentences":["#) + sentence + bytes("]}]}"), "not strict JSON")
+            refusedBytes(bytes(#"{"schema":1,"verbs":[{"base":"take","sentences":["#) + sentence + bytes("]}]}"), "not strict JSON")
         }
         // The same characters as escapes are valid JSON; the text rule still refuses them in `en`.
-        refused(raw(sentence: sentenceJSON.replacingOccurrences(of: "I take", with: "I\\u0007take")), "text-en")
+        refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: "I take", with: "I\\u0007take")), "text-en")
         // Whitespace between tokens is not inside a string.
         XCTAssertNoThrow(try VerbSentences.load(bytes("{\n\t\"schema\": 1,\r\n \"verbs\": [ ]\n}\n")))
     }
 
     func testADuplicateKeyIsRefused() {
-        refused(bytes(#"{"schema":1,"schema":1,"verbs":[]}"#), "duplicate key")
-        refused(bytes(#"{"schema":1,"verbs":[],"verbs":[]}"#), "duplicate key")
+        refusedBytes(bytes(#"{"schema":1,"schema":1,"verbs":[]}"#), "duplicate key")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[],"verbs":[]}"#), "duplicate key")
         // Escapes are resolved: "schema" is "schema".
-        refused(bytes(#"{"schema":1,"schema":1,"verbs":[]}"#), "duplicate key")
-        refused(raw(sentence: String(sentenceJSON.dropLast()) + #","en":"I take the bus every day."}"#), "duplicate key")
+        refusedBytes(bytes(#"{"schema":1,"schema":1,"verbs":[]}"#), "duplicate key")
+        refusedBytes(raw(sentence: String(sentenceJSON.dropLast()) + #","en":"I take the bus every day."}"#), "duplicate key")
     }
 
     func testTheSameKeyInDifferentObjectsIsNotADuplicate() {
@@ -89,35 +89,35 @@ final class VerbSentencesRefusalTests: VerbSentencesReaderCase {
 
     func testSchemaAndSenseIndexAreIntegersOnlyAsIntegerLiterals() {
         for literal in ["1.0", "1e0", "1E0", "10e-1", "1.00"] {
-            refused(raw(schema: literal), "control character, a null or a number")
-            refused(raw(sentence: sentenceJSON.replacingOccurrences(of: #""senseIndex":0"#, with: #""senseIndex":\#(literal)"#)),
+            refusedBytes(raw(schema: literal), "control character, a null or a number")
+            refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: #""senseIndex":0"#, with: #""senseIndex":\#(literal)"#)),
                 "a number")
         }
-        refused(raw(schema: "\"1\""), "wrong shape")
-        refused(raw(schema: "true"), "wrong shape")
-        refused(raw(sentence: sentenceJSON.replacingOccurrences(of: #""senseIndex":0"#, with: #""senseIndex":"0""#)), "wrong shape")
+        refusedBytes(raw(schema: "\"1\""), "wrong shape")
+        refusedBytes(raw(schema: "true"), "wrong shape")
+        refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: #""senseIndex":0"#, with: #""senseIndex":"0""#)), "wrong shape")
         XCTAssertNoThrow(try VerbSentences.load(raw(schema: "1")))
     }
 
     func testANullAnywhereIsRefused() {
-        refused(bytes(#"{"schema":1,"verbs":null}"#), "null")
-        refused(raw(sentence: sentenceJSON.replacingOccurrences(of: #""context":true"#, with: #""context":null"#)), "null")
-        refused(raw(sentence: String(sentenceJSON.dropLast()) + #","spoken":null}"#), "null")
+        refusedBytes(bytes(#"{"schema":1,"verbs":null}"#), "null")
+        refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: #""context":true"#, with: #""context":null"#)), "null")
+        refusedBytes(raw(sentence: String(sentenceJSON.dropLast()) + #","spoken":null}"#), "null")
     }
 
     func testAFileThatIsNotAJSONObjectIsRefused() {
-        for text in ["[]", "1", "\"x\"", "null", " [{\"schema\":1,\"verbs\":[]}]"] { refused(bytes(text), "not a JSON object") }
+        for text in ["[]", "1", "\"x\"", "null", " [{\"schema\":1,\"verbs\":[]}]"] { refusedBytes(bytes(text), "not a JSON object") }
         for text in ["{\"schema\":1,\"verbs\":[]} x", "{\"schema\":1,\"verbs\":[],}", "", "{", "nul", "{\"schema\":1,\"verbs\":[]}{}"] {
-            refused(bytes(text), "not strict JSON")
+            refusedBytes(bytes(text), "not strict JSON")
         }
     }
 
     func testALoneSurrogateEscapeIsRefusedAndAPairLoads() {
         for escape in [#"\ud800"#, #"\udc00"#, #"\ud800x"#, #"\udbff\u0041"#, #"\ud800\ud800"#, #"\u00e9\udfff"#] {
-            refused(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: "b\(escape)s")), "lone surrogate")
+            refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: "b\(escape)s")), "lone surrogate")
         }
         // A valid pair passes the byte rule (no "lone surrogate"); its character (an emoji) is outside the text allowlist.
-        refused(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\ud83d\ude00s"#)), "text-en")
+        refusedBytes(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\ud83d\ude00s"#)), "text-en")
         XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\u00e9s"#))))
         XCTAssertNoThrow(try VerbSentences.load(raw(sentence: sentenceJSON.replacingOccurrences(of: "bus", with: #"b\\ud800s"#))),
             "an escaped backslash")
@@ -126,36 +126,36 @@ final class VerbSentencesRefusalTests: VerbSentencesReaderCase {
     // MARK: Schema, fields and keys
 
     func testASchemaOtherThanOneIsRefusedWhateverElseTheFileHolds() {
-        for schema in ["0", "2", "-1", "100"] { refused(raw(schema: schema), "schema \(schema)") }
+        for schema in ["0", "2", "-1", "100"] { refusedBytes(raw(schema: schema), "schema \(schema)") }
     }
 
     func testAMissingOrUnknownFieldAtAnyLevelIsRefused() {
-        refused(bytes(#"{"schema":1}"#), "missing key verbs")
-        refused(bytes(#"{"verbs":[]}"#), "missing key schema")
-        refused(bytes(#"{"schema":1,"verbs":[],"extra":1}"#), "unknown key extra")
-        refused(bytes(#"{"schema":1,"verbs":[{"sentences":[]}]}"#), "missing key base")
-        refused(bytes(#"{"schema":1,"verbs":[{"base":"take"}]}"#), "missing key sentences")
-        refused(bytes(#"{"schema":1,"verbs":[{"base":"take","sentences":[],"extra":[]}]}"#), "unknown key extra")
+        refusedBytes(bytes(#"{"schema":1}"#), "missing key verbs")
+        refusedBytes(bytes(#"{"verbs":[]}"#), "missing key schema")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[],"extra":1}"#), "unknown key extra")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[{"sentences":[]}]}"#), "missing key base")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[{"base":"take"}]}"#), "missing key sentences")
+        refusedBytes(bytes(#"{"schema":1,"verbs":[{"base":"take","sentences":[],"extra":[]}]}"#), "unknown key extra")
         for key in ["slot", "form", "en", "es", "senseIndex", "level"] {
             let without = sentenceJSON.replacingOccurrences(of: #""\#(key)":"#, with: #""x\#(key)":"#)
-            refused(raw(sentence: without), "unknown key x\(key)")
+            refusedBytes(raw(sentence: without), "unknown key x\(key)")
         }
         for key in ["slot", "form", "en", "es", "level"] {
             let regex = try? NSRegularExpression(pattern: #""\#(key)":"[^"]*","#)
             let ns = sentenceJSON as NSString
             let cut = regex.map { $0.stringByReplacingMatches(in: sentenceJSON, range: NSRange(location: 0, length: ns.length),
                 withTemplate: "") } ?? ""
-            refused(raw(sentence: cut), "missing key \(key)")
+            refusedBytes(raw(sentence: cut), "missing key \(key)")
         }
-        refused(raw(sentence: String(sentenceJSON.dropLast()) + #","extra":1}"#), "unknown key extra")
+        refusedBytes(raw(sentence: String(sentenceJSON.dropLast()) + #","extra":1}"#), "unknown key extra")
     }
 
     func testAnOmissionHasExactlySlotAndReason() {
         let entry = { (omission: String) in self.bytes(#"{"schema":1,"verbs":[{"base":"take","sentences":[],"omitted":[\#(omission)]}]}"#) }
         XCTAssertNoThrow(try VerbSentences.load(entry(#"{"slot":"advice","reason":"no natural sentence"}"#)))
-        refused(entry(#"{"slot":"advice"}"#), "missing key reason")
-        refused(entry(#"{"reason":"no natural sentence"}"#), "missing key slot")
-        refused(entry(#"{"slot":"advice","reason":"no natural sentence","x":1}"#), "unknown key x")
+        refusedBytes(entry(#"{"slot":"advice"}"#), "missing key reason")
+        refusedBytes(entry(#"{"reason":"no natural sentence"}"#), "missing key slot")
+        refusedBytes(entry(#"{"slot":"advice","reason":"no natural sentence","x":1}"#), "unknown key x")
     }
 
     // MARK: Closed lists
