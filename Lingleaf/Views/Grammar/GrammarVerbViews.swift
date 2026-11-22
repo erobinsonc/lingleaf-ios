@@ -59,7 +59,7 @@ struct IrregularVerbsView: View {
                         ForEach(section.verbs, id: \.base) { IrregularVerbRow(verb: $0) }
                     } header: {
                         // The group's title and its example are one heading.
-                        Text(verbatim: "\(section.group.title.text(for: model.chromeLanguage)) · \(section.group.example)")
+                        Text(verbatim: "\(groupTitle(section.group)) · \(section.group.example)")
                             .foregroundStyle(Brand.secondaryText)
                             .accessibilityElement(children: .combine)
                             .accessibilityAddTraits(.isHeader)
@@ -71,6 +71,11 @@ struct IrregularVerbsView: View {
         }
         .navigationTitle("Irregular verbs")
         .searchable(text: $query, prompt: Text("Search verbs"))
+    }
+
+    /// The group's title in the language of the interface.
+    private func groupTitle(_ group: VerbGroup) -> String {
+        model.chromeLanguage == "es" ? group.title.es : group.title.en
     }
 }
 
