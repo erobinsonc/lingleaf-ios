@@ -27,6 +27,10 @@ extension LingleafUITests {
             let pinned = app.otherElements["grammar-bottom-bar"]
             let pinnedBar = pinned.exists ? pinned.frame : .null
             let bars = tabBar.union(pinnedBar)
+            // What the bar itself holds (its button, the limit text) is still checked; anything else in its frame is
+            // content scrolled under it.
+            let pinnedOwn = Set(pinned.exists ? pinned.descendants(matching: .any).allElementsBoundByIndex.map(\.label) : [])
+                .subtracting([""])
             let before = issues.count
             // A row half under the glass tab bar is measured against the bar's blur too, but
             // XCTest can't always resolve its elements, and then the exemption below can't
@@ -45,7 +49,7 @@ extension LingleafUITests {
                         // the bar's blur; scrolled into view they read normally. The tab
                         // bar's own buttons are not exempt: their contrast is still checked.
                         if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(bars),
-                           !Self.isTabBarButton(flagged, in: tabBar), !pinnedBar.contains(flagged.frame) { return true }
+                           !Self.isTabBarButton(flagged, in: tabBar), !pinnedOwn.contains(flagged.label) { return true }
                         // The search field is UIKit's own (from `.searchable`); its clipping
                         // at large text sizes is iOS's to handle, not something the app can change.
                         if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
