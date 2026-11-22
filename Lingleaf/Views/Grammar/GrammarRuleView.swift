@@ -68,6 +68,8 @@ struct GrammarRuleView: View {
         }
         .pickerStyle(.segmented)
         .controlSize(.large)
+        // The control's own name for a screen reader (the label of a segmented picker is not drawn).
+        .accessibilityLabel(Text("Rule language"))
     }
 
     private func header(_ language: GrammarLanguage) -> some View {
@@ -167,8 +169,14 @@ struct GrammarRuleView: View {
 
     /// "Try it" until the learner has been past the first item, then "Practice"; at 6 items answered today the
     /// button gives way to the limit text and "See other rules" (neutral: no nudge, no streak).
-    @ViewBuilder
     private var bottomBar: some View {
+        bottomBarContent
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("grammar-bottom-bar")
+    }
+
+    @ViewBuilder
+    private var bottomBarContent: some View {
         let size = GrammarPractice.roundSize(answeredToday: answeredToday)
         if size == 0 {
             VStack(spacing: 10) {

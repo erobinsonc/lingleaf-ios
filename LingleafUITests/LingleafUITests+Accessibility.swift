@@ -22,12 +22,17 @@ extension LingleafUITests {
             }
             // The reader hides the tab bar; then nothing can sit under it.
             let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
+            // The Grammar rule page pins its button to the bottom edge: content scrolls under that bar as under the
+            // tab bar, and is measured against its blur too. Its own controls are still checked.
+            let pinned = app.otherElements["grammar-bottom-bar"]
+            let pinnedBar = pinned.exists ? pinned.frame : .null
+            let bars = tabBar.union(pinnedBar)
             let before = issues.count
             // A row half under the glass tab bar is measured against the bar's blur too, but
             // XCTest can't always resolve its elements, and then the exemption below can't
             // see where they are. Such unresolved contrast findings are accepted only up to the
             // number of elements under the bar right now; any more still fail, with a screenshot.
-            let underBar = Self.elementsUnder(tabBar, in: app)
+            let underBar = Self.elementsUnder(bars, in: app)
             var unresolved: [String] = []
             // The audit itself can time out (the first one after a cold simulator boot): that is
             // no result, so it runs again; the findings of an audit that completes always count.
@@ -39,8 +44,8 @@ extension LingleafUITests {
                         // Rows scrolled under the translucent tab bar are measured against
                         // the bar's blur; scrolled into view they read normally. The tab
                         // bar's own buttons are not exempt: their contrast is still checked.
-                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
-                           !Self.isTabBarButton(flagged, in: tabBar) { return true }
+                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(bars),
+                           !Self.isTabBarButton(flagged, in: tabBar), !pinnedBar.contains(flagged.frame) { return true }
                         // The search field is UIKit's own (from `.searchable`); its clipping
                         // at large text sizes is iOS's to handle, not something the app can change.
                         if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }

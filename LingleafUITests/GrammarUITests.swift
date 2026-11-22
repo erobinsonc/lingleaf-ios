@@ -21,8 +21,16 @@ final class GrammarUITests: XCTestCase {
     /// A row of the list: its label is "<title>, <level>", its value the state.
     func row(_ title: String) -> XCUIElement {
         let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", title)).firstMatch
-        _ = row.waitForExistence(timeout: 10)
+        _ = reveal(row)
         return row
+    }
+
+    /// A list builds its rows as they scroll into view, so a row further down is not there until the list is scrolled.
+    @discardableResult
+    func reveal(_ element: XCUIElement) -> Bool {
+        _ = element.waitForExistence(timeout: 3)
+        for _ in 0..<8 where !element.exists || !element.isHittable { app.swipeUp() }
+        return element.exists
     }
 
     func header(_ text: String) -> XCUIElement {
@@ -36,13 +44,13 @@ final class GrammarUITests: XCTestCase {
     func testTheListShowsTheCategoriesWithTheirRulesLevelsAndStates() {
         launch("-ui-testing-grammar-states")
         XCTAssertTrue(header("Sentence building").exists)
-        XCTAssertTrue(header("Verbs and tenses").exists)
         let new = row("His, her, its")
         XCTAssertEqual(new.label, "His, her, its, A1, Beginner", "commas, no dot, in what a screen reader says")
         XCTAssertEqual(new.value as? String, "New", "a New rule draws no state, VoiceOver says New")
         XCTAssertEqual(row("Irregular past").value as? String, "Practiced")
         XCTAssertEqual(row("Irregular past").label, "Irregular past, A2, Elementary")
         XCTAssertEqual(row("The -s in the present").value as? String, "In Review")
+        XCTAssertTrue(reveal(header("Verbs and tenses")), "the second category has its header")
         let shot = XCTAttachment(screenshot: app.screenshot())
         shot.name = "en-light-grammar-list"
         shot.lifetime = .keepAlways
@@ -173,9 +181,9 @@ final class GrammarUITests: XCTestCase {
         launch("-ui-testing-grammar-states", "-ui-testing-grammar-recent", language: "es")
         XCTAssertTrue(header("Recientes").exists)
         let practiced = app.buttons.matching(NSPredicate(format: "value == %@", "Practicada")).firstMatch
-        XCTAssertTrue(practiced.exists, "the state word in Spanish")
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "value == %@", "Nueva")).firstMatch.exists)
-        XCTAssertTrue(app.buttons.matching(NSPredicate(format: "value == %@", "En el Repaso")).firstMatch.exists)
+        XCTAssertTrue(reveal(practiced), "the state word in Spanish")
+        XCTAssertTrue(reveal(app.buttons.matching(NSPredicate(format: "value == %@", "Nueva")).firstMatch))
+        XCTAssertTrue(reveal(app.buttons.matching(NSPredicate(format: "value == %@", "En el Repaso")).firstMatch))
         practiced.tap()
         XCTAssertTrue(app.buttons["Pruébalo"].waitForExistence(timeout: 5) || app.buttons["Practicar"].exists)
         XCTAssertEqual(app.segmentedControls.firstMatch.label, "Idioma de la regla")
