@@ -9,74 +9,7 @@ extension LingleafUITests {
     /// meaning). Collects every issue before failing, so one CI run shows the whole list.
     func testAccessibilityAudit() throws {
         var issues: [String] = []
-        func audit(_ screen: String) throws {
-            // The audit measures the pixels of one screenshot against the accessibility tree. A tab
-            // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
-            // than any fixed wait: audited mid-transition, black text on white failed contrast and
-            // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
-            // tree). So wait until the screen itself has stopped changing, not for a fixed time.
-            if !waitUntilSettled() {
-                attachEvidence("audit-\(screen)-never-settled")
-                // Auditing a screen that is still changing proves nothing: say so instead of going on.
-                XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
-            }
-            // The reader hides the tab bar; then nothing can sit under it.
-            let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
-            let before = issues.count
-            // A row half under the glass tab bar is measured against the bar's blur too, but
-            // XCTest can't always resolve its elements, and then the exemption below can't
-            // see where they are. Such unresolved contrast findings are accepted only up to the
-            // number of elements under the bar right now; any more still fail, with a screenshot.
-            let underBar = Self.elementsUnder(tabBar, in: app)
-            var unresolved: [String] = []
-            // The audit itself can time out (the first one after a cold simulator boot): that is
-            // no result, so it runs again; the findings of an audit that completes always count.
-            for attempt in 1...3 {
-                issues.removeSubrange(before...)
-                unresolved = []
-                do {
-                    try app.performAccessibilityAudit { issue in
-                        // Rows scrolled under the translucent tab bar are measured against
-                        // the bar's blur; scrolled into view they read normally. The tab
-                        // bar's own buttons are not exempt: their contrast is still checked.
-                        if issue.auditType == .contrast, let flagged = issue.element, flagged.frame.intersects(tabBar),
-                           !Self.isTabBarButton(flagged, in: tabBar) { return true }
-                        // The search field is UIKit's own (from `.searchable`); its clipping
-                        // at large text sizes is iOS's to handle, not something the app can change.
-                        if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                        if Self.knownFalsePositive(issue, on: screen) { return true }
-                        if issue.auditType == .contrast, issue.element == nil {
-                            unresolved.append(
-                                "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
-                            return true
-                        }
-                        let element = issue.element.map {
-                            "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
-                        } ?? "screen"
-                        issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
-                        return true
-                    }
-                    break
-                } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
-                    && error.code == -56 && attempt < 3 {
-                    RunLoop.current.run(until: Date().addingTimeInterval(2))
-                }
-            }
-            if unresolved.count > underBar {
-                issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, \(underBar) elements under the tab bar")
-                issues += unresolved
-            }
-            // Evidence for any finding: the screen as audited, kept with the test results, so a
-            // finding without a resolvable element (a view that changed mid-audit) can be traced.
-            if issues.count > before {
-                let shot = XCTAttachment(screenshot: app.screenshot())
-                // Named like the tour's shots, so CI exports and publishes it with them.
-                let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
-                shot.name = "en-light-99-audit-\(slug)"
-                shot.lifetime = .keepAlways
-                add(shot)
-            }
-        }
+        func audit(_ screen: String) throws { issues += try auditScreen(screen) }
         for tab in ["Library", "Discover", "Words", "Settings"] {
             app.tabBars.buttons[tab].tap()
             // The tab's own screen is there (its title), then still.
@@ -124,6 +57,100 @@ extension LingleafUITests {
         XCTAssertTrue(app.staticTexts["ES: sea"].waitForExistence(timeout: 5))
         try audit("Review with the meaning")
         XCTAssertTrue(issues.isEmpty, "Accessibility issues:\n" + issues.joined(separator: "\n"))
+    }
+
+    /// Audits the screen now showing and returns every finding (empty when it is clean).
+    func auditScreen(_ screen: String) throws -> [String] {
+        var issues: [String] = []
+        // The audit measures the pixels of one screenshot against the accessibility tree. A tab
+        // switch cross-fades and a sheet slides, and on a loaded CI runner that takes much longer
+        // than any fixed wait: audited mid-transition, black text on white failed contrast and
+        // "inaccessible text" was found, run 41573071692 (it passed on the re-run of the same
+        // tree). So wait until the screen itself has stopped changing, not for a fixed time.
+        if !waitUntilSettled() {
+            attachEvidence("audit-\(screen)-never-settled")
+            // Auditing a screen that is still changing proves nothing: say so instead of going on.
+            XCTFail("\(screen) never stopped changing within 30 s, so it was not audited")
+        }
+        // The reader hides the tab bar; then nothing can sit under it.
+        let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
+        let before = issues.count
+        // A row half under the glass tab bar is measured against the bar's blur too, but
+        // XCTest can't always resolve the element of a finding (in the same unchanged state it
+        // does on some audits and not on others), and then the exemption below can't see where
+        // it is. Such unresolved contrast findings are accepted only up to the number of elements
+        // under the bar right now; any more still fail, with a screenshot. That allowance is not
+        // raised by anything in the blur strip: resolved findings there are judged by the pixel rule.
+        let underBar = Self.elementsUnder(tabBar, in: app)
+        let strip = Glass.zone(above: tabBar)
+        var unresolved: [String] = []
+        var lastPixels: Pixels?
+        // The audit itself can time out (the first one after a cold simulator boot): that is
+        // no result, so it runs again; the findings of an audit that completes always count.
+        for attempt in 1...3 {
+            issues.removeSubrange(before...)
+            unresolved = []
+            // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
+            let pixels = tabBar.isNull ? nil : Pixels(app: app)
+            lastPixels = pixels
+            do {
+                try app.performAccessibilityAudit { issue in
+                    // Rows scrolled under the translucent tab bar are measured against
+                    // the bar's blur; scrolled into view they read normally. The tab
+                    // bar's own buttons are not exempt: their contrast is still checked.
+                    if issue.auditType == .contrast, let flagged = issue.element, !Self.isTabBarButton(flagged, in: tabBar) {
+                        // Under the bar only what the blur covers is exempt; the part of the element above the
+                        // strip is measured like any text (a grey line there is reported, wherever the row ends).
+                        if flagged.frame.intersects(tabBar) {
+                            if Glass.isExemptUnderBar(flagged.frame, strip: strip, pixels: pixels) { return true }
+                        } else if Glass.isLegible(flagged.elementType, flagged.frame, strip: strip, pixels: pixels) {
+                            // The blur above the bar: accepted only for a label whose own pixels measure at WCAG AA
+                            // against its local background (a Library row measures 19:1).
+                            return true
+                        }
+                    }
+                    // The search field is UIKit's own (from `.searchable`); its clipping
+                    // at large text sizes is iOS's to handle, not something the app can change.
+                    if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
+                    if Self.knownFalsePositive(issue, on: screen) { return true }
+                    if issue.auditType == .contrast, issue.element == nil {
+                        unresolved.append(
+                            "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
+                        return true
+                    }
+                    let element = issue.element.map {
+                        "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
+                    } ?? "screen"
+                    issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
+                    return true
+                }
+                break
+            } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
+                && error.code == -56 && attempt < 3 {
+                RunLoop.current.run(until: Date().addingTimeInterval(2))
+            }
+        }
+        // An unresolved finding cannot be tied to an element, so a row under the bar must not absorb it for
+        // free: while one is open, every label clear of the bar and the strip is measured too (at its strongest
+        // column, the most generous reading, so only text that is weak even then is reported) and any below 4.5.
+        if !unresolved.isEmpty {
+            issues += Self.weakLabels(above: strip, pixels: lastPixels, in: app, screen: screen)
+        }
+        if unresolved.count > underBar {
+            issues.append("[\(screen)] \(unresolved.count) unresolved contrast findings, allowance \(underBar) (elements under the tab bar)")
+            issues += unresolved
+        }
+        // Evidence for any finding: the screen as audited, kept with the test results, so a
+        // finding without a resolvable element (a view that changed mid-audit) can be traced.
+        if issues.count > before {
+            let shot = XCTAttachment(screenshot: app.screenshot())
+            // Named like the tour's shots, so CI exports and publishes it with them.
+            let slug = screen.lowercased().split { !$0.isLetter }.joined(separator: "-")
+            shot.name = "en-light-99-audit-\(slug)"
+            shot.lifetime = .keepAlways
+            add(shot)
+        }
+        return issues
     }
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
@@ -203,6 +230,24 @@ extension LingleafUITests {
             return node.children.reduce(0) { $0 + count($1) }
         }
         return count(root)
+    }
+
+    /// The labels fully above `strip` (and on screen) whose text measures below 4.5:1, as issue lines.
+    private static func weakLabels(above strip: CGRect, pixels: Pixels?, in app: XCUIApplication, screen: String) -> [String] {
+        guard !strip.isNull, let pixels, let root = try? app.snapshot() else { return [] }
+        let window = app.windows.firstMatch.frame
+        var weak: [String] = []
+        func visit(_ node: XCUIElementSnapshot) {
+            guard node.children.isEmpty else { return node.children.forEach(visit) }
+            let frame = node.frame
+            guard !node.label.isEmpty, Glass.isTextLeaf(node.elementType, frame), frame.maxY <= strip.minY,
+                  window.contains(frame),
+                  let ratio = pixels.textContrast(in: frame, percentile: 1), ratio < Glass.minimumContrast else { return }
+            let measured = String(format: "%.2f", ratio)
+            weak.append("[\(screen)] label '\(node.label.prefix(40))' measures \(measured):1 while a finding is unresolved")
+        }
+        visit(root)
+        return weak
     }
 
     private static func isTabBarButton(_ element: XCUIElement, in tabBar: CGRect) -> Bool {
