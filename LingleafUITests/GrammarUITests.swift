@@ -39,6 +39,11 @@ final class GrammarUITests: XCTestCase {
 
     func back() { app.navigationBars.buttons.element(boundBy: 0).tap() }
 
+    /// The list keeps its scroll position when a page is closed: "Recent" is at the top.
+    func scrollToTop() {
+        for _ in 0..<8 { app.swipeDown() }
+    }
+
     // MARK: The list
 
     func testTheListShowsTheCategoriesWithTheirRulesLevelsAndStates() {
@@ -65,6 +70,7 @@ final class GrammarUITests: XCTestCase {
             XCTAssertTrue(app.buttons["Try it"].waitForExistence(timeout: 5), "\(title) opened")
             back()
             XCTAssertTrue(row(title).waitForExistence(timeout: 5))
+            scrollToTop()
             if title != "Questions and negatives" { XCTAssertFalse(header("Recent").exists, "after fewer than 3 openings") }
         }
         XCTAssertTrue(header("Recent").waitForExistence(timeout: 5), "3 rules opened")
