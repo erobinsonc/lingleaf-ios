@@ -84,12 +84,14 @@ extension LingleafUITests {
         let underBar = Self.elementsUnder(tabBar, in: app)
         let strip = Glass.zone(above: tabBar)
         var unresolved: [String] = []
+        var sizeDependent: [String] = []
         var lastPixels: Pixels?
         // The audit itself can time out (the first one after a cold simulator boot): that is
         // no result, so it runs again; the findings of an audit that completes always count.
         for attempt in 1...3 {
             issues.removeSubrange(before...)
             unresolved = []
+            sizeDependent = []
             // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
             let pixels = tabBar.isNull ? nil : Pixels(app: app)
             lastPixels = pixels
@@ -118,10 +120,8 @@ extension LingleafUITests {
                             "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
                         return true
                     }
-                    let element = issue.element.map {
-                        "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
-                    } ?? "screen"
-                    issues.append("[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)")
+                    let line = Self.describe(issue, on: screen)
+                    if Self.isSizeDependent(issue) { sizeDependent.append(line) } else { issues.append(line) }
                     return true
                 }
                 break
@@ -130,6 +130,7 @@ extension LingleafUITests {
                 RunLoop.current.run(until: Date().addingTimeInterval(2))
             }
         }
+        if !sizeDependent.isEmpty { issues += try confirmedSizeFindings(sizeDependent, on: screen) }
         // An unresolved finding cannot be tied to an element, so a row under the bar must not absorb it for
         // free: while one is open, every label clear of the bar and the strip is measured too (at its strongest
         // column, the most generous reading, so only text that is weak even then is reported) and any below 4.5.
@@ -151,6 +152,62 @@ extension LingleafUITests {
             add(shot)
         }
         return issues
+    }
+
+    /// One line per finding, the same in every audit of the same unchanged screen.
+    private static func describe(_ issue: XCUIAccessibilityAuditIssue, on screen: String) -> String {
+        let element = issue.element.map {
+            "type \($0.elementType.rawValue) '\($0.label)' id '\($0.identifier)' frame \($0.frame)"
+        } ?? "screen"
+        return "[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)"
+    }
+
+    /// Dynamic Type and clipping findings come from the audit changing the text size and comparing the screen with
+    /// itself. When the screen is slow to follow (a loaded runner) they are reported for many labels at once and are
+    /// gone in the next audit: "Words with a word" flagged every label on run 45055153258, 'Español' in Settings on
+    /// another, both absent when audited again. A defect in the app is reported by every audit, so a finding counts
+    /// only if the next two audits of the same screen report it too. (An audit that fails to run keeps the finding.)
+    private static func isSizeDependent(_ issue: XCUIAccessibilityAuditIssue) -> Bool {
+        issue.auditType == .dynamicType || issue.auditType == .textClipped
+    }
+
+    private func confirmedSizeFindings(_ first: [String], on screen: String) throws -> [String] {
+        var stable = Set(first)
+        for _ in 1...2 where !stable.isEmpty {
+            waitUntilSettled()
+            var again = Set<String>()
+            do {
+                try app.performAccessibilityAudit(for: [.dynamicType, .textClipped]) { issue in
+                    if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
+                    if Self.knownFalsePositive(issue, on: screen) { return true }
+                    again.insert(Self.describe(issue, on: screen))
+                    return true
+                }
+            } catch {
+                again = stable
+            }
+            stable.formIntersection(again)
+        }
+        return first.filter { stable.contains($0) }
+    }
+
+    /// The language row of Settings follows Dynamic Type: its label and its value ('Español') grow at the largest
+    /// size. A measurement, so a row that stopped scaling fails here every time, not on some audits.
+    func testSettingsLanguageRowScalesWithDynamicType() throws {
+        func heights() throws -> (label: CGFloat, value: CGFloat) {
+            app.tabBars.buttons["Settings"].tap()
+            _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
+            let label = app.staticTexts["Translate into"].firstMatch
+            let value = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Español")).firstMatch
+            XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label")
+            XCTAssertTrue(value.waitForExistence(timeout: 10), "the language row's value")
+            return (label.frame.height, value.frame.height)
+        }
+        let normal = try heights()
+        relaunch("-ui-testing", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL")
+        let large = try heights()
+        XCTAssertGreaterThanOrEqual(large.label, normal.label * 2, "the row's label scales with Dynamic Type")
+        XCTAssertGreaterThanOrEqual(large.value, normal.value * 2, "the row's value ('Español') scales with Dynamic Type")
     }
 
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status

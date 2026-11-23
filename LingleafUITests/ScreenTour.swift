@@ -81,7 +81,7 @@ final class ScreenTour: XCTestCase {
         // The word saved unsure as Words lists it: both readings in its row.
         snap("40-words-unsure-row")
         startReview(labels)
-        if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { app.buttons[labels.showMeaning].tap() }
+        if app.buttons[labels.showMeaning].waitForExistence(timeout: 5) { tapWhenHittable(app.buttons[labels.showMeaning]) }
         snap("22-review-unsure-meaning")
     }
 
@@ -102,15 +102,15 @@ final class ScreenTour: XCTestCase {
         _ = book.waitForExistence(timeout: 10)
         snap("01-library")
 
-        book.tap()
+        tapWhenHittable(book)
         let word = app.links["beach"].firstMatch
         _ = word.waitForExistence(timeout: 10)
         snap("02-reader")
 
-        word.tap()
+        tapWhenHittable(word)
         _ = app.buttons[labels.saveWord].waitForExistence(timeout: 10)
         snap("03-word-card")
-        app.buttons[labels.saveWord].tap()
+        tapWhenHittable(app.buttons[labels.saveWord])
         // The reader confirms the save with an Undo message for a few seconds.
         let undo = app.buttons[labels.undo]
         if undo.waitForExistence(timeout: 5) {
@@ -119,19 +119,19 @@ final class ScreenTour: XCTestCase {
         }
         _ = word.waitForExistence(timeout: 5)
         snap("05-reader-with-marked-word")
-        app.navigationBars.buttons.element(boundBy: 0).tap()
+        goBack()
 
         tab(2)
         snap("06-words")
         let review = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.reviewNow)).firstMatch
         if review.waitForExistence(timeout: 5) {
-            review.tap()
+            tapWhenHittable(review)
             snap("07-review")
-            app.buttons[labels.showMeaning].tap()
+            tapWhenHittable(app.buttons[labels.showMeaning])
             snap("08-review-meaning")
-            app.buttons[labels.remembered].tap()
+            tapWhenHittable(app.buttons[labels.remembered])
             snap("09-review-done")
-            app.navigationBars.buttons.element(boundBy: 0).tap()
+            goBack()
         }
 
         tab(1)
@@ -140,17 +140,17 @@ final class ScreenTour: XCTestCase {
         // A downloaded book: Get turns into the Read pill (the fake catalog answers at once).
         let get = app.buttons["\(labels.get) Little Wizard Stories of Oz"]
         if get.waitForExistence(timeout: 5) {
-            get.tap()
+            tapWhenHittable(get)
             _ = app.buttons["\(labels.read) Little Wizard Stories of Oz"].waitForExistence(timeout: 10)
             snap("10b-discover-downloaded-book")
         }
-        app.buttons["level-filter-A2"].tap()
+        tapWhenHittable(app.buttons["level-filter-A2"])
         snap("11-discover-level-filter")
-        app.buttons["level-filter-all"].tap()
+        tapWhenHittable(app.buttons["level-filter-all"])
         // A search (the fake catalog answers any query): results end with the public-domain notice.
         let search = app.searchFields.firstMatch
         if search.waitForExistence(timeout: 5) {
-            search.tap()
+            tapWhenHittable(search)
             search.typeText("oz\n")
             _ = app.staticTexts["The Marvelous Land of Oz"].waitForExistence(timeout: 10)
             snap("11b-discover-search-results")
@@ -200,10 +200,10 @@ final class ScreenTour: XCTestCase {
     private func openStory(_ labels: Labels, level: String, title: String) {
         tab(1)
         let chip = app.buttons["level-filter-\(level)"]
-        if chip.waitForExistence(timeout: 10) { chip.tap() }
+        if chip.waitForExistence(timeout: 10) { tapWhenHittable(chip) }
         snap("25-discover-original-stories-\(level)")
         let read = app.buttons["\(labels.read) \(title)"]
-        if read.waitForExistence(timeout: 5) { read.tap() }
+        if read.waitForExistence(timeout: 5) { tapWhenHittable(read) }
     }
 
     /// Screens the main tour doesn't reach: Words with nothing saved, Discover offline and with a
@@ -220,7 +220,7 @@ final class ScreenTour: XCTestCase {
         tab(1)
         let unavailable = app.buttons["\(labels.get) The Marvelous Land of Oz"]
         if unavailable.waitForExistence(timeout: 10) {
-            unavailable.tap()
+            tapWhenHittable(unavailable)
             RunLoop.current.run(until: Date().addingTimeInterval(2))
             snap("43-discover-download-failed")
         }
@@ -231,7 +231,7 @@ final class ScreenTour: XCTestCase {
         launch(labels, ["-ui-testing"])
         let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "A Day at the Market")).firstMatch
         if book.waitForExistence(timeout: 10) {
-            book.tap()
+            tapWhenHittable(book)
             // Scroll only once the text is up and the saved position restored (the reader restores it
             // 0.5 s after it appears): a swipe during the restore fought the reader's own scroll on CI
             // (run 42519053992: the app never went idle and the next tap timed out for minutes).
@@ -239,10 +239,10 @@ final class ScreenTour: XCTestCase {
             RunLoop.current.run(until: Date().addingTimeInterval(2))
             app.swipeUp()
             RunLoop.current.run(until: Date().addingTimeInterval(1))
-            app.navigationBars.buttons.element(boundBy: 0).tap()
+            goBack()
             snap("45-library-resume-row")
             if book.waitForExistence(timeout: 10) {
-                book.tap()
+                tapWhenHittable(book)
                 RunLoop.current.run(until: Date().addingTimeInterval(1.5))
                 snap("46-reader-resumed")
             }
@@ -257,7 +257,7 @@ final class ScreenTour: XCTestCase {
         let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
         for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
         guard privacy.exists else { return }
-        privacy.tap()
+        tapWhenHittable(privacy)
         // The page comes from the network: give it a moment, and keep whatever it shows.
         RunLoop.current.run(until: Date().addingTimeInterval(6))
         snap("47-privacy-policy-page")
@@ -272,18 +272,18 @@ final class ScreenTour: XCTestCase {
         snap("14-word-card-unsure")
         if unsureChosen {
             let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "the left")).firstMatch
-            if row.waitForExistence(timeout: 5) { row.tap() }
+            if row.waitForExistence(timeout: 5) { tapWhenHittable(row) }
             _ = app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Definition of left")).firstMatch
                 .waitForExistence(timeout: 10)
             snap("15-word-card-unsure-chosen")
         }
-        if app.buttons[labels.saveWord].exists { app.buttons[labels.saveWord].tap() }
+        if app.buttons[labels.saveWord].waitForExistence(timeout: 5) { tapWhenHittable(app.buttons[labels.saveWord]) }
         if expression {
             tapWord("bound", labels)
             snap("17-word-card-expression")
-            if app.buttons[labels.saveWord].exists { app.buttons[labels.saveWord].tap() }
+            if app.buttons[labels.saveWord].waitForExistence(timeout: 5) { tapWhenHittable(app.buttons[labels.saveWord]) }
         }
-        app.navigationBars.buttons.element(boundBy: 0).tap()
+        goBack()
         tab(2)
         if expression { snap("18-words-senses") }
         startReview(labels)
@@ -298,26 +298,26 @@ final class ScreenTour: XCTestCase {
         _ = cardUndo.waitForExistence(timeout: 10)
         snap(count == 1 ? "19-words-corrections" : "19-words-corrections-\(count)")
         if undo, cardUndo.exists {
-            cardUndo.tap()
+            tapWhenHittable(cardUndo)
             snap("20-words-corrections-undone")
         }
     }
 
     private func openTestStory() {
         let story = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Test Story")).firstMatch
-        if story.waitForExistence(timeout: 10) { story.tap() }
+        if story.waitForExistence(timeout: 10) { tapWhenHittable(story) }
     }
 
     /// Taps `word` in the reader and waits for its card.
     private func tapWord(_ word: String, _ labels: Labels) {
         let link = app.links[word].firstMatch
-        if link.waitForExistence(timeout: 10) { link.tap() }
+        if link.waitForExistence(timeout: 10) { tapWhenHittable(link, onFirstLineIfNeeded: true) }
         _ = app.buttons[labels.listen].firstMatch.waitForExistence(timeout: 10)
     }
 
     private func startReview(_ labels: Labels) {
         let review = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.reviewNow)).firstMatch
-        if review.waitForExistence(timeout: 10) { review.tap() }
+        if review.waitForExistence(timeout: 10) { tapWhenHittable(review) }
         _ = app.buttons[labels.showMeaning].waitForExistence(timeout: 5)
     }
 
@@ -328,14 +328,14 @@ final class ScreenTour: XCTestCase {
         tab(0)
         let book = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "The Red Boat")).firstMatch
         guard book.waitForExistence(timeout: 10) else { return }
-        book.tap()
+        tapWhenHittable(book)
         for (word, name) in [("sand", "03b-word-card-long-definition"), ("waves", "03c-word-card-shortened-definition")] {
             let link = app.links[word].firstMatch
             guard link.waitForExistence(timeout: 10) else { continue }
-            link.tap()
+            tapWhenHittable(link)
             _ = app.buttons[labels.knowIt].waitForExistence(timeout: 10)
             snap(name)
-            app.buttons[labels.knowIt].tap()
+            tapWhenHittable(app.buttons[labels.knowIt])
             _ = app.buttons[labels.knowIt].waitForNonExistence(timeout: 10)
         }
     }
@@ -345,6 +345,10 @@ final class ScreenTour: XCTestCase {
     private func tab(_ index: Int) {
         let bar = app.tabBars.firstMatch
         if !bar.waitForExistence(timeout: 10) {
+            // The back tap did not land (the reader was still closing, or the tap hit mid-animation): the
+            // action is repeated once, not the test. Evidence is kept either way.
+            let back = app.navigationBars.buttons.element(boundBy: 0)
+            if back.exists, back.isHittable { back.tap() }
             let shot = XCTAttachment(screenshot: app.screenshot())
             shot.name = "evidence-no-tab-bar"
             shot.lifetime = .keepAlways
@@ -353,8 +357,38 @@ final class ScreenTour: XCTestCase {
             tree.name = "evidence-no-tab-bar-hierarchy"
             tree.lifetime = .keepAlways
             add(tree)
+            _ = bar.waitForExistence(timeout: 10)
         }
-        bar.buttons.element(boundBy: index).tap()
+        tapWhenHittable(bar.buttons.element(boundBy: index))
+    }
+
+    /// Existing is not tappable: a sheet is still sliding in, the tab bar is still sliding back, a button is
+    /// under a translucent layer. Waits (up to `timeout`) until the element can be hit, then taps. If it is still
+    /// not hittable (off screen in a list: XCTest scrolls to it itself; a long word wrapped over lines at the largest
+    /// text size: tapped on its first line), the tap is left to XCTest, which fails with its own message when it
+    /// cannot. An element that does not exist fails here, named. Nothing is skipped.
+    private func tapWhenHittable(_ element: XCUIElement, timeout: TimeInterval = 6, onFirstLineIfNeeded: Bool = false) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while Date() < deadline {
+            if element.exists, element.isHittable {
+                element.tap()
+                return
+            }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.25))
+        }
+        guard element.exists else {
+            XCTFail("\(element) does not exist, so it cannot be tapped")
+            return
+        }
+        if onFirstLineIfNeeded {
+            element.coordinate(withNormalizedOffset: CGVector(dx: 0.15, dy: 0.15)).tap()
+        } else {
+            element.tap()
+        }
+    }
+
+    private func goBack() {
+        tapWhenHittable(app.navigationBars.buttons.element(boundBy: 0))
     }
 
     private func snap(_ name: String) {
