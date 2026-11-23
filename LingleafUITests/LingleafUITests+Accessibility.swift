@@ -199,6 +199,8 @@ extension LingleafUITests {
             _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
             let label = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Translate into")).firstMatch
             let value = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Español")).firstMatch
+            // Settings is three screens long and its rows are created as they scroll in.
+            for _ in 0..<8 where !(label.exists && label.isHittable) { app.swipeUp() }
             XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label; on screen: "
                 + app.descendants(matching: .any).allElementsBoundByIndex.map { "\($0.elementType.rawValue):\($0.label)" }
                     .filter { !$0.hasSuffix(":") }.prefix(80).joined(separator: " | "))
