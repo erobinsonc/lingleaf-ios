@@ -197,7 +197,7 @@ extension LingleafUITests {
         func heights() throws -> (label: CGFloat, value: CGFloat) {
             app.tabBars.buttons["Settings"].tap()
             _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
-            let label = app.staticTexts["Translate into"].firstMatch
+            let label = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Translate into")).firstMatch
             let value = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Español")).firstMatch
             XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label")
             XCTAssertTrue(value.waitForExistence(timeout: 10), "the language row's value")
