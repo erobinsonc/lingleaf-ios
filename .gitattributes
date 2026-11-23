@@ -1,2 +1,6 @@
 # JSON is shared byte for byte with lingleaf-android: no line-ending conversion, so a file hash never changes.
 *.json -text
+
+# The verb sentences are hashed (SHA-256 in SPEC.md) and kept byte for byte, final newline included: named on
+# its own so the rule survives a change of the pattern above.
+LingleafCore/Sources/LingleafCore/Resources/irregular-verb-sentences.json -text
