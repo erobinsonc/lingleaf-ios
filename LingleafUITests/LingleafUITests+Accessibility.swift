@@ -199,7 +199,9 @@ extension LingleafUITests {
             _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
             let label = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Translate into")).firstMatch
             let value = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Español")).firstMatch
-            XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label")
+            XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label; on screen: "
+                + app.descendants(matching: .any).allElementsBoundByIndex.prefix(60).map { "\($0.elementType.rawValue):\($0.label)" }
+                    .filter { !$0.hasSuffix(":") }.joined(separator: " | "))
             XCTAssertTrue(value.waitForExistence(timeout: 10), "the language row's value")
             return (label.frame.height, value.frame.height)
         }
