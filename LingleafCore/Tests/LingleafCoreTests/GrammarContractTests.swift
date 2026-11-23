@@ -113,6 +113,14 @@ final class GrammarContractTests: XCTestCase {
         XCTAssertEqual(decode(#"{"schema": 2.0, "rules": {"a": {"attempts": 1}}}"#), GrammarProgress())
         XCTAssertEqual(decode(#"{"schema": 2e0, "rules": {"a": {"attempts": 1}}}"#), GrammarProgress())
         XCTAssertEqual(decode(#"{"schema": 2, "rules": {"a": {"attempts": 1}}}"#)["a"].attempts, 1)
+        // "-0" is no integer literal either (SPEC.md: `0|-?[1-9][0-9]*`), field by field; "0" still is one.
+        XCTAssertNil(item(#""due": -0"#)?.due)
+        XCTAssertEqual(item(#""due": 0"#)?.due, 0)
+        XCTAssertNil(item(#""tryMiss": -0"#)?.tryMiss)
+        XCTAssertNil(rule(#""opened": -0"#).opened)
+        let days = #""rightDays": [{"day": -0, "item": "a-1"}, {"day": 0, "item": "a-2"}]"#
+        XCTAssertEqual(rule(days).rightDays, [RightDay(day: 0, item: "a-2")])
+        XCTAssertEqual(decode(#"{"schema": -0, "rules": {"a": {"attempts": 1}}}"#), GrammarProgress())
         // The rest of the entry stays when only a day was written as a non-integer.
         XCTAssertEqual(rule(#""opened": 1.7e9, "attempts": 4"#).attempts, 4)
     }
