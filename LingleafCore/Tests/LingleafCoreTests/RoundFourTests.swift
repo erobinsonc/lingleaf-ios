@@ -320,10 +320,12 @@ final class RoundFourTests: XCTestCase {
         XCTAssertFalse(try loads("leads", [rule("lɛd", near), rule("liːd")]), "one has it, the other not")
         XCTAssertFalse(try loads("leads", [rule("lɛd", near, spoken: "leds"), rule("liːd", spoken: "leeds")]), "the singular has none")
         XCTAssertFalse(try loads("leads", [rule("lɛd", near, spoken: "leds"), rule("lɪd")]), "a sound the singular doesn't have")
-        // Length in code points: 100 letters outside the BMP are one hundred characters.
-        let wide = String(repeating: "\u{1D400}", count: 100)
+        // Length in code points: 100 letters (each 2 bytes in UTF-8, inside the text allowlist) are one hundred characters.
+        let wide = String(repeating: "\u{0250}", count: 100)
         XCTAssertNoThrow(try IrregularVerbs.load(JSONSerialization.data(withJSONObject: withVerb("lie") { $0["sEs"] = wide })))
         try refused(withVerb("lie") { $0["sEs"] = wide + "a" }, "101 code points")
+        // A supplementary-plane letter is outside the allowlist, whatever its length.
+        try refused(withVerb("lie") { $0["sEs"] = "\u{1D400}" }, "outside the text allowlist")
     }
 
     func testADictionaryEntryWithoutAWordIsSkippedAndPartsOfSpeechMatchInAnyCase() async {

@@ -310,14 +310,10 @@ public struct IrregularVerbs: Sendable {
         (1...2).contains(es.count) && es.allSatisfy(isSpanish)
     }
 
-    /// Characters no table text may hold: controls, invisible formatting (bidi, zero-width) and line breaks.
-    private static let invisible: [Unicode.GeneralCategory] = [.control, .format, .lineSeparator, .paragraphSeparator]
-
-    static func isText(_ s: String) -> Bool {
-        // Code points, as on Android: a combining mark counts.
-        !s.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && s.unicodeScalars.count <= maxText
-            && !s.unicodeScalars.contains { invisible.contains($0.properties.generalCategory) }
-    }
+    /// The text rule of the bundled files, the one `GrammarRules.isText` implements: not blank (empty or only U+0020), a fixed
+    /// list of Unicode blocks, no controls, formatting, separators, private use or exotic spaces, and marks only after a letter
+    /// or a digit, at most 2 in a row (SPEC.md, Verb sentences data).
+    static func isText(_ s: String) -> Bool { GrammarRules.isText(s, max: maxText) }
 }
 
 enum IrregularVerbsError: Error, Equatable {

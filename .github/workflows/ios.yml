@@ -100,6 +100,10 @@ jobs:
           persist-credentials: false
       - name: Test
         run: swift test --package-path LingleafCore --enable-code-coverage
+        env:
+          # The completeness test of irregular-verb-sentences.json runs on release pull requests (against main) only
+          # (SPEC.md, Verb sentences data). github.base_ref is the branch name GitHub reports, never run as shell.
+          LINGLEAF_RELEASE_PR: ${{ github.base_ref == 'main' && '1' || '' }}
       - name: Coverage gate (Sources only, ≥90% of lines)
         run: |
           python3 -I -B - "$(swift test --package-path LingleafCore --show-codecov-path)" <<'PY'
