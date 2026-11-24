@@ -84,14 +84,18 @@ extension LingleafUITests {
         let underBar = Self.elementsUnder(tabBar, in: app)
         let strip = Glass.zone(above: tabBar)
         var unresolved: [String] = []
-        var sizeDependent: [String] = []
         var lastPixels: Pixels?
         // The audit itself can time out (the first one after a cold simulator boot): that is
         // no result, so it runs again; the findings of an audit that completes always count.
+        var measured = false
         for attempt in 1...3 {
             issues.removeSubrange(before...)
             unresolved = []
-            sizeDependent = []
+            // The screen as it is when the audit starts: if it differs when the audit ends, the audit measured a
+            // screen that was changing (a loaded runner follows the audit's own text-size change late: run
+            // 45055153258 flagged every label of the Words screen at once). That is no result, like a timeout.
+            if attempt > 1 { waitUntilSettled() }
+            let shownBefore = screenBody()
             // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
             let pixels = tabBar.isNull ? nil : Pixels(app: app)
             lastPixels = pixels
@@ -120,20 +124,25 @@ extension LingleafUITests {
                             "[\(screen)] \(issue.compactDescription) — unresolved element — \(issue.detailedDescription)")
                         return true
                     }
-                    let line = Self.describe(issue, on: screen)
-                    if Self.isSizeDependent(issue) { sizeDependent.append(line) } else { issues.append(line) }
+                    issues.append(Self.describe(issue, on: screen))
                     return true
                 }
-                break
+                if screenBody() == shownBefore {
+                    measured = true
+                    break
+                }
             } catch let error as NSError where error.domain == "com.apple.xcode.xctest.accessibilityAudit"
                 && error.code == -56 && attempt < 3 {
                 RunLoop.current.run(until: Date().addingTimeInterval(2))
             }
         }
-        if !sizeDependent.isEmpty { issues += try confirmedSizeFindings(sizeDependent, on: screen) }
         // An unresolved finding cannot be tied to an element, so a row under the bar must not absorb it for
         // free: while one is open, every label clear of the bar and the strip is measured too (at its strongest
         // column, the most generous reading, so only text that is weak even then is reported) and any below 4.5.
+        if !measured {
+            attachEvidence("audit-\(screen)-screen-changed")
+            XCTFail("\(screen) kept changing while it was audited (3 attempts), so it was not audited")
+        }
         if !unresolved.isEmpty {
             issues += Self.weakLabels(above: strip, pixels: lastPixels, in: app, screen: screen)
         }
@@ -162,35 +171,6 @@ extension LingleafUITests {
         return "[\(screen)] \(issue.compactDescription) — \(element) — \(issue.detailedDescription)"
     }
 
-    /// Dynamic Type and clipping findings come from the audit changing the text size and comparing the screen with
-    /// itself. When the screen is slow to follow (a loaded runner) they are reported for many labels at once and are
-    /// gone in the next audit: "Words with a word" flagged every label on run 45055153258, 'Español' in Settings on
-    /// another, both absent when audited again. A defect in the app is reported by every audit, so a finding counts
-    /// only if the next two audits of the same screen report it too. (An audit that fails to run keeps the finding.)
-    private static func isSizeDependent(_ issue: XCUIAccessibilityAuditIssue) -> Bool {
-        issue.auditType == .dynamicType || issue.auditType == .textClipped
-    }
-
-    private func confirmedSizeFindings(_ first: [String], on screen: String) throws -> [String] {
-        var stable = Set(first)
-        for _ in 1...2 where !stable.isEmpty {
-            waitUntilSettled()
-            var again = Set<String>()
-            do {
-                try app.performAccessibilityAudit(for: [.dynamicType, .textClipped]) { issue in
-                    if issue.auditType == .textClipped, issue.element?.elementType == .searchField { return true }
-                    if Self.knownFalsePositive(issue, on: screen) { return true }
-                    again.insert(Self.describe(issue, on: screen))
-                    return true
-                }
-            } catch {
-                again = stable
-            }
-            stable.formIntersection(again)
-        }
-        return first.filter { stable.contains($0) }
-    }
-
     /// The language row of Settings follows Dynamic Type: its label and its value ('Español') grow at the largest
     /// size. A measurement, so a row that stopped scaling fails here every time, not on some audits.
     func testSettingsLanguageRowScalesWithDynamicType() throws {
@@ -202,7 +182,7 @@ extension LingleafUITests {
             // Settings is three screens long (five at the largest size) and its rows are created as they scroll
             // in: scroll by a third of a screen at a time, so that no row can pass between two looks.
             let window = app.windows.firstMatch
-            for _ in 0..<16 where !(label.exists && label.isHittable) {
+            for _ in 0..<16 where !label.exists {
                 window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
                     .press(forDuration: 0.1, thenDragTo: window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)))
             }
@@ -219,22 +199,24 @@ extension LingleafUITests {
         XCTAssertGreaterThanOrEqual(large.value, normal.value * 2, "the row's value ('Español') scales with Dynamic Type")
     }
 
+    /// The pixels of the screen without its status bar (the clock changes by itself), or nil.
+    private func screenBody() -> Data? {
+        guard let image = app.screenshot().image.cgImage else { return nil }
+        let top = image.height / 12
+        let area = CGRect(x: 0, y: top, width: image.width, height: image.height - top)
+        guard let body = image.cropping(to: area), let pixels = body.dataProvider?.data else { return nil }
+        return pixels as Data
+    }
+
     /// Waits until the screen stops changing: three screenshots in a row, 0.3 s apart, without its status
     /// bar (the clock changes by itself), are the same. False when it never does within `timeout`.
     @discardableResult
     private func waitUntilSettled(timeout: TimeInterval = 30) -> Bool {
-        func frame() -> Data? {
-            guard let image = app.screenshot().image.cgImage else { return nil }
-            let top = image.height / 12
-            let area = CGRect(x: 0, y: top, width: image.width, height: image.height - top)
-            guard let body = image.cropping(to: area), let pixels = body.dataProvider?.data else { return nil }
-            return pixels as Data
-        }
         var previous: Data?
         var same = 0
         let deadline = Date().addingTimeInterval(timeout)
         while Date() < deadline {
-            let current = frame()
+            let current = screenBody()
             if let current, current == previous { same += 1 } else { same = 0 }
             if same >= 2 { return true }
             previous = current
@@ -268,6 +250,12 @@ extension LingleafUITests {
             // accent 6.2, stepper 18.1), above WCAG AA's 4.5:1. A failure that
             // names an element is still reported.
             return issue.element == nil
+        case ("Settings", .dynamicType) where issue.element?.elementType == .staticText && issue.element?.label == "Español":
+            // The value of the "Translate into" Picker in a Form is the system's own UILabel (SettingsView.swift sets no
+            // font on it), and the audit reports it "partially unsupported" on some audits only, without the app
+            // changing. Only this element is exempt; testSettingsLanguageRowScalesWithDynamicType measures that the
+            // row's label and this value grow at least 2x at the largest text size, so a regression fails every time.
+            return true
         case (_, .hitRegion):
             // Progress bars (reader, review) are read-only indicators, not touch
             // targets, so the minimum hit area does not apply (WCAG 2.5.8 covers targets).
