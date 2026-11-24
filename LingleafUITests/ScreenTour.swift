@@ -73,6 +73,17 @@ final class ScreenTour: XCTestCase {
         let privacy = app.buttons[labels.privacyPolicy].exists ? app.buttons[labels.privacyPolicy] : app.links[labels.privacyPolicy]
         for _ in 0..<12 where !privacy.isHittable { app.swipeUp() }
         snap("49-settings-about-ax5")
+        // Grammar at the largest size: the list, and the question first (Skip moves to the navigation bar).
+        launch(labels, ["-ui-testing"] + Self.largestText)
+        tab(3)
+        _ = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.grammarRule)).firstMatch.waitForExistence(timeout: 10)
+        snap("60-grammar-list-ax5")
+        let first = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", labels.grammarRule)).firstMatch
+        if first.exists {
+            first.tap()
+            _ = app.buttons["grammar-skip-pretest"].waitForExistence(timeout: 10)
+            snap("61-grammar-pretest-ax5")
+        }
         storiesTour(labels, extra: Self.largestText)
         app.terminate()
     }
@@ -194,16 +205,52 @@ final class ScreenTour: XCTestCase {
         snap("50-grammar-list")
         if rule.exists {
             rule.tap()
-            RunLoop.current.run(until: Date().addingTimeInterval(1))
-            snap("51-grammar-rule")
+            // A rule never answered or skipped starts with a question; the rule is under it.
+            if app.buttons["grammar-skip-pretest"].waitForExistence(timeout: 10) {
+                snap("51-grammar-pretest")
+                app.buttons["grammar-option-0"].tap()
+                if app.buttons["grammar-see-rule"].waitForExistence(timeout: 5) {
+                    snap("52-grammar-pretest-answered")
+                    app.buttons["grammar-see-rule"].tap()
+                }
+            }
+            snap("53-grammar-rule")
+            if app.buttons["grammar-primary"].waitForExistence(timeout: 5) {
+                app.buttons["grammar-primary"].tap()
+                if app.buttons["grammar-option-0"].waitForExistence(timeout: 5) {
+                    snap("54-grammar-item")
+                    for number in 1...3 {
+                        if number > 1 { _ = app.buttons["grammar-option-0"].waitForExistence(timeout: 5) }
+                        app.buttons["grammar-option-0"].tap()
+                        if number == 1 { snap("55-grammar-feedback") }
+                        let next = app.buttons["grammar-next"]
+                        if next.waitForExistence(timeout: 5) { next.tap() }
+                    }
+                    snap("56-grammar-result")
+                }
+            }
+        }
+        launch(labels, ["-ui-testing"])
+        app.tabBars.buttons[labels.grammarTab].tap()
+        let verbs = app.buttons["grammar-irregular-verbs"]
+        if verbs.waitForExistence(timeout: 10) {
+            verbs.tap()
+            let row = app.descendants(matching: .any)["grammar-verb-row"].firstMatch
+            if row.waitForExistence(timeout: 10) {
+                snap("57-grammar-verbs")
+                row.tap()
+                RunLoop.current.run(until: Date().addingTimeInterval(1))
+                snap("58-grammar-verb-page")
+            }
         }
         launch(labels, ["-ui-testing", "-ui-testing-grammar-limit"])
         app.tabBars.buttons[labels.grammarTab].tap()
         let limited = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "In, on, at")).firstMatch
         if limited.waitForExistence(timeout: 10) {
             limited.tap()
+            if app.buttons["grammar-skip-pretest"].waitForExistence(timeout: 5) { app.buttons["grammar-skip-pretest"].tap() }
             RunLoop.current.run(until: Date().addingTimeInterval(1))
-            snap("52-grammar-rule-daily-limit")
+            snap("59-grammar-rule-daily-limit")
         }
     }
 

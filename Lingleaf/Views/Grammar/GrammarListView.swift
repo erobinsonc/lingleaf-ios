@@ -47,6 +47,7 @@ struct GrammarView: View {
                     Text(verbatim: "take · took · taken").font(.subheadline).foregroundStyle(Brand.secondaryText)
                 }
             }
+            .accessibilityIdentifier("grammar-irregular-verbs")
         }
         let recent = GrammarRecent.rules(progress: grammar.progress, in: rules)
         if !recent.isEmpty {

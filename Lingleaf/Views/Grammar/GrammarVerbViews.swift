@@ -44,6 +44,7 @@ struct IrregularVerbRow: View {
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: forms.replacingOccurrences(of: " · ", with: ", ")))
                 .accessibilityValue(Text(verbatim: meanings ?? ""))
+                .accessibilityIdentifier("grammar-verb-row")
             }
         }
     }

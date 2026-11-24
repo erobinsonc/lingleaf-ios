@@ -266,6 +266,7 @@ struct GrammarRuleView: View {
             EmptyView()
         } else if currentStage == .answered {
             Button("See the rule") { stage = .rule }
+                .accessibilityIdentifier("grammar-see-rule")
                 .buttonStyle(.borderedProminent)
                 .controlSize(.large)
                 .frame(maxWidth: .infinity)
@@ -291,6 +292,7 @@ struct GrammarRuleView: View {
                 case .practice: Button("Practice") { startPractice() }
                 }
             }
+            .accessibilityIdentifier("grammar-primary")
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .frame(maxWidth: .infinity)

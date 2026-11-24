@@ -137,8 +137,10 @@ struct GrammarSessionView: View {
                 // Two literals, not one conditional: a conditional would be a plain String and skip the catalog.
                 if index + 1 < items.count {
                     Button("Next") { advance() }.buttonStyle(.borderedProminent).controlSize(.large).frame(maxWidth: .infinity)
+                        .accessibilityIdentifier("grammar-next")
                 } else {
                     Button("Finish") { advance() }.buttonStyle(.borderedProminent).controlSize(.large).frame(maxWidth: .infinity)
+                        .accessibilityIdentifier("grammar-next")
                 }
             }
         }
