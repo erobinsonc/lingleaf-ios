@@ -33,6 +33,14 @@ final class GrammarUITests: XCTestCase {
         return element.exists
     }
 
+    /// Opens a rule and, when a question is offered first (a rule never answered or skipped), skips it: these tests are about
+    /// the rule page. The pretest has its own tests (`GrammarPracticeUITests`).
+    func openRule(_ title: String) {
+        row(title).tap()
+        let skip = app.buttons["grammar-skip-pretest"]
+        if skip.waitForExistence(timeout: 3) { skip.tap() }
+    }
+
     func header(_ text: String) -> XCUIElement {
         app.staticTexts.matching(NSPredicate(format: "label ==[c] %@", text)).firstMatch
     }
@@ -66,7 +74,7 @@ final class GrammarUITests: XCTestCase {
         launch()
         XCTAssertFalse(header("Recent").exists, "no rule opened yet")
         for title in ["His, her, its", "Irregular past", "Questions and negatives"] {
-            row(title).tap()
+            openRule(title)
             XCTAssertTrue(app.buttons["Try it"].waitForExistence(timeout: 5), "\(title) opened")
             back()
             XCTAssertTrue(row(title).waitForExistence(timeout: 5))
@@ -106,7 +114,7 @@ final class GrammarUITests: XCTestCase {
 
     func testARulePageShowsTheRuleItsExamplesAndTheButton() {
         launch()
-        row("His, her, its").tap()
+        openRule("His, her, its")
         XCTAssertTrue(app.buttons["Try it"].waitForExistence(timeout: 5), "a rule whose items were never shown starts with Try it")
         XCTAssertTrue(header("Examples").exists)
         XCTAssertTrue(header("Don't mix up").exists)
@@ -128,7 +136,7 @@ final class GrammarUITests: XCTestCase {
 
     func testTheRuleLanguageStartsInSpanishForASpanishTranslationAndTheChoiceSwitchesIt() {
         launch()
-        row("His, her, its").tap()
+        openRule("His, her, its")
         let picker = app.segmentedControls.firstMatch
         XCTAssertTrue(picker.waitForExistence(timeout: 5))
         XCTAssertEqual(picker.label, "Rule language")
@@ -140,7 +148,7 @@ final class GrammarUITests: XCTestCase {
         XCTAssertTrue(picker.buttons["English"].isSelected)
         // The choice is kept for every rule: the next rule opens in English too.
         back()
-        row("Irregular past").tap()
+        openRule("Irregular past")
         XCTAssertTrue(app.segmentedControls.firstMatch.buttons["English"].waitForExistence(timeout: 5))
         XCTAssertTrue(app.segmentedControls.firstMatch.buttons["English"].isSelected, "a choice, once made, is never absent again")
         app.segmentedControls.firstMatch.buttons["Español"].tap()
@@ -149,21 +157,21 @@ final class GrammarUITests: XCTestCase {
 
     func testARuleInReviewExplainsWhatThatMeans() {
         launch("-ui-testing-grammar-states")
-        row("The -s in the present").tap()
+        openRule("The -s in the present")
         XCTAssertTrue(app.staticTexts["In Review: this rule's questions will come back when you review."].waitForExistence(timeout: 5))
         XCTAssertTrue(app.staticTexts["Practiced: right answers on 2 different days."].exists)
     }
 
     func testTheButtonSaysPracticeOnceAnItemAfterTheFirstWasShown() {
         launch("-ui-testing-grammar-seen")
-        row("His, her, its").tap()
+        openRule("His, her, its")
         XCTAssertTrue(app.buttons["Practice"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.buttons["Try it"].exists)
     }
 
     func testAtSixItemsAnsweredTodayTheButtonGivesWayToTheLimitText() {
         launch("-ui-testing-grammar-limit")
-        row("In, on, at: time").tap()
+        openRule("In, on, at: time")
         XCTAssertTrue(
             app.staticTexts["You've finished today's practice for this rule. Try another rule, or come back tomorrow."]
                 .waitForExistence(timeout: 5)
@@ -176,7 +184,7 @@ final class GrammarUITests: XCTestCase {
 
     func testWithFourAnsweredTodayThereIsStillARoundOfTwo() {
         launch("-ui-testing-grammar-answered-4")
-        row("In, on, at: time").tap()
+        openRule("In, on, at: time")
         XCTAssertTrue(app.buttons["Practice"].waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["You've finished today's practice for this rule. Try another rule, or come back tomorrow."].exists)
     }
@@ -191,6 +199,8 @@ final class GrammarUITests: XCTestCase {
         XCTAssertTrue(reveal(app.buttons.matching(NSPredicate(format: "value == %@", "Nueva")).firstMatch))
         XCTAssertTrue(reveal(app.buttons.matching(NSPredicate(format: "value == %@", "En el Repaso")).firstMatch))
         practiced.tap()
+        let skip = app.buttons["grammar-skip-pretest"]
+        if skip.waitForExistence(timeout: 3) { skip.tap() }
         XCTAssertTrue(app.buttons["Pruébalo"].waitForExistence(timeout: 5) || app.buttons["Practicar"].exists)
         XCTAssertEqual(app.segmentedControls.firstMatch.label, "Idioma de la regla")
         XCTAssertTrue(app.staticTexts["Practicada: respuestas correctas en 2 días distintos."].exists)

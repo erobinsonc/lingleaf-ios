@@ -20,10 +20,15 @@ final class GrammarVerbsUITests: XCTestCase {
         XCTAssertTrue(app.navigationBars["Irregular verbs"].waitForExistence(timeout: 5))
     }
 
+    /// A list builds its rows as they scroll in: a verb further down is found by scrolling.
+    func reveal(_ element: XCUIElement) -> XCUIElement {
+        _ = element.waitForExistence(timeout: 3)
+        for _ in 0..<12 where !element.exists || !element.isHittable { app.swipeUp() }
+        return element
+    }
+
     func verbRow(_ forms: String) -> XCUIElement {
-        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", forms)).firstMatch
-        _ = row.waitForExistence(timeout: 5)
-        return row
+        reveal(app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", forms)).firstMatch)
     }
 
     func testTheFirstRowOpensTheVerbListWithTwoLineRows() {
@@ -40,8 +45,8 @@ final class GrammarVerbsUITests: XCTestCase {
 
     func testListenOnARowSaysTheFormsAndDoesNotNavigate() {
         openVerbs()
-        let listen = app.buttons["Listen, take"].firstMatch
-        XCTAssertTrue(listen.waitForExistence(timeout: 5))
+        let listen = reveal(app.buttons["Listen, take"].firstMatch)
+        XCTAssertTrue(listen.exists)
         XCTAssertGreaterThanOrEqual(listen.frame.width, 44)
         XCTAssertGreaterThanOrEqual(listen.frame.height, 44)
         listen.tap()
@@ -63,6 +68,7 @@ final class GrammarVerbsUITests: XCTestCase {
     func testSearchingTheVerbListFindsAFormAndAMeaning() {
         openVerbs()
         let search = app.searchFields.firstMatch
+        XCTAssertTrue(search.waitForExistence(timeout: 5))
         search.tap()
         search.typeText("took")
         XCTAssertTrue(verbRow("take, took, taken").waitForExistence(timeout: 5))
