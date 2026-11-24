@@ -95,6 +95,7 @@ extension LingleafUITests {
             // screen that was changing (a loaded runner follows the audit's own text-size change late: run
             // 45055153258 flagged every label of the Words screen at once). That is no result, like a timeout.
             if attempt > 1 { waitUntilSettled() }
+            // No picture of the screen (nil) is no proof that it stayed the same: the attempt does not count.
             let shownBefore = screenBody()
             // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
             let pixels = tabBar.isNull ? nil : Pixels(app: app)
@@ -127,7 +128,7 @@ extension LingleafUITests {
                     issues.append(Self.describe(issue, on: screen))
                     return true
                 }
-                if screenBody() == shownBefore {
+                if let shownBefore, screenBody() == shownBefore {
                     measured = true
                     break
                 }
@@ -174,29 +175,34 @@ extension LingleafUITests {
     /// The language row of Settings follows Dynamic Type: its label and its value ('Español') grow at the largest
     /// size. A measurement, so a row that stopped scaling fails here every time, not on some audits.
     func testSettingsLanguageRowScalesWithDynamicType() throws {
-        func heights() throws -> (label: CGFloat, value: CGFloat) {
+        func measure() throws -> (row: CGFloat, value: CGFloat, fits: Bool) {
             app.tabBars.buttons["Settings"].tap()
             _ = app.navigationBars["Settings"].waitForExistence(timeout: 10)
-            let label = app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Translate into")).firstMatch
+            let row = app.descendants(matching: .any).matching(identifier: "settings-language-picker").firstMatch
             let value = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "Español")).firstMatch
             // Settings is three screens long (five at the largest size) and its rows are created as they scroll
             // in: scroll by a third of a screen at a time, so that no row can pass between two looks.
             let window = app.windows.firstMatch
-            for _ in 0..<16 where !label.exists {
+            for _ in 0..<16 where !(row.exists && value.exists) {
                 window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
                     .press(forDuration: 0.1, thenDragTo: window.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)))
             }
-            XCTAssertTrue(label.waitForExistence(timeout: 10), "the language row's label; on screen: "
+            XCTAssertTrue(row.waitForExistence(timeout: 10) && value.waitForExistence(timeout: 10),
+                          "the language row (settings-language-picker) and its value; on screen: "
                 + app.descendants(matching: .any).allElementsBoundByIndex.map { "\($0.elementType.rawValue):\($0.label)" }
                     .filter { !$0.hasSuffix(":") }.prefix(80).joined(separator: " | "))
-            XCTAssertTrue(value.waitForExistence(timeout: 10), "the language row's value")
-            return (label.frame.height, value.frame.height)
+            // The value must not be cut off: it lies inside the window, side to side.
+            let screen = window.frame
+            let fits = value.frame.minX >= screen.minX && value.frame.maxX <= screen.maxX && row.frame.maxX <= screen.maxX
+            return (row.frame.height, value.frame.height, fits)
         }
-        let normal = try heights()
+        let normal = try measure()
         relaunch("-ui-testing", "-UIPreferredContentSizeCategoryName", "UICTContentSizeCategoryAccessibilityXXXL")
-        let large = try heights()
-        XCTAssertGreaterThanOrEqual(large.label, normal.label * 2, "the row's label scales with Dynamic Type")
+        let large = try measure()
+        XCTAssertGreaterThanOrEqual(large.row, normal.row * 2, "the row scales with Dynamic Type")
         XCTAssertGreaterThanOrEqual(large.value, normal.value * 2, "the row's value ('Español') scales with Dynamic Type")
+        XCTAssertTrue(normal.fits, "the value fits the window at the normal size")
+        XCTAssertTrue(large.fits, "the value fits the window at the largest size, not cut off")
     }
 
     /// The pixels of the screen without its status bar (the clock changes by itself), or nil.

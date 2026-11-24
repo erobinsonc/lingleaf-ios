@@ -61,6 +61,8 @@ struct SettingsView: View {
                             Text(AppModel.languageLabel(code)).tag(String?.some(code))
                         }
                     }
+                    // Only an identifier, for the UI test that measures this row at the largest text size.
+                    .accessibilityIdentifier("settings-language-picker")
                     // A row rather than a section footer: footers use a fixed style
                     // that fails the contrast and Dynamic Type audits.
                     Text("Translation happens on your iPhone. The first time, iOS asks to download the language; after that it works offline.")
