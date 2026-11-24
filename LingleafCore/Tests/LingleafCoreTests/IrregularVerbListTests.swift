@@ -113,7 +113,7 @@ final class IrregularVerbListTests: XCTestCase {
 
     // MARK: Speech
 
-    private func said(_ base: String, _ slot: VerbSlot, _ index: Int = 0) throws -> String? {
+    private func said(_ base: String, _ slot: VerbFormSlot, _ index: Int = 0) throws -> String? {
         GrammarSpeech.verbForm(try verb(base), slot: slot, index: index)?.text
     }
 
@@ -141,7 +141,7 @@ final class IrregularVerbListTests: XCTestCase {
         XCTAssertEqual(GrammarSpeech.verbForms(try verb("take")).language, "en")
         XCTAssertEqual(GrammarSpeech.verbForm(try verb("take"), slot: .ing)?.language, "en")
         XCTAssertEqual(GrammarSpeech.example("I take the bus."), SpokenText(text: "I take the bus.", language: "en"))
-        for slot in VerbSlot.allCases { XCTAssertFalse(GrammarSpeech.forms(of: try verb("take"), slot: slot).isEmpty) }
+        for slot in VerbFormSlot.allCases { XCTAssertFalse(GrammarSpeech.forms(of: try verb("take"), slot: slot).isEmpty) }
         XCTAssertEqual(GrammarSpeech.forms(of: try verb("learn"), slot: .past), ["learned", "learnt"])
         XCTAssertEqual(try said("take", .s), "takes")
         XCTAssertEqual(try said("take", .ing), "taking")

@@ -85,7 +85,7 @@ public enum IrregularVerbSearch {
 public enum IrregularVerbLine {
     /// "take · took · taken"; a slot with two forms shows both: "learn · learned / learnt · learned / learnt".
     public static func forms(_ verb: IrregularVerb) -> String {
-        [VerbSlot.base, .past, .participle].map { GrammarSpeech.forms(of: verb, slot: $0).joined(separator: " / ") }.joined(separator: " · ")
+        [VerbFormSlot.base, .past, .participle].map { GrammarSpeech.forms(of: verb, slot: $0).joined(separator: " / ") }.joined(separator: " · ")
     }
 
     /// The table's Spanish meanings, each entry as the table has it ("tomar, llevar"), the entries apart by "; ".

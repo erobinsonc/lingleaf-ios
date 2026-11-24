@@ -131,7 +131,7 @@ struct VerbPageView: View {
     }
 
     /// A form with its label, the hint under it when there is one, and a Listen for each form of the slot.
-    private func formRow(_ label: LocalizedStringKey, forms: [String], slot: VerbSlot, hint: String? = nil) -> some View {
+    private func formRow(_ label: LocalizedStringKey, forms: [String], slot: VerbFormSlot, hint: String? = nil) -> some View {
         HStack(alignment: .center, spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(label).font(.subheadline).foregroundStyle(Brand.secondaryText)
