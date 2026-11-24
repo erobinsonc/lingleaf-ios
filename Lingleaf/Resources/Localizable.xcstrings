@@ -189,6 +189,52 @@
         }
       }
     },
+    "%lld rules": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rule"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld rules"
+                }
+              }
+            }
+          }
+        },
+        "es": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld regla"
+                }
+              },
+              "many": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reglas"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%lld reglas"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "%lld words tomorrow.": {
       "localizations": {
         "en": {
@@ -301,6 +347,36 @@
         }
       }
     },
+    "(nothing)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "(nada)"
+          }
+        }
+      }
+    },
+    "-ing form": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forma -ing"
+          }
+        }
+      }
+    },
+    "A condition (how something is)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cómo está algo"
+          }
+        }
+      }
+    },
     "About": {
       "localizations": {
         "es": {
@@ -317,6 +393,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Agregar frase anterior"
+          }
+        }
+      }
+    },
+    "Advanced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avanzado"
           }
         }
       }
@@ -408,12 +494,72 @@
         }
       }
     },
+    "Asking about before now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preguntar sobre antes de ahora"
+          }
+        }
+      }
+    },
+    "Back to the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volver a la regla"
+          }
+        }
+      }
+    },
     "Back to Words": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Volver a Palabras"
+          }
+        }
+      }
+    },
+    "Base form": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forma base"
+          }
+        }
+      }
+    },
+    "Before now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antes de ahora"
+          }
+        }
+      }
+    },
+    "Before that": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antes de eso"
+          }
+        }
+      }
+    },
+    "Beginner": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Principiante"
           }
         }
       }
@@ -455,6 +601,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cerrar"
+          }
+        }
+      }
+    },
+    "collapsed": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "contraído"
           }
         }
       }
@@ -549,12 +705,32 @@
         }
       }
     },
+    "Didn't (past negative)": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Didn't (negativo en pasado)"
+          }
+        }
+      }
+    },
     "Discover": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Descubrir"
+          }
+        }
+      }
+    },
+    "Don't mix up": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No confundas"
           }
         }
       }
@@ -579,6 +755,36 @@
         }
       }
     },
+    "Done to something": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lo que le hacen a algo"
+          }
+        }
+      }
+    },
+    "Download": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descargar"
+          }
+        }
+      }
+    },
+    "Download language": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Descargar idioma"
+          }
+        }
+      }
+    },
     "Downloading %@": {
       "localizations": {
         "es": {
@@ -589,12 +795,62 @@
         }
       }
     },
+    "Elementary": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elemental"
+          }
+        }
+      }
+    },
+    "Every day": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Todos los días"
+          }
+        }
+      }
+    },
+    "Examples": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ejemplos"
+          }
+        }
+      }
+    },
+    "expanded": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "expandido"
+          }
+        }
+      }
+    },
     "Filter": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Filtro"
+          }
+        }
+      }
+    },
+    "Finish": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Terminar"
           }
         }
       }
@@ -638,6 +894,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Corregidas según sus frases:"
+          }
+        }
+      }
+    },
+    "Forms": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Formas"
           }
         }
       }
@@ -692,12 +958,42 @@
         }
       }
     },
+    "Grammar": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gramática"
+          }
+        }
+      }
+    },
     "Group: %@": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Grupo: %@"
+          }
+        }
+      }
+    },
+    "Guess, then read the rule. A wrong guess is fine.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adivina y luego lee la regla. Si fallas, no pasa nada."
+          }
+        }
+      }
+    },
+    "He, she, it": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Él / ella (he, she, it)"
           }
         }
       }
@@ -732,12 +1028,72 @@
         }
       }
     },
+    "If you speak Spanish": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si hablas español"
+          }
+        }
+      }
+    },
     "Import a .txt file": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Importar un archivo .txt"
+          }
+        }
+      }
+    },
+    "In a story": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En un cuento"
+          }
+        }
+      }
+    },
+    "In Review": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el Repaso"
+          }
+        }
+      }
+    },
+    "In Review: this rule's questions will come back when you review.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el Repaso: las preguntas de esta regla volverán cuando repases."
+          }
+        }
+      }
+    },
+    "In sentences": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En frases"
+          }
+        }
+      }
+    },
+    "In the past": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "En el pasado"
           }
         }
       }
@@ -758,6 +1114,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "En tu biblioteca"
+          }
+        }
+      }
+    },
+    "Intermediate": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermedio"
+          }
+        }
+      }
+    },
+    "Irregular verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbos irregulares"
           }
         }
       }
@@ -872,6 +1248,16 @@
         }
       }
     },
+    "Listen, %@": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Escuchar, %@"
+          }
+        }
+      }
+    },
     "Local English": {
       "localizations": {
         "es": {
@@ -918,6 +1304,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Más idiomas"
+          }
+        }
+      }
+    },
+    "New": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nueva"
+          }
+        }
+      }
+    },
+    "Next": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siguiente"
           }
         }
       }
@@ -972,6 +1378,16 @@
         }
       }
     },
+    "No rules match. Try a shorter word, like in, on or at.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ninguna regla coincide. Prueba con una palabra más corta, como in, on o at."
+          }
+        }
+      }
+    },
     "No single meaning out of context. See the sentence.": {
       "localizations": {
         "es": {
@@ -1012,6 +1428,26 @@
         }
       }
     },
+    "Not quite:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No es esa:"
+          }
+        }
+      }
+    },
+    "Not sure": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No lo sé"
+          }
+        }
+      }
+    },
     "Nothing to review. Come back tomorrow!": {
       "localizations": {
         "es": {
@@ -1028,6 +1464,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "OK"
+          }
+        }
+      }
+    },
+    "One person, every day": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Una persona, todos los días"
           }
         }
       }
@@ -1062,6 +1508,26 @@
         }
       }
     },
+    "Past": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pasado"
+          }
+        }
+      }
+    },
+    "Past participle": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Participio pasado"
+          }
+        }
+      }
+    },
     "Pause": {
       "localizations": {
         "es": {
@@ -1082,6 +1548,36 @@
         }
       }
     },
+    "Practice": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicar"
+          }
+        }
+      }
+    },
+    "Practiced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicada"
+          }
+        }
+      }
+    },
+    "Practiced: right answers on 2 different days.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Practicada: respuestas correctas en 2 días distintos."
+          }
+        }
+      }
+    },
     "Previous sentence": {
       "localizations": {
         "es": {
@@ -1098,6 +1594,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Política de privacidad"
+          }
+        }
+      }
+    },
+    "Proficient": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Experto"
           }
         }
       }
@@ -1178,6 +1684,16 @@
         }
       }
     },
+    "Question %lld of %lld": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pregunta %lld de %lld"
+          }
+        }
+      }
+    },
     "Read": {
       "localizations": {
         "es": {
@@ -1244,6 +1760,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Progreso de lectura"
+          }
+        }
+      }
+    },
+    "Recent": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recientes"
           }
         }
       }
@@ -1404,6 +1930,56 @@
         }
       }
     },
+    "Right answer": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Respuesta correcta"
+          }
+        }
+      }
+    },
+    "Right now": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ahora mismo"
+          }
+        }
+      }
+    },
+    "Right:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Correcto:"
+          }
+        }
+      }
+    },
+    "Rule language": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Idioma de la regla"
+          }
+        }
+      }
+    },
+    "Rules": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reglas"
+          }
+        }
+      }
+    },
     "Save word": {
       "localizations": {
         "es": {
@@ -1434,12 +2010,52 @@
         }
       }
     },
+    "Search rules and verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar reglas y verbos"
+          }
+        }
+      }
+    },
+    "Search verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Buscar verbos"
+          }
+        }
+      }
+    },
     "Searching Project Gutenberg…": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Buscando en Project Gutenberg…"
+          }
+        }
+      }
+    },
+    "See other rules": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver otras reglas"
+          }
+        }
+      }
+    },
+    "See the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ver la regla"
           }
         }
       }
@@ -1460,6 +2076,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ajustes"
+          }
+        }
+      }
+    },
+    "Should": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Should (debería)"
           }
         }
       }
@@ -1490,6 +2116,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Mostrar la definición completa"
+          }
+        }
+      }
+    },
+    "Skip": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omitir"
+          }
+        }
+      }
+    },
+    "Skip to the rule": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Omitir e ir a la regla"
           }
         }
       }
@@ -1564,6 +2210,36 @@
         }
       }
     },
+    "That was the last round for today.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esa fue la última ronda de hoy."
+          }
+        }
+      }
+    },
+    "That's okay. Right:": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No pasa nada. Correcto:"
+          }
+        }
+      }
+    },
+    "The language wasn't downloaded. Try again later.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se descargó el idioma. Inténtalo más tarde."
+          }
+        }
+      }
+    },
     "The sentence's translation tells you which one:": {
       "comment": "Word card, above the two readings of a word whose sentence doesn't tell which one it is.",
       "localizations": {
@@ -1605,12 +2281,32 @@
         }
       }
     },
+    "This rule is now Practiced": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esta regla ahora está Practicada"
+          }
+        }
+      }
+    },
     "Title or author": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Título o autor"
+          }
+        }
+      }
+    },
+    "To see translations, download your language once.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Para ver traducciones, descarga tu idioma una sola vez."
           }
         }
       }
@@ -1696,6 +2392,46 @@
         }
       }
     },
+    "Translations ready": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Traducciones listas"
+          }
+        }
+      }
+    },
+    "Try a question first": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba primero con una pregunta"
+          }
+        }
+      }
+    },
+    "Try it": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pruébalo"
+          }
+        }
+      }
+    },
+    "Try the verb or its meaning, like go or ir.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prueba el verbo o su significado, como go o ir."
+          }
+        }
+      }
+    },
     "UK English": {
       "localizations": {
         "es": {
@@ -1726,12 +2462,42 @@
         }
       }
     },
+    "Upper intermediate": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Intermedio alto"
+          }
+        }
+      }
+    },
     "US English": {
       "localizations": {
         "es": {
           "stringUnit": {
             "state": "translated",
             "value": "Inglés estadounidense"
+          }
+        }
+      }
+    },
+    "Used like a noun": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usado como sustantivo"
+          }
+        }
+      }
+    },
+    "Verbs": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbos"
           }
         }
       }
@@ -1752,6 +2518,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "¿Cuál es en esta frase?"
+          }
+        }
+      }
+    },
+    "Why not the others?": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Por qué no las otras?"
           }
         }
       }
@@ -1786,6 +2562,16 @@
         }
       }
     },
+    "You got %lld of %lld right": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acertaste %lld de %lld"
+          }
+        }
+      }
+    },
     "You're offline. Connect to the internet to download it.": {
       "localizations": {
         "es": {
@@ -1802,6 +2588,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sin conexión. Conéctate a internet para buscar."
+          }
+        }
+      }
+    },
+    "You've finished today's practice for this rule. Try another rule, or come back tomorrow.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ya practicaste esta regla hoy. Prueba otra regla o vuelve mañana."
+          }
+        }
+      }
+    },
+    "Your answer": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu respuesta"
+          }
+        }
+      }
+    },
+    "Your answer, right": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu respuesta, correcta"
           }
         }
       }

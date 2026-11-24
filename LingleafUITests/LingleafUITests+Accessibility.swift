@@ -10,12 +10,21 @@ extension LingleafUITests {
     func testAccessibilityAudit() throws {
         var issues: [String] = []
         func audit(_ screen: String) throws { issues += try auditScreen(screen) }
-        for tab in ["Library", "Discover", "Words", "Settings"] {
+        for tab in ["Library", "Discover", "Words", "Grammar", "Settings"] {
             app.tabBars.buttons[tab].tap()
             // The tab's own screen is there (its title), then still.
             _ = app.navigationBars[tab].waitForExistence(timeout: 10)
             try audit(tab)
         }
+        // A Grammar rule page (its pretest first, then the rule with its button pinned to the bottom edge).
+        app.tabBars.buttons["Grammar"].tap()
+        button(startingWith: "His, her, its").tap()
+        XCTAssertTrue(app.buttons["grammar-skip-pretest"].waitForExistence(timeout: 10))
+        try audit("Grammar pretest")
+        app.buttons["grammar-skip-pretest"].tap()
+        XCTAssertTrue(app.buttons["Try it"].waitForExistence(timeout: 10))
+        try audit("Grammar rule")
+        app.navigationBars.buttons.element(boundBy: 0).tap()
         app.tabBars.buttons["Library"].tap()
         button(startingWith: "The Red Boat").tap()
         XCTAssertTrue(app.links["beach"].firstMatch.waitForExistence(timeout: 10))
@@ -74,6 +83,15 @@ extension LingleafUITests {
         }
         // The reader hides the tab bar; then nothing can sit under it.
         let tabBar = app.tabBars.firstMatch.exists ? app.tabBars.firstMatch.frame : .null
+        // The Grammar rule page pins its button to the bottom edge: content scrolls under that bar as under the tab bar
+        // and is judged the same way (its blur strip, the pixel rule). What the bar itself holds (its button, the limit
+        // text) is found by label and still checked like the tab bar's own buttons.
+        let pinned = app.otherElements["grammar-bottom-bar"]
+        let pinnedFrame = pinned.exists ? pinned.frame : .null
+        let pinnedOwn = Set(pinned.exists ? pinned.descendants(matching: .any).allElementsBoundByIndex.map(\.label) : [])
+            .subtracting([""])
+        // Both bars together (the pinned one sits directly above the tab bar).
+        let bars = tabBar.union(pinnedFrame)
         let before = issues.count
         // A row half under the glass tab bar is measured against the bar's blur too, but
         // XCTest can't always resolve the element of a finding (in the same unchanged state it
@@ -81,8 +99,8 @@ extension LingleafUITests {
         // it is. Such unresolved contrast findings are accepted only up to the number of elements
         // under the bar right now; any more still fail, with a screenshot. That allowance is not
         // raised by anything in the blur strip: resolved findings there are judged by the pixel rule.
-        let underBar = Self.elementsUnder(tabBar, in: app)
-        let strip = Glass.zone(above: tabBar)
+        let underBar = Self.elementsUnder(bars, in: app)
+        let strip = Glass.zone(above: bars)
         var unresolved: [String] = []
         var lastPixels: Pixels?
         // The audit itself can time out (the first one after a cold simulator boot): that is
@@ -91,17 +109,18 @@ extension LingleafUITests {
             issues.removeSubrange(before...)
             unresolved = []
             // A fresh screenshot for each audit: the pixels measured are the ones this audit saw.
-            let pixels = tabBar.isNull ? nil : Pixels(app: app)
+            let pixels = bars.isNull ? nil : Pixels(app: app)
             lastPixels = pixels
             do {
                 try app.performAccessibilityAudit { issue in
                     // Rows scrolled under the translucent tab bar are measured against
                     // the bar's blur; scrolled into view they read normally. The tab
                     // bar's own buttons are not exempt: their contrast is still checked.
-                    if issue.auditType == .contrast, let flagged = issue.element, !Self.isTabBarButton(flagged, in: tabBar) {
+                    if issue.auditType == .contrast, let flagged = issue.element, !Self.isTabBarButton(flagged, in: tabBar),
+                       !pinnedOwn.contains(flagged.label) {
                         // Under the bar only what the blur covers is exempt; the part of the element above the
                         // strip is measured like any text (a grey line there is reported, wherever the row ends).
-                        if flagged.frame.intersects(tabBar) {
+                        if flagged.frame.intersects(bars) {
                             if Glass.isExemptUnderBar(flagged.frame, strip: strip, pixels: pixels) { return true }
                         } else if Glass.isLegible(flagged.elementType, flagged.frame, strip: strip, pixels: pixels) {
                             // The blur above the bar: accepted only for a label whose own pixels measure at WCAG AA

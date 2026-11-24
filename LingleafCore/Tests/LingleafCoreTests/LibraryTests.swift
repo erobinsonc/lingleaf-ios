@@ -533,6 +533,22 @@ final class LibraryTests: XCTestCase {
         XCTAssertEqual(self.library().state.settings, Settings())
     }
 
+    /// S21: `grammarInSpanish` is an optional boolean; only a real boolean counts, anything else is absent.
+    func testTheGrammarLanguageSettingIsAnOptionalBooleanThatOnlyARealBooleanSets() {
+        XCTAssertNil(Settings().grammarInSpanish)
+        let library = library()
+        library.updateSettings { $0.grammarInSpanish = true }
+        XCTAssertEqual(self.library().state.settings.grammarInSpanish, true)
+        library.updateSettings { $0.grammarInSpanish = false }
+        XCTAssertEqual(self.library().state.settings.grammarInSpanish, false, "false is a choice, not absent")
+        for notBoolean in ["1", "0", "1.0", "\"true\"", "\"yes\"", "null", "[true]", "{}"] {
+            storage.files["settings.json"] = "{\"dailyGoalMinutes\": 15, \"grammarInSpanish\": \(notBoolean)}"
+            let settings = self.library().state.settings
+            XCTAssertNil(settings.grammarInSpanish, notBoolean)
+            XCTAssertEqual(settings.dailyGoalMinutes, 15, "\(notBoolean): the rest of the file is kept")
+        }
+    }
+
     // S10 Import: the file picker can't be driven by UI tests, so the import rules are covered here.
     func testImportTitleIsTheFileNameWithoutItsExtension() {
         XCTAssertEqual(Library.importTitle(fileName: "Alice.txt"), "Alice")
