@@ -78,7 +78,7 @@ struct IrregularVerbsView: View {
             }
         }
         .navigationTitle("Irregular verbs")
-        .searchable(text: $query, prompt: Text("Search verbs"))
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: Text("Search verbs"))
         .grammarTranslations(translator, texts: table.verbs.map { "to " + $0.base }, model: model)
     }
 
