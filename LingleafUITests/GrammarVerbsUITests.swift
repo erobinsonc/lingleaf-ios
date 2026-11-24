@@ -90,3 +90,35 @@ final class GrammarVerbsUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["No rules match. Try a shorter word, like in, on or at."].exists)
     }
 }
+
+/// A translation language other than Spanish (SPEC S21, S24): the examples and the verb meanings are translated on the
+/// device. UI tests use the fake translator ("ES: " in front), so nothing depends on the language being installed.
+final class GrammarTranslationUITests: XCTestCase {
+    var app: XCUIApplication!
+
+    override func setUp() {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments = ["-ui-testing", "-ui-testing-language-fr", "-AppleLanguages", "(en)", "-AppleLocale", "en_US"]
+        app.launch()
+        app.tabBars.buttons["Grammar"].tap()
+    }
+
+    func testExamplesAreTranslatedOnTheDeviceAndTheBundledSpanishIsNotShown() {
+        let row = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "His, her, its")).firstMatch
+        XCTAssertTrue(row.waitForExistence(timeout: 10))
+        row.tap()
+        let skip = app.buttons["grammar-skip-pretest"]
+        if skip.waitForExistence(timeout: 5) { skip.tap() }
+        XCTAssertTrue(app.staticTexts["ES: The prince lost his shoe."].waitForExistence(timeout: 10), "translated on the device")
+        XCTAssertFalse(app.staticTexts["El príncipe perdió su zapato."].exists)
+        XCTAssertFalse(app.buttons["Download"].exists, "an installed language needs no download")
+    }
+
+    func testTheVerbListShowsTheTranslationOfToTakeAsItsMeaning() {
+        app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Irregular verbs")).firstMatch.tap()
+        let take = app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "take, took, taken")).firstMatch
+        for _ in 0..<12 where !take.exists || !take.isHittable { app.swipeUp() }
+        XCTAssertEqual(take.value as? String, "ES: to take")
+    }
+}

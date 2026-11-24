@@ -24,18 +24,22 @@ struct ListenButton: View {
 struct IrregularVerbRow: View {
     @Environment(AppModel.self) private var model
     let verb: IrregularVerb
+    /// The translation of "to take" in another translation language, when the list has it (installed on the device).
+    var translated: String?
 
     var body: some View {
         let forms = IrregularVerbLine.forms(verb)
-        // The meanings are the table's Spanish ones for a Spanish translation language; another language's translation
-        // of "to take" needs the language installed on the device and is not made here.
-        let meanings = model.targetLanguage == "es" ? IrregularVerbLine.meanings(verb) : nil
+        // The table's Spanish meanings for a Spanish translation language, else the translation of "to take" (only when that
+        // language is installed on the device), else nothing.
+        let meanings = model.targetLanguage == "es" ? IrregularVerbLine.meanings(verb) : translated
         HStack(alignment: .top, spacing: 4) {
             ListenButton(text: GrammarSpeech.verbForms(verb).text, name: verb.base)
             NavigationLink(value: GrammarRoute.verb(verb.base)) {
                 VStack(alignment: .leading, spacing: 2) {
                     LangText(forms, language: "en").font(.headline)
-                    if let meanings { LangText(meanings, language: "es").font(.subheadline).foregroundStyle(Brand.secondaryText) }
+                    if let meanings {
+                        LangText(meanings, language: model.targetLanguage ?? "es").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                    }
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel(Text(verbatim: forms.replacingOccurrences(of: " · ", with: ", ")))
@@ -49,6 +53,7 @@ struct IrregularVerbRow: View {
 struct IrregularVerbsView: View {
     @Environment(AppModel.self) private var model
     @State private var query = ""
+    @State private var translator = GrammarTranslations()
 
     var body: some View {
         let table = IrregularVerbs.shared
@@ -56,7 +61,9 @@ struct IrregularVerbsView: View {
             if query.trimmingCharacters(in: .whitespaces).isEmpty {
                 ForEach(IrregularVerbOrder.sections(table), id: \.group.id) { section in
                     Section {
-                        ForEach(section.verbs, id: \.base) { IrregularVerbRow(verb: $0) }
+                        ForEach(section.verbs, id: \.base) { verb in
+                            IrregularVerbRow(verb: verb, translated: translator.translations["to " + verb.base])
+                        }
                     } header: {
                         // The group's title and its example are one heading.
                         Text(verbatim: "\(groupTitle(section.group)) · \(section.group.example)")
@@ -66,11 +73,12 @@ struct IrregularVerbsView: View {
                     }
                 }
             } else {
-                IrregularVerbResults(verbs: IrregularVerbSearch.search(query, in: table))
+                IrregularVerbResults(verbs: IrregularVerbSearch.search(query, in: table), translator: translator)
             }
         }
         .navigationTitle("Irregular verbs")
         .searchable(text: $query, prompt: Text("Search verbs"))
+        .grammarTranslations(translator, texts: table.verbs.map { "to " + $0.base }, model: model)
     }
 
     /// The group's title in the language of the interface.
@@ -82,13 +90,14 @@ struct IrregularVerbsView: View {
 /// The matching verbs under a header that is always there; no match says what to try.
 struct IrregularVerbResults: View {
     let verbs: [IrregularVerb]
+    var translator: GrammarTranslations?
 
     var body: some View {
         Section {
             if verbs.isEmpty {
                 Text("Try the verb or its meaning, like go or ir.").foregroundStyle(Brand.secondaryText)
             }
-            ForEach(verbs, id: \.base) { IrregularVerbRow(verb: $0) }
+            ForEach(verbs, id: \.base) { IrregularVerbRow(verb: $0, translated: translator?.translations["to " + $0.base]) }
         } header: {
             SectionHeader("Verbs").accessibilityAddTraits(.isHeader)
         }
@@ -98,6 +107,7 @@ struct IrregularVerbResults: View {
 /// A verb page (S24): its level and its forms, each with Listen; a verb with a regular twin (lie, hang) shows the twin's
 /// forms under its own heading. The sentences and Save word come with the sentences data.
 struct VerbPageView: View {
+    @Environment(AppModel.self) private var model
     let verb: IrregularVerb
 
     var body: some View {
@@ -115,7 +125,11 @@ struct VerbPageView: View {
                 formRow("Past participle", forms: verb.participle, slot: .participle, hint: IrregularVerbLine.participleHint(verb))
                 formRow("-ing form", forms: [verb.ing], slot: .ing)
                 formRow("He, she, it", forms: [verb.s], slot: .s)
-                if let twin = verb.homonym { homonym(twin) }
+                sentences(senseIndex: 0)
+                if let twin = verb.homonym {
+                    homonym(twin)
+                    sentences(senseIndex: 1)
+                }
             }
             .padding(.horizontal)
             .padding(.vertical, 12)
@@ -124,6 +138,41 @@ struct VerbPageView: View {
         }
         .navigationTitle(verb.base)
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: In sentences
+
+    /// "In sentences" (S24): the verb's original sentences in the fixed positions of the sentences data, each with its
+    /// Spanish line only for a Spanish translation language, and Listen. A verb with no sentences in the data shows nothing.
+    @ViewBuilder
+    private func sentences(senseIndex: Int) -> some View {
+        let list = VerbSentences.shared.entry(base: verb.base)?.sentences(senseIndex: senseIndex) ?? []
+        if !list.isEmpty {
+            VStack(alignment: .leading, spacing: 14) {
+                if senseIndex == 0 { heading("In sentences") }
+                ForEach(Array(list.enumerated()), id: \.offset) { _, sentence in
+                    HStack(alignment: .top, spacing: 8) {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(sentence.slot.label).font(.subheadline).foregroundStyle(Brand.secondaryText)
+                            Text(bolded(sentence.en, form: sentence.form)).environment(\.locale, Locale(identifier: "en"))
+                            if model.targetLanguage == "es" {
+                                LangText(sentence.es, language: "es").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                            }
+                        }
+                        Spacer(minLength: 0)
+                        ListenButton(text: sentence.spoken ?? sentence.en, name: sentence.form)
+                    }
+                    .accessibilityElement(children: .contain)
+                }
+            }
+        }
+    }
+
+    /// The sentence with the verb's form in bold (the first whole word that is it).
+    private func bolded(_ text: String, form: String) -> AttributedString {
+        var result = AttributedString(text)
+        if let range = result.range(of: form, options: .caseInsensitive) { result[range].font = .body.bold() }
+        return result
     }
 
     private func heading(_ title: LocalizedStringKey) -> some View {
@@ -153,6 +202,27 @@ struct VerbPageView: View {
                 .font(.title3.bold())
                 .accessibilityAddTraits(.isHeader)
             LangText(([verb.base] + twin.past + twin.participle + [twin.ing, twin.s]).joined(separator: " · "), language: "en")
+        }
+    }
+}
+
+extension VerbSlot {
+    /// What the position says about the sentence (SPEC S24, Verb sentences data): the label of the slot, or of its substitute.
+    var label: LocalizedStringKey {
+        switch self {
+        case .habit: "Every day"
+        case .third: "One person, every day"
+        case .now: "Right now"
+        case .gerund: "Used like a noun"
+        case .past: "In the past"
+        case .story: "In a story"
+        case .didnt: "Didn't (past negative)"
+        case .perfect: "Before now"
+        case .passive: "Done to something"
+        case .state: "A condition (how something is)"
+        case .perfectq: "Asking about before now"
+        case .pastperfect: "Before that"
+        case .advice: "Should"
         }
     }
 }

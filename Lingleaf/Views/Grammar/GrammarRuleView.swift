@@ -20,6 +20,7 @@ struct GrammarRuleView: View {
     /// after "Skip", once answered); view state, never stored.
     @State private var excluded: Set<String> = []
     @State private var round: GrammarRound?
+    @State private var translator = GrammarTranslations()
 
     private enum Stage { case pretest, answered, rule }
 
@@ -50,6 +51,7 @@ struct GrammarRuleView: View {
                 onAnswered: { id in if id == GrammarPretest.item(of: rule)?.id { excluded.insert(id) } }
             )
         }
+        .grammarTranslations(translator, texts: rule.examples.map(\.en), model: model)
         .onAppear {
             guard !opened else { return }
             opened = true
@@ -184,13 +186,16 @@ struct GrammarRuleView: View {
     private var examples: some View {
         VStack(alignment: .leading, spacing: 10) {
             heading("Examples")
+            GrammarDownloadLine(translator: translator)
             ForEach(Array(rule.examples.enumerated()), id: \.offset) { _, example in
                 HStack(alignment: .top, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         LangText(example.en, language: "en")
-                        // The bundled translation is Spanish; another translation language is made on the device later.
+                        // Bundled for Spanish; any other language is translated on the device once it is installed.
                         if model.targetLanguage == "es" {
                             LangText(example.es, language: "es").font(.subheadline).foregroundStyle(Brand.secondaryText)
+                        } else if let translated = translator.translations[example.en], let code = model.targetLanguage {
+                            LangText(translated, language: code).font(.subheadline).foregroundStyle(Brand.secondaryText)
                         }
                     }
                     Spacer(minLength: 0)

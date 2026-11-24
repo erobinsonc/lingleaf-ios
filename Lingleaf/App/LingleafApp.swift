@@ -114,7 +114,8 @@ final class AppModel {
         // UI tests only: release builds never take the offline, fake-data path.
         let arguments = ProcessInfo.processInfo.arguments
         // With -ui-testing-no-language no translation language is saved, so the word card asks.
-        let language = arguments.contains("-ui-testing-no-language") ? nil : "es"
+        // With -ui-testing-language-fr the translation language is French (not Spanish: examples and meanings are translated).
+        let language = arguments.contains("-ui-testing-no-language") ? nil : arguments.contains("-ui-testing-language-fr") ? "fr" : "es"
         // With -ui-testing-due a word is waiting for review (new words are first due tomorrow).
         let due = arguments.contains("-ui-testing-due")
         if UITestMode.isOffline { return uiTesting(offline: true, language: language, due: due) }
