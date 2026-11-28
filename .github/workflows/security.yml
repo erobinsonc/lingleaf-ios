@@ -58,7 +58,7 @@ jobs:
       - run: |
           brew install xcodegen
           xcodegen generate
-      - uses: github/codeql-action/init@4bfa242aa49c5f7c6770b98670d354a7dfac05f8 # v3.39.1
+      - uses: github/codeql-action/init@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
         with:
           languages: swift
           build-mode: manual
