@@ -64,4 +64,4 @@ jobs:
           build-mode: manual
       - run: |
           xcodebuild build -project Lingleaf.xcodeproj -scheme Lingleaf -destination "generic/platform=iOS Simulator" CODE_SIGNING_ALLOWED=NO
-      - uses: github/codeql-action/analyze@4bfa242aa49c5f7c6770b98670d354a7dfac05f8 # v3.39.1
+      - uses: github/codeql-action/analyze@1bd86f2fdb4b86187fa4059f16f31a3202acc9ea # v4.39.4
